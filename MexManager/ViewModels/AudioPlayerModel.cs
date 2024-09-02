@@ -89,16 +89,16 @@ namespace MexManager.ViewModels
                 if (_soundPlayer?.State == OpenTK.Audio.OpenAL.ALSourceState.Playing)
                 {
                     float percent = _soundPlayer.Percentage;
-                    var e = _soundPlayer?.TotalLength;
-                    if (e != null)
-                    {
-                        // Calculate the offset TimeSpan based on the ratio
-                        double offsetSeconds = e.Value.TotalSeconds * percent;
+                    //var e = _soundPlayer?.TotalLength;
+                    //if (e != null)
+                    //{
+                    //    // Calculate the offset TimeSpan based on the ratio
+                    //    double offsetSeconds = e.Value.TotalSeconds * percent;
 
-                        var c = TimeSpan.FromSeconds(offsetSeconds);
+                    //    var c = TimeSpan.FromSeconds(offsetSeconds);
 
-                        EndTime = $"{c.Minutes}:{c.Seconds} / {e.Value.Minutes}:{e.Value.Seconds}";
-                    }
+                    //    EndTime = $"{c.Minutes}:{c.Seconds} / {e.Value.Minutes}:{e.Value.Seconds}";
+                    //}
                     SkipUpdate = true;
                     ProgressWidth = percent * Width;
                 }
@@ -114,13 +114,7 @@ namespace MexManager.ViewModels
             _soundPlayer?.LoadDSP(dsp);
             if (_soundPlayer != null)
             {
-                double? loop_sec = _soundPlayer?.LoopPoint.TotalSeconds;
-                if (loop_sec == null)
-                    return;
-                double? total_sec = _soundPlayer?.TotalLength.TotalSeconds;
-                if (total_sec == null)
-                    return;
-                OffsetX = (int)((loop_sec / total_sec) * Width);
+                OffsetX = (int)(_soundPlayer.Percentage * Width);
             }
             var l = _soundPlayer?.LoopPoint;
             if (l != null)

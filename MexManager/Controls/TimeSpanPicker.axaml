@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Class="MexManager.Controls.TimeSpanPicker">
+	<StackPanel Orientation="Horizontal">
+		<NumericUpDown x:Name="HoursUpDown" Maximum="23" Width="60" ShowButtonSpinner="False"/>
+		<TextBlock Text=":" VerticalAlignment="Center" Margin="5,0" />
+		<NumericUpDown x:Name="MinutesUpDown" Maximum="59" Width="60" ShowButtonSpinner="False"/>
+		<TextBlock Text=":" VerticalAlignment="Center" Margin="5,0" />
+		<NumericUpDown x:Name="SecondsUpDown" Maximum="59" Width="60" ShowButtonSpinner="False"/>
+		<TextBlock Text=":" VerticalAlignment="Center" Margin="5,0" />
+		<NumericUpDown x:Name="MilliSecondsUpDown" Maximum="999" Width="60" ShowButtonSpinner="False"/>
+	</StackPanel>
+</UserControl>

@@ -128,7 +128,8 @@
 								AllowQuickFilter="False"
 								ShowStyle="Builtin"
 								Margin="4"
-								DataContext="{Binding SelectedMusic}"/>
+								DataContext="{Binding SelectedMusic}"
+								Height="120"/>
 							<ListBox
 								DockPanel.Dock="Left"
 								Name="MusicList"

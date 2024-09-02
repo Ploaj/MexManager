@@ -1,0 +1,78 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:MexManager.Converters"
+		xmlns:controls="clr-namespace:MexManager.Controls"
+		mc:Ignorable="d"
+		Width="740"
+		Height="380"
+        x:Class="MexManager.Views.AudioLoopEditor"
+        Title="Audio Editor"
+        WindowStartupLocation="CenterOwner">
+	
+	<Window.Resources>
+		<!-- Define the converter in the resources -->
+		<converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter"/>
+	</Window.Resources>
+
+	<DockPanel>
+		<Canvas Name="WaveformCanvas"
+				Width="640"
+				Height="200"
+				Background="Black"
+				DockPanel.Dock="Top">
+		</Canvas>
+		<Button
+			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Center"
+			DockPanel.Dock="Bottom"
+			Height="32"
+			Click="Button_Click">
+			Save Changes
+		</Button>
+
+		<Button
+			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Center"
+			Click="PlayButton_Click"
+			CornerRadius="0"
+			Height="64"
+			DockPanel.Dock="Bottom">
+			<Image Source="avares://MexManager/Assets/Common/audio_play.png"
+				   Name="PlayPauseImage"/>
+		</Button>
+		<DockPanel
+			DockPanel.Dock="Top">
+			<StackPanel
+			Margin="5"
+			Orientation="Vertical"
+			HorizontalAlignment="Left">
+				<TextBlock
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"
+					Text="Loop Point">
+				</TextBlock>
+				<controls:TimeSpanPicker
+					Name="LoopTimeSpanPicker"/>
+				<CheckBox 
+					Name="EnableLoopCheckBox"
+					PropertyChanged="CheckBox_PropertyChanged"
+					HorizontalAlignment="Center">Enable Loop</CheckBox>
+			</StackPanel>
+			<StackPanel
+				Margin="5"
+				Orientation="Vertical"
+				HorizontalAlignment="Right"
+				DockPanel.Dock="Top">
+				<TextBlock
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					Text="End Point">
+				</TextBlock>
+				<controls:TimeSpanPicker
+					Name="EndTimeSpanPicker"/>
+			</StackPanel>
+		</DockPanel>
+	</DockPanel>
+</Window>

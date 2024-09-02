@@ -1,6 +1,7 @@
 ﻿using MeleeMedia.Audio;
 using OpenTK.Audio.OpenAL;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -9,6 +10,7 @@ namespace MexManager.Tools
 {
     public class AudioPlayer : IDisposable
     {
+        public bool Initialize { get; internal set; }
         public ALSourceState State
         {
             get
@@ -27,21 +29,29 @@ namespace MexManager.Tools
             }
         }
 
-        public TimeSpan TotalLength { get; internal set; }
-
         public TimeSpan LoopPoint { get; internal set; }
 
+        public double LoopPointMilliseconds
+        {
+            set
+            {
+                LoopPoint = TimeSpan.FromMilliseconds(value);
+                _loopPoint = (int)(_totalSize * value);
+            }
+        }
+
+        public bool EnableLoop { get; set; } = true;
+
+        private int _totalSize;
+        private int _loopPoint;
 
         private bool _manualstop = false;
 
-        private ALDevice _device;
-        private ALContext _context;
+        private static ALDevice? _device;
+        private static ALContext? _context;
 
         private int _buffer;
         private int _source;
-
-        private int _loopPoint;
-        private int _totalSize;
 
         private readonly Timer? _loopTimer;
 
@@ -51,29 +61,44 @@ namespace MexManager.Tools
         /// <param name="hps"></param>
         public AudioPlayer()
         {
-            _device = ALC.OpenDevice(null);
-            if (_device == ALDevice.Null)
+            if (_device == null)
             {
-                System.Diagnostics.Debug.WriteLine("Audio Device failed");
+                _device = ALC.OpenDevice(null);
+                if (_device == ALDevice.Null)
+                {
+                    Debug.WriteLine("Audio Device failed");
+                }
             }
 
-            _context = ALC.CreateContext(_device, new ALContextAttributes());
-            if (_context == ALContext.Null)
+            if (_context == null && _device is ALDevice dev)
             {
-                System.Diagnostics.Debug.WriteLine("Audio Context failed");
+                _context = ALC.CreateContext(dev, new ALContextAttributes());
+                if (_context == ALContext.Null)
+                {
+                    Debug.WriteLine("Audio Context failed");
+                }
             }
 
-            ALC.MakeContextCurrent(_context);
-            _buffer = AL.GenBuffer();
-            _source = AL.GenSource();
+            if (_context is ALContext con)
+            {
+                ALC.MakeContextCurrent(con);
 
-            _loopTimer = new Timer(CheckPlayback, null, 0, 100); // Check every 100ms
+                //_buffer = AL.GenBuffer();
+                //_source = AL.GenSource();
+                //Debug.WriteLine($"buffer {_buffer} source {_source}");
+                _loopTimer = new Timer(CheckPlayback, null, 0, 30); // Check every 100ms
+
+                Initialize = true;
+            }
         }
         /// <summary>
         /// 
         /// </summary>
         public void LoadDSP(byte[] dsp)
         {
+            if (!Initialize)
+                return;
+
             var d = new DSP();
             d.FromFormat(dsp, "dsp");
             LoadDSP(d);
@@ -84,22 +109,25 @@ namespace MexManager.Tools
         /// <param name="hps"></param>
         public void LoadDSP(DSP dsp)
         {
-            AL.SourceStop(_source);
+            if (!Initialize)
+                return;
 
             // regenerate sources
-            AL.DeleteBuffer(_buffer);
-            AL.DeleteSource(_source);
+            AL.SourceStop(_source);
+            AL.Source(_source, ALSourcei.Buffer, 0);
+            AL.DeleteBuffers(1, ref _buffer);
+            AL.DeleteSources(1, ref _source);
             _buffer = AL.GenBuffer();
             _source = AL.GenSource();
+            Debug.WriteLine($"Audio: buffer {_buffer} source {_source}");
 
 
             var wave = dsp.ToWAVE();
             var raw = wave.RawData.ToArray();
 
-            _loopPoint = (int)Math.Ceiling((double)dsp.Channels[0].LoopStart / 2f * 1.75f);
             _totalSize = raw.Length / 2;
-            TotalLength = TimeSpan.Parse(dsp.Length);
-            LoopPoint = TimeSpan.Parse(dsp.LoopPoint);
+            _loopPoint = (int)Math.Ceiling((double)dsp.Channels[0].LoopStart / 2f * 1.75f);
+            LoopPoint = TimeSpan.FromMilliseconds(dsp.LoopPointMilliseconds);
 
             // Pin the managed array so that the GC doesn't move it
             GCHandle handle = GCHandle.Alloc(raw, GCHandleType.Pinned);
@@ -125,6 +153,9 @@ namespace MexManager.Tools
         /// </summary>
         public void Play()
         {
+            if (!Initialize)
+                return;
+
             _manualstop = false;
             switch (State)
             {
@@ -142,6 +173,12 @@ namespace MexManager.Tools
         /// <param name="state"></param>
         private void CheckPlayback(object? state)
         {
+            if (!Initialize)
+                return;
+
+            if (!EnableLoop)
+                return;
+
             if (!_manualstop &&
                 State == ALSourceState.Stopped)
             {
@@ -155,6 +192,9 @@ namespace MexManager.Tools
         /// </summary>
         public void Stop()
         {
+            if (!Initialize)
+                return;
+
             _manualstop = true;
             AL.SourceStop(_source);
         }
@@ -165,6 +205,9 @@ namespace MexManager.Tools
         /// <exception cref="NotImplementedException"></exception>
         public void SeekPercentage(double percentage)
         {
+            if (!Initialize)
+                return;
+
             Stop();
             AL.Source(_source, ALSourcei.SampleOffset, (int)(_totalSize * percentage));
             AL.SourcePlay(_source);
@@ -175,8 +218,13 @@ namespace MexManager.Tools
         /// </summary>
         public void Dispose()
         {
-            ALC.CloseDevice(_device);
-            ALC.DestroyContext(_context);
+            _loopTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+            _loopTimer?.Dispose();
+
+            if (!Initialize)
+                return;
+
+            AL.Source(_source, ALSourcei.Buffer, 0);
             AL.DeleteSource(_source);
             AL.DeleteBuffer(_buffer);
             GC.SuppressFinalize(this);

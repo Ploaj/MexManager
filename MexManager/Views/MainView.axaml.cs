@@ -81,7 +81,7 @@ public partial class MainView : UserControl
         // check if workspace currently open
         if (Global.Workspace != null)
         {
-            var rst = await MessageBox.Show(App.MainWindow,
+            var rst = await MessageBox.Show(
                 "Save changes to current workspace?",
                 "New Workspace",
                 MessageBox.MessageBoxButtons.YesNoCancel);
@@ -100,7 +100,7 @@ public partial class MainView : UserControl
         if (string.IsNullOrEmpty(App.Settings.MeleePath) || 
             !File.Exists(App.Settings.MeleePath))
         {
-            var rst = await MessageBox.Show(App.MainWindow, 
+            var rst = await MessageBox.Show( 
                 "Please set a \"Melee ISO Path\" in Config", 
                 "New Workspace Error", 
                 MessageBox.MessageBoxButtons.Ok);
@@ -166,7 +166,7 @@ public partial class MainView : UserControl
             }
             else
             {
-                MessageBox.Show(App.MainWindow, $"Could not find \"{music.FileName}\"", "File not found", MessageBox.MessageBoxButtons.Ok);
+                MessageBox.Show($"Could not find \"{music.FileName}\"", "File not found", MessageBox.MessageBoxButtons.Ok);
             }
         }
     }
@@ -249,7 +249,7 @@ public partial class MainView : UserControl
 
             var file = await FileIO.TrySaveFile("Export Music", "", FileIO.FilterWav);
 
-            if (file != null)
+            if (path != null && file != null)
             {
                 var dsp = HPS.ToDSP(Global.Files.Get(path));
                 Global.Files.Set(file, dsp.ToWAVE().ToFile());
@@ -312,9 +312,43 @@ public partial class MainView : UserControl
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    public void MusicEditButton_Click(object? sender, RoutedEventArgs args)
+    public async void MusicEditButton_Click(object? sender, RoutedEventArgs args)
     {
-        // TODO: edit music
+        if (Global.Workspace != null &&
+            MusicList.SelectedItem is MexMusic music)
+        {
+            var path = Global.Workspace.GetFilePath($"audio\\{music.FileName}");
+
+            if (!Global.Files.Exists(path))
+            {
+                await MessageBox.Show($"Music file not found\n{music.FileName}", "File not Found", MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+
+            // load dsp
+            var dsp = HPS.ToDSP(Global.Files.Get(path));
+
+            // create editor popup
+            var popup = new AudioLoopEditor();
+            popup.SetAudio(dsp);
+            var window = GetParentWindow(this);
+            if (window != null)
+            {
+                await popup.ShowDialog(window);
+
+                if (popup.Result == AudioLoopEditor.AudioEditorResult.SaveChanges)
+                {
+                    var newdsp = popup.ApplyChanges();
+
+                    if (newdsp != null)
+                    {
+                        using var m = new MemoryStream();
+                        HPS.WriteDSPAsHPS(newdsp, m);
+                        Global.Files.Set(path, m.ToArray());
+                    }
+                }
+            }
+        }
     }
     /// <summary>
     /// 
