@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="160"
+        x:Class="MexManager.MessageBox"
+        Width="280" Height="120"
+        WindowStartupLocation="CenterOwner"
+		KeyDown="OnKeyDown">
+	
+	<StackPanel HorizontalAlignment="Center"
+				   Margin="20">
+		<TextBlock HorizontalAlignment="Center"
+				   Name="Text" 
+				   Text="Test"/>
+		<StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Name="Buttons">
+			<StackPanel.Styles>
+				<Style Selector="Button">
+					<Setter Property="Margin" Value="5"/>
+				</Style>
+			</StackPanel.Styles>
+
+		</StackPanel>
+	</StackPanel>
+</Window>

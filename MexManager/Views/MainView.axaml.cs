@@ -1,0 +1,337 @@
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
+using MeleeMedia.Audio;
+using mexLib;
+using MexManager.Extensions;
+using MexManager.Tools;
+using MexManager.ViewModels;
+using System.IO;
+
+namespace MexManager.Views;
+
+public partial class MainView : UserControl
+{
+    private MainViewModel? Context => this.DataContext as MainViewModel;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public MainView()
+    {
+        InitializeComponent();
+
+        ExitMenuItem.Click += (sender, e) =>
+        {
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.Shutdown();
+            }
+        };
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="control"></param>
+    /// <returns></returns>
+    public static Window? GetParentWindow(Control control)
+    {
+        // Traverse up the visual tree until we find a Window
+        var current = control;
+        while (current != null && !(current is Window))
+        {
+            current = current.Parent as Control;
+        }
+        return current as Window;
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    private async void OpenEditConfig()
+    {
+        var popup = new PropertyGridPopup();
+
+        popup.SetObject(App.Settings);
+
+        var window = GetParentWindow(this);
+
+        if (window != null)
+        {
+            await popup.ShowDialog(window);
+
+            if (popup.Confirmed)
+            {
+                App.Settings.Save();
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void OnNewClick(object sender, RoutedEventArgs e)
+    {
+        if (Context == null)
+            return;
+
+        // check if workspace currently open
+        if (Global.Workspace != null)
+        {
+            var rst = await MessageBox.Show(App.MainWindow,
+                "Save changes to current workspace?",
+                "New Workspace",
+                MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (rst == MessageBox.MessageBoxResult.Yes)
+            {
+                Global.SaveWorkspace();
+            }
+            else if (rst == MessageBox.MessageBoxResult.Cancel)
+            {
+                return;
+            }
+        }
+        
+        // validate melee iso path
+        if (string.IsNullOrEmpty(App.Settings.MeleePath) || 
+            !File.Exists(App.Settings.MeleePath))
+        {
+            var rst = await MessageBox.Show(App.MainWindow, 
+                "Please set a \"Melee ISO Path\" in Config", 
+                "New Workspace Error", 
+                MessageBox.MessageBoxButtons.Ok);
+
+            if (rst == MessageBox.MessageBoxResult.Ok)
+            {
+                OpenEditConfig();
+            }
+
+            return;
+        }
+
+        // Start async operation to open the dialog.
+        var file = await FileIO.TrySaveFile("Save Workspace", "project.mexproj", FileIO.FilterMexProject);
+            
+        // check if file was found
+        if (file == null)
+            return;
+
+        // create new workspace
+        Context.CreateNewWorkspace(file);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void OnOpenClick(object sender, RoutedEventArgs e)
+    {
+        if (Context == null)
+            return;
+
+        var file = await FileIO.TryOpenFile("Open Workspace", "", FileIO.FilterMexProject);
+
+        if (file != null)
+        {
+            Context.OpenWorkspace(file);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnConfigClick(object sender, RoutedEventArgs e)
+    {
+        OpenEditConfig();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public void PlaySelectedMusic()
+    {
+        if (Global.Workspace != null &&
+            MusicList.SelectedItem is MexMusic music)
+        {
+            var hps = Global.Workspace.GetFilePath($"audio\\{music.FileName}");
+
+            if (Global.Files.Exists(hps))
+            {
+                GlobalAudioView.LoadHPS(Global.Files.Get(hps));
+                GlobalAudioView.Play();
+            }
+            else
+            {
+                MessageBox.Show(App.MainWindow, $"Could not find \"{music.FileName}\"", "File not found", MessageBox.MessageBoxButtons.Ok);
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void MusicPlayButton_Click(object? sender, RoutedEventArgs args)
+    {
+        PlaySelectedMusic();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public async void MusicImportButton_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        var file = await FileIO.TryOpenFile("Import Music", "", FileIO.FilterMusic);
+
+        if (file != null)
+        {
+            var hps = new DSP();
+            if (hps.FromFile(file))
+            {
+                var fileName = Path.GetFileNameWithoutExtension(file) + ".hps";
+                var path = Global.Workspace?.GetFilePath("audio\\" + fileName);
+
+                if (Global.Files.Exists(path))
+                {
+                    var res = await MessageBox.Show($"\"{fileName}\" already exists\nWould you like to overwrite it?", "Import Music Error", MessageBox.MessageBoxButtons.YesNoCancel);
+
+                    if (res != MessageBox.MessageBoxResult.Yes)
+                        return;
+                }
+
+                if (path != null)
+                {
+                    using (MemoryStream s = new())
+                    {
+                        HPS.WriteDSPAsHPS(hps, s);
+                        Global.Files.Set(path, s.ToArray());
+                    }
+                    Global.Workspace?.Project.Music.Add(new MexMusic()
+                    {
+                        Name = Path.GetFileNameWithoutExtension(file),
+                        FileName = fileName,
+                    });
+                }
+            }
+            else
+            {
+                await MessageBox.Show($"Failed to import file\n{file}", "Import Music Error", MessageBox.MessageBoxButtons.Ok);
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public async void MusicExportButton_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        if (MusicList.SelectedItem is MexMusic music)
+        {
+            var path = Global.Workspace?.GetFilePath("audio\\" + music.FileName);
+
+            if (!Global.Files.Exists(path))
+            {
+                await MessageBox.Show($"Could not find music file\n{music.FileName}", "Export Music Error", MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+
+            var file = await FileIO.TrySaveFile("Export Music", "", FileIO.FilterWav);
+
+            if (file != null)
+            {
+                var dsp = HPS.ToDSP(Global.Files.Get(path));
+                Global.Files.Set(file, dsp.ToWAVE().ToFile());
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public async void MusicDeleteButton_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        if (MusicList.SelectedItem is MexMusic music)
+        {
+            // check if mex music
+            if (Global.Workspace.Project.Music.IndexOf(music) <= 97)
+            {
+                await MessageBox.Show("Unable to remove vanilla music tracks", "Remove Music", MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+
+            // check if sure
+            var sure = await MessageBox.Show($"Are you sure you want to remove\n{music.Name}", "Remove Music", MessageBox.MessageBoxButtons.YesNoCancel);
+            if (sure != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            // try to remove music
+            if (!Global.Workspace.Project.RemoveMusic(music))
+            {
+                await MessageBox.Show("Failed to remove music", "Music Removal Error", MessageBox.MessageBoxButtons.Ok);
+            }
+            else
+            {
+                // check to delete music file
+                var res = await MessageBox.Show($"Would you like to delete\n{music.FileName} as well?", "Music Removal", MessageBox.MessageBoxButtons.YesNoCancel);
+                if (res == MessageBox.MessageBoxResult.Yes)
+                {
+                    Global.Files.Remove(Global.Workspace.GetFilePath($"audio\\{music.FileName}"));
+                }
+
+                MusicList.RefreshList();
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void MusicReplaceButton_Click(object? sender, RoutedEventArgs args)
+    {
+        // TODO: replace music
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void MusicEditButton_Click(object? sender, RoutedEventArgs args)
+    {
+        // TODO: edit music
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void MusicList_DoubleClicked(object? sender, TappedEventArgs args)
+    {
+        PlaySelectedMusic();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void MusicList_AddNewMusic(object? sender, RoutedEventArgs args)
+    {
+        Global.Workspace?.Project.Music.Add(new MexMusic());
+    }
+}

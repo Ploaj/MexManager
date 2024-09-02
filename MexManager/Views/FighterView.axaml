@@ -1,0 +1,141 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+             x:Class="MexManager.Views.FighterView"
+			 xmlns:vm="clr-namespace:MexManager.ViewModels"
+			 xmlns:views="clr-namespace:MexManager.Views"
+			 xmlns:converters="clr-namespace:MexManager.Converters"
+			 xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
+			 xmlns:pm="clr-namespace:Avalonia.PropertyModels;assembly=Avalonia.PropertyModels"
+             x:DataType="vm:MainViewModel">
+	
+	<UserControl.Resources>
+		<converters:ImageSourceConverter x:Key="ImageSourceConverter"/>
+		<converters:StockIconImageConverter x:Key="StockIconImageConverter"/>
+		<converters:ValidationColorConverter x:Key="ValidationColorConverter"/>
+	</UserControl.Resources>
+	
+	<DockPanel>
+		<DockPanel>
+			<Menu DockPanel.Dock="Top">
+				<MenuItem Header="_Add" Click="AddFighterMenuItem_Click"/>
+				<MenuItem Header="_Remove" Click="RemoveFighterMenuItem_Click"/>
+				<MenuItem Header="_Import" Click="ImportFighterMenuItem_Click"/>
+				<MenuItem Header="_Export" Click="ExportFighterMenuItem_Click"/>
+			</Menu>
+			
+			<ListBox
+				Name="FighterList"
+				DockPanel.Dock="Bottom"
+				ItemsSource="{Binding Fighters}"
+				SelectedItem="{Binding SelectedFighter, Mode=TwoWay}"
+				FontFamily="Consolas">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<StackPanel
+							Background="{Binding IsValid, Converter={StaticResource ValidationColorConverter}}"
+							ToolTip.Tip="{Binding Name}"
+							Orientation="Horizontal"
+							Spacing="4"
+							Height="32">
+							<Image
+								Source="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Converter={StaticResource ImageSourceConverter} }"
+								Width="16"
+								Height="16"
+								Stretch="Fill"
+								HorizontalAlignment="Left"/>
+							<TextBlock
+								VerticalAlignment="Bottom">
+								<TextBlock.Text>
+									<Binding Path="." Converter="{StaticResource IndexConverter}"/>
+								</TextBlock.Text>
+							</TextBlock>
+							<Image
+								Source="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Converter={StaticResource StockIconImageConverter} }"
+								Width="24"
+								Height="24"
+								Stretch="Fill"
+								HorizontalAlignment="Left"/>
+							<TextBlock
+								VerticalAlignment="Bottom"
+								Text="{Binding Name}"/>
+						</StackPanel>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+				<ListBox.Styles>
+					<Style Selector="ListBoxItem">
+						<Setter Property="Height" Value="28"/>
+					</Style>
+				</ListBox.Styles>
+			</ListBox>
+		</DockPanel>
+		
+
+		<TabControl Margin="5"
+					DockPanel.Dock="Right">
+			<TabItem Header="General">
+				<ScrollViewer>
+					<views:PropertyGridExt
+						AllowQuickFilter="False"
+						DataContext="{Binding SelectedFighter}">
+					</views:PropertyGridExt>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem Header="Files">
+				<ScrollViewer>
+					<views:PropertyGridExt
+						AllowQuickFilter="False"
+						AllowFilter="False"
+						AllowToggleView="False"
+						DataContext="{Binding SelectedFighter.Files}">
+					</views:PropertyGridExt>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem Header="Costumes">
+			</TabItem>
+			<TabItem Header="Items">
+				<DockPanel>
+					<DockPanel>
+						<Menu DockPanel.Dock="Top">
+							<MenuItem Header="_Add" Click="AddFighterItemMenuItem_Click"/>
+							<MenuItem Header="_Remove" Click="RemoveFighterItemMenuItem_Click"/>
+						</Menu>
+						<ListBox
+							Name="ItemList"
+							DockPanel.Dock="Left"
+							Width="200"
+							ItemsSource="{Binding SelectedFighter.Items}"
+							SelectedItem="{Binding SelectedFighterItem, Mode=TwoWay}">
+						</ListBox>
+					</DockPanel>
+					<ScrollViewer>
+						<pgc:PropertyGrid
+							DataContext="{ Binding SelectedFighterItem }"/>
+					</ScrollViewer>
+				</DockPanel>
+			</TabItem>
+			<TabItem Header="Media">
+				<views:FighterMediaEditor DataContext="{Binding SelectedFighter.Media}" />
+			</TabItem>
+			<TabItem Header="Code">
+				<ScrollViewer>
+					<views:PropertyGridExt
+						AllowQuickFilter="False"
+						DataContext="{Binding SelectedFighter.Functions}">
+					</views:PropertyGridExt>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem Header="Bones">
+				<ScrollViewer>
+					<views:PropertyGridExt
+						AllowQuickFilter="False"
+						DataContext="{Binding SelectedFighter.BoneTable}">
+					</views:PropertyGridExt>
+				</ScrollViewer>
+			</TabItem>
+		</TabControl>
+		
+	</DockPanel>
+</UserControl>

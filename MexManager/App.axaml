@@ -1,0 +1,26 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
+             xmlns:converters="clr-namespace:MexManager.Converters"
+			 x:Class="MexManager.App"
+			 xmlns:views="clr-namespace:MexManager.Views"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+	
+	<Application.Resources>
+		<converters:IndexConverter x:Key="IndexConverter" />
+		<FontFamily x:Key="Palatino">avares://MexManager/Assets/Fonts/Palatino_Linotype.ttf#Palatino Linotype</FontFamily>
+		<!-- <FontFamily x:Key="FolkProH">avares://MexManager/Assets/Fonts/A_OTF_Folk_Pro_H.otf#A-OTF Folk Pro H</FontFamily>-->
+	</Application.Resources>
+	
+	<Application.Styles>
+		<FluentTheme />
+
+		<Style Selector="TabItem">
+			<Setter Property="FontFamily" Value="Segoe UI"/>
+			<Setter Property="FontSize" Value="16"/>
+			<!-- You can also set other properties like FontWeight, FontStyle, etc. -->
+		</Style>
+		
+    </Application.Styles>
+</Application>

@@ -1,0 +1,68 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:converters="clr-namespace:MexManager.Converters"
+			 xmlns:vm="clr-namespace:MexManager.ViewModels"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
+			 x:Class="MexManager.Views.AudioView"
+			 x:DataType="vm:AudioPlayerModel">
+
+	<UserControl.Styles>
+		<Style Selector="Button.flat-square">
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Padding" Value="0"/>
+			<Setter Property="CornerRadius" Value="0"/>
+			<Setter Property="Background" Value="#001020"/>
+			<Setter Property="Width" Value="64"/>
+			<Setter Property="Height" Value="40"/>
+		</Style>
+	</UserControl.Styles>
+
+	<UserControl.Resources>
+		<converters:BooleanToImageConverter x:Key="BooleanToImageConverter">
+			<converters:BooleanToImageConverter.TrueImage>
+				<Bitmap>avares://MexManager/Assets/Common/audio_pause.png</Bitmap>
+			</converters:BooleanToImageConverter.TrueImage>
+			<converters:BooleanToImageConverter.FalseImage>
+				<Bitmap>avares://MexManager/Assets/Common/audio_play.png</Bitmap>
+			</converters:BooleanToImageConverter.FalseImage>
+		</converters:BooleanToImageConverter>
+	</UserControl.Resources>
+
+	<DockPanel
+		LastChildFill="True">
+		<Button Command="{Binding PlaySoundCommand}"
+				Classes="flat-square"
+				VerticalAlignment="Top"
+				DockPanel.Dock="Left">
+			<Image
+				Source="{Binding IsPlaying, Converter={StaticResource BooleanToImageConverter}}"
+				Height="32"/>
+		</Button>
+		<Button Command="{Binding StopSoundCommand}"
+				Classes="flat-square"
+				VerticalAlignment="Top"
+				DockPanel.Dock="Left">
+			<Image
+				Source="avares://MexManager/Assets/Common/audio_stop.png"
+				Height="32"/>
+		</Button>
+		<StackPanel Margin="3"
+					Width="120"
+					DockPanel.Dock="Right">
+			<TextBlock Text="{Binding StartTime}"/>
+			<TextBlock Text="{Binding EndTime}"/>
+		</StackPanel>
+		<Slider
+			DockPanel.Dock="Left"
+			Margin="5 -4"
+			Minimum="0"
+			Maximum="100"
+			Name="PlaybackSlider"
+			Value="{Binding ProgressWidth}"
+			PropertyChanged="Slider_ValueChanged">
+		</Slider>
+	</DockPanel>
+	
+</UserControl>

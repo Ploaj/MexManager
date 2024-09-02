@@ -1,0 +1,187 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:MexManager.ViewModels"
+			 xmlns:views="clr-namespace:MexManager.Views"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MexManager.Views.MainView"
+			 xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
+			 xmlns:pm="clr-namespace:Avalonia.PropertyModels;assembly=Avalonia.PropertyModels"
+             x:DataType="vm:MainViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+                to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="_File">
+				<MenuItem Header="_New"
+						  Click="OnNewClick"/>
+				<MenuItem Header="_Open"
+						  HotKey="Ctrl+O"
+						  InputGesture="Ctrl+O"
+						  Click="OnOpenClick"/>
+				<MenuItem Header="_Save" 
+						  HotKey="Ctrl+S"
+						  InputGesture="Ctrl+S"
+						  Command="{Binding SaveCommand}"/>
+				<MenuItem Header="_Close Workspace"
+						  Command="{Binding CloseCommand}"/>
+				<Separator/>
+				<MenuItem Header="_Exit" Name="ExitMenuItem"/>
+			</MenuItem>
+			<MenuItem Header="_Config">
+				<MenuItem Header="Edit"
+						  Click="OnConfigClick">
+					<MenuItem.Icon>
+						<PathIcon Data="{StaticResource copy_regular}"/>
+					</MenuItem.Icon>
+				</MenuItem>
+			</MenuItem>
+		</Menu>
+
+		<views:AudioView
+			Name="GlobalAudioView"
+			DockPanel.Dock="Bottom"
+			HorizontalAlignment="Stretch"/>
+		
+		<DockPanel>
+			<TabControl Margin="0"
+						Padding="0"
+					TabStripPlacement="Left">
+				<TabItem ToolTip.Tip="Fighters">
+					<TabItem.Header>
+						<Image Source="avares://MexManager/Assets/Menu/category_fighter.png"
+								Width="32"
+								Height="32"/>
+					</TabItem.Header>
+					<views:FighterView
+						Name="FighterPageView"/>
+				</TabItem>
+				<TabItem ToolTip.Tip="Stages">
+					<TabItem.Header>
+						<Image Source="avares://MexManager/Assets/Menu/category_stage.png"
+								Width="32"
+								Height="32"/>
+					</TabItem.Header>
+				</TabItem>
+				<TabItem ToolTip.Tip="Menus">
+					<TabItem.Header>
+						<Image Source="avares://MexManager/Assets/Menu/category_menu.png"
+								Width="32"
+								Height="32"/>
+					</TabItem.Header>
+				</TabItem>
+				<TabItem ToolTip.Tip="Music">
+					<TabItem.Header>
+						<Image Source="avares://MexManager/Assets/Menu/category_music.png"
+								Width="32"
+								Height="32"/>
+					</TabItem.Header>
+					<DockPanel>
+						<DockPanel>
+							<Menu DockPanel.Dock="Top">
+								<MenuItem ToolTip.Tip="Import"
+										  Click="MusicImportButton_Click">
+									<MenuItem.Header>
+										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_import_music.png" />
+									</MenuItem.Header>
+								</MenuItem>
+								<MenuItem ToolTip.Tip="Delete"
+										  Click="MusicDeleteButton_Click">
+									<MenuItem.Header>
+										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_delete.png" />
+									</MenuItem.Header>
+								</MenuItem>
+								<MenuItem ToolTip.Tip="Preview"
+										  Click="MusicPlayButton_Click">
+									<MenuItem.Header>
+										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/audio_play.png" />
+									</MenuItem.Header>
+								</MenuItem>
+								<MenuItem ToolTip.Tip="Export"
+										  Click="MusicExportButton_Click">
+									<MenuItem.Header>
+										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_export.png" />
+									</MenuItem.Header>
+								</MenuItem>
+								<MenuItem ToolTip.Tip="Replace"
+										  Click="MusicReplaceButton_Click">
+									<MenuItem.Header>
+										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_replace.png" />
+									</MenuItem.Header>
+								</MenuItem>
+								<MenuItem ToolTip.Tip="Edit"
+										  Click="MusicEditButton_Click">
+									<MenuItem.Header>
+										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_replace.png" />
+									</MenuItem.Header>
+								</MenuItem>
+							</Menu>
+							<pgc:PropertyGrid
+								DockPanel.Dock="Bottom"
+								x:Name="MusicPropertyGrid"
+								AllowFilter="False"
+								AllowQuickFilter="False"
+								ShowStyle="Builtin"
+								Margin="4"
+								DataContext="{Binding SelectedMusic}"/>
+							<ListBox
+								DockPanel.Dock="Left"
+								Name="MusicList"
+								ItemsSource="{Binding Music}"
+								SelectedItem="{Binding SelectedMusic, Mode=TwoWay}"
+								DoubleTapped="MusicList_DoubleClicked"
+								FontFamily="Consolas">
+								<ListBox.ItemTemplate>
+									<DataTemplate>
+										<TextBlock
+											VerticalAlignment="Center"
+											HorizontalAlignment="Left">
+											<TextBlock.Text>
+												<Binding Path="." Converter="{StaticResource IndexConverter}"/>
+											</TextBlock.Text>
+										</TextBlock>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+								<ListBox.Styles>
+									<Style Selector="ListBoxItem">
+										<Setter Property="Padding" Value="0"/>
+										<Setter Property="Margin" Value="2 0"/>
+										<Setter Property="Height" Value="32"/>
+									</Style>
+								</ListBox.Styles>
+							</ListBox>
+						</DockPanel>
+					</DockPanel>
+				</TabItem>
+				<TabItem ToolTip.Tip="Sounds">
+					<TabItem.Header>
+						<Image Source="avares://MexManager/Assets/Menu/category_sound.png"
+								Width="32"
+								Height="32"/>
+					</TabItem.Header>
+				</TabItem>
+				<TabItem ToolTip.Tip="Codes">
+					<TabItem.Header>
+						<Image Source="avares://MexManager/Assets/Menu/category_code.png"
+								Width="32"
+								Height="32"/>
+					</TabItem.Header>
+				</TabItem>
+				<TabItem ToolTip.Tip="Filesystem">
+					<TabItem.Header>
+						<Image Source="avares://MexManager/Assets/Menu/category_filesystem.png"
+								Width="32"
+								Height="32"/>
+					</TabItem.Header>
+				</TabItem>
+			</TabControl>
+		</DockPanel>
+	</DockPanel>
+
+    
+</UserControl>
