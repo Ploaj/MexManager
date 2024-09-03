@@ -14,5 +14,13 @@ namespace MexManager.Tools
 
         public static Bitmap PauseIconImage { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://MexManager/Assets/Common/audio_pause.png")));
 
+        public static Bitmap Plus { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://MexManager/Assets/Common/icon_plus.png")));
+
+        public static Bitmap Minus { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://MexManager/Assets/Common/icon_minus.png")));
+
+        public static Bitmap ArrowUp { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://MexManager/Assets/Common/icon_dir_up.png")));
+
+        public static Bitmap ArrowDown { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://MexManager/Assets/Common/icon_dir_down.png")));
+
     }
 }

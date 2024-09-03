@@ -20,9 +20,9 @@ namespace mexLib
 
         public MEX_StageCollision Collision { get; set; } = new MEX_StageCollision();
 
-        public ObservableCollection<MEX_Item> Items { get; set; } = new ObservableCollection<MEX_Item>();
+        public ObservableCollection<MexItem> Items { get; set; } = new ObservableCollection<MexItem>();
 
-        public MEX_Playlist Playlist { get; set; } = new MEX_Playlist();
+        public MexPlaylist Playlist { get; set; } = new MexPlaylist();
 
         [Browsable(false)]
         [JsonIgnore]
@@ -151,14 +151,14 @@ namespace mexLib
             sd.ReverbTable.Set(index, Reverb);
 
             // save playlist 
-            sd.StagePlaylists.Set(index, Playlist);
+            sd.StagePlaylists.Set(index, Playlist.ToMexPlaylist());
 
             // save items
             var itemEntries = new ushort[Items.Count];
             for (int i = 0; i < itemEntries.Length; i++)
             {
                 itemEntries[i] = (ushort)(MexDefaultData.BaseItemCount + gen.MexItems.Count);
-                gen.MexItems.Add(Items[i]);
+                gen.MexItems.Add(Items[i].ToMexItem());
             }
             sd.StageItemLookup.Set(index, new MEX_ItemLookup() { Entries = itemEntries });
 

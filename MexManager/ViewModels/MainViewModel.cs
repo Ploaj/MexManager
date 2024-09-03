@@ -15,31 +15,24 @@ public class MainViewModel : ViewModelBase
     public ICommand CloseCommand { get; }
     public ICommand WorkspaceLoadedCommand { get; }
 
-    private WriteableBitmap _bannerImage;
-    public WriteableBitmap BannerImage
-    {
-        get => _bannerImage;
-        set => this.RaisePropertyChanged();
-    }
+    private object? _selectedFighter;
 
-    private object _selectedFighter;
-
-    public object SelectedFighter
+    public object? SelectedFighter
     {
         get => _selectedFighter;
         set => this.RaiseAndSetIfChanged(ref _selectedFighter, value);
     }
 
-    private object _selectedFighterItem;
+    private object? _selectedFighterItem;
 
-    public object SelectedFighterItem
+    public object? SelectedFighterItem
     {
         get => _selectedFighterItem;
         set => this.RaiseAndSetIfChanged(ref _selectedFighterItem, value);
     }
 
-    private object _selectedMusic;
-    public object SelectedMusic
+    private object? _selectedMusic;
+    public object? SelectedMusic
     {
         get => _selectedMusic;
         set => this.RaiseAndSetIfChanged(ref _selectedMusic, value);
@@ -60,6 +53,26 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _music, value);
     }
 
+    private MexPlaylist? _menuPlaylist;
+    public MexPlaylist? MenuPlaylist
+    {
+        get => _menuPlaylist;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _menuPlaylist, value);
+        }
+    }
+
+    private int _test;
+    public int Test
+    {
+        get => _test;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _test, value);
+        }
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -68,8 +81,6 @@ public class MainViewModel : ViewModelBase
         SaveCommand = new RelayCommand(SaveMenuItem_Click, SaveMenuItem_CanExecute);
         CloseCommand = new RelayCommand(CloseMenuItem_Click, SaveMenuItem_CanExecute);
         WorkspaceLoadedCommand = new RelayCommand((e) => { }, SaveMenuItem_CanExecute);
-
-        _bannerImage = new WriteableBitmap(new PixelSize(96, 32), new Vector(96, 96));
     }
     /// <summary>
     /// 
@@ -78,7 +89,8 @@ public class MainViewModel : ViewModelBase
     {
         Fighters = Global.Workspace?.Project.Fighters;
         Music = Global.Workspace?.Project.Music;
-        
+        MenuPlaylist = Global.Workspace?.Project.MenuPlaylist;
+        Test = 5;
     }
     /// <summary>
     /// 
@@ -89,14 +101,9 @@ public class MainViewModel : ViewModelBase
     {
         var workspace = Global.CreateWorkspace(path);
 
-        if (workspace != null)
+        if (workspace == null)
         {
-            _bannerImage.FromRGB(workspace.GetBannerRGBA());
-            BannerImage = _bannerImage;
-        }
-        else
-        {
-            MessageBox.Show(App.MainWindow, "Unable to create workspace", "Create Workspace", MessageBox.MessageBoxButtons.Ok);
+            MessageBox.Show("Unable to create workspace", "Create Workspace", MessageBox.MessageBoxButtons.Ok);
         }
 
         UpdateWorkspace();
@@ -107,12 +114,6 @@ public class MainViewModel : ViewModelBase
     public void OpenWorkspace(string path)
     {
         Global.LoadWorkspace(path);
-
-        if (Global.Workspace != null)
-        {
-            _bannerImage.FromRGB(Global.Workspace.GetBannerRGBA());
-        }
-
         UpdateWorkspace();
     }
     /// <summary>

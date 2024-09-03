@@ -46,6 +46,16 @@ public partial class AudioView : UserControl
     /// <summary>
     /// 
     /// </summary>
+    public void Stop()
+    {
+        if (DataContext is AudioPlayerModel model)
+        {
+            model.StopSound();
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void Slider_ValueChanged(object? sender, AvaloniaPropertyChangedEventArgs e)

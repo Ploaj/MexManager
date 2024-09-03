@@ -17,6 +17,21 @@
 	</Window.Resources>
 
 	<DockPanel>
+		<Menu DockPanel.Dock="Top"
+			  Height="24">
+			<MenuItem
+				Click="MenuItem_Click_1">
+				<MenuItem.Header>
+					<StackPanel
+						Orientation="Horizontal">
+						<Image Source="avares://MexManager/Assets/Common/icon_import_music.png" 
+							   Width="32"/>
+						<TextBlock
+							VerticalAlignment="Center">Import</TextBlock>
+					</StackPanel>
+				</MenuItem.Header>
+			</MenuItem>
+		</Menu>
 		<Canvas Name="WaveformCanvas"
 				Width="640"
 				Height="200"
@@ -37,7 +52,7 @@
 			HorizontalContentAlignment="Center"
 			Click="PlayButton_Click"
 			CornerRadius="0"
-			Height="64"
+			Height="32"
 			DockPanel.Dock="Bottom">
 			<Image Source="avares://MexManager/Assets/Common/audio_play.png"
 				   Name="PlayPauseImage"/>

@@ -10,7 +10,7 @@ public partial class TimeSpanPicker : UserControl
             AvaloniaProperty.Register<TimeSpanPicker, TimeSpan>(nameof(TimeSpan));
 
     public delegate void TimeSpanChange();
-    public TimeSpanChange OnTimeSpanChange;
+    public TimeSpanChange? OnTimeSpanChange;
 
     public TimeSpan TimeSpan
     {

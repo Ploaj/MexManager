@@ -79,22 +79,16 @@ namespace mexLib.Installer
             HSDRawFile ifAllFile = new(ifAllPath);
 
             // init menu playlist
-            project.MenuPlaylist.MenuPlaylist = new HSDArrayAccessor<HSDRaw.MEX.Sounds.MEX_PlaylistItem>()
+            project.MenuPlaylist.Entries.Add(new MexPlaylistEntry()
             {
-                Array = new HSDRaw.MEX.Sounds.MEX_PlaylistItem[]
-                {
-                    new ()
-                    {
-                        HPSID = 0x34,
-                        ChanceToPlay = 75,
-                    },
-                    new ()
-                    {
-                        HPSID = 0x36,
-                        ChanceToPlay = 25,
-                    },
-                }
-            };
+                MusicID = 0x34,
+                ChanceToPlay = 75,
+            });
+            project.MenuPlaylist.Entries.Add(new MexPlaylistEntry()
+            {
+                MusicID = 0x36,
+                ChanceToPlay = 25,
+            });
 
             // create series
             foreach (var s in MexDefaultData.GenerateDefaultSeries())

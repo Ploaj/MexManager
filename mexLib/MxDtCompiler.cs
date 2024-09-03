@@ -149,12 +149,13 @@ namespace mexLib
 
             // compile music table
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var menu_playlist = proj.MenuPlaylist.ToMexPlaylist();
             mexData.MusicTable = new()
             {
                 BGMFileNames = new HSDFixedLengthPointerArrayAccessor<HSD_String>() { Array = proj.Music.Select(e => new HSD_String() { Value = e.FileName }).ToArray() },
                 BGMLabels = new HSDFixedLengthPointerArrayAccessor<HSD_ShiftJIS_String>() { Array = proj.Music.Select(e => new HSD_ShiftJIS_String() { Value = e.Name }).ToArray() },
-                MenuPlaylist = proj.MenuPlaylist.MenuPlaylist,
-                MenuPlayListCount = proj.MenuPlaylist.MenuPlaylist.Length,
+                MenuPlaylist = menu_playlist.MenuPlaylist,
+                MenuPlayListCount = menu_playlist.MenuPlayListCount,
             };
 
             // generate stage ids

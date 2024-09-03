@@ -6,8 +6,10 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using MeleeMedia.Audio;
+using mexLib;
 using MexManager.Tools;
 using System;
+using System.IO;
 using System.Timers;
 
 namespace MexManager.Views;
@@ -90,12 +92,14 @@ public partial class AudioLoopEditor : Window
 
         LoopTimeSpanPicker.OnTimeSpanChange += () =>
         {
-            LoopPoint = LoopTimeSpanPicker.TimeSpan.TotalMilliseconds / DSP.TotalMilliseconds;
+            if (DSP != null)
+                LoopPoint = LoopTimeSpanPicker.TimeSpan.TotalMilliseconds / DSP.TotalMilliseconds;
         };
 
         EndTimeSpanPicker.OnTimeSpanChange += () =>
         {
-            EndPercentage = EndTimeSpanPicker.TimeSpan.TotalMilliseconds / DSP.TotalMilliseconds;
+            if (DSP != null)
+                EndPercentage = EndTimeSpanPicker.TimeSpan.TotalMilliseconds / DSP.TotalMilliseconds;
         };
 
         DSP = null;
@@ -136,6 +140,9 @@ public partial class AudioLoopEditor : Window
     /// </summary>
     private void InitializeTimer()
     {
+        if (positionUpdateTimer != null)
+            return;
+
         positionUpdateTimer = new Timer(30); // Update every second
         positionUpdateTimer.Elapsed += async (sender, e) =>
         {
@@ -432,7 +439,7 @@ public partial class AudioLoopEditor : Window
     /// <param name="bitsPerSample"></param>
     /// <param name="sampleRate"></param>
     /// <param name="canvas"></param>
-    private void DrawWaveform(short[] leftChannel, short[] rightChannel, int bitsPerSample, Canvas canvas)
+    private static void DrawWaveform(short[] leftChannel, short[] rightChannel, int bitsPerSample, Canvas canvas)
     {
         canvas.Children.Clear();
 
@@ -456,8 +463,8 @@ public partial class AudioLoopEditor : Window
             // Find the maximum amplitude in this sample range for both channels
             for (int i = startSampleIndex; i < endSampleIndex; i++)
             {
-                maxLeftSample = Math.Max(maxLeftSample, Math.Abs(leftChannel[i]));
-                maxRightSample = Math.Max(maxRightSample, Math.Abs(rightChannel[i]));
+                maxLeftSample = Math.Max(maxLeftSample, Math.Abs((int)leftChannel[i]));
+                maxRightSample = Math.Max(maxRightSample, Math.Abs((int)rightChannel[i]));
             }
 
             double leftY = midY - maxLeftSample * scaleFactor;
@@ -510,5 +517,26 @@ public partial class AudioLoopEditor : Window
     {
         Result = AudioEditorResult.SaveChanges;
         this.Close();
+    }
+
+    private async void MenuItem_Click_1(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        var file = await FileIO.TryOpenFile("Import Music", "", FileIO.FilterMusic);
+
+        if (file != null)
+        {
+            var hps = new DSP();
+            if (hps.FromFile(file))
+            {
+                SetAudio(hps);
+            }
+            else
+            {
+                await MessageBox.Show($"Failed to import file\n{file}", "Import Music Error", MessageBox.MessageBoxButtons.Ok);
+            }
+        }
     }
 }

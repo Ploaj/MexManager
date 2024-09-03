@@ -14,9 +14,14 @@
     <None Remove="Assets\Common\fighter_melee.png" />
     <None Remove="Assets\Common\fighter_mex.png" />
     <None Remove="Assets\Common\icon_delete.png" />
+    <None Remove="Assets\Common\icon_dir_down.png" />
+    <None Remove="Assets\Common\icon_dir_up.png" />
+    <None Remove="Assets\Common\icon_edit.png" />
     <None Remove="Assets\Common\icon_export.png" />
     <None Remove="Assets\Common\icon_hamburger.png" />
     <None Remove="Assets\Common\icon_import_music.png" />
+    <None Remove="Assets\Common\icon_minus.png" />
+    <None Remove="Assets\Common\icon_plus.png" />
     <None Remove="Assets\Common\icon_replace.png" />
     <None Remove="Assets\Data\bgm.dat" />
     <None Remove="Assets\Data\Stc_icns.dat" />

@@ -17,6 +17,8 @@ public partial class MainView : UserControl
 {
     private MainViewModel? Context => this.DataContext as MainViewModel;
 
+    public static AudioView? GlobalAudio { get; internal set; }
+
     /// <summary>
     /// 
     /// </summary>
@@ -31,36 +33,21 @@ public partial class MainView : UserControl
                 desktop.Shutdown();
             }
         };
+
+        GlobalAudio = GlobalAudioView;
     }
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="control"></param>
-    /// <returns></returns>
-    public static Window? GetParentWindow(Control control)
-    {
-        // Traverse up the visual tree until we find a Window
-        var current = control;
-        while (current != null && !(current is Window))
-        {
-            current = current.Parent as Control;
-        }
-        return current as Window;
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    private async void OpenEditConfig()
+    private static async void OpenEditConfig()
     {
         var popup = new PropertyGridPopup();
 
         popup.SetObject(App.Settings);
 
-        var window = GetParentWindow(this);
-
-        if (window != null)
+        if (App.MainWindow != null)
         {
-            await popup.ShowDialog(window);
+            await popup.ShowDialog(App.MainWindow);
 
             if (popup.Confirmed)
             {
@@ -303,20 +290,13 @@ public partial class MainView : UserControl
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    public void MusicReplaceButton_Click(object? sender, RoutedEventArgs args)
-    {
-        // TODO: replace music
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="args"></param>
     public async void MusicEditButton_Click(object? sender, RoutedEventArgs args)
     {
         if (Global.Workspace != null &&
             MusicList.SelectedItem is MexMusic music)
         {
+            Global.StopMusic();
+
             var path = Global.Workspace.GetFilePath($"audio\\{music.FileName}");
 
             if (!Global.Files.Exists(path))
@@ -331,10 +311,9 @@ public partial class MainView : UserControl
             // create editor popup
             var popup = new AudioLoopEditor();
             popup.SetAudio(dsp);
-            var window = GetParentWindow(this);
-            if (window != null)
+            if (App.MainWindow != null)
             {
-                await popup.ShowDialog(window);
+                await popup.ShowDialog(App.MainWindow);
 
                 if (popup.Result == AudioLoopEditor.AudioEditorResult.SaveChanges)
                 {

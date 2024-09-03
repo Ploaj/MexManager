@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace mexLib
 {
@@ -12,7 +7,11 @@ namespace mexLib
         [Category("General"), DisplayName("Name"), Description("Name of the series")]
         public string Name { get; set; } = "";
 
+        [Browsable(false)]
+        public MexPlaylist Playlist { get; set; } = new MexPlaylist();
+
         // TODO: 3d emblem
+        // TODO: 2d emblem
 
         public override string ToString()
         {

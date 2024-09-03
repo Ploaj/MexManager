@@ -2,6 +2,7 @@
 using HSDRaw;
 using HSDRaw.MEX;
 using mexLib;
+using MexManager.Views;
 using System.IO;
 
 namespace MexManager
@@ -19,6 +20,29 @@ namespace MexManager
 
                 return new();
             }
+        }
+
+        public static void PlayMusic(MexMusic music)
+        {
+            if (Workspace != null)
+            {
+                var hps = Workspace.GetFilePath($"audio\\{music.FileName}");
+
+                if (Files.Exists(hps))
+                {
+                    MainView.GlobalAudio?.LoadHPS(Files.Get(hps));
+                    MainView.GlobalAudio?.Play();
+                }
+                else
+                {
+                    MessageBox.Show($"Could not find \"{music.FileName}\"", "File not found", MessageBox.MessageBoxButtons.Ok);
+                }
+            }
+        }
+
+        public static void StopMusic()
+        {
+            MainView.GlobalAudio?.Stop();
         }
 
         /// <summary>

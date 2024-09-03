@@ -1,0 +1,65 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MexManager.Controls.PlaylistEditor">
+
+	<DockPanel>
+		<TextBlock
+			DockPanel.Dock="Top"
+			VerticalAlignment="Center"
+			FontSize="28">
+			Playlist
+		</TextBlock>
+		<Button
+			DockPanel.Dock="Top"
+			Content="Add Entry"
+			Click="Button_Click">
+			<StackPanel
+				Orientation="Horizontal">
+				<Image Source="/Assets/Common/icon_plus.png"
+						Width="32"
+						Height="24"/>
+				<TextBlock
+					VerticalAlignment="Center">
+					Add Entry
+				</TextBlock>
+			</StackPanel>
+		</Button>
+		<StackPanel 
+			Name="PlaylistPanel"
+			DockPanel.Dock="Top"
+			Orientation="Vertical">
+		</StackPanel>
+	</DockPanel>
+	<!--<ListBox ItemsSource="{Binding Entries}">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<DockPanel>
+						<DockPanel
+							DockPanel.Dock="Top">
+							<Button Content="Remove" 
+									Command="{Binding DataContext.RemoveEntryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+									CommandParameter="{Binding}"
+									DockPanel.Dock="Left"/>
+							<ComboBox
+								HorizontalAlignment="Stretch"
+								ItemsSource="{Binding DataContext.Music, RelativeSource={RelativeSource AncestorType=UserControl}}"
+								SelectedIndex="{Binding MusicID}"/>
+						</DockPanel>
+						<Slider
+							DockPanel.Dock="Top"
+							HorizontalAlignment="Stretch"
+							Minimum="0"
+							Maximum="100" 
+							Value="{Binding ChanceToPlay}"/>
+						
+						<Button Content="Up" Command="{Binding DataContext.MoveEntryUpCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+						<Button Content="Down" Command="{Binding DataContext.MoveEntryDownCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+						
+					</DockPanel>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>-->
+</UserControl>

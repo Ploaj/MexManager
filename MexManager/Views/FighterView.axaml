@@ -35,7 +35,6 @@
 				<ListBox.ItemTemplate>
 					<DataTemplate>
 						<StackPanel
-							Background="{Binding IsValid, Converter={StaticResource ValidationColorConverter}}"
 							ToolTip.Tip="{Binding Name}"
 							Orientation="Horizontal"
 							Spacing="4"

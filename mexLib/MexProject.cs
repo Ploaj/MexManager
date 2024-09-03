@@ -46,7 +46,7 @@ namespace mexLib
 
         public ObservableCollection<MEX_GawColor> GawColors { get; set; } = new ObservableCollection<MEX_GawColor>(); // TODO: better support game and watch colors
 
-        public MEX_Playlist MenuPlaylist { get; set; } = new MEX_Playlist();
+        public MexPlaylist MenuPlaylist { get; set; } = new MexPlaylist();
 
         //public MEX_Item[] CommonItems = new MEX_Item[0];
         //public MEX_Item[] FighterItems = new MEX_Item[0];
@@ -186,11 +186,16 @@ namespace mexLib
                     f.FighterMusic2 -= 1;
             }
 
-            // TODO: remove from stage playlists
+            // remove from stage playlists
+            foreach (var s in Stages)
+                s.Playlist.RemoveTrack(index);
 
-            // TODO: remove from menu playlists
+            // remove from menu playlists
+            MenuPlaylist.RemoveTrack(index);
 
-            // TODO: remove from series playlists
+            // remove from series playlists
+            foreach (var s in Series)
+                s.Playlist.RemoveTrack(index);
 
             return true;
         }

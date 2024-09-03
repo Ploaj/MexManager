@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:MexManager.ViewModels"
 			 xmlns:views="clr-namespace:MexManager.Views"
+			 xmlns:controls="clr-namespace:MexManager.Controls"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="MexManager.Views.MainView"
 			 xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
@@ -51,7 +52,7 @@
 		<DockPanel>
 			<TabControl Margin="0"
 						Padding="0"
-					TabStripPlacement="Left">
+						TabStripPlacement="Left">
 				<TabItem ToolTip.Tip="Fighters">
 					<TabItem.Header>
 						<Image Source="avares://MexManager/Assets/Menu/category_fighter.png"
@@ -74,6 +75,8 @@
 								Width="32"
 								Height="32"/>
 					</TabItem.Header>
+					<controls:PlaylistEditor
+						Playlist="{Binding MenuPlaylist}"></controls:PlaylistEditor>
 				</TabItem>
 				<TabItem ToolTip.Tip="Music">
 					<TabItem.Header>
@@ -83,41 +86,51 @@
 					</TabItem.Header>
 					<DockPanel>
 						<DockPanel>
-							<Menu DockPanel.Dock="Top">
+							<Menu DockPanel.Dock="Top"
+								  Height="48">
 								<MenuItem ToolTip.Tip="Import"
 										  Click="MusicImportButton_Click">
 									<MenuItem.Header>
-										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_import_music.png" />
-									</MenuItem.Header>
-								</MenuItem>
-								<MenuItem ToolTip.Tip="Delete"
-										  Click="MusicDeleteButton_Click">
-									<MenuItem.Header>
-										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_delete.png" />
-									</MenuItem.Header>
-								</MenuItem>
-								<MenuItem ToolTip.Tip="Preview"
-										  Click="MusicPlayButton_Click">
-									<MenuItem.Header>
-										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/audio_play.png" />
+										<StackPanel>
+											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_import_music.png" />
+											<TextBlock>Import</TextBlock>
+										</StackPanel>
 									</MenuItem.Header>
 								</MenuItem>
 								<MenuItem ToolTip.Tip="Export"
 										  Click="MusicExportButton_Click">
 									<MenuItem.Header>
-										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_export.png" />
-									</MenuItem.Header>
-								</MenuItem>
-								<MenuItem ToolTip.Tip="Replace"
-										  Click="MusicReplaceButton_Click">
-									<MenuItem.Header>
-										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_replace.png" />
+										<StackPanel>
+											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_export.png" />
+											<TextBlock>Export</TextBlock>
+										</StackPanel>
 									</MenuItem.Header>
 								</MenuItem>
 								<MenuItem ToolTip.Tip="Edit"
 										  Click="MusicEditButton_Click">
 									<MenuItem.Header>
-										<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_replace.png" />
+										<StackPanel>
+											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_edit.png" />
+											<TextBlock>Edit</TextBlock>
+										</StackPanel>
+									</MenuItem.Header>
+								</MenuItem>
+								<MenuItem ToolTip.Tip="Delete"
+										  Click="MusicDeleteButton_Click">
+									<MenuItem.Header>
+										<StackPanel>
+											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_delete.png" />
+											<TextBlock>Remove</TextBlock>
+										</StackPanel>
+									</MenuItem.Header>
+								</MenuItem>
+								<MenuItem ToolTip.Tip="Preview"
+										  Click="MusicPlayButton_Click">
+									<MenuItem.Header>
+										<StackPanel>
+											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/audio_play.png" />
+											<TextBlock>Play</TextBlock>
+										</StackPanel>
 									</MenuItem.Header>
 								</MenuItem>
 							</Menu>
