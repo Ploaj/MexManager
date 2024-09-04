@@ -261,7 +261,7 @@ namespace mexLib
 
             // TODO: compile codes
             sw.Restart();
-            File.Copy(GetDataPath("codes.gct"), GetFilePath("codes.gct"), true);
+            FileManager.Set(GetFilePath("codes.gct"), File.ReadAllBytes(GetDataPath("codes.gct")));
             sw.Stop();
 
             Debug.WriteLine($"Compile codes {sw.Elapsed}");

@@ -11,8 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Common\audio_pause.png" />
+    <None Remove="Assets\Common\audio_play.png" />
+    <None Remove="Assets\Common\category_series.png" />
     <None Remove="Assets\Common\fighter_melee.png" />
     <None Remove="Assets\Common\fighter_mex.png" />
+    <None Remove="Assets\Common\file_export.png" />
+    <None Remove="Assets\Common\file_import.png" />
     <None Remove="Assets\Common\icon_delete.png" />
     <None Remove="Assets\Common\icon_dir_down.png" />
     <None Remove="Assets\Common\icon_dir_up.png" />
@@ -46,6 +51,7 @@
     <PackageReference Include="bodong.PropertyModels" Version="11.1.1.1" />
     <PackageReference Include="Octokit" Version="13.0.1" />
     <PackageReference Include="OpenTK.Audio.OpenAL" Version="4.8.2" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>

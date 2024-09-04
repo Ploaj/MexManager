@@ -16,14 +16,18 @@ namespace mexLib.Utilties
         public static bool Compile(MexWorkspace ws)
         {
             var path = ws.GetFilePath("MnSlChr.usd");
+            var data = ws.FileManager.Get(path);
 
-            if (!File.Exists(path))
+            if (data == Array.Empty<byte>())
                 return false;
 
             HSDRawFile file = new(path);
             ClearOldMaterialAnimations(file["MnSelectChrDataTable"].Data as SBM_SelectChrDataTable);
             file.CreateUpdateSymbol("mexSelectChr", GenerateMexSelect(ws));
-            file.Save(path);
+
+            using MemoryStream stream = new MemoryStream();
+            file.Save(stream);
+            ws.FileManager.Set(path, stream.ToArray());
             return true;
         }
         /// <summary>

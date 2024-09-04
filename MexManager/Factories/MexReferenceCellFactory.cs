@@ -2,11 +2,7 @@
 using Avalonia.Layout;
 using Avalonia.PropertyGrid.Controls.Factories;
 using Avalonia.PropertyGrid.Controls;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PropertyModels.Extensions;
 using mexLib.Attributes;
 using mexLib;

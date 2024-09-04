@@ -7,6 +7,7 @@
 			 xmlns:vm="clr-namespace:MexManager.ViewModels"
 			 xmlns:views="clr-namespace:MexManager.Views"
 			 xmlns:converters="clr-namespace:MexManager.Converters"
+			 xmlns:controls="clr-namespace:MexManager.Controls"
 			 xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
 			 xmlns:pm="clr-namespace:Avalonia.PropertyModels;assembly=Avalonia.PropertyModels"
              x:DataType="vm:MainViewModel">
@@ -19,19 +20,37 @@
 	
 	<DockPanel>
 		<DockPanel>
-			<Menu DockPanel.Dock="Top">
-				<MenuItem Header="_Add" Click="AddFighterMenuItem_Click"/>
-				<MenuItem Header="_Remove" Click="RemoveFighterMenuItem_Click"/>
-				<MenuItem Header="_Import" Click="ImportFighterMenuItem_Click"/>
-				<MenuItem Header="_Export" Click="ExportFighterMenuItem_Click"/>
+			<Menu
+				DockPanel.Dock="Top"
+				Height="48">
+				<controls:IconMenuItem
+					Text="Add"
+					ToolTip.Tip="Add"
+					IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+					Click="AddFighterMenuItem_Click"/>
+				<controls:IconMenuItem
+					Text="Remove"
+					ToolTip.Tip="Remove"
+					IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+					Click="RemoveFighterMenuItem_Click"/>
+				<controls:IconMenuItem
+					Text="Import"
+					ToolTip.Tip="Import"
+					IconSource="avares://MexManager/Assets/Common/file_import.png"
+					Click="ImportFighterMenuItem_Click"/>
+				<controls:IconMenuItem
+					Text="Export"
+					ToolTip.Tip="Export"
+					IconSource="avares://MexManager/Assets/Common/file_export.png"
+					Click="ExportFighterMenuItem_Click"/>
 			</Menu>
-			
 			<ListBox
 				Name="FighterList"
 				DockPanel.Dock="Bottom"
 				ItemsSource="{Binding Fighters}"
 				SelectedItem="{Binding SelectedFighter, Mode=TwoWay}"
-				FontFamily="Consolas">
+				FontFamily="Consolas"
+				Width="280">
 				<ListBox.ItemTemplate>
 					<DataTemplate>
 						<StackPanel
@@ -72,11 +91,13 @@
 		</DockPanel>
 		
 
-		<TabControl Margin="5"
-					DockPanel.Dock="Right">
+		<TabControl 
+			IsVisible="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"
+			DockPanel.Dock="Right">
 			<TabItem Header="General">
 				<ScrollViewer>
 					<views:PropertyGridExt
+						Margin="4"
 						AllowQuickFilter="False"
 						DataContext="{Binding SelectedFighter}">
 					</views:PropertyGridExt>
@@ -85,6 +106,7 @@
 			<TabItem Header="Files">
 				<ScrollViewer>
 					<views:PropertyGridExt
+						Margin="4"
 						AllowQuickFilter="False"
 						AllowFilter="False"
 						AllowToggleView="False"
@@ -121,6 +143,7 @@
 			<TabItem Header="Code">
 				<ScrollViewer>
 					<views:PropertyGridExt
+						Margin="4"
 						AllowQuickFilter="False"
 						DataContext="{Binding SelectedFighter.Functions}">
 					</views:PropertyGridExt>
@@ -129,6 +152,7 @@
 			<TabItem Header="Bones">
 				<ScrollViewer>
 					<views:PropertyGridExt
+						Margin="4"
 						AllowQuickFilter="False"
 						DataContext="{Binding SelectedFighter.BoneTable}">
 					</views:PropertyGridExt>

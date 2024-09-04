@@ -2,12 +2,6 @@
 using HSDRaw.Common;
 using HSDRaw.GX;
 using HSDRaw.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace mexLib
 {
@@ -25,6 +19,33 @@ namespace mexLib
 
         public GXTlutFmt TlutFormat { get; internal set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rgba"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="fmt"></param>
+        /// <param name="tlutFmt"></param>
+        public MexImage(byte[] rgba, int width, int height, GXTexFmt fmt, GXTlutFmt tlutFmt)
+        {
+            Width = width;
+            Height = height;
+            Format = fmt;
+            TlutFormat = tlutFmt;
+
+            var image = GXImageConverter.EncodeImage(rgba, width, height, fmt, tlutFmt, out byte[] pal);
+
+            ImageData = image;
+            if (GXImageConverter.IsPalettedFormat(fmt))
+            {
+                PaletteData = pal;
+            }
+            else
+            {
+                PaletteData = Array.Empty<byte>();
+            }
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -90,6 +111,18 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static MexImage FromByteArray(byte[] data)
+        {
+            var tex = new MexImage(8, 8, GXTexFmt.I8, GXTlutFmt.IA8);
+            using MemoryStream s = new (data);
+            tex.Open(s);
+            return tex;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         public byte[] GetBGRA()
         {
@@ -103,29 +136,36 @@ namespace mexLib
         public bool Open(string filePath)
         {
             using FileStream stream = new (filePath, FileMode.Open);
-            {
-                if (stream.ReadByte() != 'T' || stream.ReadByte() != 'E' || stream.ReadByte() != 'X')
-                    return false;
+            return Open(stream);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public bool Open(Stream stream)
+        {
+            if (stream.ReadByte() != 'T' || stream.ReadByte() != 'E' || stream.ReadByte() != 'X')
+                return false;
 
-                stream.ReadByte(); // compression flag
+            stream.ReadByte(); // compression flag
 
-                Format = (GXTexFmt)stream.ReadByte();
-                TlutFormat = (GXTlutFmt)stream.ReadByte();
-                stream.ReadByte(); // padding
-                stream.ReadByte(); // padding
+            Format = (GXTexFmt)stream.ReadByte();
+            TlutFormat = (GXTlutFmt)stream.ReadByte();
+            stream.ReadByte(); // padding
+            stream.ReadByte(); // padding
 
-                Width = BitConverter.ToInt32(stream.ReadBytes(4), 0);
-                Height = BitConverter.ToInt32(stream.ReadBytes(4), 0);
+            Width = BitConverter.ToInt32(stream.ReadBytes(4), 0);
+            Height = BitConverter.ToInt32(stream.ReadBytes(4), 0);
 
-                BitConverter.ToInt32(stream.ReadBytes(4), 0);
-                var img_length = BitConverter.ToUInt32(stream.ReadBytes(4), 0);
-                BitConverter.ToInt32(stream.ReadBytes(4), 0);
-                var pal_length = BitConverter.ToUInt32(stream.ReadBytes(4), 0);
+            BitConverter.ToInt32(stream.ReadBytes(4), 0);
+            var img_length = BitConverter.ToUInt32(stream.ReadBytes(4), 0);
+            BitConverter.ToInt32(stream.ReadBytes(4), 0);
+            var pal_length = BitConverter.ToUInt32(stream.ReadBytes(4), 0);
 
-                ImageData = stream.ReadBytes(img_length);
-                PaletteData = stream.ReadBytes(pal_length);
-                return true;
-            }
+            ImageData = stream.ReadBytes(img_length);
+            PaletteData = stream.ReadBytes(pal_length);
+            return true;
         }
         /// <summary>
         /// 
@@ -135,28 +175,46 @@ namespace mexLib
         public void Save(string filePath, bool compress = false)
         {
             using FileStream stream = new (filePath, FileMode.Create);
-            {
-                stream.WriteByte((byte)'T');
-                stream.WriteByte((byte)'E');
-                stream.WriteByte((byte)'X');
-                stream.WriteByte(compress ? (byte)1 : (byte)0);
+            Write(stream, compress);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="compress"></param>
+        public byte[] ToByteArray(bool compress = false)
+        {
+            using MemoryStream stream = new();
+            Write(stream, compress);
+            return stream.ToArray();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="compress"></param>
+        public void Write(Stream stream, bool compress = false)
+        {
+            stream.WriteByte((byte)'T');
+            stream.WriteByte((byte)'E');
+            stream.WriteByte((byte)'X');
+            stream.WriteByte(compress ? (byte)1 : (byte)0);
 
-                stream.WriteByte((byte)Format);
-                stream.WriteByte((byte)TlutFormat);
-                stream.WriteByte(0);
-                stream.WriteByte(0);
+            stream.WriteByte((byte)Format);
+            stream.WriteByte((byte)TlutFormat);
+            stream.WriteByte(0);
+            stream.WriteByte(0);
 
-                stream.Write(BitConverter.GetBytes(Width), 0, 4);
-                stream.Write(BitConverter.GetBytes(Height), 0, 4);
+            stream.Write(BitConverter.GetBytes(Width), 0, 4);
+            stream.Write(BitConverter.GetBytes(Height), 0, 4);
 
-                stream.Write(BitConverter.GetBytes(0x20), 0, 4);
-                stream.Write(BitConverter.GetBytes(ImageData.Length), 0, 4);
-                stream.Write(BitConverter.GetBytes(0x20 + ImageData.Length), 0, 4);
-                stream.Write(BitConverter.GetBytes(PaletteData.Length), 0, 4);
+            stream.Write(BitConverter.GetBytes(0x20), 0, 4);
+            stream.Write(BitConverter.GetBytes(ImageData.Length), 0, 4);
+            stream.Write(BitConverter.GetBytes(0x20 + ImageData.Length), 0, 4);
+            stream.Write(BitConverter.GetBytes(PaletteData.Length), 0, 4);
 
-                stream.Write(ImageData, 0, ImageData.Length);
-                stream.Write(PaletteData, 0, PaletteData.Length);
-            }
+            stream.Write(ImageData, 0, ImageData.Length);
+            stream.Write(PaletteData, 0, PaletteData.Length);
         }
         /// <summary>
         /// 

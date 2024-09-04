@@ -1,9 +1,8 @@
-using Avalonia;
 using Avalonia.Controls;
-using HSDRaw.MEX;
 using mexLib;
 using mexLib.Utilties;
 using MexManager.Tools;
+using MexManager.ViewModels;
 using System.IO;
 
 namespace MexManager.Views;
@@ -22,17 +21,17 @@ public partial class FighterView : UserControl
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void AddFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void AddFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         // add new fighter
         var addfighter = Global.Workspace?.Project.AddNewFighter(new MexFighter());
         if (addfighter == null)
         {
-            MessageBox.Show(App.MainWindow, "Failed to add new fighter\nNo workspace is currently loaded.", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
+            await MessageBox.Show("Failed to add new fighter\nNo workspace is currently loaded.", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
         }
         else if (addfighter == false)
         {
-            MessageBox.Show(App.MainWindow, "Failed to add new fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
+            await MessageBox.Show("Failed to add new fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
         }
     }
     /// <summary>
@@ -40,16 +39,16 @@ public partial class FighterView : UserControl
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void RemoveFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void RemoveFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         var result = Global.Workspace?.Project.RemoveFighter(FighterList.SelectedIndex);
         if (result == null)
         {
-            MessageBox.Show(App.MainWindow, "No workspace is currently loaded.", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
+            await MessageBox.Show("No workspace is currently loaded.", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
         }
         else if (result == false)
         {
-            MessageBox.Show(App.MainWindow, "Cannot remove fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
+            await MessageBox.Show("Cannot remove fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
         }
     }
     /// <summary>
@@ -61,7 +60,7 @@ public partial class FighterView : UserControl
     {
         if (Global.Workspace == null)
         {
-            MessageBox.Show(App.MainWindow, "Please open a workspace", "Workspace Error", MessageBox.MessageBoxButtons.Ok);
+            await MessageBox.Show("Please open a workspace", "Workspace Error", MessageBox.MessageBoxButtons.Ok);
         }
 
         var file = await FileIO.TryOpenFile("Import Fighter", "", FileIO.FilterJson);
@@ -73,7 +72,7 @@ public partial class FighterView : UserControl
             var addfighter = Global.Workspace?.Project.AddNewFighter(mario);
             if (addfighter == null || addfighter == false)
             {
-                MessageBox.Show(App.MainWindow, "Failed to add new fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
+                await MessageBox.Show("Failed to add new fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
             }
         }
     }
@@ -110,12 +109,23 @@ public partial class FighterView : UserControl
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void RemoveFighterItemMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void RemoveFighterItemMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (FighterList.SelectedItem is MexFighter fighter &&
-            ItemList.SelectedItem is MexItem item)
+        if (DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter &&
+            model.SelectedFighterItem is MexItem item)
         {
-            fighter.Items.Remove(item);
+            var res = await MessageBox.Show(
+                    $"Are you sure you want\nto remove\"{item.Name}\"?",
+                    "Remove Item",
+                    MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (res == MessageBox.MessageBoxResult.Yes)
+            {
+                var selected = ItemList.SelectedIndex;
+                fighter.Items.Remove(item);
+                ItemList.SelectedIndex = selected;
+            }
         }
     }
 }

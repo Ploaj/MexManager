@@ -1,20 +1,27 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace mexLib.DataValidation
+namespace mexLib.Attributes
 {
+    public enum MexFilePathType
+    {
+        Files,
+        Audio,
+        Assets,
+    }
+
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class MexFilePathValidatorAttribute : ValidationAttribute
     {
         private bool CanBeNull { get; set; } = true;
 
-        private bool IsMusic { get; set; } = false;
+        private string Folder { get; set; } = "";
 
-        public MexFilePathValidatorAttribute() { }
+        private MexFilePathType Type { get; set; }
 
-        public MexFilePathValidatorAttribute(bool nullable, bool isMusic = false)
+        public MexFilePathValidatorAttribute(MexFilePathType type, bool nullable = true) 
         {
+            Type = type;
             CanBeNull = nullable;
-            IsMusic = isMusic;
         }
 
         protected override ValidationResult? IsValid(object? value, ValidationContext context)
@@ -37,10 +44,25 @@ namespace mexLib.DataValidation
                     return new ValidationResult("File is required.");
             }
 
-            string filePath = MexWorkspace.LastOpened.GetFilePath(IsMusic ? $"audio\\{stringValue}" : stringValue);
+            string filePath = "";
+            var ws = MexWorkspace.LastOpened;
+
+            switch (Type)
+            {
+                case MexFilePathType.Files: 
+                    filePath = ws.GetFilePath(stringValue); 
+                    break;
+                case MexFilePathType.Audio: 
+                    filePath = ws.GetFilePath($"audio//{stringValue}"); 
+                    break;
+                case MexFilePathType.Assets: 
+                    filePath = ws.GetAssetPath($"{stringValue}"); 
+                    break;
+            }
+
             if (!MexWorkspace.LastOpened.FileManager.Exists(filePath))
             {
-                return new ValidationResult("File not found in Filesystem.");
+                return new ValidationResult("File not found");
             }
 
             return ValidationResult.Success;

@@ -1,5 +1,4 @@
-﻿using HSDRaw.MEX.Sounds;
-using HSDRaw.MEX.Stages;
+﻿using HSDRaw.MEX.Stages;
 using HSDRaw.MEX;
 using mexLib.MexScubber;
 using System.ComponentModel;
@@ -8,20 +7,24 @@ using mexLib.Attributes;
 using HSDRaw.Common;
 using mexLib.Installer;
 using System.Text.Json.Serialization;
-using HSDRaw;
 
 namespace mexLib
 {
     public class MexStage
     {
+        [Browsable(false)]
         public MEX_Stage Stage { get; set; } = new MEX_Stage();
 
+        [Browsable(false)]
         public MEX_StageReverb Reverb { get; set; } = new MEX_StageReverb();
 
+        [Browsable(false)]
         public MEX_StageCollision Collision { get; set; } = new MEX_StageCollision();
 
+        [Browsable(false)]
         public ObservableCollection<MexItem> Items { get; set; } = new ObservableCollection<MexItem>();
 
+        [Browsable(false)]
         public MexPlaylist Playlist { get; set; } = new MexPlaylist();
 
         [Browsable(false)]
@@ -31,8 +34,13 @@ namespace mexLib
         [Category("0 - General"), DisplayName("Name"), Description("")]
         public string Name { get; set; } = "";
 
+        [Category("0 - General"), DisplayName("Series")]
+        [MexLink(MexLinkType.Series)]
+        public int SeriesID { get; set; } = 0;
+
         [Category("0 - General"), DisplayName("File Path"), Description("")]
         [JsonIgnore]
+        [MexFilePathValidator(MexFilePathType.Files)]
         public string? FileName { get => Stage.StageFileName; set => Stage.StageFileName = string.IsNullOrEmpty(value) ? null : value; }
 
         [Category("0 - General"), DisplayName("Unknown Stage Value"), Description("")]
@@ -173,6 +181,7 @@ namespace mexLib
         public void FromDOL(MexDOL dol, uint index)
         {
             Name = MexDefaultData.Stage_Names[index];
+            SeriesID = MexDefaultData.Stage_Series[index];
 
             // load stage data
             var functionPointer = dol.GetStruct<uint>(0x803DFEDC, index);

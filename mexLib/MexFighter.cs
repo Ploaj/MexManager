@@ -3,17 +3,10 @@ using HSDRaw.Common;
 using HSDRaw;
 using HSDRaw.Melee;
 using HSDRaw.MEX;
-using HSDRaw.MEX.Menus;
 using mexLib.Attributes;
 using mexLib.Installer;
 using mexLib.MexScubber;
-using System.Linq;
 using System.Collections.ObjectModel;
-using System.Numerics;
-using System.Drawing;
-using System.Reflection;
-using System.ComponentModel.DataAnnotations;
-using mexLib.DataValidation;
 using System.Runtime.CompilerServices;
 
 namespace mexLib
@@ -33,21 +26,21 @@ namespace mexLib
         public class FighterFiles
         {
             [Category("0 - Fighter Data"), DisplayName("FighterData FileName"), Description("File containing fighter's data")]
-            [MexFilePathValidator(false)]
+            [MexFilePathValidator(MexFilePathType.Files, nullable: false)]
             public string FighterDataPath { get; set; } = "";
 
             [Category("0 - Fighter Data"), DisplayName("FighterData Symbol"), Description("Symbol used inside of Fighter Data file")]
             public string FighterDataSymbol { get; set; } = "";
 
             [Category("0 - Fighter Data"), DisplayName("Animation FileName"), Description("File containing the fighter animations")]
-            [MexFilePathValidator(false)]
+            [MexFilePathValidator(MexFilePathType.Files, nullable: false)]
             public string AnimFile { get; set; } = "";
 
             [Category("0 - Fighter Data"), DisplayName("Animation Count"), Description("Number of animations the fighter has")]
             public uint AnimCount { get; set; } = 0;
 
             [Category("1 - Demo Screens"), DisplayName("VI Wait FileName"), Description("")]
-            [MexFilePathValidator]
+            [MexFilePathValidator(MexFilePathType.Files)]
             public string DemoFile { get; set; } = "";
 
             [Category("1 - Demo Screens"), DisplayName("Vi Wait"), Description("")]
@@ -63,28 +56,28 @@ namespace mexLib
             public string DemoEnding { get; set; } = "";
 
             [Category("2 - Result Screen"), DisplayName("Result Animation FileName"), Description("File Containing the Result Fighter Animations")]
-            [MexFilePathValidator]
+            [MexFilePathValidator(MexFilePathType.Files)]
             public string RstAnimFile { get; set; } = "";
 
             [Category("2 - Result Screen"), DisplayName("Result Animation Count"), Description("Number of Result Animations")]
             public uint RstAnimCount { get; set; } = 0;
 
             [Category("3 - Effects"), DisplayName("Effect FileName"), Description("Effect file to load for fighter")]
-            [MexFilePathValidator]
+            [MexFilePathValidator(MexFilePathType.Files)]
             public string EffectFile { get; set; } = "";
 
             [Category("3 - Effects"), DisplayName("Effect Symbol"), Description("Symbol in effect file to load")]
             public string EffectSymbol { get; set; } = "";
 
             [Category("4 - Kirby Data"), DisplayName("Kirby Cap FileName"), Description("Kirby cap file associated with this fighter")]
-            [MexFilePathValidator]
+            [MexFilePathValidator(MexFilePathType.Files)]
             public string KirbyCapFileName { get; set; } = "";
 
             [Category("4 - Kirby Data"), DisplayName("Kirby Cap Symbol"), Description("Symbol name in cap file")]
             public string KirbyCapSymbol { get; set; } = "";
 
             [Category("4 - Kirby Data"), DisplayName("Kirby Effect FileName"), Description("Effect file to load for Kirby")]
-            [MexFilePathValidator]
+            [MexFilePathValidator(MexFilePathType.Files)]
             public string KirbyEffectFile { get; set; } = "";
 
             [Category("4 - Kirby Data"), DisplayName("Kirby Effect Symbol"), Description("Symbol in Kirby effect file to load")]
@@ -96,6 +89,14 @@ namespace mexLib
 
         public class FighterMedia : INotifyPropertyChanged
         {
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+
+            protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+
             private string _endClassicFile = "";
             private string _endAdventureFile = "";
             private string _endAllStarFile = "";
@@ -103,7 +104,7 @@ namespace mexLib
 
             [Category("Classic Mode"), DisplayName(" "), Description("")]
             [MexMedia]
-            [MexFilePathValidator]
+            [MexFilePathValidator(MexFilePathType.Files)]
             public string EndClassicFile
             {
                 get => _endClassicFile;
@@ -119,7 +120,7 @@ namespace mexLib
 
             [Category("Adventure Mode"), DisplayName(" "), Description("")]
             [MexMedia]
-            [MexFilePathValidator]
+            [MexFilePathValidator(MexFilePathType.Files)]
             public string EndAdventureFile
             {
                 get => _endAdventureFile;
@@ -135,7 +136,7 @@ namespace mexLib
 
             [Category("All Star Mode"), DisplayName(" "), Description("")]
             [MexMedia]
-            [MexFilePathValidator]
+            [MexFilePathValidator(MexFilePathType.Files)]
             public string EndAllStarFile
             {
                 get => _endAllStarFile;
@@ -150,7 +151,7 @@ namespace mexLib
             }
 
             [Category("Ending Movie"), DisplayName(" "), Description("")]
-            [MexFilePathValidator]
+            [MexFilePathValidator(MexFilePathType.Files)]
             public string EndMovieFile
             {
                 get => _endMovieFile;
@@ -162,13 +163,6 @@ namespace mexLib
                         OnPropertyChanged();
                     }
                 }
-            }
-
-            public event PropertyChangedEventHandler? PropertyChanged;
-
-            protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
         [Browsable(false)]

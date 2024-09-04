@@ -1,14 +1,7 @@
 ﻿using HSDRaw.Common.Animation;
 using HSDRaw.Common;
 using HSDRaw.Melee.Mn;
-using HSDRaw.MEX.Menus;
-using HSDRaw.Tools;
 using HSDRaw;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HSDRaw.MEX.Stages;
 
 namespace mexLib.Utilties
@@ -21,14 +14,17 @@ namespace mexLib.Utilties
         public static bool Compile(MexWorkspace ws)
         {
             var path = ws.GetFilePath("MnSlMap.usd");
+            var data = ws.FileManager.Get(path);
 
-            if (!File.Exists(path))
+            if (data == Array.Empty<byte>())
                 return false;
 
             HSDRawFile file = new(path);
             ClearOldMaterialAnimations(file["MnSelectStageDataTable"].Data as SBM_SelectChrDataTable);
             file.CreateUpdateSymbol("mexMapData", GenerateMexSelect(ws));
-            file.Save(path);
+            using MemoryStream stream = new MemoryStream();
+            file.Save(stream);
+            ws.FileManager.Set(path, stream.ToArray());
             return true;
         }
         /// <summary>

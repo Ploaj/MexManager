@@ -8,9 +8,22 @@
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 	
 	<Application.Resources>
-		<converters:IndexConverter x:Key="IndexConverter" />
 		<FontFamily x:Key="Palatino">avares://MexManager/Assets/Fonts/Palatino_Linotype.ttf#Palatino Linotype</FontFamily>
 		<!-- <FontFamily x:Key="FolkProH">avares://MexManager/Assets/Fonts/A_OTF_Folk_Pro_H.otf#A-OTF Folk Pro H</FontFamily>-->
+		
+		<!-- Register the IndexConverter -->
+		<!-- <converters:IndexConverter x:Key="IndexConverter" /> -->
+		<converters:IndexConverter x:Key="IndexConverter"/>
+		<converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
+
+		<!-- DataTemplate for ListBox items -->
+		<DataTemplate x:Key="IndexedItemTemplate">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock Text="{Binding ., Converter={StaticResource IndexConverter}}" Margin="0,0,10,0"/>
+				<TextBlock Text="{Binding}"/>
+			</StackPanel>
+		</DataTemplate>
+
 	</Application.Resources>
 	
 	<Application.Styles>

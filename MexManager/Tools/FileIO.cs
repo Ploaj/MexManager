@@ -37,6 +37,14 @@ namespace MexManager.Tools
                 },
         ];
 
+        public static readonly FilePickerFileType[] FilterPng =
+        [
+            new FilePickerFileType("PNG")
+                {
+                    Patterns = [ "*.png", ],
+                },
+        ];
+
         public static readonly FilePickerFileType[] FilterMusic =
         [
             new FilePickerFileType("Support Audio Formats")

@@ -16,8 +16,9 @@ namespace mexLib.Utilties
         public static bool Compile(MexWorkspace ws)
         {
             var path = ws.GetFilePath("IfAll.usd");
+            var data = ws.FileManager.Get(path);
 
-            if (!File.Exists(path))
+            if (data == Array.Empty<byte>())
                 return false;
 
             HSDRawFile ifallFile = new (path);
@@ -25,7 +26,9 @@ namespace mexLib.Utilties
             ifallFile.CreateUpdateSymbol("Eblm_matanim_joint", GenerateEmblems(ws));
             ifallFile.CreateUpdateSymbol("Stc_icns", Generate_Stc_icns(ws));
 
-            ifallFile.Save(path);
+            using MemoryStream stream = new MemoryStream();
+            ifallFile.Save(stream);
+            ws.FileManager.Set(path, stream.ToArray());
             return true;
         }
         /// <summary>
@@ -40,23 +43,22 @@ namespace mexLib.Utilties
             List<HSD_TOBJ> icons = new ();
 
             // gather reserved icons
-            foreach (var f in Directory.GetFiles(ws.GetAssetPath("series\\")))
+            int icon_index = 0;
+            foreach (var s in ws.Project.Series)
             {
-                if (!Path.GetExtension(f).ToLower().Equals(".tex"))
-                    continue;
+                var iconTex = ws.FileManager.Get(ws.GetAssetPath($"series//{s.Icon.Replace(".png", ".tex")}"));
 
-                var fileName = Path.GetFileNameWithoutExtension(f);
-
-                if (int.TryParse(fileName, out int index))
+                if (iconTex != null)
                 {
                     keys.Add(new FOBJKey()
                     {
-                        Frame = index,
+                        Frame = icon_index,
                         Value = icons.Count,
                         InterpolationType = GXInterpolationType.HSD_A_OP_CON,
                     });
-                    icons.Add(new MexImage(f).ToTObj());
+                    icons.Add(MexImage.FromByteArray(iconTex).ToTObj());
                 }
+                icon_index++;
             }
 
             // generate texture animation
@@ -78,6 +80,8 @@ namespace mexLib.Utilties
             // stick icons
             List<FOBJKey> keys = new ();
             List<HSD_TOBJ> icons = new ();
+
+            // TODO: use proper filenames for stock icons
 
             // gather reserved icons
             foreach (var f in Directory.GetFiles(ws.GetAssetPath("icons\\")))

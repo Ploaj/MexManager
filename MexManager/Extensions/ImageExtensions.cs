@@ -1,9 +1,7 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using mexLib;
-using ReactiveUI;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -44,18 +42,17 @@ namespace MexManager
             }
 
             // Create a MemoryStream from the pixel data
-            using (var memoryStream = new MemoryStream(rgbaPixels))
-            {
-                using (var framebuffer = bmp.Lock())
-                {
-                    // Copy pixel data into the WriteableBitmap
-                    var dataPointer = framebuffer.Address;
+            using var memoryStream = new MemoryStream(rgbaPixels);
+            using var framebuffer = bmp.Lock();
+                
+            // Copy pixel data into the WriteableBitmap
+            var dataPointer = framebuffer.Address;
 
-                    // Copy the pixel data into the WriteableBitmap
-                    Marshal.Copy(swappedPixels, 0, dataPointer, swappedPixels.Length);
-                }
-                return bmp;
-            }
+            // Copy the pixel data into the WriteableBitmap
+            Marshal.Copy(swappedPixels, 0, dataPointer, swappedPixels.Length);
+                
+            return bmp;
+            
         }
         /// <summary>
         /// 

@@ -165,7 +165,7 @@ namespace MexManager.Factories
                     if (!Global.Files.Exists(thpPath) || 
                         Path.GetExtension(thpPath) != ".thp")
                     {
-                        image.Source = BitmapManager.MexFighterImage;
+                        image.Source = BitmapManager.MissingImage;
                     }
                     else
                     {
@@ -180,7 +180,7 @@ namespace MexManager.Factories
                 }
                 else
                 {
-                    image.Source = BitmapManager.MexFighterImage;
+                    image.Source = BitmapManager.MissingImage;
                 }
 
                 return true;

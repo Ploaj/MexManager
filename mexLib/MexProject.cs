@@ -149,6 +149,45 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="internalId"></param>
+        /// <returns></returns>
+        public bool RemoveStage(int internalId)
+        {
+            Stages.RemoveAt(internalId);
+
+            var externalId = MexStageIDConverter.ToExternalID(internalId);
+
+            // fighter
+            foreach (var fighter in Fighters)
+            {
+                if (fighter.TargetTestStage == externalId)
+                    fighter.TargetTestStage = 0;
+                else
+                if (fighter.TargetTestStage >= externalId)
+                    fighter.TargetTestStage -= 1;
+            }
+
+            // stage select icons
+            foreach (var sss in StageSelects)
+            {
+                foreach (var icon in sss.StageIcons)
+                {
+                    if (icon.StageID == externalId)
+                    {
+                        icon.StageID = 0;
+                    }
+                    else if (icon.StageID > externalId)
+                    {
+                        icon.StageID -= 1;
+                    }
+                }
+            }
+
+            return true;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="music"></param>
         public void AddMusic(MexMusic music)
         {
@@ -196,6 +235,42 @@ namespace mexLib
             // remove from series playlists
             foreach (var s in Series)
                 s.Playlist.RemoveTrack(index);
+
+            return true;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="series"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public bool RemoveSeries(MexSeries series)
+        {
+            var index = Series.IndexOf(series);
+
+            // check if music is in project
+            if (index == -1)
+                return false;
+
+            Series.Remove(series);
+
+            // remove assets
+
+            foreach (var f in Fighters)
+            {
+                if (f.SeriesID == index)
+                    f.SeriesID = 0;
+                else if (f.SeriesID > index)
+                    f.SeriesID -= 1;
+            }
+
+            // remove from stage playlists
+            foreach (var s in Stages)
+            {
+                if (s.SeriesID == index)
+                    s.SeriesID = 0;
+                else if (s.SeriesID > index)
+                    s.SeriesID -= 1;
+            }
 
             return true;
         }

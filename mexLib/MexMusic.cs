@@ -1,4 +1,4 @@
-﻿using mexLib.DataValidation;
+﻿using mexLib.Attributes;
 using mexLib.Installer;
 using mexLib.MexScubber;
 using System.ComponentModel;
@@ -11,7 +11,7 @@ namespace mexLib
         public string Name { get; set; } = "";
 
         [Category("General"), DisplayName("Filename"), Description("Name of the file in audio folder")]
-        [MexFilePathValidator(false, isMusic: true)]
+        [MexFilePathValidator(MexFilePathType.Audio)]
         public string FileName { get; set; } = "";
 
         public void FromDOL(MexDOL dol, uint index)

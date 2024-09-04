@@ -20,7 +20,7 @@ namespace MexManager.Converters
                 }
                 if (value is MexMusic music)
                 {
-                    return $"{Global.Workspace.Project.Music.IndexOf(music):D3}. {music.Name}";
+                    return $"{Global.Workspace.Project.Music.IndexOf(music):D3}.";
                 }
                 if (value is MexStage stage)
                 {

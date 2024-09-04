@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
 using MeleeMedia.Audio;
 using mexLib;
 using MexManager.Extensions;
@@ -345,6 +344,55 @@ public partial class MainView : UserControl
     /// <param name="args"></param>
     public void MusicList_AddNewMusic(object? sender, RoutedEventArgs args)
     {
-        Global.Workspace?.Project.Music.Add(new MexMusic());
+        if (Global.Workspace == null)
+            return;
+
+        Global.Workspace.Project.Music.Add(new MexMusic());
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void SeriesList_AddNew(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        var series = new MexSeries()
+        {
+            Name = "New Series"
+        };
+        Global.Workspace.Project.Series.Add(series);
+        SeriesList.SelectedItem = series;
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public async void SeriesList_Remove(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        if (SeriesList.SelectedItem is MexSeries series)
+        {
+            var ask = await MessageBox.Show($"Are you sure you want\nto remove \"{series.Name}\"?", 
+                "Remove Series",
+                MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (ask != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            int currentIndex = SeriesList.SelectedIndex;
+            Global.Workspace.Project.RemoveSeries(series);
+            if (series is MexAssetContainerBase con)
+            {
+                con.RemoveAssets(Global.Workspace);
+            }
+            SeriesList.RefreshList();
+            SeriesList.SelectedIndex = currentIndex;
+        }
     }
 }

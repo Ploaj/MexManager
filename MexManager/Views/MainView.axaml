@@ -5,6 +5,7 @@
              xmlns:vm="clr-namespace:MexManager.ViewModels"
 			 xmlns:views="clr-namespace:MexManager.Views"
 			 xmlns:controls="clr-namespace:MexManager.Controls"
+			 xmlns:converters="clr-namespace:MexManager.Converters"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="MexManager.Views.MainView"
 			 xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
@@ -68,15 +69,129 @@
 								Width="32"
 								Height="32"/>
 					</TabItem.Header>
+					<DockPanel>
+						<DockPanel
+								DockPanel.Dock="Left">
+							<Menu
+								DockPanel.Dock="Top"
+								Height="48">
+								<controls:IconMenuItem
+									Text="Add"
+									ToolTip.Tip="Add"
+									IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+									Click="StageAddMenuItem_Click"/>
+								<controls:IconMenuItem
+									Text="Remove"
+									ToolTip.Tip="Remove"
+									IconSource="avares://MexManager/Assets/Common/icon_minus.png"
+									Click="StageRemoveMenuItem_Click"/>
+								<controls:IconMenuItem
+									Text="Import"
+									ToolTip.Tip="Import"
+									IconSource="avares://MexManager/Assets/Common/file_import.png"
+									Click="StageImportMenuItem_Click"/>
+								<controls:IconMenuItem
+									Text="Export"
+									ToolTip.Tip="Export"
+									IconSource="avares://MexManager/Assets/Common/file_export.png"
+									Click="StageExportMenuItem_Click"/>
+							</Menu>
+							<ListBox
+								DockPanel.Dock="Top"
+								Name="StagesList"
+								Width="280"
+								ItemsSource="{Binding Stages}"
+								ItemTemplate="{StaticResource IndexedItemTemplate}"
+								SelectedItem="{Binding SelectedStage, Mode=TwoWay}"/>
+						</DockPanel>
+						<TabControl IsVisible="{Binding SelectedStage, Converter={StaticResource NullToBoolConverter}}">
+							<TabItem Header="General">
+								<ScrollViewer>
+									<pgc:PropertyGrid
+										DockPanel.Dock="Left"
+										VerticalAlignment="Top"
+										Margin="4"
+										DataContext="{Binding SelectedStage}"/>
+								</ScrollViewer>
+							</TabItem>
+							<TabItem Header="Items">
+								<DockPanel>
+									<DockPanel>
+										<Menu DockPanel.Dock="Top">
+											<MenuItem Header="_Add" Click="StageAddItemMenuItem_Click"/>
+											<MenuItem Header="_Remove" Click="StageRemoveItemMenuItem_Click"/>
+										</Menu>
+										<ListBox
+											Name="StageItemList"
+											DockPanel.Dock="Left"
+											Width="200"
+											ItemsSource="{Binding SelectedStage.Items}"
+											SelectedItem="{Binding SelectedStageItem, Mode=TwoWay}">
+										</ListBox>
+									</DockPanel>
+									<ScrollViewer>
+										<pgc:PropertyGrid
+											DataContext="{ Binding SelectedStageItem }"/>
+									</ScrollViewer>
+								</DockPanel>
+							</TabItem>
+							<TabItem Header="Playlist">
+								<controls:PlaylistEditor
+									Playlist="{Binding SelectedStage.Playlist}"></controls:PlaylistEditor>
+							</TabItem>
+						</TabControl>
+					</DockPanel>
 				</TabItem>
-				<TabItem ToolTip.Tip="Menus">
+				<TabItem ToolTip.Tip="Series">
 					<TabItem.Header>
-						<Image Source="avares://MexManager/Assets/Menu/category_menu.png"
+						<Image Source="avares://MexManager/Assets/Menu/category_series.png"
 								Width="32"
 								Height="32"/>
 					</TabItem.Header>
-					<controls:PlaylistEditor
-						Playlist="{Binding MenuPlaylist}"></controls:PlaylistEditor>
+					<DockPanel>
+						<DockPanel
+								DockPanel.Dock="Left">
+							<Menu
+								DockPanel.Dock="Top"
+								Height="48">
+								<controls:IconMenuItem
+									Text="Add"
+									ToolTip.Tip="Add"
+									IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+									Click="SeriesList_AddNew"/>
+								<controls:IconMenuItem
+									Text="Remove"
+									ToolTip.Tip="Remove"
+									IconSource="avares://MexManager/Assets/Common/icon_minus.png"
+									Click="SeriesList_Remove"/>
+							</Menu>
+							<ListBox 
+								DockPanel.Dock="Top"
+								Name="SeriesList"
+								Width="280"
+								ItemsSource="{Binding Series}"
+								ItemTemplate="{StaticResource IndexedItemTemplate}"
+								SelectedItem="{Binding SelectedSeries, Mode=TwoWay}"/>
+						</DockPanel>
+						<TabControl>
+							<TabItem Header="General">
+								<ScrollViewer>
+									<pgc:PropertyGrid
+										DockPanel.Dock="Left"
+										VerticalAlignment="Top"
+										AllowFilter="False"
+										AllowQuickFilter="False"
+										ShowStyle="Builtin"
+										Margin="4"
+										DataContext="{Binding SelectedSeries}"/>
+								</ScrollViewer>
+							</TabItem>
+							<TabItem Header="Playlist">
+								<controls:PlaylistEditor
+									Playlist="{Binding SelectedSeries.Playlist}"></controls:PlaylistEditor>
+							</TabItem>
+						</TabControl>
+					</DockPanel>
 				</TabItem>
 				<TabItem ToolTip.Tip="Music">
 					<TabItem.Header>
@@ -146,28 +261,10 @@
 							<ListBox
 								DockPanel.Dock="Left"
 								Name="MusicList"
-								ItemsSource="{Binding Music}"
-								SelectedItem="{Binding SelectedMusic, Mode=TwoWay}"
 								DoubleTapped="MusicList_DoubleClicked"
-								FontFamily="Consolas">
-								<ListBox.ItemTemplate>
-									<DataTemplate>
-										<TextBlock
-											VerticalAlignment="Center"
-											HorizontalAlignment="Left">
-											<TextBlock.Text>
-												<Binding Path="." Converter="{StaticResource IndexConverter}"/>
-											</TextBlock.Text>
-										</TextBlock>
-									</DataTemplate>
-								</ListBox.ItemTemplate>
-								<ListBox.Styles>
-									<Style Selector="ListBoxItem">
-										<Setter Property="Padding" Value="0"/>
-										<Setter Property="Margin" Value="2 0"/>
-										<Setter Property="Height" Value="32"/>
-									</Style>
-								</ListBox.Styles>
+								ItemsSource="{Binding Music}"
+								ItemTemplate="{StaticResource IndexedItemTemplate}"
+								SelectedItem="{Binding SelectedMusic, Mode=TwoWay}">
 							</ListBox>
 						</DockPanel>
 					</DockPanel>
@@ -179,16 +276,22 @@
 								Height="32"/>
 					</TabItem.Header>
 				</TabItem>
-				<TabItem ToolTip.Tip="Codes">
+				<TabItem ToolTip.Tip="Menus">
 					<TabItem.Header>
-						<Image Source="avares://MexManager/Assets/Menu/category_code.png"
+						<Image Source="avares://MexManager/Assets/Menu/category_menu.png"
 								Width="32"
 								Height="32"/>
 					</TabItem.Header>
+					<TabControl>
+						<TabItem Header="Menu Playlist">
+							<controls:PlaylistEditor
+								Playlist="{Binding MenuPlaylist}"></controls:PlaylistEditor>
+						</TabItem>
+					</TabControl>
 				</TabItem>
-				<TabItem ToolTip.Tip="Filesystem">
+				<TabItem ToolTip.Tip="Codes">
 					<TabItem.Header>
-						<Image Source="avares://MexManager/Assets/Menu/category_filesystem.png"
+						<Image Source="avares://MexManager/Assets/Menu/category_code.png"
 								Width="32"
 								Height="32"/>
 					</TabItem.Header>
@@ -198,4 +301,5 @@
 	</DockPanel>
 
     
+
 </UserControl>

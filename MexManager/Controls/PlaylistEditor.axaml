@@ -6,12 +6,6 @@
              x:Class="MexManager.Controls.PlaylistEditor">
 
 	<DockPanel>
-		<TextBlock
-			DockPanel.Dock="Top"
-			VerticalAlignment="Center"
-			FontSize="28">
-			Playlist
-		</TextBlock>
 		<Button
 			DockPanel.Dock="Top"
 			Content="Add Entry"

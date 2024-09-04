@@ -1,4 +1,6 @@
-﻿namespace mexLib
+﻿using System.IO;
+
+namespace mexLib
 {
     public class FileManager
     {
