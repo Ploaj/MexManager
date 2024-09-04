@@ -42,16 +42,35 @@ namespace MexManager.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        public void StageRemoveMenuItem_Click(object? sender, RoutedEventArgs args)
+        public async void StageRemoveMenuItem_Click(object? sender, RoutedEventArgs args)
         {
             if (Global.Workspace != null &&
                 DataContext is MainViewModel model &&
-                StagesList.SelectedIndex != -1)
+                StagesList.SelectedIndex != -1 &&
+                model.SelectedStage is MexStage stage)
             {
+                var res =
+                    await MessageBox.Show(
+                        $"Are you sure you want to\nremove \"{stage.Name}\"?",
+                        "Remove Stage",
+                        MessageBox.MessageBoxButtons.YesNoCancel);
+
+                if (res != MessageBox.MessageBoxResult.Yes)
+                    return;
+
                 var sel = StagesList.SelectedIndex;
-                Global.Workspace.Project.RemoveStage(StagesList.SelectedIndex);
-                StagesList.RefreshList();
-                StagesList.SelectedIndex = sel;
+                if (Global.Workspace.Project.RemoveStage(StagesList.SelectedIndex))
+                {
+                    StagesList.RefreshList();
+                    StagesList.SelectedIndex = sel;
+                }
+                else
+                {
+                    await MessageBox.Show(
+                        $"Failed to remove stage \"{stage.Name}\"\nBase game stages cannot be removed", 
+                        "Remove Stage Failed",
+                        MessageBox.MessageBoxButtons.Ok);
+                }
             }
         }
         /// <summary>

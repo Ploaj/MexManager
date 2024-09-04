@@ -47,6 +47,9 @@ namespace mexLib.Attributes
             string filePath = "";
             var ws = MexWorkspace.LastOpened;
 
+            if (Path.GetExtension(stringValue) == "")
+                stringValue += ".usd";
+
             switch (Type)
             {
                 case MexFilePathType.Files: 

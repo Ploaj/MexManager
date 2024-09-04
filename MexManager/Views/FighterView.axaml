@@ -49,7 +49,7 @@
 				DockPanel.Dock="Bottom"
 				ItemsSource="{Binding Fighters}"
 				SelectedItem="{Binding SelectedFighter, Mode=TwoWay}"
-				FontFamily="Consolas"
+				Padding="0"
 				Width="280">
 				<ListBox.ItemTemplate>
 					<DataTemplate>
@@ -57,7 +57,7 @@
 							ToolTip.Tip="{Binding Name}"
 							Orientation="Horizontal"
 							Spacing="4"
-							Height="32">
+							Height="24">
 							<Image
 								Source="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Converter={StaticResource ImageSourceConverter} }"
 								Width="16"
@@ -65,7 +65,7 @@
 								Stretch="Fill"
 								HorizontalAlignment="Left"/>
 							<TextBlock
-								VerticalAlignment="Bottom">
+								VerticalAlignment="Center">
 								<TextBlock.Text>
 									<Binding Path="." Converter="{StaticResource IndexConverter}"/>
 								</TextBlock.Text>
@@ -77,16 +77,11 @@
 								Stretch="Fill"
 								HorizontalAlignment="Left"/>
 							<TextBlock
-								VerticalAlignment="Bottom"
-								Text="{Binding Name}"/>
+								Text="{Binding Name}"
+								VerticalAlignment="Center"/>
 						</StackPanel>
 					</DataTemplate>
 				</ListBox.ItemTemplate>
-				<ListBox.Styles>
-					<Style Selector="ListBoxItem">
-						<Setter Property="Height" Value="28"/>
-					</Style>
-				</ListBox.Styles>
 			</ListBox>
 		</DockPanel>
 		

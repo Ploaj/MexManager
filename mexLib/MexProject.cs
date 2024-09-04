@@ -153,9 +153,15 @@ namespace mexLib
         /// <returns></returns>
         public bool RemoveStage(int internalId)
         {
-            Stages.RemoveAt(internalId);
+            // deny remove vanilla stages
+            if (internalId <= 70)
+                return false;
 
+            // get stages external id
             var externalId = MexStageIDConverter.ToExternalID(internalId);
+
+            // remove stage
+            Stages.RemoveAt(internalId);
 
             // fighter
             foreach (var fighter in Fighters)

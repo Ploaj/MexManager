@@ -41,14 +41,22 @@ public partial class FighterView : UserControl
     /// <param name="e"></param>
     private async void RemoveFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        var result = Global.Workspace?.Project.RemoveFighter(FighterList.SelectedIndex);
-        if (result == null)
+        if (Global.Workspace != null &&
+            FighterList.SelectedItem is MexFighter fighter)
         {
-            await MessageBox.Show("No workspace is currently loaded.", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
-        }
-        else if (result == false)
-        {
-            await MessageBox.Show("Cannot remove fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
+            var res =
+                await MessageBox.Show(
+                    $"Are you sure you want to\nremove \"{fighter.Name}\"?",
+                    "Remove Fighter",
+                    MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (res != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            if (!Global.Workspace.Project.RemoveFighter(FighterList.SelectedIndex))
+            {
+                await MessageBox.Show($"Could not remove \"{fighter.Name}\"\nYou cannot remove base game fighters", "Remove Fighter Error", MessageBox.MessageBoxButtons.Ok);
+            }
         }
     }
     /// <summary>
