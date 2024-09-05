@@ -1,9 +1,13 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using mexLib;
 using mexLib.Utilties;
 using MexManager.Tools;
 using MexManager.ViewModels;
 using System.IO;
+using System.IO.Compression;
 
 namespace MexManager.Views;
 
@@ -66,6 +70,7 @@ public partial class FighterView : UserControl
     /// <param name="e"></param>
     private async void ImportFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        // TODO: import fighter zip
         if (Global.Workspace == null)
         {
             await MessageBox.Show("Please open a workspace", "Workspace Error", MessageBox.MessageBoxButtons.Ok);
@@ -91,6 +96,7 @@ public partial class FighterView : UserControl
     /// <param name="e"></param>
     private async void ExportFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        // TODO: export fighter zip
         if (FighterList.SelectedItem is MexFighter fighter)
         {
             var file = await FileIO.TrySaveFile("Export Fighter", "", FileIO.FilterJson);
@@ -134,6 +140,99 @@ public partial class FighterView : UserControl
                 fighter.Items.Remove(item);
                 ItemList.SelectedIndex = selected;
             }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void ImportCostumeMenuItem_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter)
+        {
+            var zipPath = await FileIO.TryOpenFile("Import Costume", "", FileIO.FilterZip);
+
+            if (zipPath == null) return;
+
+            var costume = MexCostume.FromZip(Global.Workspace, zipPath, out string log);
+
+            if (!string.IsNullOrEmpty(log))
+                await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
+
+            if (costume != null)
+                fighter.Costumes.Costumes.Add(costume);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void ExportCostumeMenuItem_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighterCostume is MexCostume costume)
+        {
+            var zipPath = await FileIO.TrySaveFile("Export Costume", $"{costume.Name}.zip", FileIO.FilterZip);
+
+            if (zipPath == null) return;
+
+            costume.PackToZip(Global.Workspace, zipPath);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void RemoveCostumeMenuItem_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter &&
+            model.SelectedFighterCostume is MexCostume costume)
+        {
+            var res = await MessageBox.Show($"Are you sure you want\nto remove \"{costume.Name}\"?", "Remove Costume", MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (res != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            fighter.Costumes.Costumes.Remove(costume);
+            costume.RemoveAssets(Global.Workspace);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void DuplicateCostumeMenuItem_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null && 
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter &&
+            model.SelectedFighterCostume is MexCostume costume)
+        {
+            fighter.Costumes.Costumes.Add(new MexCostume()
+            {
+                File = new MexCostumeFile()
+                {
+                    FileName = costume.File.FileName,
+                    JointSymbol = costume.File.JointSymbol,
+                    MaterialSymbol = costume.File.MaterialSymbol,
+                },
+                KirbyFile = new MexCostumeFile()
+                {
+                    FileName = costume.KirbyFile.FileName,
+                    JointSymbol = costume.KirbyFile.JointSymbol,
+                    MaterialSymbol = costume.KirbyFile.MaterialSymbol,
+                },
+                VisibilityIndex = costume.VisibilityIndex,
+            });
         }
     }
 }

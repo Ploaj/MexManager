@@ -21,6 +21,7 @@
     <None Remove="Assets\Common\icon_delete.png" />
     <None Remove="Assets\Common\icon_dir_down.png" />
     <None Remove="Assets\Common\icon_dir_up.png" />
+    <None Remove="Assets\Common\icon_duplicate.png" />
     <None Remove="Assets\Common\icon_edit.png" />
     <None Remove="Assets\Common\icon_export.png" />
     <None Remove="Assets\Common\icon_hamburger.png" />
@@ -51,7 +52,6 @@
     <PackageReference Include="bodong.PropertyModels" Version="11.1.1.1" />
     <PackageReference Include="Octokit" Version="13.0.1" />
     <PackageReference Include="OpenTK.Audio.OpenAL" Version="4.8.2" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>

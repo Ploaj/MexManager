@@ -6,7 +6,7 @@ using HSDRaw;
 using HSDRaw.GX;
 using HSDRaw.Melee.Mn;
 
-namespace mexLib.Utilties
+namespace mexLib.Generators
 {
     public static class GenerateMexSelectChr
     {
@@ -73,7 +73,7 @@ namespace mexLib.Utilties
                 foreach (var c in f.Costumes.Costumes)
                 {
                     var textureAsset = c.GetCSPPath(ws);
-                    if (File.Exists(textureAsset))
+                    if (ws.FileManager.Exists(textureAsset))
                     {
                         keys.Add(new FOBJKey()
                         {
@@ -81,7 +81,7 @@ namespace mexLib.Utilties
                             Value = icons.Count,
                             InterpolationType = GXInterpolationType.HSD_A_OP_CON,
                         });
-                        icons.Add(new MexImage(textureAsset).ToTObj());
+                        icons.Add(MexImage.FromByteArray(ws.FileManager.Get(textureAsset)).ToTObj());
                     }
                     else
                     {
@@ -97,18 +97,18 @@ namespace mexLib.Utilties
             }
 
             // generate icon model
-            HSD_JOBJ root = new ()
+            HSD_JOBJ root = new()
             {
                 Flags = JOBJ_FLAG.CLASSICAL_SCALING,
                 SX = 1,
                 SY = 1,
                 SZ = 1,
             };
-            HSD_AnimJoint root_anim = new ()
+            HSD_AnimJoint root_anim = new()
             {
 
             };
-            HSD_MatAnimJoint root_matanim_joint = new ()
+            HSD_MatAnimJoint root_matanim_joint = new()
             {
 
             };
@@ -210,7 +210,7 @@ namespace mexLib.Utilties
         /// <returns></returns>
         private static HSD_JOBJ GenerateIconModel(MexCharacterSelectIcon icon, MexWorkspace ws)
         {
-            MexImage background = new (ws.GetAssetPath("css//Back.tex"));
+            MexImage background = MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath("css//Back.tex")));
             MexImage? iconImage = null;
 
             var fighter = ws.Project.GetFighterByExternalID(icon.Fighter);
@@ -218,9 +218,9 @@ namespace mexLib.Utilties
             {
                 var iconPath = ws.GetAssetPath($"css//{fighter.Name}.tex");
 
-                if (File.Exists(iconPath))
+                if (ws.FileManager.Exists(iconPath))
                 {
-                    iconImage = new MexImage(iconPath);
+                    iconImage = MexImage.FromByteArray(ws.FileManager.Get(iconPath));
                 }
             }
 
@@ -236,7 +236,7 @@ namespace mexLib.Utilties
                 SZ = 1,
             };
 
-            POBJ_Generator gen = new ();
+            POBJ_Generator gen = new();
 
             var generateQuadDObj = (float w, float h, float z) =>
             {
@@ -319,7 +319,7 @@ namespace mexLib.Utilties
                     alpha_b_in = TOBJ_TEV_CA.GX_CC_ZERO,
                     alpha_c_in = TOBJ_TEV_CA.GX_CC_ZERO,
                     alpha_d_in = TOBJ_TEV_CA.GX_CC_ZERO,
-                    active = TOBJ_TEVREG_ACTIVE.KONST_R|
+                    active = TOBJ_TEVREG_ACTIVE.KONST_R |
                             TOBJ_TEVREG_ACTIVE.KONST_G |
                             TOBJ_TEVREG_ACTIVE.KONST_B |
                             TOBJ_TEVREG_ACTIVE.TEV0_R |

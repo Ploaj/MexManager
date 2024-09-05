@@ -2,11 +2,25 @@
 using HSDRaw.Common.Animation;
 using HSDRaw.Common;
 using HSDRaw.Tools;
+using System.IO.Compression;
 
 namespace mexLib
 {
     public static class HSDExtensions
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        public static byte[] Extract(this ZipArchiveEntry entry)
+        {
+            using var e = entry.Open();
+            using var ms = new MemoryStream();
+            e.CopyTo(ms);
+            return ms.ToArray();
+        }
+
         /// <summary>
         /// 
         /// </summary>

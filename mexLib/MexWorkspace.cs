@@ -1,9 +1,9 @@
 ﻿using GCILib;
 using HSDRaw.Common;
 using HSDRaw.MEX;
+using mexLib.Generators;
 using mexLib.Installer;
 using mexLib.MexScubber;
-using mexLib.Utilties;
 using System.Diagnostics;
 
 namespace mexLib
@@ -168,7 +168,7 @@ namespace mexLib
                 {
                     for (int c = 0; c < fighters[f].Count; c++)
                     {
-                        var costumeName = Path.GetFileNameWithoutExtension(workspace.Project.Fighters[f].Costumes.Costumes[c].FileName);
+                        var costumeName = Path.GetFileNameWithoutExtension(workspace.Project.Fighters[f].Costumes.Costumes[c].File.FileName);
                         new MexImage(fighters[f][c]).Save(Path.Combine(path, $"{costumeName}.tex"));
                     }
                 }

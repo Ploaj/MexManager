@@ -4,7 +4,7 @@ using HSDRaw.Melee.Mn;
 using HSDRaw;
 using HSDRaw.MEX.Stages;
 
-namespace mexLib.Utilties
+namespace mexLib.Generators
 {
     public class GenerateMexSelectMap
     {
@@ -44,14 +44,14 @@ namespace mexLib.Utilties
         /// <returns></returns>
         private static MEX_mexMapData GenerateMexSelect(MexWorkspace ws)
         {
-            HSD_JOBJ jobj = new ()
+            HSD_JOBJ jobj = new()
             {
                 SX = 1,
                 SY = 1,
                 SZ = 1,
             };
 
-            HSD_AnimJoint anim = new ();
+            HSD_AnimJoint anim = new();
 
             foreach (var icon in ws.Project.StageSelects[0].StageIcons)
             {
@@ -67,8 +67,8 @@ namespace mexLib.Utilties
             var icon_joint = new HSDRawFile(ws.GetAssetPath("sss//icon_joint.dat")).Roots[0].Data as HSD_JOBJ;
 
             // generate mat anim joint
-            List<HSD_TOBJ> icon_images = new ();
-            List<HSD_TOBJ> names_images = new ();
+            List<HSD_TOBJ> icon_images = new();
+            List<HSD_TOBJ> names_images = new();
 
             icon_images.Add(new MexImage(ws.GetAssetPath("sss\\Null_icon.tex")).ToTObj());
             icon_images.Add(new MexImage(ws.GetAssetPath("sss\\Locked_icon.tex")).ToTObj());

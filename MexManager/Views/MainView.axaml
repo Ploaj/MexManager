@@ -83,7 +83,7 @@
 								<controls:IconMenuItem
 									Text="Remove"
 									ToolTip.Tip="Remove"
-									IconSource="avares://MexManager/Assets/Common/icon_minus.png"
+									IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 									Click="StageRemoveMenuItem_Click"/>
 								<controls:IconMenuItem
 									Text="Import"
@@ -162,7 +162,7 @@
 								<controls:IconMenuItem
 									Text="Remove"
 									ToolTip.Tip="Remove"
-									IconSource="avares://MexManager/Assets/Common/icon_minus.png"
+									IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 									Click="SeriesList_Remove"/>
 							</Menu>
 							<ListBox 

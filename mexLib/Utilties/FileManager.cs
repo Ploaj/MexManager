@@ -11,6 +11,31 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public string GetUniqueFilePath(string filePath)
+        {
+            // Get the directory, filename without extension, and extension
+            string? directory = Path.GetDirectoryName(filePath);
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            string extension = Path.GetExtension(filePath);
+
+            // Set the initial unique file path
+            string uniqueFilePath = filePath;
+            int count = 1;
+
+            // Check if the file exists, if so append a number until a unique path is found
+            while (Exists(uniqueFilePath))
+            {
+                uniqueFilePath = Path.Combine(directory == null ? "" : directory, $"{fileName}({count}){extension}");
+                count++;
+            }
+
+            return uniqueFilePath;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
         public bool Exists(string? path)
@@ -25,6 +50,21 @@ namespace mexLib
                 return true;
 
             return File.Exists(path);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public Stream? GetStream(string path)
+        {
+            if (ToAdd.ContainsKey(path))
+                return new MemoryStream(ToAdd[path]);
+
+            if (File.Exists(path))
+                return new FileStream(path, FileMode.Open);
+
+            return null;
         }
         /// <summary>
         /// 

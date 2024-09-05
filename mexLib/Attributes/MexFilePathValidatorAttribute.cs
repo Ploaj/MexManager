@@ -24,6 +24,32 @@ namespace mexLib.Attributes
             CanBeNull = nullable;
         }
 
+        public string GetFullPath(MexWorkspace ws, string fileName)
+        {
+            string filePath = "";
+
+            if (fileName.EndsWith("."))
+                fileName += "usd";
+            else
+            if (Path.GetExtension(fileName) == "")
+                fileName += ".usd";
+
+            switch (Type)
+            {
+                case MexFilePathType.Files:
+                    filePath = ws.GetFilePath(fileName);
+                    break;
+                case MexFilePathType.Audio:
+                    filePath = ws.GetFilePath($"audio//{fileName}");
+                    break;
+                case MexFilePathType.Assets:
+                    filePath = ws.GetAssetPath($"{fileName}");
+                    break;
+            }
+
+            return filePath;
+        }
+
         protected override ValidationResult? IsValid(object? value, ValidationContext context)
         {
             if (MexWorkspace.LastOpened == null)
@@ -44,24 +70,7 @@ namespace mexLib.Attributes
                     return new ValidationResult("File is required.");
             }
 
-            string filePath = "";
-            var ws = MexWorkspace.LastOpened;
-
-            if (Path.GetExtension(stringValue) == "")
-                stringValue += ".usd";
-
-            switch (Type)
-            {
-                case MexFilePathType.Files: 
-                    filePath = ws.GetFilePath(stringValue); 
-                    break;
-                case MexFilePathType.Audio: 
-                    filePath = ws.GetFilePath($"audio//{stringValue}"); 
-                    break;
-                case MexFilePathType.Assets: 
-                    filePath = ws.GetAssetPath($"{stringValue}"); 
-                    break;
-            }
+            string filePath = GetFullPath(MexWorkspace.LastOpened, stringValue);
 
             if (!MexWorkspace.LastOpened.FileManager.Exists(filePath))
             {
@@ -72,4 +81,28 @@ namespace mexLib.Attributes
         }
     }
 
+    public class MexFilePathValidatorCallback : Attribute
+    {
+        public string CallbackMethodName { get; }
+
+        /// <summary>
+        /// The callback method name should return MexFilePathError
+        /// The input is the new path
+        /// </summary>
+        /// <param name="callbackMethodName"></param>
+        public MexFilePathValidatorCallback(string callbackMethodName)
+        {
+            CallbackMethodName = callbackMethodName;
+        }
+    }
+
+    public class MexFilePathError
+    {
+        public string Message { get; internal set; }
+
+        public MexFilePathError(string message)
+        {
+            Message = message;
+        }
+    }
 }

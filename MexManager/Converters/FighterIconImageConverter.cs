@@ -42,7 +42,7 @@ namespace MexManager.Converters
             {
                 if (item.Costumes.Costumes.Count > 0)
                 {
-                    var iconPath = Path.GetFileNameWithoutExtension(item.Costumes.Costumes[0].FileName);
+                    var iconPath = Path.GetFileNameWithoutExtension(item.Costumes.Costumes[0].File.FileName);
                     iconPath = Global.Workspace.GetAssetPath($"icons//{iconPath}.tex");
 
                     if (Global.Files.Exists(iconPath))

@@ -87,7 +87,7 @@ namespace MexManager
             }
 
             // Create a MemoryStream from the pixel data
-            using (var memoryStream = new MemoryStream(rgbaPixels))
+            using var memoryStream = new MemoryStream(rgbaPixels);
             {
                 var pixelSize = new PixelSize(width, height);
                 var stride = width * 4; // Each row in bytes (4 bytes per pixel)

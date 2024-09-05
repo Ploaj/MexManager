@@ -9,6 +9,22 @@ namespace MexManager.Tools
 {
     public static class FileIO
     {
+        public static readonly FilePickerFileType[] FilterAll =
+        [
+            new ("All Files")
+            {
+                Patterns = [ "*" ],
+            },
+        ];
+
+        public static readonly FilePickerFileType[] FilterZip =
+        [
+            new ("Zip Archive")
+            {
+                Patterns = [ "*.zip" ],
+            },
+        ];
+
         public static readonly FilePickerFileType[] FilterMexProject =
         [
             new ("m-ex Project")

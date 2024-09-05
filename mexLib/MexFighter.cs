@@ -267,19 +267,7 @@ namespace mexLib
             fd.AnnouncerCalls[externalId] = AnnouncerCall;
 
             // create costume strings
-            fd.CostumeFileSymbols.Set(internalId, new MEX_CostumeFileSymbolTable() 
-            { 
-                CostumeSymbols = new HSDArrayAccessor<MEX_CostumeFileSymbol>() 
-                { 
-                    Array = Costumes.Costumes.Select(e => new MEX_CostumeFileSymbol()
-                    {
-                        FileName = e.FileName,
-                        JointSymbol = e.ModelSymbol,
-                        MatAnimSymbol = e.MaterialSymbol,
-                        VisibilityLookupIndex = e.VisibilityIndex,
-                    }).ToArray()
-                } 
-            });
+            fd.CostumeFileSymbols.Set(internalId, Costumes.ToMxDt());
 
             // create costume runtime
             fd.CostumePointers.Set(internalId, new MEX_CostumeRuntimePointers()
@@ -355,9 +343,9 @@ namespace mexLib
                 { 
                     Array = Costumes.Costumes.Select(e => new MEX_CostumeFileSymbol()
                     {
-                        FileName = e.KirbyFileName,
-                        JointSymbol = e.KirbyModelSymbol,
-                        MatAnimSymbol = e.KirbyMaterialSymbol,
+                        FileName = e.KirbyFile.FileName,
+                        JointSymbol = e.KirbyFile.JointSymbol,
+                        MatAnimSymbol = e.KirbyFile.MaterialSymbol,
                     }).ToArray() 
                 });
                 kb.CostumeRuntime._s.SetReference(internalId * 4, new HSDAccessor() { _s = new HSDStruct(Costumes.Costumes.Count * 8) });

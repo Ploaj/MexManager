@@ -18,6 +18,9 @@ using System.IO;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using Avalonia.Media;
+using Avalonia.Input;
+using System.IO.Enumeration;
+using System.ComponentModel;
 
 namespace MexManager.Factories
 {
@@ -37,7 +40,7 @@ namespace MexManager.Factories
             //public TextBox? TextBox { get; set; }
         }
 
-        private static Control GenerateImagePanel(MexTextureSize sizeAttr, out Image imageControl)
+        private static StackPanel GenerateImagePanel(MexTextureSize sizeAttr, out Image imageControl)
         {
             // create border
             var imageBorder = new Border()
@@ -79,6 +82,67 @@ namespace MexManager.Factories
 
             return panel;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        private async static void ImportImage(
+            string? file,
+            MexAssetContainerBase? con, 
+            string? fileName, 
+            Image imageControl,
+            MexTextureSize sizeAttr,
+            MexTextureFormatAttribute fmtAttr)
+        {
+            if (Global.Workspace == null)
+                return;
+
+            // create new asset if filepath is blank
+            con?.GenerateAssetPaths(Global.Workspace);
+
+            // get filepath and check for null
+            if (string.IsNullOrEmpty(fileName))
+                return;
+
+            // get absolute path
+            var path = Global.Workspace.GetAssetPath(fileName);
+
+            // get file to import
+            if (file == null)
+                file = await FileIO.TryOpenFile("Image", "", FileIO.FilterPng);
+
+            if (file != null)
+            {
+
+                if (path != null)
+                {
+                    // image->tex
+                    MexImage tex;
+                    if (fmtAttr != null)
+                    {
+                        // resize image
+                        if (sizeAttr != null)
+                        {
+                            tex = mexLib.Utilties.ImageConverter.PNGtoMexImage(file, sizeAttr.Width, sizeAttr.Height, fmtAttr.Format, fmtAttr.TlutFormat);
+                        }
+                        else
+                        {
+                            tex = mexLib.Utilties.ImageConverter.PNGtoMexImage(file, fmtAttr.Format, fmtAttr.TlutFormat);
+                        }
+                    }
+                    else
+                    {
+                        tex = mexLib.Utilties.ImageConverter.PNGtoMexImage(file, HSDRaw.GX.GXTexFmt.RGBA8, HSDRaw.GX.GXTlutFmt.IA8);
+                    }
+
+                    // update image preview
+                    imageControl.Source = tex.ToBitmap();
+
+                    // save files
+                    Global.Files.Set(path, File.ReadAllBytes(file));
+                    Global.Files.Set(path.Replace(".png", ".tex"), tex.ToByteArray());
+                }
+            }
+        }
 
         /// <summary>
         /// Handles the new property.
@@ -106,61 +170,68 @@ namespace MexManager.Factories
 
             var imagePanel = GenerateImagePanel(sizeAttr, out Image imageControl);
 
+            DragDrop.SetAllowDrop(imagePanel, true);
+            imagePanel.AddHandler(DragDrop.DragEnterEvent, (s, e) =>
+            {
+                if (e.Data.Contains(DataFormats.Files))
+                {
+                    e.DragEffects = DragDropEffects.Copy;
+                }
+                else
+                {
+                    e.DragEffects = DragDropEffects.None;
+                }
+            });
+            imagePanel.AddHandler(DragDrop.DragOverEvent, (s, e) =>
+            {
+                // Check if the data is file data
+                if (e.Data.Contains(DataFormats.Files))
+                {
+                    e.DragEffects = DragDropEffects.Copy;
+                }
+                else
+                {
+                    e.DragEffects = DragDropEffects.None;
+                }
+            });
+            imagePanel.AddHandler(DragDrop.DropEvent, (s, e) =>
+            {
+                // Get the dropped file names
+                if (e.Data.Contains(DataFormats.Files))
+                {
+                    var fileNames = e.Data.GetFiles();
+                    if (fileNames == null)
+                        return;
+
+                    foreach (var f in fileNames.Select(e => e.Path.AbsolutePath))
+                    {
+                        if (f.EndsWith(".png"))
+                        {
+                            ImportImage(
+                                f,
+                                target as MexAssetContainerBase,
+                                propertyDescriptor.GetValue(target) as string,
+                                imageControl,
+                                sizeAttr,
+                                fmtAttr);
+                        }
+                    }
+                }
+            });
+
             var importButton = new Button()
             {
                 Content = "Import"
             };
-            importButton.Click += async (s, e) =>
+            importButton.Click += (s, e) =>
             {
-                if (Global.Workspace == null)
-                    return;
-
-                // create new asset if filepath is blank
-                if (target is MexAssetContainerBase con)
-                    con.GenerateAssetPaths(Global.Workspace);
-
-                // get filepath and check for null
-                var fileName = propertyDescriptor.GetValue(target) as string;
-                if (string.IsNullOrEmpty(fileName))
-                    return;
-
-                // get absolute path
-                var path = Global.Workspace.GetAssetPath(fileName);
-
-                // get file to import
-                var file = await FileIO.TryOpenFile("Image", "", FileIO.FilterPng);
-                if (file != null)
-                {
-
-                    if (path != null)
-                    {
-                        // image->tex
-                        MexImage tex;
-                        if (fmtAttr != null)
-                        {
-                            // resize image
-                            if (sizeAttr != null)
-                            {
-                                tex = ImageConverter.PNGtoMexImage(file, sizeAttr.Width, sizeAttr.Height, fmtAttr.Format, fmtAttr.TlutFormat);
-                            }
-                            else
-                            {
-                                tex = ImageConverter.PNGtoMexImage(file, fmtAttr.Format, fmtAttr.TlutFormat);
-                            }
-                        }
-                        else
-                        {
-                            tex = ImageConverter.PNGtoMexImage(file, HSDRaw.GX.GXTexFmt.RGBA8, HSDRaw.GX.GXTlutFmt.IA8);
-                        }
-
-                        // update image preview
-                        imageControl.Source = tex.ToBitmap();
-
-                        // save files
-                        Global.Files.Set(path, File.ReadAllBytes(file));
-                        Global.Files.Set(path.Replace(".png", ".tex"), tex.ToByteArray());
-                    }
-                }
+                ImportImage(
+                    null,
+                    target as MexAssetContainerBase,
+                    propertyDescriptor.GetValue(target) as string,
+                    imageControl,
+                    sizeAttr,
+                    fmtAttr);
             };
             var exportButton = new Button()
             {

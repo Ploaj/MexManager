@@ -367,7 +367,7 @@ namespace mexLib.Installer
                     var k = keys.Find(e => e.Frame == i + 30 * j);
                     if (k != null)
                     {
-                        var costumeName = Path.GetFileNameWithoutExtension(fighter.Costumes.Costumes[j].FileName);
+                        var costumeName = Path.GetFileNameWithoutExtension(fighter.Costumes.Costumes[j].File.FileName);
                         var image = new MexImage(tobjs[(int)k.Value]);
                         image.Save(workspace.GetAssetPath($"csp\\{costumeName}.tex"));
                     }

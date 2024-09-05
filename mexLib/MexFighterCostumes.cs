@@ -1,6 +1,10 @@
-﻿using mexLib.MexScubber;
+﻿using HSDRaw;
+using HSDRaw.MEX;
+using mexLib.Attributes;
+using mexLib.MexScubber;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO.Compression;
 using System.Text.Json.Serialization;
 
 namespace mexLib
@@ -17,7 +21,7 @@ namespace mexLib
         public byte GreenCostumeIndex { get; set; }
 
         [Browsable(false)]
-        public ObservableCollection<MexFighterCostume> Costumes { get; set; } = new ObservableCollection<MexFighterCostume>();
+        public ObservableCollection<MexCostume> Costumes { get; set; } = new ObservableCollection<MexCostume>();
 
         public bool HasKirbyCostumes
         {
@@ -25,6 +29,57 @@ namespace mexLib
             {
                 return Costumes.Any(e => !string.IsNullOrEmpty(e.KirbyFileName));
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public MEX_CostumeFileSymbolTable ToMxDt()
+        {
+            return new MEX_CostumeFileSymbolTable()
+            {
+                CostumeSymbols = new HSDArrayAccessor<MEX_CostumeFileSymbol>()
+                {
+                    Array = Costumes.Select(e => new MEX_CostumeFileSymbol()
+                    {
+                        FileName = e.File.FileName,
+                        JointSymbol = e.File.JointSymbol,
+                        MatAnimSymbol = e.File.MaterialSymbol,
+                        VisibilityLookupIndex = e.VisibilityIndex,
+                    }).ToArray()
+                }
+            };
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public static string ColorNameFromFileName(string fileName)
+        {
+            var code = Path.GetFileNameWithoutExtension(fileName);
+
+            if (code.Length != 6)
+                return code;
+
+            switch (code.Substring(4))
+            {
+                case "Nr": return "Normal";
+                case "Re": return "Red";
+                case "Bu": return "Blue";
+                case "Gr": return "Green";
+                case "Ye": return "Yellow";
+                case "Or": return "Orange";
+                case "La": return "Purple";
+                case "Gy": return "Gray";
+                case "Aq": return "Aqua";
+                case "Pi": return "Pink";
+                case "Wh": return "White";
+                case "Bk": return "Black";
+            }
+
+            return code;
         }
         /// <summary>
         /// 
@@ -47,67 +102,33 @@ namespace mexLib
             var costumePointerKirby = dol.GetStruct<uint>(0x803CB3E8, index);
             for (uint i = 0; i < costumeCount; i++)
             {
-                var costume = new MexFighterCostume()
+                var costume = new MexCostume()
                 {
-                    FileName = dol.GetStruct<string>(costumePointer + 0x00, i, 0x0C),
-                    ModelSymbol = dol.GetStruct<string>(costumePointer + 0x04, i, 0x0C),
-                    MaterialSymbol = dol.GetStruct<string>(costumePointer + 0x08, i, 0x0C),
+                    File = new MexCostumeFile()
+                    {
+                        FileName = dol.GetStruct<string>(costumePointer + 0x00, i, 0x0C),
+                        JointSymbol = dol.GetStruct<string>(costumePointer + 0x04, i, 0x0C),
+                        MaterialSymbol = dol.GetStruct<string>(costumePointer + 0x08, i, 0x0C),
+                    },
                     VisibilityIndex = (int)i,
                 };
 
+                costume.Name = ColorNameFromFileName(costume.FileName);
+                costume.Icon = $"icons\\{Path.GetFileNameWithoutExtension(costume.File.FileName)}.png";
+                costume.CSP = $"csp\\{Path.GetFileNameWithoutExtension(costume.File.FileName)}.png";
+
                 if (costumePointerKirby != 0)
                 {
-                    costume.KirbyFileName = dol.GetStruct<string>(costumePointerKirby + 0x00, i, 0x0C);
-                    costume.KirbyModelSymbol = dol.GetStruct<string>(costumePointerKirby + 0x04, i, 0x0C);
-                    costume.KirbyMaterialSymbol = dol.GetStruct<string>(costumePointerKirby + 0x08, i, 0x0C);
+                    costume.KirbyFile = new MexCostumeFile()
+                    {
+                        FileName = dol.GetStruct<string>(costumePointerKirby + 0x00, i, 0x0C),
+                        JointSymbol = dol.GetStruct<string>(costumePointerKirby + 0x04, i, 0x0C),
+                        MaterialSymbol = dol.GetStruct<string>(costumePointerKirby + 0x08, i, 0x0C),
+                    };
                 }
 
                 Costumes.Add(costume);
             }
-        }
-    }
-
-    public class MexFighterCostume
-    {
-        [Category("Player"), DisplayName("Filename"), Description("Filename of the costume")]
-        public string FileName { get; set; } = "";
-
-        [Category("Player"), DisplayName("Model Symbol"), Description("Joint symbol inside the costume dat.")]
-        public string ModelSymbol { get; set; } = "";
-
-        [Category("Player"), DisplayName("Material Symbol"), Description("Material symbol inside the costume dat. Leave blank if there isn't one.")]
-        public string MaterialSymbol { get; set; } = "";
-
-        [Category("Player"), DisplayName("Visibility Table Index"), Description("Table to use for visibility lookup. Unless specified otherwise, use 0.")]
-        public int VisibilityIndex { get; set; } = 0;
-
-
-        [Category("Kirby"), DisplayName("Filename"), Description("Filename of the costume. Leave Empty if kirby does not use costume.")]
-        public string KirbyFileName { get; set; } = "";
-
-        [Category("Kirby"), DisplayName("Model Symbol"), Description("Joint symbol inside the costume dat. Leave Empty if kirby does not use costume.")]
-        public string KirbyModelSymbol { get; set; } = "";
-
-        [Category("Kirby"), DisplayName("Material Symbol"), Description("Material symbol inside the costume dat. Leave blank if there isn't one. Leave Empty if kirby does not use costume.")]
-        public string KirbyMaterialSymbol { get; set; } = "";
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <returns></returns>
-        public string GetIconPath(MexWorkspace workspace)
-        {
-            return workspace.GetAssetPath($"icons\\{Path.GetFileNameWithoutExtension(FileName)}.tex");
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <returns></returns>
-        public string GetCSPPath(MexWorkspace workspace)
-        {
-            return workspace.GetAssetPath($"csp\\{Path.GetFileNameWithoutExtension(FileName)}.tex");
         }
     }
 }

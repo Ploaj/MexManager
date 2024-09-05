@@ -110,6 +110,55 @@
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Costumes">
+				<DockPanel>
+					<DockPanel>
+						<Menu DockPanel.Dock="Top"
+							  Height="48">
+							<controls:IconMenuItem
+								Text="Import"
+								ToolTip.Tip="Import"
+								IconSource="avares://MexManager/Assets/Common/file_import.png"
+								Click="ImportCostumeMenuItem_Click"/>
+							<controls:IconMenuItem
+								Text="Export"
+								ToolTip.Tip="Export"
+								IconSource="avares://MexManager/Assets/Common/file_export.png"
+								Click="ExportCostumeMenuItem_Click">
+							</controls:IconMenuItem>
+							<controls:IconMenuItem
+								Text="Duplicate"
+								ToolTip.Tip="Duplicate"
+								IconSource="avares://MexManager/Assets/Common/icon_duplicate.png"
+								Click="DuplicateCostumeMenuItem_Click"/>
+							<controls:IconMenuItem
+								Text="Remove"
+								ToolTip.Tip="Remove"
+								IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+								Click="RemoveCostumeMenuItem_Click"/>
+						</Menu>
+						<ListBox
+							Name="ItemList"
+							DockPanel.Dock="Left"
+							SelectionMode="Single"
+							ItemsSource="{Binding SelectedFighter.Costumes.Costumes}"
+							SelectedItem="{Binding SelectedFighterCostume, Mode=TwoWay}">
+
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding Name}" />
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</DockPanel>
+					<ScrollViewer>
+						<pgc:PropertyGrid
+							AllowQuickFilter="False"
+							AllowFilter="False"
+							AllowToggleView="False"
+							ShowStyle="Builtin"
+							DataContext="{ Binding SelectedFighterCostume }"/>
+					</ScrollViewer>
+				</DockPanel>
 			</TabItem>
 			<TabItem Header="Items">
 				<DockPanel>
@@ -119,7 +168,7 @@
 							<MenuItem Header="_Remove" Click="RemoveFighterItemMenuItem_Click"/>
 						</Menu>
 						<ListBox
-							Name="ItemList"
+							Name="CostumeList"
 							DockPanel.Dock="Left"
 							Width="200"
 							ItemsSource="{Binding SelectedFighter.Items}"
@@ -128,6 +177,9 @@
 					</DockPanel>
 					<ScrollViewer>
 						<pgc:PropertyGrid
+							AllowQuickFilter="False"
+							AllowFilter="False"
+							AllowToggleView="False"
 							DataContext="{ Binding SelectedFighterItem }"/>
 					</ScrollViewer>
 				</DockPanel>

@@ -4,7 +4,7 @@ using HSDRaw.MEX;
 using HSDRaw.Tools;
 using HSDRaw;
 
-namespace mexLib.Utilties
+namespace mexLib.Generators
 {
     public static class GenerateIfAll
     {
@@ -21,7 +21,7 @@ namespace mexLib.Utilties
             if (data == Array.Empty<byte>())
                 return false;
 
-            HSDRawFile ifallFile = new (path);
+            HSDRawFile ifallFile = new(path);
 
             ifallFile.CreateUpdateSymbol("Eblm_matanim_joint", GenerateEmblems(ws));
             ifallFile.CreateUpdateSymbol("Stc_icns", Generate_Stc_icns(ws));
@@ -39,8 +39,8 @@ namespace mexLib.Utilties
         private static HSD_MatAnimJoint GenerateEmblems(MexWorkspace ws)
         {
             // stick icons
-            List<FOBJKey> keys = new ();
-            List<HSD_TOBJ> icons = new ();
+            List<FOBJKey> keys = new();
+            List<HSD_TOBJ> icons = new();
 
             // gather reserved icons
             int icon_index = 0;
@@ -78,8 +78,8 @@ namespace mexLib.Utilties
         private static MEX_Stock Generate_Stc_icns(MexWorkspace ws)
         {
             // stick icons
-            List<FOBJKey> keys = new ();
-            List<HSD_TOBJ> icons = new ();
+            List<FOBJKey> keys = new();
+            List<HSD_TOBJ> icons = new();
 
             // TODO: use proper filenames for stock icons
 
@@ -114,7 +114,7 @@ namespace mexLib.Utilties
                 foreach (var c in f.Costumes.Costumes)
                 {
                     var textureAsset = c.GetIconPath(ws);
-                    if (File.Exists(textureAsset))
+                    if (ws.FileManager.Exists(textureAsset))
                     {
                         keys.Add(new FOBJKey()
                         {
@@ -122,7 +122,7 @@ namespace mexLib.Utilties
                             Value = icons.Count,
                             InterpolationType = GXInterpolationType.HSD_A_OP_CON,
                         });
-                        icons.Add(new MexImage(textureAsset).ToTObj());
+                        icons.Add(MexImage.FromByteArray(ws.FileManager.Get(textureAsset)).ToTObj());
                     }
                     else
                     {
@@ -132,13 +132,13 @@ namespace mexLib.Utilties
                             Value = 0,
                             InterpolationType = GXInterpolationType.HSD_A_OP_CON,
                         });
+                        icons.Add(new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.IA8).ToTObj());
                     }
                     costume_index++;
                 }
             }
 
-            // generate stock icon node
-            return new MEX_Stock()
+            var stock = new MEX_Stock()
             {
                 Reserved = (short)reservedCount,
                 Stride = (short)stride,
@@ -150,10 +150,15 @@ namespace mexLib.Utilties
                     }
                 },
                 CustomStockLength = 0,
-                CustomStockEntries = new HSDRaw.HSDArrayAccessor<MEX_StockEgg>()
+                CustomStockEntries = new HSDArrayAccessor<MEX_StockEgg>()
                 {
                 }
             };
+
+            stock.Optimize();
+
+            // generate stock icon node
+            return stock;
         }
     }
 }

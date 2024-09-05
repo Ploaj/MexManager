@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HSDRaw.Melee.Pl;
 
-namespace mexLib.Utilties
+namespace mexLib.Generators
 {
     public static class GeneratePlCo
     {
@@ -21,7 +21,7 @@ namespace mexLib.Utilties
                 return;
 
             // dump fighter bone table data
-            for(int internalId = 0; internalId < ws.Project.Fighters.Count; internalId++)
+            for (int internalId = 0; internalId < ws.Project.Fighters.Count; internalId++)
             {
                 plCo.BoneTables.Set(internalId, ws.Project.Fighters[internalId].BoneTable);
                 plCo.FighterTable.Set(internalId, ws.Project.Fighters[internalId].UnkTable);

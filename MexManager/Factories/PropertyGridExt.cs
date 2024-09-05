@@ -12,6 +12,7 @@ namespace MexManager.Views
             CellEditFactoryService.Default.AddFactory(new MexReferenceCellFactory());
             CellEditFactoryService.Default.AddFactory(new MediaImageFactory());
             CellEditFactoryService.Default.AddFactory(new HexCellFactory());
+            CellEditFactoryService.Default.AddFactory(new MexFilePathFactory());
         }
     }
 

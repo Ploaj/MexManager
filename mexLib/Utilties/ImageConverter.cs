@@ -1,11 +1,9 @@
-﻿using SixLabors.ImageSharp.PixelFormats;
+﻿using HSDRaw.GX;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
-using System;
-using mexLib;
-using HSDRaw.GX;
 using SixLabors.ImageSharp.Processing;
 
-namespace MexManager.Tools
+namespace mexLib.Utilties
 {
     public class ImageConverter
     {
