@@ -7,7 +7,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
-using mexLib;
+using mexLib.Types;
 using MexManager.Tools;
 using MexManager.ViewModels;
 using System;

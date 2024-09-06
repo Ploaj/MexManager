@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Numerics;
 
-namespace mexLib
+namespace mexLib.Types
 {
     public class MexCharacterSelectIcon
     {
@@ -62,7 +62,7 @@ namespace mexLib
 
         public float StageSelectCursorStartZ { get; set; } = 0;
 
-        public ObservableCollection<MexCharacterSelectIcon> FighterIcons { get; set; } = new ();
+        public ObservableCollection<MexCharacterSelectIcon> FighterIcons { get; set; } = new();
 
         /// <summary>
         /// 
@@ -71,7 +71,7 @@ namespace mexLib
         public void FromDOL(MexDOL dol)
         {
             // CSSIconData - 0x803F0A48 0x398
-            MEX_IconData css = new ()
+            MEX_IconData css = new()
             {
                 _s = new HSDStruct(dol.GetData(0x803F0A48, 0x398))
             };
@@ -103,7 +103,7 @@ namespace mexLib
 
             tb.CSSIconData = new MEX_IconData()
             {
-                Icons = FighterIcons.Select((e, i)=>e.ToIcon(i)).ToArray()
+                Icons = FighterIcons.Select((e, i) => e.ToIcon(i)).ToArray()
             };
         }
     }

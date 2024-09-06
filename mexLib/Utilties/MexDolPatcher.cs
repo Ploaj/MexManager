@@ -14,9 +14,9 @@ namespace mexLib.Utilties
         /// <param name="patched"></param>
         public static void CreatePatch(byte[] source, byte[] patched, string filePath)
         {
-            using (FileStream s = new FileStream(filePath, FileMode.Create))
+            using FileStream s = new (filePath, FileMode.Create);
             {
-                using (SHA256 sha256 = SHA256.Create())
+                using SHA256 sha256 = SHA256.Create();
                 {
                     var hash1 = sha256.ComputeHash(source);
                     var hash2 = sha256.ComputeHash(patched);
@@ -27,7 +27,7 @@ namespace mexLib.Utilties
                     s.Write(hash2, 0, 0x20);
                 }
 
-                using (DeflateStream w = new DeflateStream(s, CompressionLevel.Optimal))
+                using DeflateStream w = new (s, CompressionLevel.Optimal);
                 {
                     for (int i = 0; i < Math.Min(source.Length, patched.Length); i++)
                     {
@@ -85,8 +85,8 @@ namespace mexLib.Utilties
             var patch = PatchFile;
             patched = source;
 
-            using (SHA256 sha256 = SHA256.Create())
-            using (MemoryStream s = new MemoryStream(patch))
+            using SHA256 sha256 = SHA256.Create();
+            using MemoryStream s = new (patch);
             {
                 var size1 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
                 var size2 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
@@ -102,7 +102,7 @@ namespace mexLib.Utilties
                 patched = new byte[size2];
                 Array.Copy(source, 0, patched, 0, Math.Min(size1, size2));
 
-                using (DeflateStream r = new DeflateStream(s, CompressionMode.Decompress))
+                using DeflateStream r = new(s, CompressionMode.Decompress);
                 {
                     while (true)
                     {
@@ -135,8 +135,8 @@ namespace mexLib.Utilties
         /// <returns></returns>
         public static bool CheckPatchApplied(byte[] source)
         {
-            using (SHA256 sha256 = SHA256.Create())
-            using (MemoryStream s = new MemoryStream(PatchFile))
+            using SHA256 sha256 = SHA256.Create();
+            using MemoryStream s = new (PatchFile);
             {
                 var size1 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
                 var size2 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);

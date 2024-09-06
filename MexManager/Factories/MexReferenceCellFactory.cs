@@ -46,7 +46,7 @@ namespace MexManager.Factories
                 return null;
 
             var target = context.Target;
-            if (!(propertyDescriptor.GetValue(target) is int index))
+            if (propertyDescriptor.GetValue(target) is not int index)
                 return null;
 
             var type = propertyDescriptor.PropertyType;

@@ -3,7 +3,7 @@ using HSDRaw.MEX;
 using mexLib.Attributes;
 using System.Collections.ObjectModel;
 
-namespace mexLib
+namespace mexLib.Types
 {
     public class MexItemState : HSDAccessor
     {
@@ -31,7 +31,7 @@ namespace mexLib
             {
                 AnimID = AnimID,
                 AnimationCallback = (int)AnimationCallback,
-                PhysicsCallback= (int)PhysicsCallback,
+                PhysicsCallback = (int)PhysicsCallback,
                 CollisionCallback = (int)CollisionCallback
             };
         }
@@ -124,7 +124,7 @@ namespace mexLib
         {
             return new MEX_Item()
             {
-                ItemStates = States.Select(e=>e.ToMexItemState()).ToArray(),
+                ItemStates = States.Select(e => e.ToMexItemState()).ToArray(),
                 OnSpawn = (int)OnSpawn,
                 OnDestroy = (int)OnDestroy,
                 OnPickup = (int)OnPickup,

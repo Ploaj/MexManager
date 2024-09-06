@@ -27,7 +27,7 @@ namespace mexLib
             // Check if the file exists, if so append a number until a unique path is found
             while (Exists(uniqueFilePath))
             {
-                uniqueFilePath = Path.Combine(directory == null ? "" : directory, $"{fileName}({count}){extension}");
+                uniqueFilePath = Path.Combine(directory ?? $"{fileName}_{count:D3}{extension}");
                 count++;
             }
 
@@ -114,6 +114,9 @@ namespace mexLib
         {
             foreach (var v in ToAdd)
             {
+                var dir = Path.GetDirectoryName(v.Key);
+                if (dir != null)
+                    Directory.CreateDirectory(dir);
                 File.WriteAllBytes(v.Key, v.Value);
             }
 

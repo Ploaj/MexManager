@@ -5,6 +5,7 @@ using HSDRaw.Tools;
 using HSDRaw;
 using HSDRaw.GX;
 using HSDRaw.Melee.Mn;
+using mexLib.Types;
 
 namespace mexLib.Generators
 {
@@ -25,7 +26,7 @@ namespace mexLib.Generators
             ClearOldMaterialAnimations(file["MnSelectChrDataTable"].Data as SBM_SelectChrDataTable);
             file.CreateUpdateSymbol("mexSelectChr", GenerateMexSelect(ws));
 
-            using MemoryStream stream = new MemoryStream();
+            using MemoryStream stream = new ();
             file.Save(stream);
             ws.FileManager.Set(path, stream.ToArray());
             return true;
@@ -206,6 +207,67 @@ namespace mexLib.Generators
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="gen"></param>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
+        private static HSD_DOBJ GenerateQuadDobj(POBJ_Generator gen, float w, float h, float z)
+        {
+            HSD_DOBJ dobj = new()
+            {
+                Mobj = new HSD_MOBJ()
+                {
+                    RenderFlags = RENDER_MODE.CONSTANT |
+                                RENDER_MODE.TEX0 |
+                                RENDER_MODE.NO_ZUPDATE |
+                                RENDER_MODE.XLU,
+                    Material = new HSD_Material()
+                    {
+                        AMB_A = 255,
+                        AMB_R = 128,
+                        AMB_G = 128,
+                        AMB_B = 128,
+                        DIF_A = 255,
+                        DIF_R = 255,
+                        DIF_G = 255,
+                        DIF_B = 255,
+                        SPC_A = 255,
+                        SPC_R = 255,
+                        SPC_G = 255,
+                        SPC_B = 255,
+                        Shininess = 50,
+                        Alpha = 0.999f
+                    }
+                }
+            };
+
+            List<GX_Vertex> verts = new()
+                {
+                    // First Triangle (Bottom-right -> Top-right -> Bottom-left)
+                    new GX_Vertex() { POS = new GXVector3(-w, -h, z), TEX0 = new GXVector2(0, 1) }, // Bottom-left
+                    new GX_Vertex() { POS = new GXVector3(w, h, z), TEX0 = new GXVector2(1, 0) },   // Top-right
+                    new GX_Vertex() { POS = new GXVector3(w, -h, z), TEX0 = new GXVector2(1, 1) },  // Bottom-right
+
+                    // Second Triangle (Top-right -> Top-left -> Bottom-left)
+                    new GX_Vertex() { POS = new GXVector3(-w, -h, z), TEX0 = new GXVector2(0, 1) }, // Bottom-left
+                    new GX_Vertex() { POS = new GXVector3(-w, h, z), TEX0 = new GXVector2(0, 0) },  // Top-left
+                    new GX_Vertex() { POS = new GXVector3(w, h, z), TEX0 = new GXVector2(1, 0) },   // Top-right
+                };
+
+            dobj.Pobj = gen.CreatePOBJsFromTriangleList(verts, new GXAttribName[]
+            {
+                    GXAttribName.GX_VA_POS,
+                    GXAttribName.GX_VA_TEX0,
+            }, null);
+
+            dobj.Pobj.Flags = POBJ_FLAG.CULLFRONT;
+
+            return dobj;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
         private static HSD_JOBJ GenerateIconModel(MexCharacterSelectIcon icon, MexWorkspace ws)
@@ -224,7 +286,7 @@ namespace mexLib.Generators
                 }
             }
 
-            iconImage ??= new MexImage(ws.GetAssetPath("css//Null.tex"));
+            iconImage ??= MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath("css//Null.tex")));
 
             var source = new HSD_JOBJ()
             {
@@ -238,67 +300,13 @@ namespace mexLib.Generators
 
             POBJ_Generator gen = new();
 
-            var generateQuadDObj = (float w, float h, float z) =>
-            {
-                HSD_DOBJ dobj = new()
-                {
-                    Mobj = new HSD_MOBJ()
-                    {
-                        RenderFlags = RENDER_MODE.CONSTANT |
-                                    RENDER_MODE.TEX0 |
-                                    RENDER_MODE.NO_ZUPDATE |
-                                    RENDER_MODE.XLU,
-                        Material = new HSD_Material()
-                        {
-                            AMB_A = 255,
-                            AMB_R = 128,
-                            AMB_G = 128,
-                            AMB_B = 128,
-                            DIF_A = 255,
-                            DIF_R = 255,
-                            DIF_G = 255,
-                            DIF_B = 255,
-                            SPC_A = 255,
-                            SPC_R = 255,
-                            SPC_G = 255,
-                            SPC_B = 255,
-                            Shininess = 50,
-                            Alpha = 0.999f
-                        }
-                    }
-                };
-
-                List<GX_Vertex> verts = new()
-                {
-                    // First Triangle (Bottom-right -> Top-right -> Bottom-left)
-                    new GX_Vertex() { POS = new GXVector3(-w, -h, z), TEX0 = new GXVector2(0, 1) }, // Bottom-left
-                    new GX_Vertex() { POS = new GXVector3(w, h, z), TEX0 = new GXVector2(1, 0) },   // Top-right
-                    new GX_Vertex() { POS = new GXVector3(w, -h, z), TEX0 = new GXVector2(1, 1) },  // Bottom-right
-
-                    // Second Triangle (Top-right -> Top-left -> Bottom-left)
-                    new GX_Vertex() { POS = new GXVector3(-w, -h, z), TEX0 = new GXVector2(0, 1) }, // Bottom-left
-                    new GX_Vertex() { POS = new GXVector3(-w, h, z), TEX0 = new GXVector2(0, 0) },  // Top-left
-                    new GX_Vertex() { POS = new GXVector3(w, h, z), TEX0 = new GXVector2(1, 0) },   // Top-right
-                };
-
-                dobj.Pobj = gen.CreatePOBJsFromTriangleList(verts, new GXAttribName[]
-                {
-                    GXAttribName.GX_VA_POS,
-                    GXAttribName.GX_VA_TEX0,
-                }, null);
-
-                dobj.Pobj.Flags = POBJ_FLAG.CULLFRONT;
-
-                return dobj;
-            };
-
             // background
             {
                 float w = 3.265f;
                 float h = 3.361f;
                 float z = 0.2f;
 
-                var dobj = generateQuadDObj(w, h, z);
+                var dobj = GenerateQuadDobj(gen, w, h, z);
                 dobj.Mobj.Textures = background.ToTObj();
                 dobj.Mobj.Textures.AlphaOperation = ALPHAMAP.NONE;
                 dobj.Mobj.Textures.TEV = new HSD_TOBJ_TEV()
@@ -337,7 +345,7 @@ namespace mexLib.Generators
                 float h = 3.5f;
                 float z = 0.0f;
 
-                var dobj = generateQuadDObj(w, h, z);
+                var dobj = GenerateQuadDobj(gen, w, h, z);
                 var tobj = iconImage.ToTObj();
                 tobj.ColorOperation = COLORMAP.BLEND;
                 tobj.AlphaOperation = ALPHAMAP.BLEND;

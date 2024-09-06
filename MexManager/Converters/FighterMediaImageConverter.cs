@@ -28,11 +28,9 @@ namespace MexManager.Converters
 
                 var thp = new THP(Global.Files.Get(thpPath));
                 var jpeg = thp.ToJPEG();
-                using (var stream = new MemoryStream(jpeg))
-                {
-                    var bitmap = new Bitmap(stream);
-                    return bitmap;
-                }
+                using var stream = new MemoryStream(jpeg);
+                var bitmap = new Bitmap(stream);
+                return bitmap;            
             }
 
             return BitmapManager.MexFighterImage;

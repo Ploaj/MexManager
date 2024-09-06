@@ -1,28 +1,13 @@
-﻿using GCILib.BZip2;
-using HSDRaw;
+﻿using HSDRaw;
 using HSDRaw.Common;
-using HSDRaw.GX;
 using HSDRaw.Melee;
 using HSDRaw.Melee.Mn;
-using HSDRaw.MEX;
-using HSDRaw.MEX.Akaneia;
 using HSDRaw.MEX.Misc;
 using HSDRaw.MEX.Scenes;
-using HSDRaw.Tools;
-using HSDRaw.Tools.TriangleConverter;
 using MeleeMedia.Audio;
 using mexLib.MexScubber;
-using mexLib.Utilties;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using mexLib.Types;
 
 namespace mexLib.Installer
 {
@@ -102,12 +87,10 @@ namespace mexLib.Installer
                     int[] series_order = { 0, 1, 2, 3, 9, 4, 5, 6, 8, 7, 10, 13, 11, 12, 14, 15 };
                     var emblem_matanim_joint = ifAll[0].MaterialAnimations[0].Child.MaterialAnimation.TextureAnimation.ToTOBJs();
 
-                    var ssmPath = workspace.GetAssetPath($"series//");
-                    Directory.CreateDirectory(ssmPath);
                     for (int i = 0; i < series_order.Length; i++)
                     {
                         var img = new MexImage(emblem_matanim_joint[series_order[i]]);
-                        img.Save($"{ssmPath}{i:D3}.tex");
+                        project.Series[i].IconAsset.SetFromMexImage(workspace, img);
                     }
                 }
             }
@@ -266,7 +249,7 @@ namespace mexLib.Installer
             workspace.Project.StageSelects[0].RandomIcon.FromJoint(position_joints[off_random], position_animjoints[off_random]);
             new MexImage(tex0[0]).Save(workspace.GetAssetPath($"sss\\Null_icon.tex"));
             new MexImage(tex0[1]).Save(workspace.GetAssetPath($"sss\\Locked_icon.tex"));
-            new MexImage(nameTOBJs[nameTOBJs.Length - 1]).Save(workspace.GetAssetPath($"sss\\Random_tag.tex"));
+            new MexImage(nameTOBJs[^1]).Save(workspace.GetAssetPath($"sss\\Random_tag.tex"));
 
             // messy
             foreach (var icon in workspace.Project.StageSelects[0].StageIcons)
@@ -421,8 +404,8 @@ namespace mexLib.Installer
                         var anim = single_anim[joint_index - 1];
                         var trax = anim.AOBJ.FObjDesc.GetDecodedKeys();
                         var tray = anim.AOBJ.FObjDesc.Next.GetDecodedKeys();
-                        icon.X = trax[trax.Count - 1].Value + 3.4f;
-                        icon.Y = tray[trax.Count - 1].Value - 3.5f;
+                        icon.X = trax[^1].Value + 3.4f;
+                        icon.Y = tray[^1].Value - 3.5f;
                         icon.Z = cloneJoint.TZ;
                     }
                 }

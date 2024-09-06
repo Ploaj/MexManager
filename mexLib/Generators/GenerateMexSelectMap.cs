@@ -22,7 +22,7 @@ namespace mexLib.Generators
             HSDRawFile file = new(path);
             ClearOldMaterialAnimations(file["MnSelectStageDataTable"].Data as SBM_SelectChrDataTable);
             file.CreateUpdateSymbol("mexMapData", GenerateMexSelect(ws));
-            using MemoryStream stream = new MemoryStream();
+            using MemoryStream stream = new ();
             file.Save(stream);
             ws.FileManager.Set(path, stream.ToArray());
             return true;
@@ -70,8 +70,8 @@ namespace mexLib.Generators
             List<HSD_TOBJ> icon_images = new();
             List<HSD_TOBJ> names_images = new();
 
-            icon_images.Add(new MexImage(ws.GetAssetPath("sss\\Null_icon.tex")).ToTObj());
-            icon_images.Add(new MexImage(ws.GetAssetPath("sss\\Locked_icon.tex")).ToTObj());
+            icon_images.Add(MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath("sss\\Null_icon.tex"))).ToTObj());
+            icon_images.Add(MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath("sss\\Locked_icon.tex"))).ToTObj());
 
             for (int i = 0; i < ws.Project.StageSelects[0].StageIcons.Count; i++)
             {
@@ -80,11 +80,11 @@ namespace mexLib.Generators
                 var stage = ws.Project.Stages[internal_id];
                 var name = stage.Name;
 
-                icon_images.Add(new MexImage(ws.GetAssetPath($"sss\\{name}_icon.tex")).ToTObj());
-                names_images.Add(new MexImage(ws.GetAssetPath($"sss\\{name}_tag.tex")).ToTObj());
+                icon_images.Add(MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath($"sss\\{name}_icon.tex"))).ToTObj());
+                names_images.Add(MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath($"sss\\{name}_tag.tex"))).ToTObj());
             }
 
-            names_images.Add(new MexImage(ws.GetAssetPath("sss\\Random_tag.tex")).ToTObj());
+            names_images.Add(MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath("sss\\Random_tag.tex"))).ToTObj());
 
             // generate structure
             return new MEX_mexMapData()

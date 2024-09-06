@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace mexLib
 {
-    public class MexCostume : MexAssetContainerBase
+    public class MexCostume : MexReactiveObject
     {
         [Browsable(false)]
         public MexCostumeFile File { get; set; } = new MexCostumeFile();
@@ -20,8 +20,8 @@ namespace mexLib
         public string Name { get; set; } = "New Costume";
 
         [DisplayName("Filename")]
-        [MexFilePathValidator(MexFilePathType.Files)]
-        [MexFilePathValidatorCallback("CheckFileName")]
+        //[MexFilePathValidator(MexFilePathType.Files)]
+        //[MexFilePathValidatorCallback("CheckFileName")]
         public string FileName
         {
             get
@@ -31,15 +31,15 @@ namespace mexLib
             set
             {
                 File.FileName = value;
-                if (MexWorkspace.LastOpened != null)
-                    File.GetSymbolFromFile(MexWorkspace.LastOpened);
+                //if (MexWorkspace.LastOpened != null)
+                //    File.GetSymbolFromFile(MexWorkspace.LastOpened);
                 OnPropertyChanged();
                 SetCostumeVisibilityFromSymbols();
             }
         }
 
         [DisplayName("Kirby Filename")]
-        [MexFilePathValidator(MexFilePathType.Files)]
+        //[MexFilePathValidator(MexFilePathType.Files)]
         public string KirbyFileName
         {
             get
@@ -49,8 +49,8 @@ namespace mexLib
             set
             {
                 KirbyFile.FileName = value;
-                if (MexWorkspace.LastOpened != null)
-                    KirbyFile.GetSymbolFromFile(MexWorkspace.LastOpened);
+                //if (MexWorkspace.LastOpened != null)
+                //    KirbyFile.GetSymbolFromFile(MexWorkspace.LastOpened);
             }
         }
 
@@ -66,19 +66,19 @@ namespace mexLib
         }
         public int _visibilityIndex = 0;
 
-        [DisplayName("Stock Icon")]
-        [MexTextureAsset]
-        [MexTextureFormat(HSDRaw.GX.GXTexFmt.CI4, HSDRaw.GX.GXTlutFmt.RGB5A3)]
-        [MexTextureSize(24, 24)]
-        [MexFilePathValidator(MexFilePathType.Assets)]
+        //[DisplayName("Stock Icon")]
+        //[MexTextureAsset]
+        //[MexTextureFormat(HSDRaw.GX.GXTexFmt.CI4, HSDRaw.GX.GXTlutFmt.RGB5A3)]
+        //[MexTextureSize(24, 24)]
+        //[MexFilePathValidator(MexFilePathType.Assets)]
         public string Icon { get => _icon; set { _icon = value; OnPropertyChanged(); } }
         private string _icon = "";
 
         [DisplayName("Character Select Portrait")]
-        [MexTextureAsset]
-        [MexTextureFormat(HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB5A3)]
-        [MexTextureSize(136, 188)]
-        [MexFilePathValidator(MexFilePathType.Assets)]
+        //[MexTextureAsset]
+        //[MexTextureFormat(HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB5A3)]
+        //[MexTextureSize(136, 188)]
+        //[MexFilePathValidator(MexFilePathType.Assets)]
         public string CSP { get => _csp; set { _csp = value; OnPropertyChanged(); } }
         private string _csp = "";
 
@@ -162,26 +162,6 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ws"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void GenerateAssetPaths(MexWorkspace ws)
-        {
-            Icon = GeneratePathIfNotExists(ws, Icon, "icons", "icon", ".png");
-            CSP = GeneratePathIfNotExists(ws, CSP, "csp", "csp", ".png");
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ws"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public override void RemoveAssets(MexWorkspace ws)
-        {
-            RemoveTexAsset(ws, Icon);
-            RemoveTexAsset(ws, CSP);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
         /// <returns></returns>
         public static MexCostume? FromZip(MexWorkspace workspace, string zipPath, out string log)
         {
@@ -191,7 +171,6 @@ namespace mexLib
             {
                 Name = Path.GetFileNameWithoutExtension(zipPath)
             };
-            costume.GenerateAssetPaths(workspace);
 
             using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Read))
                 foreach (ZipArchiveEntry entry in zip.Entries)

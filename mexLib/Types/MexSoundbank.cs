@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Text.Json.Serialization;
 using System.Xml.Linq;
 
-namespace mexLib
+namespace mexLib.Types
 {
     public enum MexSoundbankType
     {
@@ -30,29 +30,29 @@ namespace mexLib
         [JsonIgnore]
         public MexSoundbankType Type
         {
-            get => (MexSoundbankType)((GroupFlags >> 24) & 0xFF);
-            set => GroupFlags = (GroupFlags & ~0xFF000000) | (((uint)value & 0xFF) << 24);
+            get => (MexSoundbankType)(GroupFlags >> 24 & 0xFF);
+            set => GroupFlags = GroupFlags & ~0xFF000000 | ((uint)value & 0xFF) << 24;
         }
 
         [JsonIgnore]
         public byte GroupFlag1
         {
-            get => (byte)((GroupFlags >> 16) & 0xFF);
-            set => GroupFlags = (uint)((GroupFlags & ~0x00FF0000) | (((uint)value & 0xFF) << 16));
+            get => (byte)(GroupFlags >> 16 & 0xFF);
+            set => GroupFlags = (uint)(GroupFlags & ~0x00FF0000 | ((uint)value & 0xFF) << 16);
         }
 
         [JsonIgnore]
         public byte GroupFlag2
         {
-            get => (byte)((GroupFlags >> 8) & 0xFF);
-            set => GroupFlags = (uint)((GroupFlags & ~0x0000FF00) | (((uint)value & 0xFF) << 8));
+            get => (byte)(GroupFlags >> 8 & 0xFF);
+            set => GroupFlags = (uint)(GroupFlags & ~0x0000FF00 | ((uint)value & 0xFF) << 8);
         }
 
         [JsonIgnore]
         public byte GroupFlag3
         {
             get => (byte)(GroupFlags & 0xFF);
-            set => GroupFlags = (uint)((GroupFlags & ~0x000000FF) | ((uint)value & 0xFF));
+            set => GroupFlags = (uint)(GroupFlags & ~0x000000FF | (uint)value & 0xFF);
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using MeleeMedia.Audio;
-using mexLib;
+using mexLib.Types;
 using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
@@ -387,10 +387,10 @@ public partial class MainView : UserControl
 
             int currentIndex = SeriesList.SelectedIndex;
             Global.Workspace.Project.RemoveSeries(series);
-            if (series is MexAssetContainerBase con)
-            {
-                con.RemoveAssets(Global.Workspace);
-            }
+            //if (series is MexAssetContainerBase con)
+            //{
+            //    con.RemoveAssets(Global.Workspace);
+            //}
             SeriesList.RefreshList();
             SeriesList.SelectedIndex = currentIndex;
         }

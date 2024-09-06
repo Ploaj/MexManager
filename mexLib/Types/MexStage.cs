@@ -8,7 +8,7 @@ using HSDRaw.Common;
 using mexLib.Installer;
 using System.Text.Json.Serialization;
 
-namespace mexLib
+namespace mexLib.Types
 {
     public class MexStage
     {

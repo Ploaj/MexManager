@@ -4,6 +4,7 @@ using Avalonia.Data.Converters;
 using System.Globalization;
 using MexManager.Tools;
 using System.IO;
+using mexLib.Types;
 
 namespace MexManager.Converters
 {
@@ -47,7 +48,7 @@ namespace MexManager.Converters
 
                     if (Global.Files.Exists(iconPath))
                     {
-                        return new MexImage(iconPath).ToBitmap();
+                        return MexImage.FromByteArray(Global.Files.Get(iconPath)).ToBitmap();
                     }
                 }
             }

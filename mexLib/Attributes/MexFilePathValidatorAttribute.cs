@@ -14,11 +14,9 @@ namespace mexLib.Attributes
     {
         private bool CanBeNull { get; set; } = true;
 
-        private string Folder { get; set; } = "";
-
         private MexFilePathType Type { get; set; }
 
-        public MexFilePathValidatorAttribute(MexFilePathType type, bool nullable = true) 
+        public MexFilePathValidatorAttribute(MexFilePathType type, bool nullable = true)
         {
             Type = type;
             CanBeNull = nullable;
@@ -52,35 +50,36 @@ namespace mexLib.Attributes
 
         protected override ValidationResult? IsValid(object? value, ValidationContext context)
         {
-            if (MexWorkspace.LastOpened == null)
-            {
-                return new ValidationResult("Workspace is not opened.");
-            }
+            //if (MexWorkspace.LastOpened == null)
+            //{
+            //    return new ValidationResult("Workspace is not opened.");
+            //}
 
-            if (!(value is string stringValue))
-            {
-                return new ValidationResult("Value is not a valid string.");
-            }
+            //if (!(value is string stringValue))
+            //{
+            //    return new ValidationResult("Value is not a valid string.");
+            //}
 
-            if (string.IsNullOrEmpty(stringValue))
-            {
-                if (CanBeNull)
-                    return ValidationResult.Success;
-                else
-                    return new ValidationResult("File is required.");
-            }
+            //if (string.IsNullOrEmpty(stringValue))
+            //{
+            //    if (CanBeNull)
+            //        return ValidationResult.Success;
+            //    else
+            //        return new ValidationResult("File is required.");
+            //}
 
-            string filePath = GetFullPath(MexWorkspace.LastOpened, stringValue);
+            //string filePath = GetFullPath(MexWorkspace.LastOpened, stringValue);
 
-            if (!MexWorkspace.LastOpened.FileManager.Exists(filePath))
-            {
-                return new ValidationResult("File not found");
-            }
+            //if (!MexWorkspace.LastOpened.FileManager.Exists(filePath))
+            //{
+            //    return new ValidationResult("File not found");
+            //}
 
             return ValidationResult.Success;
         }
     }
 
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class MexFilePathValidatorCallback : Attribute
     {
         public string CallbackMethodName { get; }

@@ -2,25 +2,15 @@
 using Avalonia.Layout;
 using Avalonia.PropertyGrid.Controls;
 using Avalonia.PropertyGrid.Controls.Factories;
-using mexLib.Attributes;
 using mexLib;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PropertyModels.Extensions;
-using Avalonia.Media.Imaging;
 using Avalonia;
-using MeleeMedia.Video;
 using MexManager.Tools;
 using System.IO;
-using System.Diagnostics;
-using System.Reflection.Metadata;
 using Avalonia.Media;
 using Avalonia.Input;
-using System.IO.Enumeration;
-using System.ComponentModel;
+using mexLib.AssetTypes;
 
 namespace MexManager.Factories
 {
@@ -36,11 +26,9 @@ namespace MexManager.Factories
         private class UserData
         {
             public Image? Image { get; set; }
-
-            //public TextBox? TextBox { get; set; }
         }
 
-        private static StackPanel GenerateImagePanel(MexTextureSize sizeAttr, out Image imageControl)
+        private static StackPanel GenerateImagePanel(MexTextureAsset asset, out Image imageControl)
         {
             // create border
             var imageBorder = new Border()
@@ -59,7 +47,7 @@ namespace MexManager.Factories
             imageBorder.Child = imageControl;
 
             // create final panel
-            StackPanel panel = new ()
+            StackPanel panel = new()
             {
                 Orientation = Orientation.Vertical,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -67,15 +55,15 @@ namespace MexManager.Factories
             panel.Children.Add(imageBorder);
 
             // optional size attribute view
-            if (sizeAttr != null)
+            if (asset != null)
             {
-                imageBorder.Width = sizeAttr.Width;
-                imageBorder.Height = sizeAttr.Height;
-                imageControl.Width = sizeAttr.Width;
-                imageControl.Height = sizeAttr.Height;
+                imageBorder.Width = asset.Width;
+                imageBorder.Height = asset.Height;
+                imageControl.Width = asset.Width;
+                imageControl.Height = asset.Height;
                 panel.Children.Add(new TextBlock()
                 {
-                    Text = $"{sizeAttr.Width}x{sizeAttr.Height}",
+                    Text = $"{asset.Width}x{asset.Height}",
                     HorizontalAlignment = HorizontalAlignment.Center,
                 });
             }
@@ -86,62 +74,26 @@ namespace MexManager.Factories
         /// 
         /// </summary>
         private async static void ImportImage(
+            MexWorkspace workspace,
             string? file,
-            MexAssetContainerBase? con, 
-            string? fileName, 
-            Image imageControl,
-            MexTextureSize sizeAttr,
-            MexTextureFormatAttribute fmtAttr)
+            MexTextureAsset asset,
+            Image imageControl)
         {
             if (Global.Workspace == null)
                 return;
 
-            // create new asset if filepath is blank
-            con?.GenerateAssetPaths(Global.Workspace);
+            // get file to import
+            file ??= await FileIO.TryOpenFile("Image", "", FileIO.FilterPng);
 
-            // get filepath and check for null
-            if (string.IsNullOrEmpty(fileName))
+            // no file to import
+            if (file == null)
                 return;
 
             // get absolute path
-            var path = Global.Workspace.GetAssetPath(fileName);
+            asset.SetFromImageFile(workspace, file);
 
-            // get file to import
-            if (file == null)
-                file = await FileIO.TryOpenFile("Image", "", FileIO.FilterPng);
-
-            if (file != null)
-            {
-
-                if (path != null)
-                {
-                    // image->tex
-                    MexImage tex;
-                    if (fmtAttr != null)
-                    {
-                        // resize image
-                        if (sizeAttr != null)
-                        {
-                            tex = mexLib.Utilties.ImageConverter.PNGtoMexImage(file, sizeAttr.Width, sizeAttr.Height, fmtAttr.Format, fmtAttr.TlutFormat);
-                        }
-                        else
-                        {
-                            tex = mexLib.Utilties.ImageConverter.PNGtoMexImage(file, fmtAttr.Format, fmtAttr.TlutFormat);
-                        }
-                    }
-                    else
-                    {
-                        tex = mexLib.Utilties.ImageConverter.PNGtoMexImage(file, HSDRaw.GX.GXTexFmt.RGBA8, HSDRaw.GX.GXTlutFmt.IA8);
-                    }
-
-                    // update image preview
-                    imageControl.Source = tex.ToBitmap();
-
-                    // save files
-                    Global.Files.Set(path, File.ReadAllBytes(file));
-                    Global.Files.Set(path.Replace(".png", ".tex"), tex.ToByteArray());
-                }
-            }
+            // update image preview
+            imageControl.Source = asset.GetSourceImage(workspace)?.ToBitmap();
         }
 
         /// <summary>
@@ -151,24 +103,22 @@ namespace MexManager.Factories
         /// <returns>Control.</returns>
         public override Control? HandleNewProperty(PropertyCellContext context)
         {
+            if (Global.Workspace == null)
+                return null;
+
             var propertyDescriptor = context.Property;
             var target = context.Target;
 
-            if (propertyDescriptor.PropertyType != typeof(string))
-            {
+            // check type
+            if (propertyDescriptor.PropertyType != typeof(MexTextureAsset))
                 return null;
-            }
 
-            var attr = propertyDescriptor.GetCustomAttribute<MexTextureAssetAttribute>();
-            var sizeAttr = propertyDescriptor.GetCustomAttribute<MexTextureSize>();
-            var fmtAttr = propertyDescriptor.GetCustomAttribute<MexTextureFormatAttribute>();
-
-            if (attr == null)
-            {
+            // get texture asset
+            if (context.GetValue() is not MexTextureAsset textureAsset)
                 return null;
-            }
 
-            var imagePanel = GenerateImagePanel(sizeAttr, out Image imageControl);
+            // create image panel and enable drag and drop
+            var imagePanel = GenerateImagePanel(textureAsset, out Image imageControl);
 
             DragDrop.SetAllowDrop(imagePanel, true);
             imagePanel.AddHandler(DragDrop.DragEnterEvent, (s, e) =>
@@ -208,12 +158,10 @@ namespace MexManager.Factories
                         if (f.EndsWith(".png"))
                         {
                             ImportImage(
+                                Global.Workspace,
                                 f,
-                                target as MexAssetContainerBase,
-                                propertyDescriptor.GetValue(target) as string,
-                                imageControl,
-                                sizeAttr,
-                                fmtAttr);
+                                textureAsset,
+                                imageControl);
                         }
                     }
                 }
@@ -226,12 +174,10 @@ namespace MexManager.Factories
             importButton.Click += (s, e) =>
             {
                 ImportImage(
+                    Global.Workspace,
                     null,
-                    target as MexAssetContainerBase,
-                    propertyDescriptor.GetValue(target) as string,
-                    imageControl,
-                    sizeAttr,
-                    fmtAttr);
+                    textureAsset,
+                    imageControl);
             };
             var exportButton = new Button()
             {
@@ -290,40 +236,31 @@ namespace MexManager.Factories
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         public override bool HandlePropertyChanged(PropertyCellContext context)
         {
+            if (Global.Workspace == null)
+                return false;
+
+            var control = context.CellEdit;
             var propertyDescriptor = context.Property;
             var target = context.Target;
-            var control = context.CellEdit;
 
-            if (propertyDescriptor.PropertyType != typeof(string))
-            {
+            // check type
+            if (propertyDescriptor.PropertyType != typeof(MexTextureAsset))
                 return false;
-            }
+
+            // get texture asset
+            if (context.GetValue() is not MexTextureAsset textureAsset)
+                return false;
 
             ValidateProperty(control, propertyDescriptor, target);
 
             if (control.Tag is UserData data)
             {
-                var filePath = propertyDescriptor.GetValue(target) as string;
-
-                //if (data.TextBox != null)
-                //    data.TextBox.Text = filePath;
-
                 if (data.Image != null)
                 {
-                    if (filePath != null &&
-                    Global.Workspace != null)
+                    var image = textureAsset.GetSourceImage(Global.Workspace);
+                    if (image != null)
                     {
-                        var assetPath = Global.Workspace.GetAssetPath(filePath);
-
-                        if (!Global.Files.Exists(assetPath))
-                        {
-                            data.Image.Source = BitmapManager.MissingImage;
-                        }
-                        else
-                        {
-                            using var stream = new MemoryStream(Global.Files.Get(assetPath));
-                            data.Image.Source = new Bitmap(stream);
-                        }
+                        data.Image.Source = image.ToBitmap();
                     }
                     else
                     {
@@ -332,7 +269,7 @@ namespace MexManager.Factories
 
                     data.Image.Height = data.Image.Source.Size.Height;
                 }
-                
+
                 return true;
             }
 

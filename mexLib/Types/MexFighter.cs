@@ -7,11 +7,10 @@ using mexLib.Attributes;
 using mexLib.Installer;
 using mexLib.MexScubber;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 
-namespace mexLib
+namespace mexLib.Types
 {
-    public class MexFighter
+    public partial class MexFighter
     {
         //[Category("0 - General"), DisplayName("Valid"), Description("Fighter has no invalid data")]
         //public bool IsValid { get => Utilties.ValidationHelper.AreAllPropertiesValid(this); }
@@ -22,153 +21,6 @@ namespace mexLib
         [Category("0 - General"), DisplayName("Series"), Description("Series Fighter belongs to")]
         [MexLink(MexLinkType.Series)]
         public int SeriesID { get; set; } = 0;
-
-        public class FighterFiles
-        {
-            [Category("0 - Fighter Data"), DisplayName("FighterData FileName"), Description("File containing fighter's data")]
-            [MexFilePathValidator(MexFilePathType.Files, nullable: false)]
-            public string FighterDataPath { get; set; } = "";
-
-            [Category("0 - Fighter Data"), DisplayName("FighterData Symbol"), Description("Symbol used inside of Fighter Data file")]
-            public string FighterDataSymbol { get; set; } = "";
-
-            [Category("0 - Fighter Data"), DisplayName("Animation FileName"), Description("File containing the fighter animations")]
-            [MexFilePathValidator(MexFilePathType.Files, nullable: false)]
-            public string AnimFile { get; set; } = "";
-
-            [Category("0 - Fighter Data"), DisplayName("Animation Count"), Description("Number of animations the fighter has")]
-            public uint AnimCount { get; set; } = 0;
-
-            [Category("1 - Demo Screens"), DisplayName("VI Wait FileName"), Description("")]
-            [MexFilePathValidator(MexFilePathType.Files)]
-            public string DemoFile { get; set; } = "";
-
-            [Category("1 - Demo Screens"), DisplayName("Vi Wait"), Description("")]
-            public string DemoWait { get; set; } = "";
-
-            [Category("1 - Demo Screens"), DisplayName("Result"), Description("")]
-            public string DemoResult { get; set; } = "";
-
-            [Category("1 - Demo Screens"), DisplayName("Intro"), Description("")]
-            public string DemoIntro { get; set; } = "";
-
-            [Category("1 - Demo Screens"), DisplayName("Ending"), Description("")]
-            public string DemoEnding { get; set; } = "";
-
-            [Category("2 - Result Screen"), DisplayName("Result Animation FileName"), Description("File Containing the Result Fighter Animations")]
-            [MexFilePathValidator(MexFilePathType.Files)]
-            public string RstAnimFile { get; set; } = "";
-
-            [Category("2 - Result Screen"), DisplayName("Result Animation Count"), Description("Number of Result Animations")]
-            public uint RstAnimCount { get; set; } = 0;
-
-            [Category("3 - Effects"), DisplayName("Effect FileName"), Description("Effect file to load for fighter")]
-            [MexFilePathValidator(MexFilePathType.Files)]
-            public string EffectFile { get; set; } = "";
-
-            [Category("3 - Effects"), DisplayName("Effect Symbol"), Description("Symbol in effect file to load")]
-            public string EffectSymbol { get; set; } = "";
-
-            [Category("4 - Kirby Data"), DisplayName("Kirby Cap FileName"), Description("Kirby cap file associated with this fighter")]
-            [MexFilePathValidator(MexFilePathType.Files)]
-            public string KirbyCapFileName { get; set; } = "";
-
-            [Category("4 - Kirby Data"), DisplayName("Kirby Cap Symbol"), Description("Symbol name in cap file")]
-            public string KirbyCapSymbol { get; set; } = "";
-
-            [Category("4 - Kirby Data"), DisplayName("Kirby Effect FileName"), Description("Effect file to load for Kirby")]
-            [MexFilePathValidator(MexFilePathType.Files)]
-            public string KirbyEffectFile { get; set; } = "";
-
-            [Category("4 - Kirby Data"), DisplayName("Kirby Effect Symbol"), Description("Symbol in Kirby effect file to load")]
-            public string KirbyEffectSymbol { get; set; } = "";
-        }
-
-        [Browsable(false)]
-        public FighterFiles Files { get; set; } = new FighterFiles();
-
-        public class FighterMedia : INotifyPropertyChanged
-        {
-
-            public event PropertyChangedEventHandler? PropertyChanged;
-
-            protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-
-            private string _endClassicFile = "";
-            private string _endAdventureFile = "";
-            private string _endAllStarFile = "";
-            private string _endMovieFile = "";
-
-            [Category("Classic Mode"), DisplayName(" "), Description("")]
-            [MexMedia]
-            [MexFilePathValidator(MexFilePathType.Files)]
-            public string EndClassicFile
-            {
-                get => _endClassicFile;
-                set
-                {
-                    if (_endClassicFile != value)
-                    {
-                        _endClassicFile = value;
-                        OnPropertyChanged();
-                    }
-                }
-            }
-
-            [Category("Adventure Mode"), DisplayName(" "), Description("")]
-            [MexMedia]
-            [MexFilePathValidator(MexFilePathType.Files)]
-            public string EndAdventureFile
-            {
-                get => _endAdventureFile;
-                set
-                {
-                    if (_endAdventureFile != value)
-                    {
-                        _endAdventureFile = value;
-                        OnPropertyChanged();
-                    }
-                }
-            }
-
-            [Category("All Star Mode"), DisplayName(" "), Description("")]
-            [MexMedia]
-            [MexFilePathValidator(MexFilePathType.Files)]
-            public string EndAllStarFile
-            {
-                get => _endAllStarFile;
-                set
-                {
-                    if (_endAllStarFile != value)
-                    {
-                        _endAllStarFile = value;
-                        OnPropertyChanged();
-                    }
-                }
-            }
-
-            [Category("Ending Movie"), DisplayName(" "), Description("")]
-            [MexFilePathValidator(MexFilePathType.Files)]
-            public string EndMovieFile
-            {
-                get => _endMovieFile;
-                set
-                {
-                    if (_endMovieFile != value)
-                    {
-                        _endMovieFile = value;
-                        OnPropertyChanged();
-                    }
-                }
-            }
-        }
-        [Browsable(false)]
-        public FighterMedia Media { get; set; } = new FighterMedia();
-
-
 
         [Category("3 - Sounds"), DisplayName("SoundBank"), Description("Soundbank to load for fighter")]
         [MexLink(MexLinkType.Sound)]
@@ -237,7 +89,13 @@ namespace mexLib
         public MexFighterCostumes Costumes { get; set; } = new MexFighterCostumes();
 
         [Browsable(false)]
-        public MEXFighterFunctions Functions { get; set; } = new MEXFighterFunctions();
+        public FighterFunctions Functions { get; set; } = new FighterFunctions();
+
+        [Browsable(false)]
+        public FighterFiles Files { get; set; } = new FighterFiles();
+
+        [Browsable(false)]
+        public FighterMedia Media { get; set; } = new FighterMedia();
 
         [Browsable(false)]
         public SBM_BoneLookupTable BoneTable { get; set; } = new SBM_BoneLookupTable();

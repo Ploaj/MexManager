@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace mexLib
+namespace mexLib.Types
 {
     public class MexPlaylistEntry : INotifyPropertyChanged
     {
@@ -36,7 +36,7 @@ namespace mexLib
 
     public class MexPlaylist
     {
-        public ObservableCollection<MexPlaylistEntry> Entries { get; set; } = new ();
+        public ObservableCollection<MexPlaylistEntry> Entries { get; set; } = new();
 
         /// <summary>
         /// 
@@ -61,8 +61,8 @@ namespace mexLib
                 MenuPlayListCount = Entries.Count,
                 MenuPlaylist = new HSDRaw.HSDArrayAccessor<MEX_PlaylistItem>()
                 {
-                    Array = Entries.Select(e=>new MEX_PlaylistItem() 
-                    { 
+                    Array = Entries.Select(e => new MEX_PlaylistItem()
+                    {
                         HPSID = (ushort)e.MusicID,
                         ChanceToPlay = e.ChanceToPlay
                     }).ToArray()

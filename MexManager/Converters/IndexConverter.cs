@@ -2,6 +2,7 @@
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using mexLib;
+using mexLib.Types;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

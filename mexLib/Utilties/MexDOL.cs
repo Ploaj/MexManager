@@ -9,12 +9,12 @@ namespace mexLib.MexScubber
 {
     public class MexDOL
     {
-        private uint[] _sectionOffset = new uint[18];
-        private uint[] _sectionAddress = new uint[18];
-        private uint[] _sectionLengths = new uint[18];
+        private readonly uint[] _sectionOffset = new uint[18];
+        private readonly uint[] _sectionAddress = new uint[18];
+        private readonly uint[] _sectionLengths = new uint[18];
 
-        private uint _bSSAddress;
-        private uint _bSSLength;
+        //private uint _bSSAddress;
+        //private uint _bSSLength;
 
         private byte[] _data;
 
@@ -25,8 +25,8 @@ namespace mexLib.MexScubber
         public MexDOL(byte[] dol)
         {
             _data = dol;
-            using (var s = new MemoryStream(dol))
-            using (BinaryReaderExt r = new BinaryReaderExt(s))
+            using var s = new MemoryStream(dol);
+            using BinaryReaderExt r = new(s);
             {
                 r.BigEndian = true;
 
@@ -39,8 +39,8 @@ namespace mexLib.MexScubber
                 for (int i = 0; i < 18; i++)
                     _sectionLengths[i] = r.ReadUInt32();
 
-                _bSSAddress = r.ReadUInt32();
-                _bSSLength = r.ReadUInt32();
+                //_bSSAddress = r.ReadUInt32();
+                //_bSSLength = r.ReadUInt32();
             }
         }
         /// <summary>
@@ -159,7 +159,7 @@ namespace mexLib.MexScubber
             if ((addr & 0x80000000) != 0)
                 addr = ToDol(addr);
 
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new ();
 
             while (addr < _data.Length 
                 && _data[addr] != 0x00)

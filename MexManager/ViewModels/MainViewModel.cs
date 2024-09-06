@@ -6,6 +6,7 @@ using Avalonia;
 using System.Collections.ObjectModel;
 using System;
 using MexManager.Views;
+using mexLib.Types;
 
 namespace MexManager.ViewModels;
 

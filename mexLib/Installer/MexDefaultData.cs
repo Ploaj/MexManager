@@ -1,6 +1,7 @@
 ﻿using HSDRaw.MEX;
 using HSDRaw.MEX.Stages;
 using mexLib.MexScubber;
+using mexLib.Types;
 
 namespace mexLib.Installer
 {
@@ -269,22 +270,22 @@ namespace mexLib.Installer
 
         public static IEnumerable<MexSeries> GenerateDefaultSeries()
         {
-            yield return new MexSeries() { Name = "F-Zero", Icon = "series//000.png" };
-            yield return new MexSeries() { Name = "Donkey Kong", Icon = "series//001.png" };
-            yield return new MexSeries() { Name = "Star Fox", Icon = "series//002.png" };
-            yield return new MexSeries() { Name = "Game & Watch", Icon = "series//003.png" };
-            yield return new MexSeries() { Name = "Ice Climber", Icon = "series//004.png" };
-            yield return new MexSeries() { Name = "Kirby", Icon = "series//005.png" };
-            yield return new MexSeries() { Name = "Super Mario", Icon = "series//006.png" };
-            yield return new MexSeries() { Name = "Fire Emblem", Icon = "series//007.png" };
-            yield return new MexSeries() { Name = "EarthBound", Icon = "series//008.png" };
-            yield return new MexSeries() { Name = "Pokémon", Icon = "series//009.png" };
-            yield return new MexSeries() { Name = "Metroid", Icon = "series//010.png" };
-            yield return new MexSeries() { Name = "Smash Bros.", Icon = "series//011.png" };
-            yield return new MexSeries() { Name = "Yoshi", Icon = "series//012.png" };
-            yield return new MexSeries() { Name = "The Legend of Zelda", Icon = "series//013.png" };
-            yield return new MexSeries() { Name = "Master Hand", Icon = "series//014.png" };
-            yield return new MexSeries() { Name = "Crazy Hand", Icon = "series//015.png" };
+            yield return new MexSeries() { Name = "F-Zero" };
+            yield return new MexSeries() { Name = "Donkey Kong" };
+            yield return new MexSeries() { Name = "Star Fox" };
+            yield return new MexSeries() { Name = "Game & Watch" };
+            yield return new MexSeries() { Name = "Ice Climber" };
+            yield return new MexSeries() { Name = "Kirby" };
+            yield return new MexSeries() { Name = "Super Mario" };
+            yield return new MexSeries() { Name = "Fire Emblem" };
+            yield return new MexSeries() { Name = "EarthBound" };
+            yield return new MexSeries() { Name = "Pokémon" };
+            yield return new MexSeries() { Name = "Metroid" };
+            yield return new MexSeries() { Name = "Smash Bros." };
+            yield return new MexSeries() { Name = "Yoshi" };
+            yield return new MexSeries() { Name = "The Legend of Zelda" };
+            yield return new MexSeries() { Name = "Master Hand" };
+            yield return new MexSeries() { Name = "Crazy Hand" };
         }
 
         public static IEnumerable<MEX_EffectFiles> GenerateDefaultMexEffectSlots(MexDOL dol)

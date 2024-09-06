@@ -2,6 +2,7 @@
 using HSDRaw;
 using HSDRaw.MEX;
 using mexLib;
+using mexLib.Types;
 using MexManager.Views;
 using System.IO;
 
@@ -68,19 +69,19 @@ namespace MexManager
                     stc);
             }
 
-            // convert all .tex to pngs
-            foreach (var f in Directory.GetFiles(Workspace.GetAssetPath(""), "*.*", System.IO.SearchOption.AllDirectories))
-            {
-                var ext = Path.GetExtension(f).ToLower();
+            // TODO: convert all .tex to pngs
+            //foreach (var f in Directory.GetFiles(Workspace.GetAssetPath(""), "*.*", System.IO.SearchOption.AllDirectories))
+            //{
+            //    var ext = Path.GetExtension(f).ToLower();
 
-                if (ext.Equals(".tex"))
-                {
-                    var newName = f.Replace(".tex", ".png");
-                    var image = new MexImage(f);
-                    using var bmp = image.ToBitmap();
-                    bmp.Save(newName);
-                }
-            }
+            //    if (ext.Equals(".tex"))
+            //    {
+            //        var newName = f.Replace(".tex", ".png");
+            //        var image = new MexImage(f);
+            //        using var bmp = image.ToBitmap();
+            //        bmp.Save(newName);
+            //    }
+            //}
 
             return Workspace;
         }

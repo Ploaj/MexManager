@@ -9,6 +9,7 @@
         Series
     }
 
+    [AttributeUsage(AttributeTargets.Property)]
     public class MexLinkAttribute : Attribute
     {
         public MexLinkType Link { get; internal set; }

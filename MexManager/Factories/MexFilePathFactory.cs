@@ -28,7 +28,7 @@ namespace MexManager.Factories
             if (attr == null)
                 return null;
 
-            if (!(context.Property.GetValue(context.Target) is string path))
+            if (context.Property.GetValue(context.Target) is not string path)
                 return null;
 
             var cbAttr = context.Property.GetCustomAttribute<MexFilePathValidatorCallback>();

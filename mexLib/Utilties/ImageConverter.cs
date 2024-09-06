@@ -2,6 +2,7 @@
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats.Png;
 
 namespace mexLib.Utilties
 {
@@ -10,15 +11,11 @@ namespace mexLib.Utilties
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="fmt"></param>
-        /// <param name="tlutFmt"></param>
+        /// <param name="png"></param>
         /// <returns></returns>
-        public static MexImage PNGtoMexImage(string filePath, int width, int height, GXTexFmt fmt, GXTlutFmt tlutFmt)
+        public static MexImage FromPNG(Stream stream, GXTexFmt fmt, GXTlutFmt tlutFmt)
         {
-            using Image<Rgba32> image = Image.Load<Rgba32>(filePath);
-            if (image.Width > width || image.Height > height)
-                ResizeImage(image, width, height);
+            using Image<Rgba32> image = Image.Load<Rgba32>(stream);
             var bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
             return new MexImage(bgra, w, h, fmt, tlutFmt);
         }
@@ -29,11 +26,32 @@ namespace mexLib.Utilties
         /// <param name="fmt"></param>
         /// <param name="tlutFmt"></param>
         /// <returns></returns>
-        public static MexImage PNGtoMexImage(string filePath, GXTexFmt fmt, GXTlutFmt tlutFmt)
+        public static MexImage FromPNG(Stream stream, int width, int height, GXTexFmt fmt, GXTlutFmt tlutFmt)
         {
-            using Image<Rgba32> image = Image.Load<Rgba32>(filePath);
+            using Image<Rgba32> image = Image.Load<Rgba32>(stream);
+            if (image.Width > width || image.Height > height)
+                ResizeImage(image, width, height);
             var bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
             return new MexImage(bgra, w, h, fmt, tlutFmt);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bgraPixels"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public static byte[] ConvertBgraToPng(byte[] bgraPixels, int width, int height)
+        {
+            // Create an image from the BGRA pixel array
+            using Image<Bgra32> image = Image.LoadPixelData<Bgra32>(bgraPixels, width, height);
+
+            // Save the image as a PNG into a MemoryStream
+            using MemoryStream ms = new ();
+            image.Save(ms, new PngEncoder());
+
+            // Return the byte array of the PNG image
+            return ms.ToArray();
         }
         /// <summary>
         /// 

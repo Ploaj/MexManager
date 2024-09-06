@@ -81,10 +81,9 @@ namespace MexManager.Factories
             };
             importButton.Click += async (s, e) =>
             {
-                var fileName = propertyDescriptor.GetValue(context.Target) as string;
                 var file = await FileIO.TryOpenFile("Image", "", FileIO.FilterJpeg);
                 if (file != null &&
-                    fileName != null)
+                    propertyDescriptor.GetValue(context.Target) is string fileName)
                 {
                     var thpPath = Global.Workspace?.GetFilePath(fileName);
                     if (thpPath != null &&

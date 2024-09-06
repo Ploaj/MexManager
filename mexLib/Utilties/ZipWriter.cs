@@ -23,6 +23,7 @@ namespace mexLib.Utilties
         public void Dispose()
         {
             _zipArchive.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

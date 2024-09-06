@@ -1,15 +1,16 @@
-﻿using Avalonia.Interactivity;
-using System;
+﻿using System;
 using System.Windows.Input;
 
 namespace MexManager.ViewModels
 {
     public class RelayCommand : ICommand
     {
-        private readonly Action<object?> _execute;
+        private readonly Action<object?>? _execute;
         private readonly Func<object?, bool>? _canExecute;
 
-        public RelayCommand(Action<object?> execute, Func<object?, bool>? canExecute = null)
+        public RelayCommand() { }
+
+        public RelayCommand(Action<object?>? execute, Func<object?, bool>? canExecute = null)
         {
             _execute = execute;
             _canExecute = canExecute;
@@ -17,19 +18,20 @@ namespace MexManager.ViewModels
 
         public event EventHandler? CanExecuteChanged;
 
-        public bool CanExecute(object? parameter)
-        {
-            return _canExecute == null || _canExecute(parameter);
-        }
+        public bool CanExecute(object? parameter) =>
+            _canExecute == null || _canExecute(parameter);
 
         public void Execute(object? parameter)
         {
+            if (_execute == null)
+            {
+                throw new InvalidOperationException("Execute action is not set.");
+            }
+
             _execute(parameter);
         }
 
-        public void RaiseCanExecuteChanged()
-        {
+        public void RaiseCanExecuteChanged() =>
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-        }
     }
 }

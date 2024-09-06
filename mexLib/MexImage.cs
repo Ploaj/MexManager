@@ -2,6 +2,8 @@
 using HSDRaw.Common;
 using HSDRaw.GX;
 using HSDRaw.Tools;
+using mexLib.Utilties;
+using System.Security.Cryptography;
 
 namespace mexLib
 {
@@ -100,17 +102,6 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="filePath"></param>
-        public MexImage(string filePath) : this(8, 8, GXTexFmt.I8, GXTlutFmt.IA8)
-        {
-            if (!Open(filePath))
-            {
-                
-            }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
         public static MexImage FromByteArray(byte[] data)
@@ -127,16 +118,6 @@ namespace mexLib
         public byte[] GetBGRA()
         {
             return GXImageConverter.DecodeTPL(Format, Width, Height, ImageData, TlutFormat, PaletteData.Length / 2, PaletteData);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
-        public bool Open(string filePath)
-        {
-            using FileStream stream = new (filePath, FileMode.Open);
-            return Open(stream);
         }
         /// <summary>
         /// 
@@ -215,6 +196,16 @@ namespace mexLib
 
             stream.Write(ImageData, 0, ImageData.Length);
             stream.Write(PaletteData, 0, PaletteData.Length);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        internal byte[] ToPNG()
+        {
+            return ImageConverter.ConvertBgraToPng(GXImageConverter.DecodeTPL(Format, Width, Height, ImageData, TlutFormat, PaletteData.Length / 2, PaletteData), 
+                Width, 
+                Height);
         }
         /// <summary>
         /// 

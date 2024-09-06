@@ -10,8 +10,6 @@ namespace mexLib
 {
     public class MexWorkspace
     {
-        public static MexWorkspace? LastOpened { get; internal set; }
-
         public byte VersionMajor { get; } = 1;
         public byte VersionMinor { get; } = 1;
 
@@ -30,7 +28,7 @@ namespace mexLib
         /// <returns></returns>
         public string GetDataPath(string fileName)
         {
-            return $"{FilePath}\\data\\{fileName}";
+            return $"{FilePath}data\\{fileName}";
         }
         /// <summary>
         /// 
@@ -39,7 +37,7 @@ namespace mexLib
         /// <returns></returns>
         public string GetFilePath(string fileName) 
         { 
-            return $"{FilePath}\\files\\{fileName}";
+            return $"{FilePath}files\\{fileName}";
         }
         /// <summary>
         /// 
@@ -48,7 +46,7 @@ namespace mexLib
         /// <returns></returns>
         public string GetAssetPath(string fileName)
         {
-            return $"{FilePath}\\assets\\{fileName}";
+            return $"{FilePath}assets\\{fileName}";
         }
         /// <summary>
         /// 
@@ -57,7 +55,7 @@ namespace mexLib
         /// <returns></returns>
         public string GetSystemPath(string fileName)
         {
-            return $"{FilePath}\\sys\\{fileName}";
+            return $"{FilePath}sys\\{fileName}";
         }
         /// <summary>
         /// 
@@ -180,8 +178,6 @@ namespace mexLib
             // save workspace
             workspace.Save();
 
-            LastOpened = workspace;
-
             return workspace;
         }
         /// <summary>
@@ -213,8 +209,6 @@ namespace mexLib
             };
 
             workspace.Project = MexProject.LoadFromFile(workspace);
-
-            LastOpened = workspace;
 
             return true;
         }

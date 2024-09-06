@@ -7,7 +7,7 @@ using mexLib.Attributes;
 using mexLib.MexScubber;
 using System.Collections.ObjectModel;
 
-namespace mexLib
+namespace mexLib.Types
 {
     public class MexStageSelectIcon
     {
@@ -57,11 +57,11 @@ namespace mexLib
                 switch ((JointTrackType)t.TrackType)
                 {
                     case JointTrackType.HSD_A_J_TRAX:
-                        X = keys[keys.Count - 1].Value;
+                        X = keys[^1].Value;
                         AnimX = keys;
                         break;
                     case JointTrackType.HSD_A_J_TRAY:
-                        Y = keys[keys.Count - 1].Value;
+                        Y = keys[^1].Value;
                         AnimY = keys;
                         break;
                 }
@@ -96,7 +96,7 @@ namespace mexLib
 
             if (AnimX.Count > 0)
             {
-                HSD_FOBJDesc fobj = new ();
+                HSD_FOBJDesc fobj = new();
                 fobj.SetKeys(AnimX, (byte)JointTrackType.HSD_A_J_TRAX);
                 if (aobj.FObjDesc == null)
                     aobj.FObjDesc = fobj;
@@ -108,7 +108,7 @@ namespace mexLib
 
             if (AnimY.Count > 0)
             {
-                HSD_FOBJDesc fobj = new ();
+                HSD_FOBJDesc fobj = new();
                 fobj.SetKeys(AnimY, (byte)JointTrackType.HSD_A_J_TRAY);
                 if (aobj.FObjDesc == null)
                     aobj.FObjDesc = fobj;

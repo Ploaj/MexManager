@@ -3,7 +3,7 @@ using mexLib.Installer;
 using mexLib.MexScubber;
 using System.ComponentModel;
 
-namespace mexLib
+namespace mexLib.Types
 {
     public class MexMusic
     {
@@ -11,7 +11,7 @@ namespace mexLib
         public string Name { get; set; } = "";
 
         [Category("General"), DisplayName("Filename"), Description("Name of the file in audio folder")]
-        [MexFilePathValidator(MexFilePathType.Audio)]
+        //[MexFilePathValidator(MexFilePathType.Audio)]
         public string FileName { get; set; } = "";
 
         public void FromDOL(MexDOL dol, uint index)

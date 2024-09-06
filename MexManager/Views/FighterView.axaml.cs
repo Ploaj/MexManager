@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using mexLib;
+using mexLib.Types;
 using mexLib.Utilties;
 using MexManager.Tools;
 using MexManager.ViewModels;
@@ -202,7 +203,7 @@ public partial class FighterView : UserControl
                 return;
 
             fighter.Costumes.Costumes.Remove(costume);
-            costume.RemoveAssets(Global.Workspace);
+            //costume.RemoveAssets(Global.Workspace);
         }
     }
     /// <summary>

@@ -6,6 +6,7 @@ using HSDRaw.MEX.Menus;
 using HSDRaw.MEX.Sounds;
 using HSDRaw.MEX.Stages;
 using mexLib.Installer;
+using mexLib.Types;
 using System.Text;
 
 namespace mexLib

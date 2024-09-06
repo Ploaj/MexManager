@@ -1,13 +1,10 @@
 ﻿using HSDRaw;
 using HSDRaw.MEX;
-using mexLib.Attributes;
 using mexLib.MexScubber;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO.Compression;
-using System.Text.Json.Serialization;
 
-namespace mexLib
+namespace mexLib.Types
 {
     public class MexFighterCostumes
     {
@@ -63,23 +60,22 @@ namespace mexLib
             if (code.Length != 6)
                 return code;
 
-            switch (code.Substring(4))
+            return code[4..] switch
             {
-                case "Nr": return "Normal";
-                case "Re": return "Red";
-                case "Bu": return "Blue";
-                case "Gr": return "Green";
-                case "Ye": return "Yellow";
-                case "Or": return "Orange";
-                case "La": return "Purple";
-                case "Gy": return "Gray";
-                case "Aq": return "Aqua";
-                case "Pi": return "Pink";
-                case "Wh": return "White";
-                case "Bk": return "Black";
-            }
-
-            return code;
+                "Nr" => "Normal",
+                "Re" => "Red",
+                "Bu" => "Blue",
+                "Gr" => "Green",
+                "Ye" => "Yellow",
+                "Or" => "Orange",
+                "La" => "Purple",
+                "Gy" => "Gray",
+                "Aq" => "Aqua",
+                "Pi" => "Pink",
+                "Wh" => "White",
+                "Bk" => "Black",
+                _ => code,
+            };
         }
         /// <summary>
         /// 

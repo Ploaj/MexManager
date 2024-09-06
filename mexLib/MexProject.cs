@@ -1,6 +1,7 @@
 ﻿using HSDRaw.MEX.Misc;
 using HSDRaw.MEX.Scenes;
 using HSDRaw.MEX.Sounds;
+using mexLib.Types;
 using mexLib.Utilties;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

@@ -1,13 +1,6 @@
-﻿using Avalonia.Data.Converters;
-using mexLib;
+﻿using mexLib.Types;
 using PropertyModels.ComponentModel;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace MexManager.ViewModels
@@ -15,12 +8,6 @@ namespace MexManager.ViewModels
     public class PlaylistEditorViewModel : ReactiveObject
     {
         public ObservableCollection<MexPlaylistEntry> Entries { get; } = [];
-        public ObservableCollection<MexMusic>? Music { get; } = new ObservableCollection<MexMusic>()
-        {
-            new MexMusic(){ Name="1"},
-            new MexMusic(){ Name="2"},
-        };// Global.Workspace?.Project.Music;
-
 
         public ICommand AddEntryCommand { get; }
         public ICommand RemoveEntryCommand { get; }

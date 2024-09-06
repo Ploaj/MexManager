@@ -70,16 +70,13 @@ namespace mexLib
         /// <returns>self</returns>
         public static HSD_TexAnim GenerateTextureAnimation(this HSD_TexAnim anim, List<HSD_TOBJ> icons, List<FOBJKey>? keys)
         {
-            if (keys == null)
+            keys ??= Enumerable.Range(0, icons.Count).Select(e => new FOBJKey()
             {
-                keys = Enumerable.Range(0, icons.Count).Select(e => new FOBJKey()
-                {
-                    Frame = e,
-                    Value = e,
-                    InterpolationType = GXInterpolationType.HSD_A_OP_CON
-                }).ToList();
-            }
-
+                Frame = e,
+                Value = e,
+                InterpolationType = GXInterpolationType.HSD_A_OP_CON
+            }).ToList();
+            
             // generate texture animation
             anim.AnimationObject = new HSD_AOBJ()
             {

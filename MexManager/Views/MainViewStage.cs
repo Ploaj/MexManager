@@ -1,8 +1,9 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
-using mexLib;
+using mexLib.Types;
 using MexManager.Extensions;
 using MexManager.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace MexManager.Views
 {
@@ -22,14 +23,15 @@ namespace MexManager.Views
                 {
                     Playlist = new MexPlaylist()
                     {
-                        Entries = new System.Collections.ObjectModel.ObservableCollection<MexPlaylistEntry>()
-                        {
-                            new MexPlaylistEntry()
+                        Entries = 
+                        [
+                            new ()
                             {
                                 MusicID = 0,
                                 ChanceToPlay = 50,
                             }
-                        }
+                        ]
+                            
                     }
                 };
                 model.Stages.Add(stage);

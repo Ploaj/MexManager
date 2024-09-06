@@ -24,7 +24,7 @@ namespace MexManager.Controls
         public static readonly StyledProperty<string> IconSourceProperty =
             AvaloniaProperty.Register<IconMenuItem, string>(nameof(IconSource));
 
-        private Image image;
+        private readonly Image image;
 
         public string IconSource
         {

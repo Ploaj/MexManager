@@ -21,9 +21,11 @@ namespace MexManager.Factories
 
             if (prop.PropertyType == typeof(uint))
             {
-                var control = new UIntHexEditor();
+                var control = new UIntHexEditor()
+                {
+                    HorizontalAlignment = HorizontalAlignment.Stretch
+                };
 
-                control.HorizontalAlignment = HorizontalAlignment.Stretch;
                 if (prop.GetValue(context.Target) is uint value)
                     control.Value = value;
 
@@ -45,7 +47,7 @@ namespace MexManager.Factories
     }
     public class UIntHexEditor : UserControl
     {
-        private TextBox _textBox;
+        private readonly TextBox _textBox;
 
         // Define an event for value changes
         public event Action<uint>? OnValueChanged;
@@ -82,7 +84,7 @@ namespace MexManager.Factories
             if (!string.IsNullOrEmpty(text) &&
                 text.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
             {
-                text = text.Substring(2);
+                text = text[2..];
             }
 
             if (uint.TryParse(text, System.Globalization.NumberStyles.HexNumber, null, out uint result))

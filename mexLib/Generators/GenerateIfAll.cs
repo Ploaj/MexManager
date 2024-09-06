@@ -26,7 +26,7 @@ namespace mexLib.Generators
             ifallFile.CreateUpdateSymbol("Eblm_matanim_joint", GenerateEmblems(ws));
             ifallFile.CreateUpdateSymbol("Stc_icns", Generate_Stc_icns(ws));
 
-            using MemoryStream stream = new MemoryStream();
+            using MemoryStream stream = new ();
             ifallFile.Save(stream);
             ws.FileManager.Set(path, stream.ToArray());
             return true;
@@ -46,7 +46,7 @@ namespace mexLib.Generators
             int icon_index = 0;
             foreach (var s in ws.Project.Series)
             {
-                var iconTex = ws.FileManager.Get(ws.GetAssetPath($"series//{s.Icon.Replace(".png", ".tex")}"));
+                var iconTex = s.IconAsset.GetTexFile(ws);
 
                 if (iconTex != null)
                 {
@@ -56,7 +56,7 @@ namespace mexLib.Generators
                         Value = icons.Count,
                         InterpolationType = GXInterpolationType.HSD_A_OP_CON,
                     });
-                    icons.Add(MexImage.FromByteArray(iconTex).ToTObj());
+                    icons.Add(iconTex.ToTObj());
                 }
                 icon_index++;
             }
@@ -99,7 +99,7 @@ namespace mexLib.Generators
                         Value = icons.Count,
                         InterpolationType = GXInterpolationType.HSD_A_OP_CON,
                     });
-                    icons.Add(new MexImage(f).ToTObj());
+                    icons.Add(MexImage.FromByteArray(ws.FileManager.Get(f)).ToTObj());
                 }
             }
 

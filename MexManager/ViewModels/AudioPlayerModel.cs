@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace MexManager.ViewModels
 {
-    public class AudioPlayerModel : ViewModelBase
+    public class AudioPlayerModel : ViewModelBase, IDisposable
     {
         private readonly AudioPlayer? _soundPlayer;
         public ICommand PlaySoundCommand { get; }
@@ -72,6 +72,7 @@ namespace MexManager.ViewModels
         }
 
         private readonly Timer? _updateTimer;
+        private bool _disposed;
 
         /// <summary>
         /// 
@@ -103,6 +104,12 @@ namespace MexManager.ViewModels
                     ProgressWidth = percent * Width;
                 }
             }, null, 0, 20); // Check every 20ms
+        }
+
+        ~AudioPlayerModel()
+        {
+            // Finalizer calls Dispose(false)
+            Dispose(false);
         }
         /// <summary>
         /// 
@@ -181,6 +188,29 @@ namespace MexManager.ViewModels
         public bool AudioIsLoaded(object? obj)
         {
             return _soundPlayer != null;
+        }
+
+        // Dispose pattern implementation
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // Dispose managed resources
+                    _updateTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+                }
+
+                // Dispose unmanaged resources if any
+
+                _disposed = true;
+            }
         }
     }
 }
