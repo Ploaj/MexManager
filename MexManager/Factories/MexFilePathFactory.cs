@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.PropertyGrid.Controls;
@@ -22,6 +23,11 @@ namespace MexManager.Factories
 
         public override Control? HandleNewProperty(PropertyCellContext context)
         {
+            return GenerateControl(context);
+        }
+
+        public static Control? GenerateControl(PropertyCellContext context)
+        {
             var prop = context.Property;
             var attr = prop.GetCustomAttribute<MexFilePathValidatorAttribute>();
 
@@ -32,7 +38,7 @@ namespace MexManager.Factories
                 return null;
 
             var cbAttr = context.Property.GetCustomAttribute<MexFilePathValidatorCallback>();
-            
+
             var control = new DockPanel();
 
             TextBox stringControl = (TextBox)new Avalonia.PropertyGrid.Controls.Factories.Builtins.StringCellEditFactory().HandleNewProperty(context);
@@ -134,7 +140,7 @@ namespace MexManager.Factories
             }
 
             // get new filename
-            var fileName = Path.GetFileName(newPath);
+            var fileName = System.IO.Path.GetFileName(newPath);
             var fullPath = attr.GetFullPath(Global.Workspace, fileName);
 
             // check if file already exists

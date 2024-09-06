@@ -90,10 +90,13 @@ namespace MexManager.Factories
                 return;
 
             // get absolute path
-            asset.SetFromImageFile(workspace, file);
+            using var stream = new FileStream(file, FileMode.Open);
+            asset.SetFromImageFile(workspace, stream);
 
             // update image preview
             imageControl.Source = asset.GetSourceImage(workspace)?.ToBitmap();
+            imageControl.Width = asset.Width;
+            imageControl.Height = asset.Height;
         }
 
         /// <summary>
@@ -119,53 +122,6 @@ namespace MexManager.Factories
 
             // create image panel and enable drag and drop
             var imagePanel = GenerateImagePanel(textureAsset, out Image imageControl);
-
-            DragDrop.SetAllowDrop(imagePanel, true);
-            imagePanel.AddHandler(DragDrop.DragEnterEvent, (s, e) =>
-            {
-                if (e.Data.Contains(DataFormats.Files))
-                {
-                    e.DragEffects = DragDropEffects.Copy;
-                }
-                else
-                {
-                    e.DragEffects = DragDropEffects.None;
-                }
-            });
-            imagePanel.AddHandler(DragDrop.DragOverEvent, (s, e) =>
-            {
-                // Check if the data is file data
-                if (e.Data.Contains(DataFormats.Files))
-                {
-                    e.DragEffects = DragDropEffects.Copy;
-                }
-                else
-                {
-                    e.DragEffects = DragDropEffects.None;
-                }
-            });
-            imagePanel.AddHandler(DragDrop.DropEvent, (s, e) =>
-            {
-                // Get the dropped file names
-                if (e.Data.Contains(DataFormats.Files))
-                {
-                    var fileNames = e.Data.GetFiles();
-                    if (fileNames == null)
-                        return;
-
-                    foreach (var f in fileNames.Select(e => e.Path.AbsolutePath))
-                    {
-                        if (f.EndsWith(".png"))
-                        {
-                            ImportImage(
-                                Global.Workspace,
-                                f,
-                                textureAsset,
-                                imageControl);
-                        }
-                    }
-                }
-            });
 
             var importButton = new Button()
             {
@@ -218,6 +174,54 @@ namespace MexManager.Factories
             {
                 Image = imageControl,
             };
+
+
+            DragDrop.SetAllowDrop(control, true);
+            control.AddHandler(DragDrop.DragEnterEvent, (s, e) =>
+            {
+                if (e.Data.Contains(DataFormats.Files))
+                {
+                    e.DragEffects = DragDropEffects.Copy;
+                }
+                else
+                {
+                    e.DragEffects = DragDropEffects.None;
+                }
+            });
+            control.AddHandler(DragDrop.DragOverEvent, (s, e) =>
+            {
+                // Check if the data is file data
+                if (e.Data.Contains(DataFormats.Files))
+                {
+                    e.DragEffects = DragDropEffects.Copy;
+                }
+                else
+                {
+                    e.DragEffects = DragDropEffects.None;
+                }
+            });
+            control.AddHandler(DragDrop.DropEvent, (s, e) =>
+            {
+                // Get the dropped file names
+                if (e.Data.Contains(DataFormats.Files))
+                {
+                    var fileNames = e.Data.GetFiles();
+                    if (fileNames == null)
+                        return;
+
+                    foreach (var f in fileNames.Select(e => e.Path.AbsolutePath))
+                    {
+                        if (f.EndsWith(".png"))
+                        {
+                            ImportImage(
+                                Global.Workspace,
+                                f,
+                                textureAsset,
+                                imageControl);
+                        }
+                    }
+                }
+            });
 
             return control;
         }

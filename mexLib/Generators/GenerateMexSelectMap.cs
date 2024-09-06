@@ -104,7 +104,7 @@ namespace mexLib.Generators
             names_images.Add(randomBanner.ToTObj());
 
 
-            // TODO: sss icon could be generated on save
+            // sss icon could be generated on save
             HSD_JOBJ model;
             if (dataTable != null)
             {

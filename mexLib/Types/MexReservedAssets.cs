@@ -113,7 +113,7 @@ namespace mexLib.Types
             TlutFormat = HSDRaw.GX.GXTlutFmt.RGB5A3,
         };
 
-        // TODO: reserved sss null, locked, random, random tag
+        // reserved sss null, locked, random, random tag
 
         [JsonInclude]
         public string? SSSNull { get => SSSNullAsset.AssetFileName; internal set => SSSNullAsset.AssetFileName = value; }

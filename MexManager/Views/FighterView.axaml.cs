@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using mexLib;
 using mexLib.Types;
 using mexLib.Utilties;
@@ -154,17 +155,42 @@ public partial class FighterView : UserControl
             DataContext is MainViewModel model &&
             model.SelectedFighter is MexFighter fighter)
         {
-            var zipPath = await FileIO.TryOpenFile("Import Costume", "", FileIO.FilterZip);
+            var zipPath = await FileIO.TryOpenFile("Import Costume", "",
+            [
+                new ("Supported Formats")
+                {
+                    Patterns = [ "*.zip", "*.dat" ],
+                },
+            ]);
 
             if (zipPath == null) return;
 
-            var costume = MexCostume.FromZip(Global.Workspace, zipPath, out string log);
+            switch (Path.GetExtension(zipPath))
+            {
+                case ".zip":
+                    {
+                        var costume = MexCostume.FromZip(Global.Workspace, zipPath, out string log);
 
-            if (!string.IsNullOrEmpty(log))
-                await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
+                        if (!string.IsNullOrEmpty(log))
+                            await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
 
-            if (costume != null)
-                fighter.Costumes.Costumes.Add(costume);
+                        if (costume != null)
+                            fighter.Costumes.Costumes.Add(costume);
+                    }
+                    break;
+                case ".dat":
+                    {
+                        var costume = MexCostume.FromDATFile(Global.Workspace, zipPath, out string log);
+
+                        if (!string.IsNullOrEmpty(log))
+                            await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
+
+                        if (costume != null)
+                            fighter.Costumes.Costumes.Add(costume);
+                    }
+                    break;
+            }
+
         }
     }
     /// <summary>

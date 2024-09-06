@@ -184,7 +184,7 @@ namespace mexLib
             // create workspace
             workspace = new MexWorkspace()
             {
-                FilePath = Path.GetDirectoryName(projectFilePath) + "//",
+                FilePath = Path.GetDirectoryName(projectFilePath) + "\\",
                 ProjectFilePath = projectFilePath,
             };
 

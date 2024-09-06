@@ -5,7 +5,7 @@ namespace mexLib.AssetTypes
 {
     public class MexTextureAsset
     {
-        public string? AssetFileName { get; internal set; }
+        public string? AssetFileName { get; set; }
 
         public string AssetPath { get; internal set; } = "";
 
@@ -85,19 +85,19 @@ namespace mexLib.AssetTypes
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="filePath"></param>
-        public void SetFromImageFile(MexWorkspace workspace, string filePath)
+        public void SetFromImageFile(MexWorkspace workspace, Stream imageStream)
         {
             var path = GetFullPath(workspace);
 
             // set png
             // i perform an encoding before saving to apply limitations of the texture format for more accurate preview
-            using var fstream = new FileStream(filePath, FileMode.Open);
-            var source_png = ImageConverter.FromPNG(fstream, Format, TlutFormat);
+            imageStream.Position = 0;
+            var source_png = ImageConverter.FromPNG(imageStream, Format, TlutFormat);
             workspace.FileManager.Set(path + ".png", source_png.ToPNG());
 
             // compile and set tex
-            using var stream = new FileStream(filePath, FileMode.Open);
-            MexImage tex = ImageConverter.FromPNG(stream, Width, Height, Format, TlutFormat);
+            imageStream.Position = 0;
+            MexImage tex = ImageConverter.FromPNG(imageStream, Width, Height, Format, TlutFormat);
             workspace.FileManager.Set(path + ".tex", tex.ToByteArray());
         }
         /// <summary>
@@ -107,6 +107,9 @@ namespace mexLib.AssetTypes
         /// <returns></returns>
         public MexImage? GetSourceImage(MexWorkspace workspace)
         {
+            if (AssetFileName == null)
+                return null;
+
             var path = GetFullPath(workspace);
 
             using var stream = workspace.FileManager.GetStream(path + ".png");
@@ -125,6 +128,9 @@ namespace mexLib.AssetTypes
         /// <returns></returns>
         public MexImage? GetTexFile(MexWorkspace workspace)
         {
+            if (AssetFileName == null)
+                return null;
+
             var texPath = GetFullPath(workspace) + ".tex";
 
             if (!workspace.FileManager.Exists(texPath))
