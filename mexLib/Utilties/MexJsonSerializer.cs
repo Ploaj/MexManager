@@ -14,6 +14,7 @@ namespace mexLib.Utilties
             WriteIndented = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             //ReferenceHandler = ReferenceHandler.Preserve,
+            
         };
         /// <summary>
         /// 

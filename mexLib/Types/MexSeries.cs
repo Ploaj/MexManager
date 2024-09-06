@@ -1,5 +1,4 @@
 ﻿using mexLib.AssetTypes;
-using mexLib.Attributes;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
@@ -23,7 +22,8 @@ namespace mexLib.Types
         //private string _icon = "";
 
         [Browsable(false)]
-        public string? Icon { get => IconAsset.AssetFileName; set => IconAsset.AssetFileName = value; }
+        [JsonInclude]
+        public string? Icon { get => IconAsset.AssetFileName; internal set => IconAsset.AssetFileName = value; }
 
         [JsonIgnore]
         public MexTextureAsset IconAsset { get; set; } = new MexTextureAsset()

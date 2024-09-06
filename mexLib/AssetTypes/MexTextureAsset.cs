@@ -90,7 +90,10 @@ namespace mexLib.AssetTypes
             var path = GetFullPath(workspace);
 
             // set png
-            workspace.FileManager.Set(path + ".png", File.ReadAllBytes(filePath));
+            // i perform an encoding before saving to apply limitations of the texture format for more accurate preview
+            using var fstream = new FileStream(filePath, FileMode.Open);
+            var source_png = ImageConverter.FromPNG(fstream, Format, TlutFormat);
+            workspace.FileManager.Set(path + ".png", source_png.ToPNG());
 
             // compile and set tex
             using var stream = new FileStream(filePath, FileMode.Open);
@@ -106,13 +109,12 @@ namespace mexLib.AssetTypes
         {
             var path = GetFullPath(workspace);
 
-            var stream = workspace.FileManager.GetStream(path + ".png");
+            using var stream = workspace.FileManager.GetStream(path + ".png");
 
             if (stream == null)
                 return null;
 
             var tex = ImageConverter.FromPNG(stream, Format, TlutFormat);
-            stream.Close();
 
             return tex;
         }

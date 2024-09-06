@@ -14,7 +14,8 @@ namespace mexLib.Types
             // TODO: result screen big
 
             [Browsable(false)]
-            public string? CSSIcon { get => CSSIconAsset.AssetFileName; set => CSSIconAsset.AssetFileName = value; }
+            [JsonInclude]
+            public string? CSSIcon { get => CSSIconAsset.AssetFileName; internal set => CSSIconAsset.AssetFileName = value; }
 
             [Category("Character Select")]
             [DisplayName("Icon")]

@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 
 namespace mexLib.Types
 {
-    public class MexStage
+    public partial class MexStage
     {
         [Browsable(false)]
         public MEX_Stage Stage { get; set; } = new MEX_Stage();

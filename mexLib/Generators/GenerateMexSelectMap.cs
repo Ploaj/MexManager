@@ -21,7 +21,7 @@ namespace mexLib.Generators
 
             HSDRawFile file = new(path);
             ClearOldMaterialAnimations(file["MnSelectStageDataTable"].Data as SBM_SelectChrDataTable);
-            file.CreateUpdateSymbol("mexMapData", GenerateMexSelect(ws));
+            file.CreateUpdateSymbol("mexMapData", GenerateMexSelect(ws, file));
             using MemoryStream stream = new ();
             file.Save(stream);
             ws.FileManager.Set(path, stream.ToArray());
@@ -42,8 +42,13 @@ namespace mexLib.Generators
         /// </summary>
         /// <param name="ws"></param>
         /// <returns></returns>
-        private static MEX_mexMapData GenerateMexSelect(MexWorkspace ws)
+        private static MEX_mexMapData GenerateMexSelect(MexWorkspace ws, HSDRawFile file)
         {
+            var dataTable = file["MnSelectStageDataTable"].Data as SBM_MnSelectStageDataTable;
+
+            var project = ws.Project;
+            var reserved = project.ReservedAssets;
+
             HSD_JOBJ jobj = new()
             {
                 SX = 1,
@@ -64,32 +69,60 @@ namespace mexLib.Generators
 
             jobj.UpdateFlags();
 
-            var icon_joint = new HSDRawFile(ws.GetAssetPath("sss//icon_joint.dat")).Roots[0].Data as HSD_JOBJ;
-
             // generate mat anim joint
             List<HSD_TOBJ> icon_images = new();
             List<HSD_TOBJ> names_images = new();
 
-            icon_images.Add(MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath("sss\\Null_icon.tex"))).ToTObj());
-            icon_images.Add(MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath("sss\\Locked_icon.tex"))).ToTObj());
+            var nullIcon = reserved.SSSNullAsset.GetTexFile(ws);
+            nullIcon ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
+
+            var lockedIcon = reserved.SSSLockedNullAsset.GetTexFile(ws);
+            lockedIcon ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
+
+            icon_images.Add(nullIcon.ToTObj());
+            icon_images.Add(lockedIcon.ToTObj());
 
             for (int i = 0; i < ws.Project.StageSelects[0].StageIcons.Count; i++)
             {
                 var external_id = ws.Project.StageSelects[0].StageIcons[i].StageID;
                 var internal_id = MexStageIDConverter.ToInternalID(external_id);
                 var stage = ws.Project.Stages[internal_id];
-                var name = stage.Name;
 
-                icon_images.Add(MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath($"sss\\{name}_icon.tex"))).ToTObj());
-                names_images.Add(MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath($"sss\\{name}_tag.tex"))).ToTObj());
+                var icon = stage.Assets.IconAsset.GetTexFile(ws);
+                icon ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
+
+                var banner = stage.Assets.BannerAsset.GetTexFile(ws);
+                banner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
+
+                icon_images.Add(icon.ToTObj());
+                names_images.Add(banner.ToTObj());
             }
 
-            names_images.Add(MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath("sss\\Random_tag.tex"))).ToTObj());
+            // add random banner
+            var randomBanner = reserved.SSSRandomBannerAsset.GetTexFile(ws);
+            randomBanner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
+            names_images.Add(randomBanner.ToTObj());
+
+
+            // TODO: sss icon could be generated on save
+            HSD_JOBJ model;
+            if (dataTable != null)
+            {
+                model = HSDAccessor.DeepClone<HSD_JOBJ>(dataTable.IconDoubleModel);
+                var icon_joint = model.Child.Next;
+                model.Child = icon_joint;
+            }
+            else
+            {
+                model = new HSD_JOBJ()
+                {
+                };
+            }
 
             // generate structure
             return new MEX_mexMapData()
             {
-                IconModel = icon_joint,
+                IconModel = model,
                 IconAnimJoint = new HSD_AnimJoint()
                 {
                     Child = new HSD_AnimJoint()

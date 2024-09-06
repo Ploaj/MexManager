@@ -135,6 +135,15 @@
 									</ScrollViewer>
 								</DockPanel>
 							</TabItem>
+							<TabItem Header="Assets">
+								<ScrollViewer>
+									<views:PropertyGridExt
+										Margin="4"
+										AllowQuickFilter="False"
+										DataContext="{Binding SelectedStage.Assets}">
+									</views:PropertyGridExt>
+								</ScrollViewer>
+							</TabItem>
 							<TabItem Header="Playlist">
 								<controls:PlaylistEditor
 									Playlist="{Binding SelectedStage.Playlist}"></controls:PlaylistEditor>

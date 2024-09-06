@@ -288,10 +288,6 @@ namespace mexLib.Installer
             if (dataTable == null)
                 return new MexInstallerError("Error reading MnSlMap.usd");
 
-            // create asset folder
-            var sssFolder = workspace.GetAssetPath("sss\\");
-            Directory.CreateDirectory(sssFolder);
-
             // get model animation
             int off1 = 1;
             int off2 = 20;
@@ -310,16 +306,17 @@ namespace mexLib.Installer
 
             // get random
             workspace.Project.StageSelects[0].RandomIcon.FromJoint(position_joints[off_random], position_animjoints[off_random]);
-            new MexImage(tex0[0]).Save(workspace.GetAssetPath($"sss\\Null_icon.tex"));
-            new MexImage(tex0[1]).Save(workspace.GetAssetPath($"sss\\Locked_icon.tex"));
-            new MexImage(nameTOBJs[^1]).Save(workspace.GetAssetPath($"sss\\Random_tag.tex"));
+            var reserved = workspace.Project.ReservedAssets;
+            reserved.SSSNullAsset.SetFromMexImage(workspace, new MexImage(tex0[0]));
+            reserved.SSSLockedNullAsset.SetFromMexImage(workspace, new MexImage(tex0[1]));
+            reserved.SSSRandomBannerAsset.SetFromMexImage(workspace, new MexImage(nameTOBJs[^1]));
 
             // messy
             foreach (var icon in workspace.Project.StageSelects[0].StageIcons)
             {
-                var name = workspace.Project.Stages[MexStageIDConverter.ToInternalID(icon.StageID)].Name;
+                var stage = workspace.Project.Stages[MexStageIDConverter.ToInternalID(icon.StageID)];
 
-                // get icon
+                // deswizzle icon
                 int index = icon.PreviewID;
                 HSD_TOBJ? stage_icon;
                 if (index < 22) // double icons
@@ -352,24 +349,26 @@ namespace mexLib.Installer
                     icon.ScaleX = 0.8f;
                     icon.ScaleY = 0.8f;
                 }
-                if (stage_icon != null)
-                    new MexImage(stage_icon).Save(workspace.GetAssetPath($"sss\\{name}_icon.tex"));
 
-                // get name
-                new MexImage(nameTOBJs[icon.PreviewID]).Save(workspace.GetAssetPath($"sss\\{name}_tag.tex"));
+                // set icon
+                if (stage_icon != null)
+                    stage.Assets.IconAsset.SetFromMexImage(workspace, new MexImage(stage_icon));
+
+                // set banner
+                stage.Assets.BannerAsset.SetFromMexImage(workspace, new MexImage(nameTOBJs[icon.PreviewID]));
             }
 
             // extract icon model
-            var model = dataTable.IconDoubleModel;
-            var icon_joint = model.Child.Next;
-            model.Child = icon_joint;
-            var iconFile = new HSDRawFile();
-            iconFile.Roots.Add(new HSDRootNode()
-            {
-                Name = "icon_joint",
-                Data = model
-            });
-            iconFile.Save(workspace.GetAssetPath("sss\\icon_joint.dat"));
+            //var model = dataTable.IconDoubleModel;
+            //var icon_joint = model.Child.Next;
+            //model.Child = icon_joint;
+            //var iconFile = new HSDRawFile();
+            //iconFile.Roots.Add(new HSDRootNode()
+            //{
+            //    Name = "icon_joint",
+            //    Data = model
+            //});
+            //iconFile.Save(workspace.GetAssetPath("sss\\icon_joint.dat"));
 
             return null;
         }
