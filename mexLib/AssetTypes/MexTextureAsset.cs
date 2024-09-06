@@ -123,11 +123,12 @@ namespace mexLib.AssetTypes
         /// <returns></returns>
         public MexImage? GetTexFile(MexWorkspace workspace)
         {
-            var stream = workspace.FileManager.Get(GetFullPath(workspace) + ".tex");
+            var texPath = GetFullPath(workspace) + ".tex";
 
-            if (stream == null)
+            if (!workspace.FileManager.Exists(texPath))
                 return null;
 
+            var stream = workspace.FileManager.Get(texPath);
             return MexImage.FromByteArray(stream);
         }
     }

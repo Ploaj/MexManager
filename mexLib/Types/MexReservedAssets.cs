@@ -90,7 +90,26 @@ namespace mexLib.Types
             },
         };
 
-        // TODO: reserved css icon back, null
+        // reserved css icon back, null
+        public string? CSSBack { get => CSSBackAsset.AssetFileName; set => CSSBackAsset.AssetFileName = value; }
+        public MexTextureAsset CSSBackAsset = new MexTextureAsset()
+        {
+            AssetPath = "css/back",
+            Width = 64,
+            Height = 56,
+            Format = HSDRaw.GX.GXTexFmt.I4,
+        };
+
+        public string? CSSNull { get => CSSNullAsset.AssetFileName; set => CSSNullAsset.AssetFileName = value; }
+        public MexTextureAsset CSSNullAsset = new MexTextureAsset()
+        {
+            AssetPath = "css/null",
+            Width = 64,
+            Height = 56,
+            Format = HSDRaw.GX.GXTexFmt.CI8,
+            TlutFormat = HSDRaw.GX.GXTlutFmt.RGB5A3,
+
+        };
 
         // TODO: reserved sss null, locked, random, random tag
     }

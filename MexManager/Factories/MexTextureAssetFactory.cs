@@ -188,18 +188,10 @@ namespace MexManager.Factories
                 if (Global.Workspace == null)
                     return;
 
-                var fileName = propertyDescriptor.GetValue(target) as string;
-                if (string.IsNullOrEmpty(fileName))
-                    return;
-
-                var path = Global.Workspace.GetAssetPath(fileName);
-                if (!Global.Files.Exists(path))
-                    return;
-
                 var file = await FileIO.TrySaveFile("Image", "", FileIO.FilterPng);
                 if (file != null)
                 {
-                    File.WriteAllBytes(file, Global.Files.Get(path));
+                    textureAsset.GetSourceImage(Global.Workspace)?.ToBitmap().Save(file);
                 }
             };
 

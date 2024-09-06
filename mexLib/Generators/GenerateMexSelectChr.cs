@@ -272,21 +272,11 @@ namespace mexLib.Generators
         /// <returns></returns>
         private static HSD_JOBJ GenerateIconModel(MexCharacterSelectIcon icon, MexWorkspace ws)
         {
-            MexImage background = MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath("css//Back.tex")));
-            MexImage? iconImage = null;
-
             var fighter = ws.Project.GetFighterByExternalID(icon.Fighter);
-            if (fighter != null)
-            {
-                var iconPath = ws.GetAssetPath($"css//{fighter.Name}.tex");
+            MexImage? iconImage = fighter?.Assets.CSSIconAsset.GetTexFile(ws);
 
-                if (ws.FileManager.Exists(iconPath))
-                {
-                    iconImage = MexImage.FromByteArray(ws.FileManager.Get(iconPath));
-                }
-            }
-
-            iconImage ??= MexImage.FromByteArray(ws.FileManager.Get(ws.GetAssetPath("css//Null.tex")));
+            iconImage ??= ws.Project.ReservedAssets.CSSNullAsset.GetTexFile(ws);
+            MexImage? background = ws.Project.ReservedAssets.CSSBackAsset.GetTexFile(ws);
 
             var source = new HSD_JOBJ()
             {
@@ -307,36 +297,40 @@ namespace mexLib.Generators
                 float z = 0.2f;
 
                 var dobj = GenerateQuadDobj(gen, w, h, z);
-                dobj.Mobj.Textures = background.ToTObj();
-                dobj.Mobj.Textures.AlphaOperation = ALPHAMAP.NONE;
-                dobj.Mobj.Textures.TEV = new HSD_TOBJ_TEV()
+                if (background != null)
                 {
-                    color_op = TevColorOp.GX_TEV_ADD,
-                    alpha_op = TevAlphaOp.GX_TEV_ADD,
-                    color_bias = TevBias.GX_TB_ZERO,
-                    alpha_bias = TevBias.GX_TB_ZERO,
-                    color_scale = TevScale.GX_CS_SCALE_1,
-                    alpha_scale = TevScale.GX_CS_SCALE_1,
-                    color_clamp = true,
-                    alpha_clamp = true,
-                    color_a_in = TOBJ_TEV_CC.TEX0_RGB,
-                    color_b_in = TOBJ_TEV_CC.KONST_RGB,
-                    color_c_in = TOBJ_TEV_CC.GX_CC_TEXC,
-                    color_d_in = TOBJ_TEV_CC.GX_CC_ZERO,
-                    alpha_a_in = TOBJ_TEV_CA.GX_CC_ZERO,
-                    alpha_b_in = TOBJ_TEV_CA.GX_CC_ZERO,
-                    alpha_c_in = TOBJ_TEV_CA.GX_CC_ZERO,
-                    alpha_d_in = TOBJ_TEV_CA.GX_CC_ZERO,
-                    active = TOBJ_TEVREG_ACTIVE.KONST_R |
-                            TOBJ_TEVREG_ACTIVE.KONST_G |
-                            TOBJ_TEVREG_ACTIVE.KONST_B |
-                            TOBJ_TEVREG_ACTIVE.TEV0_R |
-                            TOBJ_TEVREG_ACTIVE.TEV0_G |
-                            TOBJ_TEVREG_ACTIVE.TEV0_B |
-                            TOBJ_TEVREG_ACTIVE.COLOR_TEV,
-                    constant = System.Drawing.Color.FromArgb(204, 204, 229),
-                    tev0 = System.Drawing.Color.FromArgb(0, 25, 51),
-                };
+                    dobj.Mobj.Textures = background.ToTObj();
+                    dobj.Mobj.Textures.AlphaOperation = ALPHAMAP.NONE;
+                    dobj.Mobj.Textures.TEV = new HSD_TOBJ_TEV()
+                    {
+                        color_op = TevColorOp.GX_TEV_ADD,
+                        alpha_op = TevAlphaOp.GX_TEV_ADD,
+                        color_bias = TevBias.GX_TB_ZERO,
+                        alpha_bias = TevBias.GX_TB_ZERO,
+                        color_scale = TevScale.GX_CS_SCALE_1,
+                        alpha_scale = TevScale.GX_CS_SCALE_1,
+                        color_clamp = true,
+                        alpha_clamp = true,
+                        color_a_in = TOBJ_TEV_CC.TEX0_RGB,
+                        color_b_in = TOBJ_TEV_CC.KONST_RGB,
+                        color_c_in = TOBJ_TEV_CC.GX_CC_TEXC,
+                        color_d_in = TOBJ_TEV_CC.GX_CC_ZERO,
+                        alpha_a_in = TOBJ_TEV_CA.GX_CC_ZERO,
+                        alpha_b_in = TOBJ_TEV_CA.GX_CC_ZERO,
+                        alpha_c_in = TOBJ_TEV_CA.GX_CC_ZERO,
+                        alpha_d_in = TOBJ_TEV_CA.GX_CC_ZERO,
+                        active = TOBJ_TEVREG_ACTIVE.KONST_R |
+                                TOBJ_TEVREG_ACTIVE.KONST_G |
+                                TOBJ_TEVREG_ACTIVE.KONST_B |
+                                TOBJ_TEVREG_ACTIVE.TEV0_R |
+                                TOBJ_TEVREG_ACTIVE.TEV0_G |
+                                TOBJ_TEVREG_ACTIVE.TEV0_B |
+                                TOBJ_TEVREG_ACTIVE.COLOR_TEV,
+                        constant = System.Drawing.Color.FromArgb(204, 204, 229),
+                        tev0 = System.Drawing.Color.FromArgb(0, 25, 51),
+                    };
+                }
+                
                 source.Dobj = dobj;
             }
             // foreground
@@ -346,10 +340,13 @@ namespace mexLib.Generators
                 float z = 0.0f;
 
                 var dobj = GenerateQuadDobj(gen, w, h, z);
-                var tobj = iconImage.ToTObj();
-                tobj.ColorOperation = COLORMAP.BLEND;
-                tobj.AlphaOperation = ALPHAMAP.BLEND;
-                dobj.Mobj.Textures = tobj;
+                if (iconImage != null)
+                {
+                    var tobj = iconImage.ToTObj();
+                    tobj.ColorOperation = COLORMAP.BLEND;
+                    tobj.AlphaOperation = ALPHAMAP.BLEND;
+                    dobj.Mobj.Textures = tobj;
+                }
                 source.Dobj.Add(dobj);
             }
 

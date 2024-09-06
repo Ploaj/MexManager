@@ -89,7 +89,7 @@ namespace mexLib
         [JsonIgnore]
         public MexTextureAsset CSPAsset { get; set; } = new MexTextureAsset()
         {
-            AssetPath = "css/csp",
+            AssetPath = "csp/csp",
             Width = 136,
             Height = 188,
             Format = HSDRaw.GX.GXTexFmt.CI8,
