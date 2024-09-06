@@ -5,6 +5,9 @@ namespace mexLib.Types
 {
     public partial class MexFighter
     {
+
+        [Browsable(false)]
+        public FighterFiles Files { get; set; } = new FighterFiles();
         public class FighterFiles
         {
             [Category("0 - Fighter Data"), DisplayName("FighterData FileName"), Description("File containing fighter's data")]

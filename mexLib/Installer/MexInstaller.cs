@@ -8,8 +8,6 @@ using MeleeMedia.Audio;
 using mexLib.MexScubber;
 using System.Drawing;
 using mexLib.Types;
-using System.Diagnostics;
-using System.Security.Cryptography;
 
 namespace mexLib.Installer
 {
@@ -82,8 +80,6 @@ namespace mexLib.Installer
                 var fighter = new MexFighter();
                 fighter.FromDOL(dol, i, plco);
                 project.Fighters.Add(fighter);
-
-                // load data from plco
             }
 
             // load items 0x2b + 0x76 + 0x2F + 0x1D
@@ -239,6 +235,9 @@ namespace mexLib.Installer
                 int internalId = 0;
                 foreach (var f in workspace.Project.Fighters)
                 {
+                    if (internalId > 26)
+                        continue;
+
                     int externalId = MexFighterIDConverter.ToExternalID(internalId, workspace.Project.Fighters.Count);
                     if (externalId == 18)
                         externalId = 25;
@@ -406,6 +405,10 @@ namespace mexLib.Installer
             {
                 // get figher from external id
                 int fighterId = MexFighterIDConverter.ToInternalID(i, 0x21);
+
+                if (fighterId > 26)
+                    continue;
+
                 var fighter = workspace.Project.Fighters[fighterId];
 
                 for (int j = 0; j < fighter.Costumes.Costumes.Count; j++)
@@ -414,83 +417,81 @@ namespace mexLib.Installer
                     var k = keys.Find(e => e.Frame == i + 30 * j);
                     if (k != null)
                     {
-                        var costumeName = Path.GetFileNameWithoutExtension(fighter.Costumes.Costumes[j].File.FileName);
-                        var image = new MexImage(tobjs[(int)k.Value]);
-                        image.Save(workspace.GetAssetPath($"csp\\{costumeName}.tex"));
+                        fighter.Costumes.Costumes[j].CSPAsset.SetFromMexImage(workspace, new MexImage(tobjs[(int)k.Value]));
                     }
                 }
             }
 
-            // extract fighter icons
-            var iconFolders = workspace.GetAssetPath("css\\");
-            Directory.CreateDirectory(iconFolders);
-            var single_joint = dataTable.SingleMenuModel.TreeList;
-            var single_anim = dataTable.SingleMenuAnimation.TreeList;
-            var single_matanim = dataTable.SingleMenuMaterialAnimation.TreeList;
-            // 16 - 34
-            // 16mario, 17luigi, 18bowser, 19peach, 20yoshi, 21dk, 22falcon
-            // 23fox, 24ness, 25climbers, 26kirby, 27samus, 28zelda, 29link
-            // 30pikachu, 31jigglypuff, 32mewtwo, 33game, 34marth
-            // 4dr, 6ganon, 8falco, 10younlink, 12pichu, 14roy
-            var internal_to_joint_index = new int[] { 
-                16, 23, 22, 21, 26, 18, 29, -1, 24, 19,
-                25, -1, 30, 27, 20, 31, 32, 17, 34, 28,
-                10, 4, 8, 12, 33, 6, 14
-            };
-            for (int i = 0; i < internal_to_joint_index.Length; i++)
-            {
-                if (internal_to_joint_index[i] == -1)
-                    continue;
+            // TODO: extract fighter icons
+            //var iconFolders = workspace.GetAssetPath("css\\");
+            //Directory.CreateDirectory(iconFolders);
+            //var single_joint = dataTable.SingleMenuModel.TreeList;
+            //var single_anim = dataTable.SingleMenuAnimation.TreeList;
+            //var single_matanim = dataTable.SingleMenuMaterialAnimation.TreeList;
+            //// 16 - 34
+            //// 16mario, 17luigi, 18bowser, 19peach, 20yoshi, 21dk, 22falcon
+            //// 23fox, 24ness, 25climbers, 26kirby, 27samus, 28zelda, 29link
+            //// 30pikachu, 31jigglypuff, 32mewtwo, 33game, 34marth
+            //// 4dr, 6ganon, 8falco, 10younlink, 12pichu, 14roy
+            //var internal_to_joint_index = new int[] { 
+            //    16, 23, 22, 21, 26, 18, 29, -1, 24, 19,
+            //    25, -1, 30, 27, 20, 31, 32, 17, 34, 28,
+            //    10, 4, 8, 12, 33, 6, 14
+            //};
+            //for (int i = 0; i < internal_to_joint_index.Length; i++)
+            //{
+            //    if (internal_to_joint_index[i] == -1)
+            //        continue;
 
-                var externalId = MexFighterIDConverter.ToExternalID(i, workspace.Project.Fighters.Count);
-                var fighter = workspace.Project.Fighters[i];
+            //    var externalId = MexFighterIDConverter.ToExternalID(i, workspace.Project.Fighters.Count);
+            //    var fighter = workspace.Project.Fighters[i];
 
-                var joint_index = internal_to_joint_index[i];
-                var joint = single_joint[joint_index];
+            //    var joint_index = internal_to_joint_index[i];
+            //    var joint = single_joint[joint_index];
 
-                // get icon position
-                var icon = workspace.Project.CharacterSelect.FighterIcons.FirstOrDefault(e => e.Fighter == externalId);
-                if (icon != null)
-                {
-                    icon.X = joint.TX + 3.4f;
-                    icon.Y = joint.TY - 3.5f;
-                    icon.Z = joint.TZ;
+            //    // get icon position
+            //    var icon = workspace.Project.CharacterSelect.FighterIcons.FirstOrDefault(e => e.Fighter == externalId);
+            //    if (icon != null)
+            //    {
+            //        icon.X = joint.TX + 3.4f;
+            //        icon.Y = joint.TY - 3.5f;
+            //        icon.Z = joint.TZ;
 
-                    // clone fighters....
-                    if (joint_index == 4 ||
-                        joint_index == 6 ||
-                        joint_index == 8 ||
-                        joint_index == 10 ||
-                        joint_index == 12 ||
-                        joint_index == 14)
-                    {
-                        var cloneJoint = single_joint[joint_index - 1];
-                        var anim = single_anim[joint_index - 1];
-                        var trax = anim.AOBJ.FObjDesc.GetDecodedKeys();
-                        var tray = anim.AOBJ.FObjDesc.Next.GetDecodedKeys();
-                        icon.X = trax[^1].Value + 3.4f;
-                        icon.Y = tray[^1].Value - 3.5f;
-                        icon.Z = cloneJoint.TZ;
-                    }
-                }
+            //        // clone fighters....
+            //        if (joint_index == 4 ||
+            //            joint_index == 6 ||
+            //            joint_index == 8 ||
+            //            joint_index == 10 ||
+            //            joint_index == 12 ||
+            //            joint_index == 14)
+            //        {
+            //            var cloneJoint = single_joint[joint_index - 1];
+            //            var anim = single_anim[joint_index - 1];
+            //            var trax = anim.AOBJ.FObjDesc.GetDecodedKeys();
+            //            var tray = anim.AOBJ.FObjDesc.Next.GetDecodedKeys();
+            //            icon.X = trax[^1].Value + 3.4f;
+            //            icon.Y = tray[^1].Value - 3.5f;
+            //            icon.Z = cloneJoint.TZ;
+            //        }
+            //    }
 
-                // zelda and blank asset
-                if (internal_to_joint_index[i] == 28)
-                {
-                    var matanim = single_matanim[internal_to_joint_index[i]];
+            //    // zelda and blank asset
+            //    if (internal_to_joint_index[i] == 28)
+            //    {
+            //        var matanim = single_matanim[internal_to_joint_index[i]];
 
-                    var image = new MexImage(matanim.MaterialAnimation.Next.TextureAnimation.ToTOBJs()[0]);
-                    image.Save(workspace.GetAssetPath($"css\\{fighter.Name}.tex"));
+            //        var image = new MexImage(matanim.MaterialAnimation.Next.TextureAnimation.ToTOBJs()[0]);
+            //        image.Save(workspace.GetAssetPath($"css\\{fighter.Name}.tex"));
 
-                    // extrac these assets for later use
-                    new MexImage(joint.Dobj.Next.Mobj.Textures).Save(workspace.GetAssetPath($"css\\Null.tex"));
-                    new MexImage(joint.Dobj.Mobj.Textures).Save(workspace.GetAssetPath($"css\\Back.tex"));
-                }
-                else
-                {
-                    new MexImage(joint.Dobj.Next.Mobj.Textures).Save(workspace.GetAssetPath($"css\\{fighter.Name}.tex"));
-                }
-            }
+            //        // extrac these assets for later use
+            //        new MexImage(joint.Dobj.Next.Mobj.Textures).Save(workspace.GetAssetPath($"css\\Null.tex"));
+            //        new MexImage(joint.Dobj.Mobj.Textures).Save(workspace.GetAssetPath($"css\\Back.tex"));
+            //    }
+            //    else
+            //    {
+            //        new MexImage(joint.Dobj.Next.Mobj.Textures).Save(workspace.GetAssetPath($"css\\{fighter.Name}.tex"));
+            //    }
+            //}
 
             return null;
         }

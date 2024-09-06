@@ -213,10 +213,10 @@ namespace mexLib.Installer
             "Onett",
             "Fourside",
             "Icicle Mountain",
-            "Null",
+            "Ice Top",
             "Mushroom Kingdom",
             "Mushroom Kingdom II",
-            "Null",
+            "Akaneia",
             "Flat Zone",
             "Dream Land N64",
             "Yoshi's Island N64",
@@ -265,7 +265,7 @@ namespace mexLib.Installer
 
         public static readonly int[] Stage_Series =
         {
-            11, 11, 6, 6, 1, 1, 13, 13, 10, 10, 12, 12, 5, 5, 2, 2, 9, 9, 0, 0, 8, 8, 4, 4, 6, 6, 3, 3, 5, 12, 1, 6, 11, 10, 0, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11
+            11, 11, 6, 6, 1, 1, 13, 13, 10, 10, 12, 12, 5, 5, 2, 2, 9, 9, 0, 0, 8, 8, 4, 4, 6, 6, 7, 3, 5, 12, 1, 6, 11, 10, 0, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11
         };
 
         public static IEnumerable<MexSeries> GenerateDefaultSeries()

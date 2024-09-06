@@ -6,6 +6,8 @@ namespace mexLib.Types
 {
     public partial class MexFighter
     {
+        [Browsable(false)]
+        public FighterMedia Media { get; set; } = new FighterMedia();
         public class FighterMedia : INotifyPropertyChanged
         {
 

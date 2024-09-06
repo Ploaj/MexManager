@@ -79,26 +79,15 @@ namespace mexLib.Types
         [Category("6 - Misc"), DisplayName("Sub-Fighter Behavior"), Description("The association between this fighter and the sub-fighter")]
         public SubCharacterBehavior SubCharacterBehavior { get; set; }
 
-        [Browsable(false)]
-        public SBM_PlCoUnknownFighterTable? UnkTable { get; set; } = new SBM_PlCoUnknownFighterTable();
 
         [Browsable(false)]
         public ObservableCollection<MexItem> Items { get; set; } = new ObservableCollection<MexItem>();
 
         [Browsable(false)]
-        public MexFighterCostumes Costumes { get; set; } = new MexFighterCostumes();
-
-        [Browsable(false)]
-        public FighterFunctions Functions { get; set; } = new FighterFunctions();
-
-        [Browsable(false)]
-        public FighterFiles Files { get; set; } = new FighterFiles();
-
-        [Browsable(false)]
-        public FighterMedia Media { get; set; } = new FighterMedia();
-
-        [Browsable(false)]
         public SBM_BoneLookupTable BoneTable { get; set; } = new SBM_BoneLookupTable();
+
+        [Browsable(false)]
+        public SBM_PlCoUnknownFighterTable? UnkTable { get; set; } = new SBM_PlCoUnknownFighterTable();
 
         /// <summary>
         /// 

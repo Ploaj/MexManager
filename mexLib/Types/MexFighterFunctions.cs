@@ -6,6 +6,8 @@ namespace mexLib.Types
 {
     public partial class MexFighter
     {
+        [Browsable(false)]
+        public FighterFunctions Functions { get; set; } = new FighterFunctions();
         public class FighterFunctions
         {
             [Browsable(false)]
