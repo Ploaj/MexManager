@@ -1,9 +1,11 @@
-﻿using mexLib.Attributes;
+﻿using mexLib.AssetTypes;
+using mexLib.Attributes;
 using mexLib.Utilties;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Xml.Linq;
 
 namespace mexLib
@@ -20,7 +22,7 @@ namespace mexLib
         public string Name { get; set; } = "New Costume";
 
         [DisplayName("Filename")]
-        //[MexFilePathValidator(MexFilePathType.Files)]
+        [MexFilePathValidator(MexFilePathType.Files)]
         //[MexFilePathValidatorCallback("CheckFileName")]
         public string FileName
         {
@@ -39,7 +41,7 @@ namespace mexLib
         }
 
         [DisplayName("Kirby Filename")]
-        //[MexFilePathValidator(MexFilePathType.Files)]
+        [MexFilePathValidator(MexFilePathType.Files)]
         public string KirbyFileName
         {
             get
@@ -66,21 +68,33 @@ namespace mexLib
         }
         public int _visibilityIndex = 0;
 
-        //[DisplayName("Stock Icon")]
-        //[MexTextureAsset]
-        //[MexTextureFormat(HSDRaw.GX.GXTexFmt.CI4, HSDRaw.GX.GXTlutFmt.RGB5A3)]
-        //[MexTextureSize(24, 24)]
-        //[MexFilePathValidator(MexFilePathType.Assets)]
-        public string Icon { get => _icon; set { _icon = value; OnPropertyChanged(); } }
-        private string _icon = "";
+        [Browsable(false)]
+        public string? Icon { get => IconAsset.AssetFileName; set => IconAsset.AssetFileName = value; }
 
         [DisplayName("Character Select Portrait")]
-        //[MexTextureAsset]
-        //[MexTextureFormat(HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB5A3)]
-        //[MexTextureSize(136, 188)]
-        //[MexFilePathValidator(MexFilePathType.Assets)]
-        public string CSP { get => _csp; set { _csp = value; OnPropertyChanged(); } }
-        private string _csp = "";
+        [JsonIgnore]
+        public MexTextureAsset IconAsset { get; set; } = new MexTextureAsset()
+        {
+            AssetPath = "icons/ft",
+            Width = 24,
+            Height = 24,
+            Format = HSDRaw.GX.GXTexFmt.CI4,
+            TlutFormat = HSDRaw.GX.GXTlutFmt.RGB5A3,
+        };
+
+        [Browsable(false)]
+        public string? CSP { get => CSPAsset.AssetFileName; set => CSPAsset.AssetFileName = value; }
+
+        [DisplayName("Character Select Portrait")]
+        [JsonIgnore]
+        public MexTextureAsset CSPAsset { get; set; } = new MexTextureAsset()
+        {
+            AssetPath = "css/csp",
+            Width = 136,
+            Height = 188,
+            Format = HSDRaw.GX.GXTexFmt.CI8,
+            TlutFormat = HSDRaw.GX.GXTlutFmt.RGB5A3,
+        };
 
         public void SetCostumeVisibilityFromSymbols()
         {
@@ -136,24 +150,6 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="workspace"></param>
-        /// <returns></returns>
-        public string GetIconPath(MexWorkspace workspace)
-        {
-            return workspace.GetAssetPath(Icon.Replace(".png", ".tex"));
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <returns></returns>
-        public string GetCSPPath(MexWorkspace workspace)
-        {
-            return workspace.GetAssetPath(CSP.Replace(".png", ".tex"));
-        }
-        /// <summary>
-        /// 
-        /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
@@ -165,69 +161,71 @@ namespace mexLib
         /// <returns></returns>
         public static MexCostume? FromZip(MexWorkspace workspace, string zipPath, out string log)
         {
-            var l = new StringBuilder();
+            // TODO: costume from zip
+            //var l = new StringBuilder();
 
-            var costume = new MexCostume()
-            {
-                Name = Path.GetFileNameWithoutExtension(zipPath)
-            };
+            //var costume = new MexCostume()
+            //{
+            //    Name = Path.GetFileNameWithoutExtension(zipPath)
+            //};
 
-            using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Read))
-                foreach (ZipArchiveEntry entry in zip.Entries)
-                {
-                    // assets
-                    switch (entry.Name.ToLower())
-                    {
-                        case "stc.png":
-                        case "stock.png":
-                        case "icon.png":
-                            l.AppendLine($"Imported \"{entry.FullName}\" as stock icon");
-                            workspace.FileManager.Set(workspace.GetAssetPath(costume.Icon), entry.Extract());
-                            // TODO: convert to tex and add asset
-                            //workspace.FileManager.Set(workspace.GetAssetPath(costume.Icon.Replace(".png", ".tex")), entry.Extract());
-                            break;
-                        case "csp.png":
-                        case "portrait.png":
-                        case "select.png":
-                            l.AppendLine($"Imported \"{entry.FullName}\" as portrait");
-                            // TODO: convert to tex and add asset
-                            workspace.FileManager.Set(workspace.GetAssetPath(costume.CSP), entry.Extract());
-                            break;
-                    }
-                    // dat assets
-                    if (entry.Name.EndsWith(".dat"))
-                    {
-                        // file
-                        if (entry.Name.StartsWith("PlKb"))
-                        {
-                            var targetPath = workspace.GetFilePath(entry.Name);
-                            var path = workspace.FileManager.GetUniqueFilePath(targetPath);
+            //using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Read))
+            //    foreach (ZipArchiveEntry entry in zip.Entries)
+            //    {
+            //        // assets
+            //        switch (entry.Name.ToLower())
+            //        {
+            //            case "stc.png":
+            //            case "stock.png":
+            //            case "icon.png":
+            //                l.AppendLine($"Imported \"{entry.FullName}\" as stock icon");
+            //                workspace.FileManager.Set(workspace.GetAssetPath(costume.Icon), entry.Extract());
+            //                // TODO: convert to tex and add asset
+            //                //workspace.FileManager.Set(workspace.GetAssetPath(costume.Icon.Replace(".png", ".tex")), entry.Extract());
+            //                break;
+            //            case "csp.png":
+            //            case "portrait.png":
+            //            case "select.png":
+            //                l.AppendLine($"Imported \"{entry.FullName}\" as portrait");
+            //                // TODO: convert to tex and add asset
+            //                workspace.FileManager.Set(workspace.GetAssetPath(costume.CSP), entry.Extract());
+            //                break;
+            //        }
+            //        // dat assets
+            //        if (entry.Name.EndsWith(".dat"))
+            //        {
+            //            // file
+            //            if (entry.Name.StartsWith("PlKb"))
+            //            {
+            //                var targetPath = workspace.GetFilePath(entry.Name);
+            //                var path = workspace.FileManager.GetUniqueFilePath(targetPath);
 
-                            workspace.FileManager.Set(path, entry.Extract());
-                            costume.KirbyFileName = Path.GetFileName(path);
+            //                workspace.FileManager.Set(path, entry.Extract());
+            //                costume.KirbyFileName = Path.GetFileName(path);
 
-                            l.AppendLine($"Imported \"{entry.FullName}\" as kirby costume");
-                        }
-                        else
-                        {
-                            var targetPath = workspace.GetFilePath(entry.Name);
-                            var path = workspace.FileManager.GetUniqueFilePath(targetPath);
+            //                l.AppendLine($"Imported \"{entry.FullName}\" as kirby costume");
+            //            }
+            //            else
+            //            {
+            //                var targetPath = workspace.GetFilePath(entry.Name);
+            //                var path = workspace.FileManager.GetUniqueFilePath(targetPath);
 
-                            workspace.FileManager.Set(path, entry.Extract());
-                            costume.FileName = Path.GetFileName(path);
+            //                workspace.FileManager.Set(path, entry.Extract());
+            //                costume.FileName = Path.GetFileName(path);
 
-                            l.AppendLine($"Imported \"{entry.FullName}\" as costume");
-                        }
-                    }
-                }
+            //                l.AppendLine($"Imported \"{entry.FullName}\" as costume");
+            //            }
+            //        }
+            //    }
 
-            costume.File.GetSymbolFromFile(workspace);
-            costume.KirbyFile.GetSymbolFromFile(workspace);
+            //costume.File.GetSymbolFromFile(workspace);
+            //costume.KirbyFile.GetSymbolFromFile(workspace);
 
-            log = l.ToString();
-            if (!string.IsNullOrEmpty(costume.FileName))
-                return costume;
-            else
+            //log = l.ToString();
+            //if (!string.IsNullOrEmpty(costume.FileName))
+            //    return costume;
+            //else
+            log = "";
                 return null;
         }
         /// <summary>
@@ -261,35 +259,36 @@ namespace mexLib
         /// <param name="workspace"></param>
         public void PackToZip(MexWorkspace workspace, string zipPath)
         {
-            using var zip = new ZipWriter(zipPath);
+            // TODO: costume pack to zip
+            //using var zip = new ZipWriter(zipPath);
 
-            // normal dat file
-            var path = workspace.GetFilePath(FileName);
-            if (workspace.FileManager.Exists(path))
-            {
-                zip.Write(FileName, workspace.FileManager.Get(path));
-            }
+            //// normal dat file
+            //var path = workspace.GetFilePath(FileName);
+            //if (workspace.FileManager.Exists(path))
+            //{
+            //    zip.Write(FileName, workspace.FileManager.Get(path));
+            //}
 
-            // kirby dat file
-            var kpath = workspace.GetFilePath(KirbyFileName);
-            if (workspace.FileManager.Exists(kpath))
-            {
-                zip.Write(KirbyFileName, workspace.FileManager.Get(kpath));
-            }
+            //// kirby dat file
+            //var kpath = workspace.GetFilePath(KirbyFileName);
+            //if (workspace.FileManager.Exists(kpath))
+            //{
+            //    zip.Write(KirbyFileName, workspace.FileManager.Get(kpath));
+            //}
 
-            // csp
-            var cspPath = workspace.GetAssetPath(CSP);
-            if (workspace.FileManager.Exists(cspPath))
-            {
-                zip.Write("csp.png", workspace.FileManager.Get(cspPath));
-            }
+            //// csp
+            //var cspPath = workspace.GetAssetPath(CSP);
+            //if (workspace.FileManager.Exists(cspPath))
+            //{
+            //    zip.Write("csp.png", workspace.FileManager.Get(cspPath));
+            //}
 
-            // stock
-            var stockPath = workspace.GetAssetPath(Icon);
-            if (workspace.FileManager.Exists(stockPath))
-            {
-                zip.Write("stc.png", workspace.FileManager.Get(stockPath));
-            }
+            //// stock
+            //var stockPath = workspace.GetAssetPath(Icon);
+            //if (workspace.FileManager.Exists(stockPath))
+            //{
+            //    zip.Write("stc.png", workspace.FileManager.Get(stockPath));
+            //}
         }
     }
 }

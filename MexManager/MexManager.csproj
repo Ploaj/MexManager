@@ -30,7 +30,6 @@
     <None Remove="Assets\Common\icon_plus.png" />
     <None Remove="Assets\Common\icon_replace.png" />
     <None Remove="Assets\Data\bgm.dat" />
-    <None Remove="Assets\Data\Stc_icns.dat" />
     <None Remove="Assets\dol.patch" />
     <None Remove="Assets\Menu\category_code.png" />
     <None Remove="Assets\Menu\category_fighter.png" />

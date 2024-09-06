@@ -21,6 +21,14 @@ namespace mexLib
 
         public int TrophySDOffset { get; set; } = 302;
 
+        public ObservableCollection<MEX_GawColor> GawColors { get; set; } = new ObservableCollection<MEX_GawColor>(); // TODO: better support game and watch colors
+
+        public MexPlaylist MenuPlaylist { get; set; } = new MexPlaylist();
+
+        public MexReservedAssets ReservedAssets { get; set; } = new MexReservedAssets();
+
+
+
         [JsonIgnore]
         public MexCharacterSelect CharacterSelect { get; set; } = new MexCharacterSelect();
 
@@ -45,9 +53,7 @@ namespace mexLib
         [JsonIgnore]
         public MEX_SceneData SceneData { get; set; } = new MEX_SceneData();
 
-        public ObservableCollection<MEX_GawColor> GawColors { get; set; } = new ObservableCollection<MEX_GawColor>(); // TODO: better support game and watch colors
 
-        public MexPlaylist MenuPlaylist { get; set; } = new MexPlaylist();
 
         //public MEX_Item[] CommonItems = new MEX_Item[0];
         //public MEX_Item[] FighterItems = new MEX_Item[0];

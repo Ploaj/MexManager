@@ -53,35 +53,14 @@ namespace MexManager
         /// <returns></returns>
         public static MexWorkspace? CreateWorkspace(string filepath)
         {
-            // extract ifall from our own resources because it's a mess otherwise
             using (var s = new MemoryStream())
             {
-                var stream = AssetLoader.Open(new System.Uri("avares://MexManager/Assets/Data/Stc_icns.dat"));
-                stream.CopyTo(s);
-                HSDRawFile stc_icns = new (s.ToArray());
-                var stc = stc_icns.Roots[0].Data as MEX_Stock;
-
                 Workspace = MexWorkspace.NewWorkspace(
                     filepath,
                     App.Settings.MeleePath,
                     Updater.MexCodePath,
-                    Updater.MexAddCodePath,
-                    stc);
+                    Updater.MexAddCodePath);
             }
-
-            // TODO: convert all .tex to pngs
-            //foreach (var f in Directory.GetFiles(Workspace.GetAssetPath(""), "*.*", System.IO.SearchOption.AllDirectories))
-            //{
-            //    var ext = Path.GetExtension(f).ToLower();
-
-            //    if (ext.Equals(".tex"))
-            //    {
-            //        var newName = f.Replace(".tex", ".png");
-            //        var image = new MexImage(f);
-            //        using var bmp = image.ToBitmap();
-            //        bmp.Save(newName);
-            //    }
-            //}
 
             return Workspace;
         }

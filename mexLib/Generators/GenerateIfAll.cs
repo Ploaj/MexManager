@@ -3,6 +3,7 @@ using HSDRaw.Common;
 using HSDRaw.MEX;
 using HSDRaw.Tools;
 using HSDRaw;
+using System;
 
 namespace mexLib.Generators
 {
@@ -81,26 +82,17 @@ namespace mexLib.Generators
             List<FOBJKey> keys = new();
             List<HSD_TOBJ> icons = new();
 
-            // TODO: use proper filenames for stock icons
-
             // gather reserved icons
-            foreach (var f in Directory.GetFiles(ws.GetAssetPath("icons\\")))
+            for (int i = 0; i < ws.Project.ReservedAssets.IconsAssets.Length; i++)
             {
-                if (!Path.GetExtension(f).ToLower().Equals(".tex"))
-                    continue;
-
-                var fileName = Path.GetFileNameWithoutExtension(f);
-
-                if (int.TryParse(fileName, out int index))
+                keys.Add(new FOBJKey()
                 {
-                    keys.Add(new FOBJKey()
-                    {
-                        Frame = index,
-                        Value = icons.Count,
-                        InterpolationType = GXInterpolationType.HSD_A_OP_CON,
-                    });
-                    icons.Add(MexImage.FromByteArray(ws.FileManager.Get(f)).ToTObj());
-                }
+                    Frame = i,
+                    Value = icons.Count,
+                    InterpolationType = GXInterpolationType.HSD_A_OP_CON,
+                });
+                if (ws.Project.ReservedAssets.IconsAssets[i].GetTexFile(ws) is MexImage tex)
+                    icons.Add(tex.ToTObj());
             }
 
             int reservedCount = icons.Count;
@@ -113,8 +105,8 @@ namespace mexLib.Generators
                 int costume_index = 0;
                 foreach (var c in f.Costumes.Costumes)
                 {
-                    var textureAsset = c.GetIconPath(ws);
-                    if (ws.FileManager.Exists(textureAsset))
+                    var textureAsset = c.IconAsset.GetTexFile(ws);
+                    if (textureAsset != null)
                     {
                         keys.Add(new FOBJKey()
                         {
@@ -122,7 +114,7 @@ namespace mexLib.Generators
                             Value = icons.Count,
                             InterpolationType = GXInterpolationType.HSD_A_OP_CON,
                         });
-                        icons.Add(MexImage.FromByteArray(ws.FileManager.Get(textureAsset)).ToTObj());
+                        icons.Add(textureAsset.ToTObj());
                     }
                     else
                     {

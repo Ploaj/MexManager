@@ -8,6 +8,8 @@ using MeleeMedia.Audio;
 using mexLib.MexScubber;
 using System.Drawing;
 using mexLib.Types;
+using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace mexLib.Installer
 {
@@ -58,11 +60,6 @@ namespace mexLib.Installer
             if (smst == null)
                 return new MexInstallerError("Error reading PlCo.dat");
 
-            var ifAllPath = workspace.GetFilePath(@"IfAll.dat");
-            if (!File.Exists(ifAllPath))
-                return new MexInstallerError("IfAll.dat not found");
-            HSDRawFile ifAllFile = new(ifAllPath);
-
             // init menu playlist
             project.MenuPlaylist.Entries.Add(new MexPlaylistEntry()
             {
@@ -78,22 +75,6 @@ namespace mexLib.Installer
             // create series
             foreach (var s in MexDefaultData.GenerateDefaultSeries())
                 project.Series.Add(s);
-
-            // extract emblems
-            {
-                var ifAll = ifAllFile["DmgMrk_scene_models"].Data as HSDNullPointerArrayAccessor<HSD_JOBJDesc>;
-                if (ifAll != null)
-                {
-                    int[] series_order = { 0, 1, 2, 3, 9, 4, 5, 6, 8, 7, 10, 13, 11, 12, 14, 15 };
-                    var emblem_matanim_joint = ifAll[0].MaterialAnimations[0].Child.MaterialAnimation.TextureAnimation.ToTOBJs();
-
-                    for (int i = 0; i < series_order.Length; i++)
-                    {
-                        var img = new MexImage(emblem_matanim_joint[series_order[i]]);
-                        project.Series[i].IconAsset.SetFromMexImage(workspace, img);
-                    }
-                }
-            }
 
             // load fighters
             for (uint i = 0; i < 0x21; i++)
@@ -156,14 +137,14 @@ namespace mexLib.Installer
                 var ssm = new SSM();
                 ssm.Open(workspace.GetFilePath($"audio//us//{sound.FileName}"));
 
-                // export ssm files
-                var ssmPath = workspace.GetAssetPath($"audio//{i:D3}//");
-                Directory.CreateDirectory( ssmPath );
-                int si = 0;
-                foreach (var s in ssm.Sounds)
-                {
-                    s.ExportFormat(ssmPath + $"{si++:D3}.dsp");
-                }
+                //// export ssm files
+                //var ssmPath = workspace.GetAssetPath($"audio//{i:D3}//");
+                //Directory.CreateDirectory( ssmPath );
+                //int si = 0;
+                //foreach (var s in ssm.Sounds)
+                //{
+                //    s.ExportFormat(ssmPath + $"{si++:D3}.dsp");
+                //}
 
                 // load script meta data
                 for (int j = 0; j < sound.ScriptBank.Scripts.Length; j++)
@@ -194,8 +175,8 @@ namespace mexLib.Installer
             // load scenes
             project.SceneData = InstallScenes(dol);
 
-            // load misc
-            InstallMisc(project);
+            // load ifalldata
+            InstallStockIcons(workspace);
 
             // extract css
             project.CharacterSelect.FromDOL(dol);
@@ -206,6 +187,89 @@ namespace mexLib.Installer
             sss.FromDOL(dol);
             project.StageSelects.Add(sss);
             InstallSSS(workspace);
+
+            // load misc
+            InstallMisc(project);
+
+            return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        private static MexInstallerError? InstallStockIcons(MexWorkspace workspace)
+        {
+            var ifAllPath = workspace.GetFilePath(@"IfAll.dat");
+            if (!File.Exists(ifAllPath))
+                return new MexInstallerError("IfAll.dat not found");
+
+            HSDRawFile ifAllFile = new(ifAllPath);
+
+            // red dot is frame 185 of single menu model 53
+            // rest are in Stc_scemdls joint 1
+            // external id (sort of) order
+            // stride of 30
+            //      19-24 get subtracted by 1
+            //      18 is 25
+
+            //      26 is smash logo
+            //      27 master hand
+            //      28 crazy hand
+            //      57 target
+            //      58 giga bowser
+            //      59 sandbag
+            //      124 is blank
+            if (ifAllFile["Stc_scemdls"].Data is HSDNullPointerArrayAccessor<HSD_JOBJDesc> stc)
+            {
+                var joint = stc[0].MaterialAnimations[0].TreeList[1];
+                var anim = joint.MaterialAnimation.TextureAnimation;
+                var tobjs = anim.ToTOBJs();
+                var keys = anim.AnimationObject.FObjDesc.GetDecodedKeys();
+
+                // get resereved icons
+                int[] reserved = { 124, 26, 27, 28, 57, 58, 59 };
+                for (int i = 0; i < reserved.Length; i++)
+                {
+                    workspace.Project.ReservedAssets.IconsAssets[i].SetFromMexImage(workspace, new MexImage(tobjs[(int)keys[reserved[i]].Value]));
+                }
+                // this icon exists in mnslchr, but I'm store it manually
+                workspace.Project.ReservedAssets.IconsAssets[^1].SetFromMexImage(workspace, MexImage.FromByteArray(MexDefaultData.SinglePlayerIcon));
+
+                // get fighter icons
+                int internalId = 0;
+                foreach (var f in workspace.Project.Fighters)
+                {
+                    int externalId = MexFighterIDConverter.ToExternalID(internalId, workspace.Project.Fighters.Count);
+                    if (externalId == 18)
+                        externalId = 25;
+                    else if (externalId >= 19)
+                        externalId -= 1;
+
+                    for (int i = 0; i < f.Costumes.Costumes.Count; i++)
+                    {
+                        var k = keys.Find(e => e.Frame == externalId + (i * 30));
+                        if (k != null)
+                        {
+                            f.Costumes.Costumes[i].IconAsset.SetFromMexImage(workspace, new MexImage(tobjs[(int)k.Value]));
+                        }
+                    }
+
+                    internalId++;
+                }
+            }
+
+            // extract emblems
+            var dmgmrk = ifAllFile["DmgMrk_scene_models"].Data as HSDNullPointerArrayAccessor<HSD_JOBJDesc>;
+            if (dmgmrk != null)
+            {
+                int[] series_order = { 0, 1, 2, 3, 9, 4, 5, 6, 8, 7, 10, 13, 11, 12, 14, 15 };
+                var emblem_matanim_joint = dmgmrk[0].MaterialAnimations[0].Child.MaterialAnimation.TextureAnimation.ToTOBJs();
+                for (int i = 0; i < series_order.Length; i++)
+                {
+                    var img = new MexImage(emblem_matanim_joint[series_order[i]]);
+                    workspace.Project.Series[i].IconAsset.SetFromMexImage(workspace, img);
+                }
+            }
 
             return null;
         }

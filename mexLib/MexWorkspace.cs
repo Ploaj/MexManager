@@ -85,13 +85,14 @@ namespace mexLib
             string projectFile,
             string isoPath,
             string gctPath,
-            string codesPath,
-            MEX_Stock? stock)
+            string codesPath)
         {
             if (!File.Exists(isoPath))
                 throw new FileNotFoundException("Melee ISO not found");
 
             var projectPath = Path.GetDirectoryName(projectFile) + "\\";
+
+            Directory.Delete(projectPath + "\\assets", recursive: true);
 
             var sys = projectPath + "\\sys";
             if (!Directory.Exists(sys))
@@ -149,27 +150,6 @@ namespace mexLib
             if (error != null)
             {
                 throw new Exception(error.Message);
-            }
-
-            // extract stock icons
-            if (stock != null)
-            {
-                stock.GetFighterIcons(out List<List<HSD_TOBJ>> fighters, out List<HSD_TOBJ> reserved);
-                var path = workspace.GetAssetPath("icons\\");
-                Directory.CreateDirectory(path);
-                int index = 0;
-                foreach (var icon in reserved)
-                {
-                    new MexImage(icon).Save(Path.Combine(path, $"{index++:D3}.tex"));
-                }
-                for (int f = 0; f < fighters.Count; f++)
-                {
-                    for (int c = 0; c < fighters[f].Count; c++)
-                    {
-                        var costumeName = Path.GetFileNameWithoutExtension(workspace.Project.Fighters[f].Costumes.Costumes[c].File.FileName);
-                        new MexImage(fighters[f][c]).Save(Path.Combine(path, $"{costumeName}.tex"));
-                    }
-                }
             }
 
             // save dol just this once

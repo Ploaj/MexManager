@@ -110,8 +110,6 @@ namespace mexLib.Types
                 };
 
                 costume.Name = ColorNameFromFileName(costume.FileName);
-                costume.Icon = $"icons\\{Path.GetFileNameWithoutExtension(costume.File.FileName)}.png";
-                costume.CSP = $"csp\\{Path.GetFileNameWithoutExtension(costume.File.FileName)}.png";
 
                 if (costumePointerKirby != 0)
                 {

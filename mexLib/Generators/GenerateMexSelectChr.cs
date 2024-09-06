@@ -73,8 +73,8 @@ namespace mexLib.Generators
                 int costume_index = 0;
                 foreach (var c in f.Costumes.Costumes)
                 {
-                    var textureAsset = c.GetCSPPath(ws);
-                    if (ws.FileManager.Exists(textureAsset))
+                    var textureAsset = c.CSPAsset.GetTexFile(ws);
+                    if (textureAsset != null)
                     {
                         keys.Add(new FOBJKey()
                         {
@@ -82,7 +82,7 @@ namespace mexLib.Generators
                             Value = icons.Count,
                             InterpolationType = GXInterpolationType.HSD_A_OP_CON,
                         });
-                        icons.Add(MexImage.FromByteArray(ws.FileManager.Get(textureAsset)).ToTObj());
+                        icons.Add(textureAsset.ToTObj());
                     }
                     else
                     {

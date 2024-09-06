@@ -15,6 +15,9 @@ namespace mexLib
         /// <returns></returns>
         public string GetUniqueFilePath(string filePath)
         {
+            // sanitize
+            filePath = new Uri(filePath).AbsolutePath;
+
             // Get the directory, filename without extension, and extension
             string? directory = Path.GetDirectoryName(filePath);
             string fileName = Path.GetFileNameWithoutExtension(filePath);
@@ -27,7 +30,7 @@ namespace mexLib
             // Check if the file exists, if so append a number until a unique path is found
             while (Exists(uniqueFilePath))
             {
-                uniqueFilePath = Path.Combine(directory ?? $"{fileName}_{count:D3}{extension}");
+                uniqueFilePath = Path.Combine(directory ?? "", $"{fileName}_{count:D3}{extension}");
                 count++;
             }
 
@@ -42,6 +45,8 @@ namespace mexLib
         {
             if (string.IsNullOrEmpty(path))
                 return false;
+
+            path = new Uri(path).AbsolutePath;
 
             if (ToRemove.Contains(path))
                 return false;
@@ -58,6 +63,8 @@ namespace mexLib
         /// <returns></returns>
         public Stream? GetStream(string path)
         {
+            path = new Uri(path).AbsolutePath;
+
             if (ToAdd.ContainsKey(path))
                 return new MemoryStream(ToAdd[path]);
 
@@ -73,6 +80,8 @@ namespace mexLib
         /// <returns></returns>
         public byte[] Get(string path)
         {
+            path = new Uri(path).AbsolutePath;
+
             if (ToAdd.ContainsKey(path))
                 return ToAdd[path];
 
@@ -88,6 +97,8 @@ namespace mexLib
         /// <param name="data"></param>
         public void Set(string path, byte[] data)
         {
+            path = new Uri(path).AbsolutePath;
+
             if (ToAdd.ContainsKey(path))
             {
                 ToAdd[path] = data;
@@ -104,6 +115,8 @@ namespace mexLib
         /// <param name="path"></param>
         public void Remove(string path)
         {
+            path = new Uri(path).AbsolutePath;
+
             ToRemove.Add(path);
             ToAdd.Remove(path);
         }
