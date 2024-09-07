@@ -19,7 +19,17 @@ namespace mexLib.Types
         [MexLink(MexLinkType.Series)]
         public int SeriesID { get; set; } = 0;
 
-        [Category("0 - General"), DisplayName("SoundBank")]
+        [Category("0 - General"), DisplayName("Can Wall Jump"), Description("Determines if fighter can wall jump")]
+        public bool CanWallJump { get; set; }
+
+        [Category("0 - General"), DisplayName("Sub-Fighter"), Description("The fighter associated with this fighter (Sheik/Zelda and Ice Climbers)")]
+        public int SubCharacter { get; set; }
+
+        [Category("0 - General"), DisplayName("Sub-Fighter Behavior"), Description("The association between this fighter and the sub-fighter")]
+        public SubCharacterBehavior SubCharacterBehavior { get; set; }
+
+
+        [Category("1 - Audio"), DisplayName("SoundBank")]
         [MexLink(MexLinkType.Sound)]
         public int SoundBank { get; set; } = 55; // default is null
 
@@ -29,52 +39,44 @@ namespace mexLib.Types
         [Browsable(false)]
         public uint SSMBitfield2 { get; set; }
 
-        [Category("0 - General"), DisplayName("Narrator Sound Clip"), Description("Sound effect index of narrator sound clip")]
+        [Category("1 - Audio"), DisplayName("Narrator Sound Clip"), Description("Sound effect index of narrator sound clip")]
         public int AnnouncerCall { get; set; }
 
-        [Category("0 - General"), DisplayName("Victory Theme"), Description("Music to play on victory screen")]
+        [Category("1 - Audio"), DisplayName("Victory Theme"), Description("Music to play on victory screen")]
         [MexLink(MexLinkType.Music)]
         public int VictoryTheme { get; set; }
 
-        [Category("0 - General"), DisplayName("Fighter Music 1"), Description("Possible music to play for fighter credits")]
+        [Category("1 - Audio"), DisplayName("Fighter Music 1"), Description("Possible music to play for fighter credits")]
         [MexLink(MexLinkType.Music)]
         public int FighterMusic1 { get; set; }
 
-        [Category("0 - General"), DisplayName("Fighter Music 2"), Description("Possible music to play for fighter credits")]
+        [Category("1 - Audio"), DisplayName("Fighter Music 2"), Description("Possible music to play for fighter credits")]
         [MexLink(MexLinkType.Music)]
         public int FighterMusic2 { get; set; }
 
 
-        [Category("1 - Misc"), DisplayName(""), Description("")]
-        public short ClassicTrophyId { get; set; }
-
-        [Category("1 - Misc"), DisplayName(""), Description("")]
-        public short AdventureTrophyId { get; set; }
-
-        [Category("1 - Misc"), DisplayName(""), Description("")]
-        public short AllStarTrophyId { get; set; }
-
-        [Category("1 - Misc"), DisplayName("Target Test Stage"), Description("The stage id of the target test stage for this fighter")]
+        [Category("2 - Single Player"), DisplayName("Target Test Stage"), Description("The stage id of the target test stage for this fighter")]
         [MexLink(MexLinkType.Stage)]
         public int TargetTestStage { get; set; } = 0;
 
-        [Category("1 - Misc"), DisplayName("Race to the Finish Time"), Description("Seconds the fighter has to complete \"Race to the Finish\"")]
+        [Category("2 - Single Player"), DisplayName(""), Description("")]
+        public short ClassicTrophyId { get; set; }
+
+        [Category("2 - Single Player"), DisplayName(""), Description("")]
+        public short AdventureTrophyId { get; set; }
+
+        [Category("2 - Single Player"), DisplayName(""), Description("")]
+        public short AllStarTrophyId { get; set; }
+
+        [Category("2 - Single Player"), DisplayName("Race to the Finish Time"), Description("Seconds the fighter has to complete \"Race to the Finish\"")]
         public uint RacetoTheFinishTime { get; set; }
 
-        [Category("1 - Misc"), DisplayName("Result Screen Scale"), Description("Amount to scale model on result screen")]
+        [Category("2 - Single Player"), DisplayName("Result Screen Scale"), Description("Amount to scale model on result screen")]
         public float ResultScreenScale { get; set; }
 
-        [Category("1 - Misc"), DisplayName("Ending Screen Scale"), Description("Amount to scale model on trophy fall screen")]
+        [Category("2 - Single Player"), DisplayName("Ending Screen Scale"), Description("Amount to scale model on trophy fall screen")]
         public float EndingScreenScale { get; set; }
 
-        [Category("1 - Misc"), DisplayName("Can Wall Jump"), Description("Determines if fighter can wall jump")]
-        public bool CanWallJump { get; set; }
-
-        [Category("1 - Misc"), DisplayName("Sub-Fighter"), Description("The fighter associated with this fighter (Sheik/Zelda and Ice Climbers)")]
-        public int SubCharacter { get; set; }
-
-        [Category("1 - Misc"), DisplayName("Sub-Fighter Behavior"), Description("The association between this fighter and the sub-fighter")]
-        public SubCharacterBehavior SubCharacterBehavior { get; set; }
 
         [Browsable(false)]
         public ObservableCollection<MexItem> Items { get; set; } = new ObservableCollection<MexItem>();

@@ -33,14 +33,13 @@ namespace mexLib
             set
             {
                 File.FileName = value;
-                //if (MexWorkspace.LastOpened != null)
-                //    File.GetSymbolFromFile(MexWorkspace.LastOpened);
                 SetCostumeVisibilityFromSymbols();
             }
         }
 
         [DisplayName("Kirby File")]
         [MexFilePathValidator(MexFilePathType.Files)]
+        [MexFilePathValidatorCallback("CheckFileName")]
         public string KirbyFileName
         {
             get
@@ -50,8 +49,6 @@ namespace mexLib
             set
             {
                 KirbyFile.FileName = value;
-                //if (MexWorkspace.LastOpened != null)
-                //    KirbyFile.GetSymbolFromFile(MexWorkspace.LastOpened);
             }
         }
 
@@ -147,6 +144,7 @@ namespace mexLib
                 return new MexFilePathError("joint not found in dat");
 
             File.GetSymbolFromFile(workspace);
+            KirbyFile.GetSymbolFromFile(workspace);
 
             return null;
         }

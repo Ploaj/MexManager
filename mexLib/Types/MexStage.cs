@@ -43,14 +43,6 @@ namespace mexLib.Types
         [DisplayHex]
         public uint MapDescPointer { get; set; }
 
-        [Category("2 - Functions"), DisplayName("")]
-        [DisplayHex]
-        public uint MovingCollisionPointer { get; set; }
-
-        [Category("2 - Functions"), DisplayName("")]
-        [DisplayHex]
-        public int MovingCollisionCount { get; set; }
-
         [Category("2 - Functions"), DisplayName("OnStageInit")]
         [DisplayHex]
         public uint OnStageInit { get; set; }
@@ -82,6 +74,14 @@ namespace mexLib.Types
         // rainbow cruise is 4 and pichu target test is 0, but I think this is unused
         [Browsable(false)]
         public int UnknownValue { get; set; } = 1;
+
+        [Category("2 - Functions"), DisplayName("")]
+        [DisplayHex]
+        public uint MovingCollisionPointer { get; set; }
+
+        [Category("2 - Functions"), DisplayName("")]
+        [DisplayHex]
+        public int MovingCollisionCount { get; set; }
 
         [Browsable(false)]
         public ObservableCollection<MexItem> Items { get; set; } = new ObservableCollection<MexItem>();

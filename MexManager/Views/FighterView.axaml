@@ -61,18 +61,18 @@
 							Orientation="Horizontal"
 							Spacing="4"
 							Height="24">
-							<Image
-								Source="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Converter={StaticResource ImageSourceConverter} }"
-								Width="16"
-								Height="16"
-								Stretch="Fill"
-								HorizontalAlignment="Left"/>
 							<TextBlock
 								VerticalAlignment="Center">
 								<TextBlock.Text>
 									<Binding Path="." Converter="{StaticResource IndexConverter}"/>
 								</TextBlock.Text>
 							</TextBlock>
+							<Image
+								Source="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Converter={StaticResource ImageSourceConverter} }"
+								Width="24"
+								Height="24"
+								Stretch="Fill"
+								HorizontalAlignment="Left"/>
 							<Image
 								Source="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Converter={StaticResource StockIconImageConverter} }"
 								Width="24"

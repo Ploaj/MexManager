@@ -8,18 +8,19 @@ namespace mexLib.Types
 {
     public partial class MexFighter
     {
-        [Category("Parameters"), DisplayName("Red Costume Index"), Description("")]
+        [Category("0 - General"), DisplayName("Red Costume Index"), Description("")]
         public byte RedCostumeIndex { get; set; }
 
-        [Category("Parameters"), DisplayName("Blue Costume Index"), Description("")]
+        [Category("0 - General"), DisplayName("Blue Costume Index"), Description("")]
         public byte BlueCostumeIndex { get; set; }
 
-        [Category("Parameters"), DisplayName("Green Costume Index"), Description("")]
+        [Category("0 - General"), DisplayName("Green Costume Index"), Description("")]
         public byte GreenCostumeIndex { get; set; }
 
         [Browsable(false)]
         public ObservableCollection<MexCostume> Costumes { get; set; } = new ObservableCollection<MexCostume>();
 
+        [Browsable(false)]
         public bool HasKirbyCostumes
         {
             get

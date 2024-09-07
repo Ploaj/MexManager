@@ -43,12 +43,10 @@ namespace MexManager.Converters
             {
                 if (item.Costumes.Count > 0)
                 {
-                    var iconPath = Path.GetFileNameWithoutExtension(item.Costumes[0].File.FileName);
-                    iconPath = Global.Workspace.GetAssetPath($"icons//{iconPath}.tex");
-
-                    if (Global.Files.Exists(iconPath))
+                    var icon = item.Costumes[0].IconAsset.GetSourceImage(Global.Workspace);
+                    if (icon != null)
                     {
-                        return MexImage.FromByteArray(Global.Files.Get(iconPath)).ToBitmap();
+                        return icon.ToBitmap();
                     }
                 }
             }
