@@ -41,9 +41,9 @@ namespace MexManager.Converters
             if (value is MexFighter item &&
                 Global.Workspace != null)
             {
-                if (item.Costumes.Costumes.Count > 0)
+                if (item.Costumes.Count > 0)
                 {
-                    var iconPath = Path.GetFileNameWithoutExtension(item.Costumes.Costumes[0].File.FileName);
+                    var iconPath = Path.GetFileNameWithoutExtension(item.Costumes[0].File.FileName);
                     iconPath = Global.Workspace.GetAssetPath($"icons//{iconPath}.tex");
 
                     if (Global.Files.Exists(iconPath))

@@ -110,22 +110,22 @@ namespace mexLib.Types
             fd.AnnouncerCalls[externalId] = AnnouncerCall;
 
             // create costume strings
-            fd.CostumeFileSymbols.Set(internalId, Costumes.ToMxDt());
+            fd.CostumeFileSymbols.Set(internalId, CostumesToMxDt());
 
             // create costume runtime
             fd.CostumePointers.Set(internalId, new MEX_CostumeRuntimePointers()
             {
-                CostumeCount = (byte)Costumes.Costumes.Count,
-                Pointer = new HSDRaw.HSDAccessor() { _s = new HSDRaw.HSDStruct(0x18 * Costumes.Costumes.Count) }
+                CostumeCount = (byte)Costumes.Count,
+                Pointer = new HSDRaw.HSDAccessor() { _s = new HSDRaw.HSDStruct(0x18 * Costumes.Count) }
             });
 
             // create costume lookups
             fd.CostumeIDs.Set(externalId, new MEX_CostumeIDs()
             {
-                CostumeCount = (byte)Costumes.Costumes.Count,
-                RedCostumeIndex = Costumes.RedCostumeIndex,
-                BlueCostumeIndex = Costumes.BlueCostumeIndex,
-                GreenCostumeIndex = Costumes.GreenCostumeIndex
+                CostumeCount = (byte)Costumes.Count,
+                RedCostumeIndex = RedCostumeIndex,
+                BlueCostumeIndex = BlueCostumeIndex,
+                GreenCostumeIndex = GreenCostumeIndex
             });
 
             fd.DefineIDs.Set(externalId, new MEX_CharDefineIDs()
@@ -180,18 +180,18 @@ namespace mexLib.Types
                 Symbol = string.IsNullOrEmpty(Files.KirbyCapSymbol) ? null : Files.KirbyCapSymbol,
             });
             kb.KirbyEffectIDs[internalId] = (byte)mex.GetEffectID(Files.KirbyEffectFile, Files.KirbyEffectSymbol);
-            if (Costumes.HasKirbyCostumes)
+            if (HasKirbyCostumes)
             {
                 kb.KirbyCostumes.Set(internalId, new MEX_KirbyCostume() 
                 { 
-                    Array = Costumes.Costumes.Select(e => new MEX_CostumeFileSymbol()
+                    Array = Costumes.Select(e => new MEX_CostumeFileSymbol()
                     {
                         FileName = e.KirbyFile.FileName,
                         JointSymbol = e.KirbyFile.JointSymbol,
                         MatAnimSymbol = e.KirbyFile.MaterialSymbol,
                     }).ToArray() 
                 });
-                kb.CostumeRuntime._s.SetReference(internalId * 4, new HSDAccessor() { _s = new HSDStruct(Costumes.Costumes.Count * 8) });
+                kb.CostumeRuntime._s.SetReference(internalId * 4, new HSDAccessor() { _s = new HSDStruct(Costumes.Count * 8) });
             }
             else
             {
@@ -371,7 +371,7 @@ namespace mexLib.Types
             SSMBitfield2 = dol.GetStruct<uint>(0x803BB3C0 + 0x0C, exid, 0x10);
 
             // css
-            Costumes.FromDOL(dol, index);
+            CostumesFromDOL(dol, index);
 
             // Functions
             Functions.FromDOL(dol, index);

@@ -124,13 +124,21 @@ public class MainViewModel : ViewModelBase
     public void UpdateWorkspace()
     {
         if (Global.Workspace == null)
-            return;
-
-        Fighters = Global.Workspace.Project.Fighters;
-        Stages = Global.Workspace.Project.Stages;
-        Music = Global.Workspace.Project.Music;
-        MenuPlaylist = Global.Workspace.Project.MenuPlaylist;
-        Series = Global.Workspace.Project.Series;
+        {
+            Fighters = null;
+            Stages = null;
+            Music = null;
+            MenuPlaylist = null;
+            Series = null;
+        }
+        else
+        {
+            Fighters = Global.Workspace.Project.Fighters;
+            Stages = Global.Workspace.Project.Stages;
+            Music = Global.Workspace.Project.Music;
+            MenuPlaylist = Global.Workspace.Project.MenuPlaylist;
+            Series = Global.Workspace.Project.Series;
+        }
     }
     /// <summary>
     /// 

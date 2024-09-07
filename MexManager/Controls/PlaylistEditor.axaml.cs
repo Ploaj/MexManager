@@ -1,18 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Interactivity;
-using Avalonia.LogicalTree;
-using Avalonia.Markup.Xaml;
-using Avalonia.Media;
-using Avalonia.Styling;
-using Avalonia.VisualTree;
 using mexLib.Types;
 using MexManager.Tools;
-using MexManager.ViewModels;
-using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 
 namespace MexManager.Controls;
 
@@ -21,8 +11,8 @@ public partial class PlaylistEditor : UserControl
     public static readonly DirectProperty<PlaylistEditor, MexPlaylist> PlaylistProperty =
         AvaloniaProperty.RegisterDirect<PlaylistEditor, MexPlaylist>(nameof(Playlist), o => o.Playlist, (o, v) => o.Playlist = v);
 
-    private MexPlaylist _playlist;
-    public MexPlaylist Playlist
+    private MexPlaylist? _playlist;
+    public MexPlaylist? Playlist
     {
         get => _playlist;
         set
@@ -39,16 +29,19 @@ public partial class PlaylistEditor : UserControl
         InitializeComponent();
     }
 
-    private void SetPlaylist(MexPlaylist playlist)
+    private void SetPlaylist(MexPlaylist? playlist)
     {
-        if (playlist == null)
-            return;
-
-        Entries = playlist.Entries;
-
         PlaylistPanel.Children.Clear();
-        foreach (var e in Entries)
-            GenerateCell(PlaylistPanel, e);
+        if (playlist == null)
+        {
+            Entries.Clear();
+        }
+        else
+        {
+            Entries = playlist.Entries;
+            foreach (var e in Entries)
+                GenerateCell(PlaylistPanel, e);
+        }
     }
 
     private void GenerateCell(StackPanel root, MexPlaylistEntry entry)

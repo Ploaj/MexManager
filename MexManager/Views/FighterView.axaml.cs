@@ -8,6 +8,7 @@ using mexLib.Types;
 using mexLib.Utilties;
 using MexManager.Tools;
 using MexManager.ViewModels;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 
@@ -175,7 +176,7 @@ public partial class FighterView : UserControl
                             await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
 
                         if (costume != null)
-                            fighter.Costumes.Costumes.Add(costume);
+                            fighter.Costumes.Add(costume);
                     }
                     break;
                 case ".dat":
@@ -186,7 +187,7 @@ public partial class FighterView : UserControl
                             await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
 
                         if (costume != null)
-                            fighter.Costumes.Costumes.Add(costume);
+                            fighter.Costumes.Add(costume);
                     }
                     break;
             }
@@ -228,7 +229,7 @@ public partial class FighterView : UserControl
             if (res != MessageBox.MessageBoxResult.Yes)
                 return;
 
-            fighter.Costumes.Costumes.Remove(costume);
+            fighter.Costumes.Remove(costume);
             //costume.RemoveAssets(Global.Workspace);
         }
     }
@@ -244,7 +245,7 @@ public partial class FighterView : UserControl
             model.SelectedFighter is MexFighter fighter &&
             model.SelectedFighterCostume is MexCostume costume)
         {
-            fighter.Costumes.Costumes.Add(new MexCostume()
+            fighter.Costumes.Add(new MexCostume()
             {
                 File = new MexCostumeFile()
                 {
@@ -260,6 +261,54 @@ public partial class FighterView : UserControl
                 },
                 VisibilityIndex = costume.VisibilityIndex,
             });
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void MoveUpCostumeMenuItem_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter &&
+            model.SelectedFighterCostume is MexCostume costume)
+        {
+            int index = fighter.Costumes.IndexOf(costume);
+
+            // Ensure the item isn't the last one in the collection
+            if (index > 0)
+            {
+                // Swap the item with the one below it
+                (fighter.Costumes[index - 1], fighter.Costumes[index]) = (fighter.Costumes[index], fighter.Costumes[index - 1]);
+
+                CostumeList.SelectedIndex = index - 1;
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void MoveDownCostumeMenuItem_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter &&
+            model.SelectedFighterCostume is MexCostume costume)
+        {
+            int index = fighter.Costumes.IndexOf(costume);
+
+            // Ensure the item isn't the last one in the collection
+            if (index < fighter.Costumes.Count - 1)
+            {
+                // Swap the item with the one below it
+                (fighter.Costumes[index + 1], fighter.Costumes[index]) = (fighter.Costumes[index], fighter.Costumes[index + 1]);
+
+                CostumeList.SelectedIndex = index + 1;
+            }
         }
     }
 }

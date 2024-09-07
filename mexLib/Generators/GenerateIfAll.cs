@@ -103,7 +103,7 @@ namespace mexLib.Generators
             {
                 var f = ws.Project.Fighters[internalId];
                 int costume_index = 0;
-                foreach (var c in f.Costumes.Costumes)
+                foreach (var c in f.Costumes)
                 {
                     var textureAsset = c.IconAsset.GetTexFile(ws);
                     if (textureAsset != null)

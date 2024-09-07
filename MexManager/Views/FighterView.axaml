@@ -31,6 +31,7 @@
 				<controls:IconMenuItem
 					Text="Remove"
 					ToolTip.Tip="Remove"
+					IsEnabled="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"
 					IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 					Click="RemoveFighterMenuItem_Click"/>
 				<controls:IconMenuItem
@@ -41,6 +42,7 @@
 				<controls:IconMenuItem
 					Text="Export"
 					ToolTip.Tip="Export"
+					IsEnabled="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"
 					IconSource="avares://MexManager/Assets/Common/file_export.png"
 					Click="ExportFighterMenuItem_Click"/>
 			</Menu>
@@ -50,7 +52,8 @@
 				ItemsSource="{Binding Fighters}"
 				SelectedItem="{Binding SelectedFighter, Mode=TwoWay}"
 				Padding="0"
-				Width="280">
+				Width="280"
+				SelectedIndex="0">
 				<ListBox.ItemTemplate>
 					<DataTemplate>
 						<StackPanel
@@ -117,30 +120,47 @@
 							<controls:IconMenuItem
 								Text="Import"
 								ToolTip.Tip="Import"
+								IsEnabled="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"
 								IconSource="avares://MexManager/Assets/Common/file_import.png"
 								Click="ImportCostumeMenuItem_Click"/>
 							<controls:IconMenuItem
 								Text="Export"
 								ToolTip.Tip="Export"
+								IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
 								IconSource="avares://MexManager/Assets/Common/file_export.png"
-								Click="ExportCostumeMenuItem_Click">
-							</controls:IconMenuItem>
+								Click="ExportCostumeMenuItem_Click"/>
 							<controls:IconMenuItem
 								Text="Duplicate"
 								ToolTip.Tip="Duplicate"
+								IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
 								IconSource="avares://MexManager/Assets/Common/icon_duplicate.png"
 								Click="DuplicateCostumeMenuItem_Click"/>
 							<controls:IconMenuItem
 								Text="Remove"
 								ToolTip.Tip="Remove"
+								IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
 								IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 								Click="RemoveCostumeMenuItem_Click"/>
 						</Menu>
+						<Menu DockPanel.Dock="Top"
+							  Height="48">
+							<controls:IconMenuItem
+								Text="Move Up"
+								ToolTip.Tip="Move Up"
+								IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
+								IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
+								Click="MoveUpCostumeMenuItem_Click"/>
+							<controls:IconMenuItem
+								Text="Move Down"
+								ToolTip.Tip="Move Down"
+								IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
+								IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
+								Click="MoveDownCostumeMenuItem_Click"/>
+						</Menu>
 						<ListBox
-							Name="ItemList"
+							Name="CostumeList"
 							DockPanel.Dock="Left"
-							SelectionMode="Single"
-							ItemsSource="{Binding SelectedFighter.Costumes.Costumes}"
+							ItemsSource="{Binding SelectedFighter.Costumes}"
 							SelectedItem="{Binding SelectedFighterCostume, Mode=TwoWay}">
 
 							<ListBox.ItemTemplate>
@@ -168,7 +188,7 @@
 							<MenuItem Header="_Remove" Click="RemoveFighterItemMenuItem_Click"/>
 						</Menu>
 						<ListBox
-							Name="CostumeList"
+							Name="ItemList"
 							DockPanel.Dock="Left"
 							Width="200"
 							ItemsSource="{Binding SelectedFighter.Items}"

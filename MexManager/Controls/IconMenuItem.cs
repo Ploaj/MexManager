@@ -39,8 +39,17 @@ namespace MexManager.Controls
         public string Text
         {
             get => GetValue(TextProperty);
-            set => SetValue(TextProperty, value);
+            set
+            {
+                SetValue(TextProperty, value);
+                if (string.IsNullOrEmpty(value))
+                {
+                    textBlock.IsVisible = false;
+                }
+            }
         }
+
+        private readonly TextBlock textBlock;
 
         public IconMenuItem()
         {
@@ -52,7 +61,7 @@ namespace MexManager.Controls
                 Height = 24,
             };
 
-            var textBlock = new TextBlock();
+            textBlock = new TextBlock();
             textBlock[!TextBlock.TextProperty] = this[!TextProperty];
 
             stackPanel.Children.Add(image);

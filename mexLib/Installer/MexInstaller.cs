@@ -244,12 +244,12 @@ namespace mexLib.Installer
                     else if (externalId >= 19)
                         externalId -= 1;
 
-                    for (int i = 0; i < f.Costumes.Costumes.Count; i++)
+                    for (int i = 0; i < f.Costumes.Count; i++)
                     {
                         var k = keys.Find(e => e.Frame == externalId + (i * 30));
                         if (k != null)
                         {
-                            f.Costumes.Costumes[i].IconAsset.SetFromMexImage(workspace, new MexImage(tobjs[(int)k.Value]));
+                            f.Costumes[i].IconAsset.SetFromMexImage(workspace, new MexImage(tobjs[(int)k.Value]));
                         }
                     }
 
@@ -410,13 +410,13 @@ namespace mexLib.Installer
 
                 var fighter = workspace.Project.Fighters[fighterId];
 
-                for (int j = 0; j < fighter.Costumes.Costumes.Count; j++)
+                for (int j = 0; j < fighter.Costumes.Count; j++)
                 {
                     // get key on this frame
                     var k = keys.Find(e => e.Frame == i + 30 * j);
                     if (k != null)
                     {
-                        fighter.Costumes.Costumes[j].CSPAsset.SetFromMexImage(workspace, new MexImage(tobjs[(int)k.Value]));
+                        fighter.Costumes[j].CSPAsset.SetFromMexImage(workspace, new MexImage(tobjs[(int)k.Value]));
                     }
                 }
             }

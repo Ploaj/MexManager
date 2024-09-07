@@ -71,7 +71,7 @@ namespace mexLib.Generators
                 int externalId = MexFighterIDConverter.ToExternalID(internalId, stride);
                 var f = ws.Project.Fighters[internalId];
                 int costume_index = 0;
-                foreach (var c in f.Costumes.Costumes)
+                foreach (var c in f.Costumes)
                 {
                     var textureAsset = c.CSPAsset.GetTexFile(ws);
                     if (textureAsset != null)
