@@ -119,7 +119,7 @@ namespace mexLib
                 File.WriteAllBytes(workspace.GetFilePath("MnSlChr.usd"), iso.GetFileData("MnSlChr.usd"));
                 File.WriteAllBytes(workspace.GetFilePath("MnSlMap.usd"), iso.GetFileData("MnSlMap.usd"));
 
-                // write files
+                // TODO: write files
                 //int index = 0;
                 //foreach (var file in iso.GetAllFilePaths())
                 //{

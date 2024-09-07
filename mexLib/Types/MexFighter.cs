@@ -200,69 +200,7 @@ namespace mexLib.Types
             }
 
             // Functions
-            var ff = mexData.FighterFunctions;
-            var func = Functions;
-
-            ff.MoveLogicPointers[internalId] = func.MoveLogicPointer;
-            ff.OnLoad[internalId] = func.OnLoad;
-            ff.OnDeath[internalId] = func.OnRespawn;
-            ff.OnUnknown[internalId] = func.OnDestroy;
-            ff.DemoMoveLogic[internalId] = func.DemoMoveLogicPointer;
-            ff.SpecialN[internalId] = func.SpecialN;
-            ff.SpecialNAir[internalId] = func.SpecialNAir;
-            ff.SpecialHi[internalId] = func.SpecialHi;
-            ff.SpecialHiAir[internalId] = func.SpecialHiAir;
-            ff.SpecialS[internalId] = func.SpecialS;
-            ff.SpecialSAir[internalId] = func.SpecialSAir;
-            ff.SpecialLw[internalId] = func.SpecialLw;
-            ff.SpecialLwAir[internalId] = func.SpecialLwAir;
-            ff.OnAbsorb[internalId] = func.OnAbsorb;
-            ff.onItemCatch[internalId] = func.OnItemPickup;
-            ff.onMakeItemInvisible[internalId] = func.OnMakeItemInvisible;
-            ff.onMakeItemVisible[internalId] = func.OnMakeItemVisible;
-            ff.onItemPickup[internalId] = func.OnItemPickup;
-            ff.onItemDrop[internalId] = func.OnItemDrop;
-            ff.onItemCatch[internalId] = func.OnItemCatch;
-            ff.onUnknownItemRelated[internalId] = func.OnUnknownItemRelated;
-            ff.onApplyHeadItem[internalId] = func.OnApplyHeadItem;
-            ff.onRemoveHeadItem[internalId] = func.OnRemoveHeadItem;
-            ff.onHit[internalId] = func.EyeTextureDamaged;
-            ff.onUnknownEyeTextureRelated[internalId] = func.EyeTextureNormal;
-            ff.onFrame[internalId] = func.OnFrame;
-            ff.onActionStateChange[internalId] = func.OnActionStateChange;
-            ff.onRespawn[internalId] = func.ResetAttribute;
-            ff.onModelRender[internalId] = func.OnModelRender;
-            ff.onShadowRender[internalId] = func.OnShadowRender;
-            ff.onUnknownMultijump[internalId] = func.OnUnknownMultijump;
-            ff.onActionStateChangeWhileEyeTextureIsChanged[internalId * 2] = func.OnActionStateChangeWhileEyeTextureIsChanged1;
-            ff.onActionStateChangeWhileEyeTextureIsChanged[internalId * 2 + 1] = func.OnActionStateChangeWhileEyeTextureIsChanged2;
-            ff.onTwoEntryTable[internalId * 2] = func.OnTwoEntryTable1;
-            ff.onTwoEntryTable[internalId * 2 + 1] = func.OnTwoEntryTable2;
-            ff.onLand[internalId] = func.OnLanding;
-            ff.onExtRstAnim[internalId] = func.OnExtRstAnim;
-            ff.onIndexExtResultAnim[internalId] = func.OnIndexExtRstAnim;
-
-            ff.onSmashDown[internalId] = func.OnSmashLw;
-            ff.onSmashUp[internalId] = func.OnSmashHi;
-            ff.onSmashForward[internalId] = func.OnSmashF;
-            ff.enterFloat[internalId] = func.EnterFloat;
-            ff.enterSpecialDoubleJump[internalId] = func.EnterDoubleJump;
-            ff.enterTether[internalId] = func.EnterTether;
-            ff.onIntroL[internalId] = func.OnIntroL;
-            ff.onIntroR[internalId] = func.OnIntroR;
-            ff.onCatch[internalId] = func.OnCatch;
-            ff.onAppeal[internalId] = func.OnAppeal;
-            ff.getTrailData[internalId] = func.GetSwordTrail;
-
-            var kff = mexData.KirbyFunctions;
-            kff.KirbyOnHit[internalId] = func.KirbyOnHit;
-            kff.KirbyOnItemInit[internalId] = func.KirbyOnItemInit;
-            kff.OnAbilityLose[internalId] = func.KirbyOnLoseAbility;
-            kff.OnAbilityGain[internalId] = func.KirbyOnSwallow;
-            kff.KirbySpecialN[internalId] = func.KirbySpecialN;
-            kff.KirbySpecialNAir[internalId] = func.KirbySpecialNAir;
-            kff.KirbyOnFrame[internalId] = func.KirbyOnFrame;
-            kff.KirbyOnDeath[internalId] = func.KirbyOnDeath;
+            Functions.ToMxDt(mexData, internalId);
 
             // save items
             var itemEntries = new ushort[Items.Count];

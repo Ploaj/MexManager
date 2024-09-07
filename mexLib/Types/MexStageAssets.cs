@@ -11,6 +11,7 @@ namespace mexLib.Types
 {
     public partial class MexStage
     {
+        [Browsable(false)]
         public StageAssets Assets { get; set; } = new StageAssets();
 
         public class StageAssets

@@ -1,4 +1,5 @@
-﻿using mexLib.Attributes;
+﻿using HSDRaw.MEX;
+using mexLib.Attributes;
 using mexLib.MexScubber;
 using System.ComponentModel;
 
@@ -8,6 +9,7 @@ namespace mexLib.Types
     {
         [Browsable(false)]
         public FighterFunctions Functions { get; set; } = new FighterFunctions();
+
         public class FighterFunctions
         {
             [Browsable(false)]
@@ -42,6 +44,7 @@ namespace mexLib.Types
             public uint SpecialNAir { get; set; }
 
             [Category("Fighter")]
+            [DisplayHex]
             public uint SpecialHi { get; set; }
 
             [Category("Fighter")]
@@ -49,6 +52,7 @@ namespace mexLib.Types
             public uint SpecialHiAir { get; set; }
 
             [Category("Fighter")]
+            [DisplayHex]
             public uint SpecialLw { get; set; }
 
             [Category("Fighter")]
@@ -238,15 +242,82 @@ namespace mexLib.Types
             /// <summary>
             /// 
             /// </summary>
+            /// <param name="mexData"></param>
+            /// <param name="internalId"></param>
+            public void ToMxDt(MEX_Data mexData, int internalId)
+            {
+                var ff = mexData.FighterFunctions;
+
+                ff.MoveLogicPointers[internalId] = MoveLogicPointer;
+                ff.OnLoad[internalId] = OnLoad;
+                ff.OnDeath[internalId] = OnRespawn;
+                ff.OnUnknown[internalId] = OnDestroy;
+                ff.DemoMoveLogic[internalId] = DemoMoveLogicPointer;
+                ff.SpecialN[internalId] = SpecialN;
+                ff.SpecialNAir[internalId] = SpecialNAir;
+                ff.SpecialHi[internalId] = SpecialHi;
+                ff.SpecialHiAir[internalId] = SpecialHiAir;
+                ff.SpecialS[internalId] = SpecialS;
+                ff.SpecialSAir[internalId] = SpecialSAir;
+                ff.SpecialLw[internalId] = SpecialLw;
+                ff.SpecialLwAir[internalId] = SpecialLwAir;
+                ff.OnAbsorb[internalId] = OnAbsorb;
+                ff.onItemCatch[internalId] = OnItemPickup;
+                ff.onMakeItemInvisible[internalId] = OnMakeItemInvisible;
+                ff.onMakeItemVisible[internalId] = OnMakeItemVisible;
+                ff.onItemPickup[internalId] = OnItemPickup;
+                ff.onItemDrop[internalId] = OnItemDrop;
+                ff.onItemCatch[internalId] = OnItemCatch;
+                ff.onUnknownItemRelated[internalId] = OnUnknownItemRelated;
+                ff.onApplyHeadItem[internalId] = OnApplyHeadItem;
+                ff.onRemoveHeadItem[internalId] = OnRemoveHeadItem;
+                ff.onHit[internalId] = EyeTextureDamaged;
+                ff.onUnknownEyeTextureRelated[internalId] = EyeTextureNormal;
+                ff.onFrame[internalId] = OnFrame;
+                ff.onActionStateChange[internalId] = OnActionStateChange;
+                ff.onRespawn[internalId] = ResetAttribute;
+                ff.onModelRender[internalId] = OnModelRender;
+                ff.onShadowRender[internalId] = OnShadowRender;
+                ff.onUnknownMultijump[internalId] = OnUnknownMultijump;
+                ff.onActionStateChangeWhileEyeTextureIsChanged[internalId * 2] = OnActionStateChangeWhileEyeTextureIsChanged1;
+                ff.onActionStateChangeWhileEyeTextureIsChanged[internalId * 2 + 1] = OnActionStateChangeWhileEyeTextureIsChanged2;
+                ff.onTwoEntryTable[internalId * 2] = OnTwoEntryTable1;
+                ff.onTwoEntryTable[internalId * 2 + 1] = OnTwoEntryTable2;
+                ff.onLand[internalId] = OnLanding;
+                ff.onExtRstAnim[internalId] = OnExtRstAnim;
+                ff.onIndexExtResultAnim[internalId] = OnIndexExtRstAnim;
+
+                ff.onSmashDown[internalId] = OnSmashLw;
+                ff.onSmashUp[internalId] = OnSmashHi;
+                ff.onSmashForward[internalId] = OnSmashF;
+                ff.enterFloat[internalId] = EnterFloat;
+                ff.enterSpecialDoubleJump[internalId] = EnterDoubleJump;
+                ff.enterTether[internalId] = EnterTether;
+                ff.onIntroL[internalId] = OnIntroL;
+                ff.onIntroR[internalId] = OnIntroR;
+                ff.onCatch[internalId] = OnCatch;
+                ff.onAppeal[internalId] = OnAppeal;
+                ff.getTrailData[internalId] = GetSwordTrail;
+
+                var kff = mexData.KirbyFunctions;
+                kff.KirbyOnHit[internalId] = KirbyOnHit;
+                kff.KirbyOnItemInit[internalId] = KirbyOnItemInit;
+                kff.OnAbilityLose[internalId] = KirbyOnLoseAbility;
+                kff.OnAbilityGain[internalId] = KirbyOnSwallow;
+                kff.KirbySpecialN[internalId] = KirbySpecialN;
+                kff.KirbySpecialNAir[internalId] = KirbySpecialNAir;
+                kff.KirbyOnFrame[internalId] = KirbyOnFrame;
+                kff.KirbyOnDeath[internalId] = KirbyOnDeath;
+            }
+            /// <summary>
+            /// 
+            /// </summary>
             /// <param name="dol"></param>
             /// <param name="index"></param>
             public void FromDOL(MexDOL dol, uint index)
             {
                 if (index > 0x21)
                     return;
-
-                // get external id
-                //var exid = (uint)MexFighterIDConverter.ToExternalID((int)index, 0x21);
 
                 // Functions
                 OnLoad = dol.GetStruct<uint>(0x803C1154, index);

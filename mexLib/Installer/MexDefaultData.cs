@@ -314,7 +314,5 @@ namespace mexLib.Installer
                 };
             }
         }
-
-        // TODO: bgm
     }
 }
