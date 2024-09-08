@@ -306,6 +306,58 @@
 								Width="32"
 								Height="32"/>
 					</TabItem.Header>
+					<DockPanel>
+						<DockPanel
+								DockPanel.Dock="Left">
+							<Menu
+								DockPanel.Dock="Top"
+								Height="48">
+								<controls:IconMenuItem
+									Text="Add"
+									ToolTip.Tip="Add"
+									IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+									/>
+								<controls:IconMenuItem
+									Text="Remove"
+									ToolTip.Tip="Remove"
+									IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+									/>
+							</Menu>
+							<ListBox
+								DockPanel.Dock="Top"
+								Name="CodesList"
+								Width="280"
+								ItemsSource="{Binding Codes}"
+								SelectedItem="{Binding SelectedCode, Mode=TwoWay}">
+								<ListBox.ItemTemplate>
+									<DataTemplate>
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Text="! "
+													 Foreground="Yellow"
+													 VerticalAlignment="Center"
+													 IsVisible="{Binding CompileError, Converter={StaticResource NullToBoolConverter}}"/>
+											<CheckBox IsChecked="{Binding Enabled}"/>
+											<TextBlock Text="{Binding Name}"
+													   VerticalAlignment="Center"/>
+										</StackPanel>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+							</ListBox>
+						</DockPanel>
+						<DockPanel>
+							<pgc:PropertyGrid
+								DockPanel.Dock="Top"
+								VerticalAlignment="Top"
+								AllowFilter="False"
+								AllowQuickFilter="False"
+								ShowStyle="Builtin"
+								Margin="4"
+								DataContext="{Binding SelectedCode}"/>
+							<controls:CodeBox 
+								DataContext="{Binding SelectedCode, Mode=TwoWay}"
+								DockPanel.Dock="Top"/>
+						</DockPanel>
+					</DockPanel>
 				</TabItem>
 			</TabControl>
 		</DockPanel>

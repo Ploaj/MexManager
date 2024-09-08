@@ -27,7 +27,11 @@ namespace mexLib
 
         public MexReservedAssets ReservedAssets { get; set; } = new MexReservedAssets();
 
+        [JsonIgnore]
+        public MexCode MainCode { get; set; } = new MexCode();
 
+        [JsonIgnore]
+        public ObservableCollection<MexCode> Codes { get; set; } = new ObservableCollection<MexCode>();
 
         [JsonIgnore]
         public MexCharacterSelect CharacterSelect { get; set; } = new MexCharacterSelect();
@@ -86,6 +90,17 @@ namespace mexLib
         /// </summary>
         public MexProject()
         {
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<MexCode> GetAllCodes()
+        {
+            yield return MainCode;
+
+            foreach (var c in Codes)
+                yield return c;
         }
         /// <summary>
         /// 
@@ -313,6 +328,12 @@ namespace mexLib
             foreach (var f in proj.SoundSaveMap.Load<MexSoundbank>(ws.GetDataPath("sounds//")))
                 proj.Soundbanks.Add(f);
 
+            // Load main code
+            MexJsonSerializer.LoadData<MexCode>(ws.GetDataPath("mex.json"), data => proj.MainCode = data);
+
+            // Load codes
+            MexJsonSerializer.LoadData<ObservableCollection<MexCode>>(ws.GetDataPath("codes.json"), data => proj.Codes = data);
+
             // Load character select
             MexJsonSerializer.LoadData<MexCharacterSelect>(ws.GetDataPath("css.json"), data => proj.CharacterSelect = data);
 
@@ -404,6 +425,12 @@ namespace mexLib
             //    File.WriteAllText(Path.Combine(projectPath, "data//items_stages.json"), JsonSerializer.Serialize(StageItems, _serializeoptions));
             //    File.WriteAllText(Path.Combine(projectPath, "data//items_fighters.json"), JsonSerializer.Serialize(FighterItems, _serializeoptions));
             //}
+
+            // save mexcode
+            File.WriteAllText(workspace.GetDataPath("mex.json"), MexJsonSerializer.Serialize(MainCode));
+
+            // save codes
+            File.WriteAllText(workspace.GetDataPath("codes.json"), MexJsonSerializer.Serialize(Codes));
 
             // save character select
             File.WriteAllText(workspace.GetDataPath("css.json"), MexJsonSerializer.Serialize(CharacterSelect));

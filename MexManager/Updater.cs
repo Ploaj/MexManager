@@ -22,9 +22,6 @@ namespace MexManager
 
         //public static bool UpdateReady;
 
-        public static readonly string MexCodePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "codes.gct");
-        public static readonly string MexAddCodePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "codes.ini");
-
         /// <summary>
         /// 
         /// </summary>
@@ -33,8 +30,8 @@ namespace MexManager
             // https://github.com/akaneia/m-ex/raw/master/asm/codes.gct
             // https://github.com/akaneia/m-ex/raw/master/asm/codes.ini
 
-            UpdateCodesFromURL(MexCodePath, @"https://github.com/akaneia/m-ex/raw/master/asm/codes.gct");
-            UpdateCodesFromURL(MexAddCodePath, @"https://github.com/akaneia/m-ex/raw/master/asm/codes.ini");
+            UpdateCodesFromURL(Global.MexCodePath, @"https://github.com/akaneia/m-ex/raw/master/asm/codes.gct");
+            UpdateCodesFromURL(Global.MexAddCodePath, @"https://github.com/akaneia/m-ex/raw/master/asm/codes.ini");
 
             return false;
         }

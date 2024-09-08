@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MexManager.Controls.CodeBox">
+
+	<DockPanel>
+		<TextBlock 
+			DockPanel.Dock="Top"
+			Name="ErrorBlock"
+			FontFamily="Consolas"
+			Height="16"/>
+		<ScrollViewer
+			DockPanel.Dock="Top">
+			<Grid Margin="4">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+				<!-- Line Numbers -->
+				<TextBlock x:Name="LineNumbers"
+							Grid.Column="0"
+							FontFamily="Consolas"
+							VerticalAlignment="Top"
+							HorizontalAlignment="Right"
+							Margin="5"/>
+
+				<!-- The TextBox -->
+				<TextBox x:Name="MainTextBox"
+						 Text="{Binding Source}"
+						Grid.Column="1"
+						FontFamily="Consolas"
+						AcceptsReturn="True"
+						TextWrapping="Wrap"
+						TextChanged="OnTextChanged"/>
+			</Grid>
+		</ScrollViewer>
+	</DockPanel>
+
+</UserControl>

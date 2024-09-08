@@ -56,7 +56,6 @@ public class MainViewModel : ViewModelBase
     }
 
     private object? _selectedStageItem;
-
     public object? SelectedStageItem
     {
         get => _selectedStageItem;
@@ -69,7 +68,6 @@ public class MainViewModel : ViewModelBase
         get => _selectedSeries;
         set => this.RaiseAndSetIfChanged(ref _selectedSeries, value);
     }
-
 
     private ObservableCollection<MexSeries>? _series;
     public ObservableCollection<MexSeries>? Series
@@ -97,6 +95,22 @@ public class MainViewModel : ViewModelBase
     {
         get => _music;
         set => this.RaiseAndSetIfChanged(ref _music, value);
+    }
+
+
+
+    private object? _selectedCode;
+    public object? SelectedCode
+    {
+        get => _selectedCode;
+        set => this.RaiseAndSetIfChanged(ref _selectedCode, value);
+    }
+
+    private ObservableCollection<MexCode>? _codes;
+    public ObservableCollection<MexCode>? Codes
+    {
+        get => _codes;
+        set => this.RaiseAndSetIfChanged(ref _codes, value);
     }
 
     private MexPlaylist? _menuPlaylist;
@@ -130,6 +144,7 @@ public class MainViewModel : ViewModelBase
             Music = null;
             MenuPlaylist = null;
             Series = null;
+            Codes = null;
         }
         else
         {
@@ -138,6 +153,7 @@ public class MainViewModel : ViewModelBase
             Music = Global.Workspace.Project.Music;
             MenuPlaylist = Global.Workspace.Project.MenuPlaylist;
             Series = Global.Workspace.Project.Series;
+            Codes = Global.Workspace.Project.Codes;
         }
     }
     /// <summary>

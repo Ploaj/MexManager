@@ -4,6 +4,8 @@ using HSDRaw.MEX;
 using mexLib.Generators;
 using mexLib.Installer;
 using mexLib.MexScubber;
+using mexLib.Types;
+using mexLib.Utilties;
 using System.Diagnostics;
 
 namespace mexLib
@@ -84,15 +86,15 @@ namespace mexLib
         public static MexWorkspace NewWorkspace(
             string projectFile,
             string isoPath,
-            string gctPath,
-            string codesPath)
+            MexCode mainCode,
+            IEnumerable<MexCode> defaultCodes)
         {
             if (!File.Exists(isoPath))
                 throw new FileNotFoundException("Melee ISO not found");
 
             var projectPath = Path.GetDirectoryName(projectFile) + "\\";
 
-            Directory.Delete(projectPath + "\\assets", recursive: true);
+            //Directory.Delete(projectPath + "\\assets", recursive: true);
 
             var sys = projectPath + "\\sys";
             if (!Directory.Exists(sys))
@@ -141,8 +143,6 @@ namespace mexLib
             // copy codes
             Directory.CreateDirectory(workspace.GetDataPath(""));
             Directory.CreateDirectory(workspace.GetAssetPath(""));
-            File.Copy(gctPath, workspace.GetDataPath("codes.gct"), true);
-            File.Copy(codesPath, workspace.GetDataPath("codes.ini"), true);
 
             // install mex system
             var dol = new MexDOL(workspace.GetDOL());
@@ -156,6 +156,9 @@ namespace mexLib
             dol.Save(workspace.GetSystemPath("main.dol"));
 
             // save workspace
+            workspace.Project.MainCode = mainCode;
+            foreach (var c in defaultCodes)
+                workspace.Project.Codes.Add(c);
             workspace.Save();
 
             return workspace;
@@ -233,19 +236,21 @@ namespace mexLib
 
             // TODO: generate sem/smst/ssm
 
-            // TODO: compile codes
+            // compile codes
             sw.Restart();
-            FileManager.Set(GetFilePath("codes.gct"), File.ReadAllBytes(GetDataPath("codes.gct")));
+            FileManager.Set(GetFilePath("codes.gct"), CodeLoader.ToGCT(Project.GetAllCodes()));
             sw.Stop();
 
             Debug.WriteLine($"Compile codes {sw.Elapsed}");
 
+            // save data
             sw.Restart();
             Project.Save(this);
             sw.Stop();
 
             Debug.WriteLine($"Save Project Data {sw.Elapsed}");
 
+            // save files
             sw.Start();
             FileManager.Save();
             sw.Stop();

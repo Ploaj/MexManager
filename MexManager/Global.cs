@@ -1,9 +1,8 @@
-﻿using Avalonia.Platform;
-using HSDRaw;
-using HSDRaw.MEX;
-using mexLib;
+﻿using mexLib;
 using mexLib.Types;
+using mexLib.Utilties;
 using MexManager.Views;
+using System;
 using System.IO;
 
 namespace MexManager
@@ -21,6 +20,17 @@ namespace MexManager
 
                 return new();
             }
+        }
+
+        public static MexCode? MEXCode { get; internal set; }
+
+        public static readonly string MexCodePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "codes.gct");
+        public static readonly string MexAddCodePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "codes.ini");
+
+        public static void Initialize()
+        {
+            // TODO: check update for codes and tool
+            //Updater.UpdateCodes();
         }
 
         public static void PlayMusic(MexMusic music)
@@ -55,11 +65,15 @@ namespace MexManager
         {
             using (var s = new MemoryStream())
             {
+                // load codes
+                var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
+                var defaultCodes = CodeLoader.FromINI(File.ReadAllBytes(MexAddCodePath));
+
                 Workspace = MexWorkspace.NewWorkspace(
                     filepath,
                     App.Settings.MeleePath,
-                    Updater.MexCodePath,
-                    Updater.MexAddCodePath);
+                    mainCode,
+                    defaultCodes);
             }
 
             return Workspace;

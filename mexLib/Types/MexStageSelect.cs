@@ -79,8 +79,8 @@ namespace mexLib.Types
                 TX = X,
                 TY = Y,
                 TZ = Z,
-                SX = 1,
-                SY = 1,
+                SX = ScaleX,
+                SY = ScaleY,
                 SZ = 1,
             };
         }

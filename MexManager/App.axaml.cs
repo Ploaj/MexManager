@@ -6,8 +6,6 @@ using Avalonia.Markup.Xaml;
 using MexManager.ViewModels;
 using MexManager.Views;
 using System;
-using System.IO;
-using System.Text.Json;
 
 namespace MexManager;
 
@@ -30,9 +28,7 @@ public partial class App : Application
 
         Settings = ApplicationSettings.TryOpen();
 
-        // TODO: check update for codes and tool
-        if (!File.Exists(Updater.MexCodePath))
-            Updater.UpdateCodes();
+        Global.Initialize();
     }
 
     /// <summary>
