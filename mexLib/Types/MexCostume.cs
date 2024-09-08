@@ -64,6 +64,22 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
+        public void DeleteFiles(MexWorkspace workspace)
+        {
+            File.DeleteFiles(workspace);
+            KirbyFile.DeleteFiles(workspace);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void DeleteAssets(MexWorkspace workspace)
+        {
+            CSPAsset.Delete(workspace);
+            IconAsset.Delete(workspace);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         public static IEnumerable<MexCostume> FromZip(MexWorkspace workspace, string zipPath, StringBuilder log)
         {

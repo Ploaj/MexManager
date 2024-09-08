@@ -139,5 +139,19 @@ namespace mexLib.AssetTypes
             var stream = workspace.FileManager.Get(texPath);
             return MexImage.FromByteArray(stream);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        public void Delete(MexWorkspace workspace)
+        {
+            if (AssetFileName == null)
+                return;
+
+            var path = GetFullPath(workspace);
+
+            workspace.FileManager.Remove(path + ".png");
+            workspace.FileManager.Remove(path + ".tex");
+        }
     }
 }

@@ -140,5 +140,15 @@ namespace mexLib
 
             return passing;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void DeleteFiles(MexWorkspace workspace)
+        {
+            var path = workspace.GetFilePath(FileName);
+
+            if (workspace.FileManager.Exists(path))
+                workspace.FileManager.Remove(path);
+        }
     }
 }

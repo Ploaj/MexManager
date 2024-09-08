@@ -169,7 +169,7 @@ public partial class FighterView : UserControl
 
             switch (Path.GetExtension(zipPath))
             {
-                case ".zip": // TODO: 
+                case ".zip":
                     {
                         StringBuilder log = new ();
                         var costume = MexCostume.FromZip(Global.Workspace, zipPath, log);
@@ -226,13 +226,23 @@ public partial class FighterView : UserControl
             model.SelectedFighter is MexFighter fighter &&
             model.SelectedFighterCostume is MexCostume costume)
         {
+            // ask are you sure
             var res = await MessageBox.Show($"Are you sure you want\nto remove \"{costume.Name}\"?", "Remove Costume", MessageBox.MessageBoxButtons.YesNoCancel);
-
             if (res != MessageBox.MessageBoxResult.Yes)
                 return;
 
+            // ask to delete files
+            res = await MessageBox.Show($"Would you like to delete\n\"{costume.File.FileName}\" as well?", "Delete Costume File", MessageBox.MessageBoxButtons.YesNoCancel);
+            if (res == MessageBox.MessageBoxResult.Yes)
+            {
+                costume.DeleteFiles(Global.Workspace);
+            }
+
+            // delete assets
+            costume.DeleteAssets(Global.Workspace);
+
+            // finally remove costume
             fighter.Costumes.Remove(costume);
-            //costume.RemoveAssets(Global.Workspace);
         }
     }
     /// <summary>
