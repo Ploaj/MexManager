@@ -18,17 +18,19 @@ namespace mexLib
         }
         public int _visibilityIndex = 0;
 
-        [DisplayName("File")]
-        [MexFilePathValidator(MexFilePathType.Files)]
-        [MexFilePathValidatorCallback("CheckFileName")]
-        public new string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); SetCostumeVisibilityFromSymbols(); } }
-
-        private string _fileName = "";
+        public MexCostumeVisibilityFile()
+        {
+            PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(JointSymbol))
+                    SetCostumeVisibilityFromSymbols();
+            };
+        }
 
         /// <summary>
         /// 
         /// </summary>
-        public void SetCostumeVisibilityFromSymbols()
+        private void SetCostumeVisibilityFromSymbols()
         {
             switch (JointSymbol)
             {
@@ -99,8 +101,8 @@ namespace mexLib
                 return new MexFilePathError("joint not found in dat");
 
             GetSymbolFromFile(workspace, fullPath);
-            OnPropertyChanged(propertyName: "JointSymbol");
-            OnPropertyChanged(propertyName: "MaterialSymbol");
+            OnPropertyChanged(propertyName: nameof(JointSymbol));
+            OnPropertyChanged(propertyName: nameof(MaterialSymbol));
 
             return null;
         }
@@ -109,11 +111,16 @@ namespace mexLib
         /// </summary>
         /// <param name="workspace"></param>
         /// <returns></returns>
-        public bool GetSymbolFromFile(MexWorkspace workspace, string fullPath)
+        public bool GetSymbolFromFile(MexWorkspace workspace, string? fullPath = null)
         {
+            fullPath ??= workspace.GetFilePath(FileName);
+
             using Stream? s = workspace.FileManager.GetStream(fullPath);
 
-            if (s != null && !ArchiveTools.IsValidHSDFile(s))
+            if (s == null)
+                return false;
+
+            if (!ArchiveTools.IsValidHSDFile(s))
                 return false;
 
             JointSymbol = "";

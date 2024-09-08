@@ -69,64 +69,107 @@ namespace mexLib
         {
             Dictionary<string, MexCostume> costumes = new ();
 
-            //using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Read))
-            //    foreach (ZipArchiveEntry entry in zip.Entries)
-            //    {
-            //        using var fstream = entry.Open();
-            //        using var stream = new MemoryStream();
-            //        fstream.CopyTo(stream);
-            //        fstream.Close();
+            // first scan file for dat files
+            using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Read))
+            {
+                foreach (ZipArchiveEntry entry in zip.Entries)
+                {
+                    using var fstream = entry.Open();
+                    using var stream = new MemoryStream();
+                    fstream.CopyTo(stream);
+                    fstream.Close();
 
-            //        // assets
-            //        switch (entry.Name.ToLower())
-            //        {
-            //            case "stc.png":
-            //            case "stock.png":
-            //            case "icon.png":
-            //                l.AppendLine($"Imported \"{entry.FullName}\" as stock icon");
-            //                costume.IconAsset.SetFromImageFile(workspace, stream);
-            //                break;
-            //            case "csp.png":
-            //            case "portrait.png":
-            //            case "select.png":
-            //                l.AppendLine($"Imported \"{entry.FullName}\" as portrait");
-            //                costume.CSPAsset.SetFromImageFile(workspace, stream);
-            //                break;
-            //        }
-            //        // dat assets
-            //        if (entry.Name.EndsWith(".dat"))
-            //        {
-            //            // file
-            //            if (entry.Name.StartsWith("PlKb"))
-            //            {
-            //                var targetPath = workspace.GetFilePath(entry.Name.Replace(" ", "_"));
-            //                var path = workspace.FileManager.GetUniqueFilePath(targetPath);
+                    // dat assets
+                    if (entry.Name.EndsWith(".dat"))
+                    {
+                        // file
+                        if (entry.Name.StartsWith("PlKb"))
+                        {
+                            var targetPath = workspace.GetFilePath(entry.Name.Replace(" ", "_"));
+                            var path = workspace.FileManager.GetUniqueFilePath(targetPath);
 
-            //                workspace.FileManager.Set(path, stream.ToArray());
-            //                costume.KirbyFileName = Path.GetFileName(path);
+                            var costume_key = Path.GetFileNameWithoutExtension(path)[4..];
+                            if (!costumes.ContainsKey(costume_key))
+                                costumes.Add(costume_key, new MexCostume());
 
-            //                l.AppendLine($"Imported \"{entry.FullName}\" as kirby costume");
-            //            }
-            //            else
-            //            {
-            //                var targetPath = workspace.GetFilePath(entry.Name.Replace(" ", "_"));
-            //                var path = workspace.FileManager.GetUniqueFilePath(targetPath);
+                            workspace.FileManager.Set(path, stream.ToArray());
+                            costumes[costume_key].KirbyFile.FileName = Path.GetFileName(path);
 
-            //                workspace.FileManager.Set(path, stream.ToArray());
-            //                costume.FileName = Path.GetFileName(path);
+                            log.AppendLine($"Imported \"{entry.FullName}\" as kirby costume");
+                        }
+                        else
+                        {
+                            var targetPath = workspace.GetFilePath(entry.Name.Replace(" ", "_"));
+                            var path = workspace.FileManager.GetUniqueFilePath(targetPath);
 
-            //                l.AppendLine($"Imported \"{entry.FullName}\" as costume");
-            //            }
-            //        }
-            //    }
+                            var costume_key = Path.GetFileNameWithoutExtension(path)[4..6];
+                            if (!costumes.ContainsKey(costume_key))
+                                costumes.Add(costume_key, new MexCostume());
 
-            //costume.File.GetSymbolFromFile(workspace);
-            //costume.KirbyFile.GetSymbolFromFile(workspace);
+                            workspace.FileManager.Set(path, stream.ToArray());
+                            costumes[costume_key].Name = Path.GetFileNameWithoutExtension(path);
+                            costumes[costume_key].File.FileName = Path.GetFileName(path);
 
+                            log.AppendLine($"Imported \"{entry.FullName}\" as costume");
+                        }
+                    }
+                }
+            }
+
+            // search for assets
+            using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Read))
+                foreach (ZipArchiveEntry entry in zip.Entries)
+                {
+                    using var fstream = entry.Open();
+                    using var stream = new MemoryStream();
+                    fstream.CopyTo(stream);
+                    fstream.Close();
+
+                    if (costumes.Count == 1)
+                    {
+                        // assets
+                        switch (entry.Name.ToLower())
+                        {
+                            case "stc.png":
+                            case "stock.png":
+                            case "icon.png":
+                                log.AppendLine($"Imported \"{entry.FullName}\" as stock icon");
+                                costumes.Values.ToArray()[0].IconAsset.SetFromImageFile(workspace, stream);
+                                break;
+                            case "csp.png":
+                            case "portrait.png":
+                            case "select.png":
+                                log.AppendLine($"Imported \"{entry.FullName}\" as portrait");
+                                costumes.Values.ToArray()[0].CSPAsset.SetFromImageFile(workspace, stream);
+                                break;
+                        }
+                    }
+                    //else
+                    //{
+                    //    if (Path.GetExtension(entry.Name).ToLower() == ".png")
+                    //    {
+                    //        var name = Path.GetFileName(entry.Name);
+                    //        if (name.Length == 6 && name.StartsWith("Pl"))
+                    //        {
+                    //            var key = name[4..6];
+                    //            if (costumes.ContainsKey(key))
+                    //            {
+                    //                costumes[key].IconAsset.SetFromImageFile(workspace, stream);
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                }
+
+            // grab symbols and return 
             foreach (var c in costumes)
             {
                 if (!string.IsNullOrEmpty(c.Value.File.FileName))
-                yield return c.Value;
+                {
+                    c.Value.File.GetSymbolFromFile(workspace);
+                    c.Value.KirbyFile.GetSymbolFromFile(workspace);
+                    yield return c.Value;
+                }
             }
         }
         /// <summary>

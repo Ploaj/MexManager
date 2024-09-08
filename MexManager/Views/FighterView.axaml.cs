@@ -11,6 +11,7 @@ using MexManager.ViewModels;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
 
 namespace MexManager.Views;
 
@@ -170,13 +171,14 @@ public partial class FighterView : UserControl
             {
                 case ".zip": // TODO: 
                     {
-                        //var costume = MexCostume.FromZip(Global.Workspace, zipPath, out string log);
+                        StringBuilder log = new ();
+                        var costume = MexCostume.FromZip(Global.Workspace, zipPath, log);
 
-                        //if (!string.IsNullOrEmpty(log))
-                        //    await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
+                        if (log.Length != 0)
+                            await MessageBox.Show(log.ToString(), "Import Log", MessageBox.MessageBoxButtons.Ok);
 
-                        //if (costume != null)
-                        //    fighter.Costumes.Add(costume);
+                        foreach (var c in costume)
+                            fighter.Costumes.Add(c);
                     }
                     break;
                 case ".dat":

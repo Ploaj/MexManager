@@ -48,6 +48,36 @@ namespace mexLib.Attributes
             return filePath;
         }
 
+        public ValidationResult? IsValid(MexWorkspace? workspace, object? value)
+        {
+            if (workspace == null)
+            {
+                return new ValidationResult("Workspace is not opened.");
+            }
+
+            if (value is not string stringValue)
+            {
+                return new ValidationResult("Value is not a valid string.");
+            }
+
+            if (string.IsNullOrEmpty(stringValue))
+            {
+                if (CanBeNull)
+                    return ValidationResult.Success;
+                else
+                    return new ValidationResult("File is required.");
+            }
+
+            string filePath = GetFullPath(workspace, stringValue);
+
+            if (!workspace.FileManager.Exists(filePath))
+            {
+                return new ValidationResult("File not found");
+            }
+
+            return ValidationResult.Success;
+        }
+
         protected override ValidationResult? IsValid(object? value, ValidationContext context)
         {
             //if (MexWorkspace.LastOpened == null)

@@ -24,8 +24,11 @@ namespace mexLib.Generators
 
             HSDRawFile ifallFile = new(path);
 
-            ifallFile.CreateUpdateSymbol("Eblm_matanim_joint", GenerateEmblems(ws));
-            ifallFile.CreateUpdateSymbol("Stc_icns", Generate_Stc_icns(ws));
+            var emblems = GenerateEmblems(ws);
+            var stock_icons = Generate_Stc_icns(ws);
+
+            ifallFile.CreateUpdateSymbol("Eblm_matanim_joint", emblems);
+            ifallFile.CreateUpdateSymbol("Stc_icns", stock_icons);
 
             using MemoryStream stream = new ();
             ifallFile.Save(stream);
@@ -124,7 +127,6 @@ namespace mexLib.Generators
                             Value = 0,
                             InterpolationType = GXInterpolationType.HSD_A_OP_CON,
                         });
-                        icons.Add(new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.IA8).ToTObj());
                     }
                     costume_index++;
                 }

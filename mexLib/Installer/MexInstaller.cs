@@ -223,10 +223,12 @@ namespace mexLib.Installer
                 var keys = anim.AnimationObject.FObjDesc.GetDecodedKeys();
 
                 // get resereved icons
-                int[] reserved = { 124, 26, 27, 28, 57, 58, 59 };
+                int[] reserved = { 180, 26, 27, 28, 57, 58, 59 };
                 for (int i = 0; i < reserved.Length; i++)
                 {
-                    workspace.Project.ReservedAssets.IconsAssets[i].SetFromMexImage(workspace, new MexImage(tobjs[(int)keys[reserved[i]].Value]));
+                    var key = keys.Find(e => e.Frame == reserved[i]);
+                    if (key != null)
+                        workspace.Project.ReservedAssets.IconsAssets[i].SetFromMexImage(workspace, new MexImage(tobjs[(int)key.Value]));
                 }
                 // this icon exists in mnslchr, but I'm store it manually
                 workspace.Project.ReservedAssets.IconsAssets[^1].SetFromMexImage(workspace, MexImage.FromByteArray(MexDefaultData.SinglePlayerIcon));

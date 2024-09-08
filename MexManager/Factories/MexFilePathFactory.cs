@@ -1,15 +1,22 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.PropertyGrid.Controls;
 using Avalonia.PropertyGrid.Controls.Factories;
+using Avalonia.PropertyGrid.Services;
 using DynamicData.Kernel;
 using mexLib.Attributes;
+using MexManager.Extensions;
 using MexManager.Tools;
+using PropertyModels.ComponentModel.DataAnnotations;
 using PropertyModels.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -42,7 +49,24 @@ namespace MexManager.Factories
             var control = new DockPanel();
 
             TextBox stringControl = (TextBox)new Avalonia.PropertyGrid.Controls.Factories.Builtins.StringCellEditFactory().HandleNewProperty(context);
-            stringControl.HorizontalAlignment = HorizontalAlignment.Stretch;
+            stringControl.HorizontalAlignment = HorizontalAlignment.Stretch; 
+            stringControl.Background = ThemeExtensions.SystemAccentColor;
+            stringControl.TextChanged += (s, e) =>
+            {
+                var res = attr.IsValid(Global.Workspace, stringControl.Text);
+                if (res == null)
+                {
+
+                }
+                else if (res == ValidationResult.Success)
+                {
+                    DataValidationErrors.ClearErrors(stringControl);
+                }
+                else
+                {
+                    DataValidationErrors.SetErrors(stringControl, [ LocalizationService.Default[res.ErrorMessage] ]);
+                }
+            };
             DockPanel.SetDock(stringControl, Dock.Left);
 
             DragDrop.SetAllowDrop(stringControl, true);
