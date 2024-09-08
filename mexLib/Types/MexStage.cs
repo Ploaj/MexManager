@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using mexLib.Attributes;
 using HSDRaw.Common;
 using mexLib.Installer;
-using HSDRaw;
 
 namespace mexLib.Types
 {
@@ -25,10 +24,6 @@ namespace mexLib.Types
 
         private string? _fileName;
 
-        [Category("0 - General"), DisplayName("Collision Materials")]
-        [DisplayHex]
-        public uint CollisionMaterials { get; set; }
-
         [Category("1 - Sound"), DisplayName("Sound Bank")]
         [MexLink(MexLinkType.Sound)]
         public int SoundBank { get; set; }
@@ -39,35 +34,40 @@ namespace mexLib.Types
         [Category("1 - Sound"), DisplayName("Reverb 2")]
         public int ReverbValue2 { get; set; }
 
-        [Category("2 - Functions"), DisplayName("")]
+
+        [Category("2 - Code"), DisplayName("Collision Materials")]
+        [DisplayHex]
+        public uint CollisionMaterials { get; set; }
+
+        [Category("2 - Code"), DisplayName("")]
         [DisplayHex]
         public uint MapDescPointer { get; set; }
 
-        [Category("2 - Functions"), DisplayName("OnStageInit")]
+        [Category("2 - Code"), DisplayName("OnStageInit")]
         [DisplayHex]
         public uint OnStageInit { get; set; }
 
-        [Category("2 - Functions"), DisplayName("OnStageLoad")]
+        [Category("2 - Code"), DisplayName("OnStageLoad")]
         [DisplayHex]
         public uint OnStageLoad { get; set; }
 
-        [Category("2 - Functions"), DisplayName("OnStageGo"), Description("Executes when GO begins in match")]
+        [Category("2 - Code"), DisplayName("OnStageGo"), Description("Executes when GO begins in match")]
         [DisplayHex]
         public uint OnStageGo { get; set; }
 
-        [Category("2 - Functions"), DisplayName("OnUnknown1")]
+        [Category("2 - Code"), DisplayName("OnUnknown1")]
         [DisplayHex]
         public uint OnGo { get; set; }
 
-        [Category("2 - Functions"), DisplayName("OnUnknown2")]
+        [Category("2 - Code"), DisplayName("OnUnknown2")]
         [DisplayHex]
         public uint OnUnknown2 { get; set; }
 
-        [Category("2 - Functions"), DisplayName("OnUnknown3")]
+        [Category("2 - Code"), DisplayName("OnUnknown3")]
         [DisplayHex]
         public uint OnTouchLine { get; set; }
 
-        [Category("2 - Functions"), DisplayName("OnUnknown4")]
+        [Category("2 - Code"), DisplayName("OnUnknown4")]
         [DisplayHex]
         public uint OnUnknown4 { get; set; }
 
@@ -75,11 +75,11 @@ namespace mexLib.Types
         [Browsable(false)]
         public int UnknownValue { get; set; } = 1;
 
-        [Category("2 - Functions"), DisplayName("")]
+        [Category("2 - Code"), DisplayName("")]
         [DisplayHex]
         public uint MovingCollisionPointer { get; set; }
 
-        [Category("2 - Functions"), DisplayName("")]
+        [Category("2 - Code"), DisplayName("")]
         [DisplayHex]
         public int MovingCollisionCount { get; set; }
 

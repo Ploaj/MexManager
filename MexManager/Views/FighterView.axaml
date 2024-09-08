@@ -51,6 +51,7 @@
 				DockPanel.Dock="Bottom"
 				ItemsSource="{Binding Fighters}"
 				SelectedItem="{Binding SelectedFighter, Mode=TwoWay}"
+				SelectionChanged="FighterList_SelectionChanged"
 				Padding="0"
 				Width="280"
 				SelectedIndex="0">

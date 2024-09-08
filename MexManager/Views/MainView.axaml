@@ -83,6 +83,7 @@
 								<controls:IconMenuItem
 									Text="Remove"
 									ToolTip.Tip="Remove"
+									IsEnabled="{Binding SelectedStage, Converter={StaticResource NullToBoolConverter}}"
 									IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 									Click="StageRemoveMenuItem_Click"/>
 								<controls:IconMenuItem
@@ -93,6 +94,7 @@
 								<controls:IconMenuItem
 									Text="Export"
 									ToolTip.Tip="Export"
+									IsEnabled="{Binding SelectedStage, Converter={StaticResource NullToBoolConverter}}"
 									IconSource="avares://MexManager/Assets/Common/file_export.png"
 									Click="StageExportMenuItem_Click"/>
 							</Menu>

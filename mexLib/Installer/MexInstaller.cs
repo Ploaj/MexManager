@@ -15,7 +15,7 @@ namespace mexLib.Installer
     {
         public string Message { get; internal set; }
 
-        public MexInstallerError(string message) { this.Message = message; }
+        public MexInstallerError(string message) { Message = message; }
     }
 
     public class MexInstaller
@@ -235,14 +235,25 @@ namespace mexLib.Installer
                 int internalId = 0;
                 foreach (var f in workspace.Project.Fighters)
                 {
-                    if (internalId > 26)
+                    if (internalId > 26 || internalId == 11) // 11 is nana
+                    {
+                        internalId++;
                         continue;
+                    }
 
                     int externalId = MexFighterIDConverter.ToExternalID(internalId, workspace.Project.Fighters.Count);
-                    if (externalId == 18)
+                    if (internalId == 7)
+                    {
                         externalId = 25;
+                    }
+                    else
+                    if (externalId == 26)
+                    {
+                    }
                     else if (externalId >= 19)
+                    {
                         externalId -= 1;
+                    }
 
                     for (int i = 0; i < f.Costumes.Count; i++)
                     {
@@ -358,18 +369,6 @@ namespace mexLib.Installer
                 stage.Assets.BannerAsset.SetFromMexImage(workspace, new MexImage(nameTOBJs[icon.PreviewID]));
             }
 
-            // extract icon model
-            //var model = dataTable.IconDoubleModel;
-            //var icon_joint = model.Child.Next;
-            //model.Child = icon_joint;
-            //var iconFile = new HSDRawFile();
-            //iconFile.Roots.Add(new HSDRootNode()
-            //{
-            //    Name = "icon_joint",
-            //    Data = model
-            //});
-            //iconFile.Save(workspace.GetAssetPath("sss\\icon_joint.dat"));
-
             return null;
         }
         /// <summary>
@@ -400,12 +399,12 @@ namespace mexLib.Installer
                 if ((k.Frame % 30) >= 19)
                     k.Frame++;
             var tobjs = portrait_anim.ToTOBJs();
-            for (int i = 0; i < 0x21; i++)
+            for (int internalId = 0; internalId < 0x21; internalId++)
             {
                 // get figher from external id
-                int fighterId = MexFighterIDConverter.ToInternalID(i, 0x21);
+                int fighterId = MexFighterIDConverter.ToInternalID(internalId, 0x21);
 
-                if (fighterId > 26)
+                if (internalId > 26)
                     continue;
 
                 var fighter = workspace.Project.Fighters[fighterId];
@@ -413,7 +412,7 @@ namespace mexLib.Installer
                 for (int j = 0; j < fighter.Costumes.Count; j++)
                 {
                     // get key on this frame
-                    var k = keys.Find(e => e.Frame == i + 30 * j);
+                    var k = keys.Find(e => e.Frame == internalId + 30 * j);
                     if (k != null)
                     {
                         fighter.Costumes[j].CSPAsset.SetFromMexImage(workspace, new MexImage(tobjs[(int)k.Value]));

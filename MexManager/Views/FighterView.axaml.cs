@@ -311,4 +311,14 @@ public partial class FighterView : UserControl
             }
         }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void FighterList_SelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
+    {
+        CostumeList.SelectedIndex = 0;
+        ItemList.SelectedIndex = 0;
+    }
 }
