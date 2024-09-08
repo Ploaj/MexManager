@@ -293,12 +293,7 @@
 								Width="32"
 								Height="32"/>
 					</TabItem.Header>
-					<TabControl>
-						<TabItem Header="Menu Playlist">
-							<controls:PlaylistEditor
-								Playlist="{Binding MenuPlaylist}"></controls:PlaylistEditor>
-						</TabItem>
-					</TabControl>
+					<views:CSSEditorView/>
 				</TabItem>
 				<TabItem ToolTip.Tip="Codes">
 					<TabItem.Header>
@@ -316,12 +311,12 @@
 									Text="Add"
 									ToolTip.Tip="Add"
 									IconSource="avares://MexManager/Assets/Common/icon_plus.png"
-									/>
+									Click="AddCode_Click"/>
 								<controls:IconMenuItem
 									Text="Remove"
 									ToolTip.Tip="Remove"
 									IconSource="avares://MexManager/Assets/Common/icon_delete.png"
-									/>
+									Click="RemoveCode_Click"/>
 							</Menu>
 							<ListBox
 								DockPanel.Dock="Top"
@@ -331,7 +326,8 @@
 								SelectedItem="{Binding SelectedCode, Mode=TwoWay}">
 								<ListBox.ItemTemplate>
 									<DataTemplate>
-										<StackPanel Orientation="Horizontal">
+										<StackPanel Orientation="Horizontal"
+													Height="24">
 											<TextBlock Text="! "
 													 Foreground="Yellow"
 													 VerticalAlignment="Center"

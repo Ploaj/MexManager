@@ -11,9 +11,9 @@ namespace MexManager.Controls;
 
 public partial class CodeBox : UserControl
 {
-    private static IBrush CompileSuccess = Brushes.Green;
+    private readonly static IBrush CompileSuccess = Brushes.Green;
 
-    private static IBrush CompileFailed = Brushes.Red;
+    private readonly static IBrush CompileFailed = Brushes.Red;
 
     /// <summary>
     /// 

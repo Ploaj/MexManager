@@ -395,4 +395,43 @@ public partial class MainView : UserControl
             SeriesList.SelectedIndex = currentIndex;
         }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void AddCode_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        var code = new MexCode();
+        Global.Workspace.Project.Codes.Add(code);
+        CodesList.SelectedItem = code;
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public async void RemoveCode_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        if (CodesList.SelectedItem is MexCode code)
+        {
+            var ask = await MessageBox.Show($"Are you sure you want\nto remove \"{code.Name}\"?",
+                "Remove Code",
+                MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (ask != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            int currentIndex = CodesList.SelectedIndex;
+            Global.Workspace.Project.Codes.Remove(code);
+            CodesList.RefreshList();
+            CodesList.SelectedIndex = currentIndex;
+        }
+    }
 }

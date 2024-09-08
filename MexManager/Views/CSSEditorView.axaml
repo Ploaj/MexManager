@@ -1,0 +1,86 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:views="clr-namespace:MexManager.Views"
+			 xmlns:controls="clr-namespace:MexManager.Controls"
+			 xmlns:converters="clr-namespace:MexManager.Converters"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MexManager.Views.CSSEditorView">
+
+	<TabControl>
+		<TabItem Header="Menu Playlist">
+			<controls:PlaylistEditor
+				Playlist="{Binding MenuPlaylist}"></controls:PlaylistEditor>
+		</TabItem>
+		<TabItem Header="Character Select">
+			<DockPanel>
+				<DockPanel DockPanel.Dock="Left">
+					<Menu DockPanel.Dock="Top"
+						  Height="48">
+						<controls:IconMenuItem
+							Text="Add"
+							ToolTip.Tip="Add"
+							IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+							Click="AddIcon_Click"/>
+					</Menu>
+					<ListBox
+						Width="220"
+						Height="260"
+						DockPanel.Dock="Top"
+						ItemsSource="{Binding CSSIcons}"
+						SelectedItem="{Binding SelectedCSSIcon}">
+					</ListBox>
+					<views:PropertyGridExt
+						Margin="4"
+						AllowQuickFilter="False"
+						AllowFilter="False"
+						AllowToggleView="False"
+						DataContext="{Binding SelectedCSSIcon}">
+					</views:PropertyGridExt>
+				</DockPanel>
+				<DockPanel>
+					<Menu DockPanel.Dock="Top"
+						  Height="48">
+						<controls:IconMenuItem
+							Text="Undo"
+							ToolTip.Tip="Undo"
+							IconSource="avares://MexManager/Assets/Common/icon_undo.png"
+							Click="UndoButton_Click"/>
+						<controls:IconMenuItem
+							Text="Redo"
+							ToolTip.Tip="Redo"
+							IconSource="avares://MexManager/Assets/Common/icon_redo.png"
+							Click="RedoButton_Click"/>
+						<controls:IconMenuItem
+							Text="Test"
+							ToolTip.Tip="Test"
+							IconSource="avares://MexManager/Assets/Common/icon_redo.png"
+							Click="Button_Click"/>
+					</Menu>
+					<ScrollViewer>
+						<controls:SelectCanvas
+							Name="SelectScreen"
+							Scale="6"
+							HorizontalAlignment="Left"
+							VerticalAlignment="Top"
+							Icons="{Binding CSSIcons}"
+							Width="640"
+							Height="480"/>
+					</ScrollViewer>
+				</DockPanel>
+				<DockPanel DockPanel.Dock="Right">
+					<views:PropertyGridExt
+						Name="TemplateGrid"
+						Margin="4"
+						AllowQuickFilter="False"
+						AllowFilter="False"
+						AllowToggleView="False">
+					</views:PropertyGridExt>
+				</DockPanel>
+			</DockPanel>
+			
+		</TabItem>
+	</TabControl>
+	
+</UserControl>

@@ -25,7 +25,8 @@
 							FontFamily="Consolas"
 							VerticalAlignment="Top"
 							HorizontalAlignment="Right"
-							Margin="5"/>
+							Margin="5"
+						    Width="32"/>
 
 				<!-- The TextBox -->
 				<TextBox x:Name="MainTextBox"

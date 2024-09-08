@@ -97,6 +97,19 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _music, value);
     }
 
+    private object? _selectedCSSIcon;
+    public object? SelectedCSSIcon
+    {
+        get => _selectedCSSIcon;
+        set => this.RaiseAndSetIfChanged(ref _selectedCSSIcon, value);
+    }
+
+    private ObservableCollection<MexCharacterSelectIcon>? _cssIcon;
+    public ObservableCollection<MexCharacterSelectIcon>? CSSIcons
+    {
+        get => _cssIcon;
+        set => this.RaiseAndSetIfChanged(ref _cssIcon, value);
+    }
 
 
     private object? _selectedCode;
@@ -145,6 +158,7 @@ public class MainViewModel : ViewModelBase
             MenuPlaylist = null;
             Series = null;
             Codes = null;
+            CSSIcons = null;
         }
         else
         {
@@ -154,6 +168,7 @@ public class MainViewModel : ViewModelBase
             MenuPlaylist = Global.Workspace.Project.MenuPlaylist;
             Series = Global.Workspace.Project.Series;
             Codes = Global.Workspace.Project.Codes;
+            CSSIcons = Global.Workspace.Project.CharacterSelect.FighterIcons;
         }
     }
     /// <summary>

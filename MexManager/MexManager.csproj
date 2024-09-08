@@ -28,7 +28,9 @@
     <None Remove="Assets\Common\icon_import_music.png" />
     <None Remove="Assets\Common\icon_minus.png" />
     <None Remove="Assets\Common\icon_plus.png" />
+    <None Remove="Assets\Common\icon_redo.png" />
     <None Remove="Assets\Common\icon_replace.png" />
+    <None Remove="Assets\Common\icon_undo.png" />
     <None Remove="Assets\Data\bgm.dat" />
     <None Remove="Assets\dol.patch" />
     <None Remove="Assets\Menu\category_code.png" />

@@ -10,6 +10,10 @@ namespace mexLib.Types
 {
     public class MexCharacterSelectIcon
     {
+        public readonly static float BaseWidth = 3.5f;
+
+        public readonly static float BaseHeight = 3.4f;
+
         [MexLink(MexLinkType.Fighter)]
         public int Fighter { get; set; }
 

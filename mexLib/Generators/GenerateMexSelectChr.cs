@@ -283,8 +283,8 @@ namespace mexLib.Generators
                 TX = icon.X,
                 TY = icon.Y,
                 TZ = icon.Z,
-                SX = 1,
-                SY = 1,
+                SX = icon.ScaleX,
+                SY = icon.ScaleY,
                 SZ = 1,
             };
 
