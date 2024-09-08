@@ -25,7 +25,7 @@ namespace mexLib.Types
         {
             get
             {
-                return Costumes.Any(e => !string.IsNullOrEmpty(e.KirbyFileName));
+                return Costumes.Any(e => !string.IsNullOrEmpty(e.KirbyFile.FileName));
             }
         }
 
@@ -44,7 +44,7 @@ namespace mexLib.Types
                         FileName = e.File.FileName,
                         JointSymbol = e.File.JointSymbol,
                         MatAnimSymbol = e.File.MaterialSymbol,
-                        VisibilityLookupIndex = e.VisibilityIndex,
+                        VisibilityLookupIndex = e.File.VisibilityIndex,
                     }).ToArray()
                 }
             };
@@ -101,16 +101,16 @@ namespace mexLib.Types
             {
                 var costume = new MexCostume()
                 {
-                    File = new MexCostumeFile()
+                    File = new MexCostumeVisibilityFile()
                     {
                         FileName = dol.GetStruct<string>(costumePointer + 0x00, i, 0x0C),
                         JointSymbol = dol.GetStruct<string>(costumePointer + 0x04, i, 0x0C),
                         MaterialSymbol = dol.GetStruct<string>(costumePointer + 0x08, i, 0x0C),
+                        VisibilityIndex = (int)i,
                     },
-                    VisibilityIndex = (int)i,
                 };
 
-                costume.Name = ColorNameFromFileName(costume.FileName);
+                costume.Name = ColorNameFromFileName(costume.File.FileName);
 
                 if (costumePointerKirby != 0)
                 {

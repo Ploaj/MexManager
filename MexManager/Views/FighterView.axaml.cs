@@ -168,15 +168,15 @@ public partial class FighterView : UserControl
 
             switch (Path.GetExtension(zipPath))
             {
-                case ".zip":
+                case ".zip": // TODO: 
                     {
-                        var costume = MexCostume.FromZip(Global.Workspace, zipPath, out string log);
+                        //var costume = MexCostume.FromZip(Global.Workspace, zipPath, out string log);
 
-                        if (!string.IsNullOrEmpty(log))
-                            await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
+                        //if (!string.IsNullOrEmpty(log))
+                        //    await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
 
-                        if (costume != null)
-                            fighter.Costumes.Add(costume);
+                        //if (costume != null)
+                        //    fighter.Costumes.Add(costume);
                     }
                     break;
                 case ".dat":
@@ -247,11 +247,12 @@ public partial class FighterView : UserControl
         {
             fighter.Costumes.Add(new MexCostume()
             {
-                File = new MexCostumeFile()
+                File = new MexCostumeVisibilityFile()
                 {
                     FileName = costume.File.FileName,
                     JointSymbol = costume.File.JointSymbol,
                     MaterialSymbol = costume.File.MaterialSymbol,
+                    VisibilityIndex = costume.File.VisibilityIndex,
                 },
                 KirbyFile = new MexCostumeFile()
                 {
@@ -259,7 +260,6 @@ public partial class FighterView : UserControl
                     JointSymbol = costume.KirbyFile.JointSymbol,
                     MaterialSymbol = costume.KirbyFile.MaterialSymbol,
                 },
-                VisibilityIndex = costume.VisibilityIndex,
             });
         }
     }
