@@ -16,6 +16,9 @@ namespace MexManager.Factories
 
         public override Control? HandleNewProperty(PropertyCellContext context)
         {
+            if (Global.Workspace == null)
+                return null;
+
             var propertyDescriptor = context.Property;
             MexLinkAttribute? link = propertyDescriptor.GetCustomAttribute<MexLinkAttribute>();
 
@@ -56,6 +59,11 @@ namespace MexManager.Factories
                 ItemsSource = coll,
             };
 
+            if (link.Link == MexLinkType.Fighter && Global.Workspace != null)
+            {
+                control.SelectedIndex = MexFighterIDConverter.ToInternalID(index, Global.Workspace.Project.Fighters.Count);
+            }
+            else
             if (link.Link == MexLinkType.Stage)
             {
                 control.SelectedIndex = MexStageIDConverter.ToInternalID(index);
@@ -68,6 +76,11 @@ namespace MexManager.Factories
 
             control.SelectionChanged += (s, e) =>
             {
+                if (link.Link == MexLinkType.Fighter)
+                {
+                    propertyDescriptor.SetValue(target, MexFighterIDConverter.ToExternalID(control.SelectedIndex, Global.Workspace.Project.Fighters.Count));
+                }
+                else
                 if (link.Link == MexLinkType.Stage)
                 {
                     propertyDescriptor.SetValue(target, MexStageIDConverter.ToExternalID(control.SelectedIndex));

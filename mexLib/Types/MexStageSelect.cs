@@ -167,6 +167,12 @@ namespace mexLib.Types
 
         public MexStageSelectIcon RandomIcon { get; set; } = new MexStageSelectIcon();
 
+        public float StageSelectCursorStartX { get; set; } = 0;
+
+        public float StageSelectCursorStartY { get; set; } = -17;
+
+        public float StageSelectCursorStartZ { get; set; } = 0;
+
         /// <summary>
         /// 
         /// </summary>
@@ -200,6 +206,9 @@ namespace mexLib.Types
         public void ToMxDt(MexGenerator gen)
         {
             var tb = gen.Data.MenuTable;
+            tb.Parameters.StageSelectCursorStartX = StageSelectCursorStartX;
+            tb.Parameters.StageSelectCursorStartY = StageSelectCursorStartY;
+            tb.Parameters.StageSelectCursorStartZ = StageSelectCursorStartZ;
 
             var icons = StageIcons.Select(e => e.ToIcon()).ToList();
             icons.Add(RandomIcon.ToIcon());

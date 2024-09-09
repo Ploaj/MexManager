@@ -1,13 +1,12 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using mexLib;
 using mexLib.Types;
+using MexManager.Extensions;
 using MexManager.ViewModels;
 using System;
-using System.Collections;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Reactive.Linq;
 
@@ -15,109 +14,197 @@ namespace MexManager.Views;
 
 public partial class CSSEditorView : UserControl
 {
-
-    public class CSSTemplate
-    {
-        public float TotalWidth { get; set; } = 70.1f;
-
-        public int IconsPerRow { get; set; } = 9;
-
-        public float Scale { get; set; } = 1.0f;
-
-        public float CenterX { get; set; } = 0.05f;
-        public float CenterY { get; set; } = 9.5f;
-
-        public float IconWidth { get; set; } = 7.05f;
-        public float IconHeight { get; set; } = 7.2f;
-
-        public float IconSideDropX { get; set; } = 0;
-        public float IconSideDropY { get; set; } = -0.3f;
-        public float IconSideDropZ { get; set; } = -1;
-
-        public void Apply(ObservableCollection<MexCharacterSelectIcon> icons)
-        {
-            int icon_count = icons.Count;
-
-            int num_of_rows = (int)Math.Ceiling(icons.Count / (double)IconsPerRow);
-
-            float icon_height = IconHeight * Scale;
-            float icon_width = IconWidth * Scale;
-
-            float total_height = (num_of_rows) * icon_height;
-            float total_width = IconsPerRow * icon_width;
-
-            for (int i = 0; i < icons.Count; i++)
-            {
-                int col = i % IconsPerRow;
-                int row = i / IconsPerRow;
-
-                int lastRow = IconsPerRow - 1;
-
-                if (row >= num_of_rows - 1 && (icons.Count % IconsPerRow) > 0)
-                {
-                    lastRow = (icons.Count % IconsPerRow) - 1;
-                    total_width = (icons.Count % IconsPerRow) * icon_width;
-                }
-
-                icons[i].X = CenterX - total_width / 2 + icon_width * col + icon_width / 2;
-                icons[i].Y = CenterY + total_height / 2 - icon_height * row - icon_height / 2;
-                icons[i].Z = 0;
-                icons[i].ScaleX = Scale;
-                icons[i].ScaleY = Scale;
-
-                if (col == lastRow || col == 0)
-                {
-                    icons[i].X += IconSideDropX;
-                    icons[i].Y += IconSideDropY;
-                    icons[i].Z += IconSideDropZ;
-                }
-
-                Debug.WriteLine($"{i} {col} {row} {total_width}");
-            }
-
-            // TODO: calculate collisions
-        }
-    }
-
-    private CSSTemplate template = new CSSTemplate();
-
     public CSSEditorView()
     {
         InitializeComponent();
 
-        TemplateGrid.DataContext = template;
-    }
+        SelectScreen.OnSwap += () =>
+        {
+            ApplySelectTemplate();
+        };
 
-    public void Button_Click(object? sender, RoutedEventArgs args)
+        TemplatePropertyGrid.DataContextChanged += (s, e) =>
+        {
+            if (Global.Workspace != null &&
+                DataContext is MainViewModel model &&
+                model.CharacterSelect != null)
+            {
+                model.CharacterSelect.Template.PropertyChanged += (s2, e2) =>
+                {
+                    ApplySelectTemplate();
+                };
+            }
+        };
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    private void ApplySelectTemplate()
     {
         if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
-            model.CSSIcons != null)
+            model.CharacterSelect != null)
         {
-            template.Apply(model.CSSIcons);
+            if (model.AutoApplyCSSTemplate && IconList.SelectedItems != null)
+            {
+                foreach (MexReactiveObject i in IconList.SelectedItems)
+                    i.PropertyChanged -= IconPropertyChanged;
+
+                model.CharacterSelect.Template.Apply(model.CharacterSelect.FighterIcons);
+
+                foreach (MexReactiveObject i in IconList.SelectedItems)
+                    i.PropertyChanged += IconPropertyChanged;
+            }
             SelectScreen.InvalidateVisual();
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void ApplyTemplate_Click(object? sender, RoutedEventArgs args)
+    {
+        ApplySelectTemplate();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     public void UndoButton_Click(object? sender, RoutedEventArgs args)
     {
         SelectScreen.Undo();
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     public void RedoButton_Click(object? sender, RoutedEventArgs args)
     {
         SelectScreen.Redo();
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     public void AddIcon_Click(object? sender, RoutedEventArgs args)
     {
         if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
-            model.CSSIcons != null)
+            model.CharacterSelect != null)
         {
-            model.CSSIcons.Add(new MexCharacterSelectIcon()
+            model.CharacterSelect.FighterIcons.Add(new MexCharacterSelectIcon()
             {
                 
             });
+
+            IconList.SelectedIndex = model.CharacterSelect.FighterIcons.Count - 1;
+
+            if (model.AutoApplyCSSTemplate)
+                ApplySelectTemplate();
         }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public async void RemoveIcon_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.CharacterSelect != null && 
+            model.SelectedCSSIcon is MexCharacterSelectIcon icon)
+        {
+            var res = await MessageBox.Show("Are you sure you want\nto remove this icon?", "Remove Icon", MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (res != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            int index = IconList.SelectedIndex;
+            model.CharacterSelect.FighterIcons.Remove(icon);
+            IconList.SelectedIndex = index;
+
+            if (model.AutoApplyCSSTemplate)
+                ApplySelectTemplate();
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void MoveUpIcon_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.CharacterSelect != null &&
+            model.SelectedCSSIcon is MexCharacterSelectIcon icon)
+        {
+            int index = IconList.SelectedIndex;
+            if (index > 0)
+            {
+                model.CharacterSelect.FighterIcons.Move(index, index - 1);
+                IconList.SelectedIndex = index - 1;
+
+                if (model.AutoApplyCSSTemplate)
+                    ApplySelectTemplate();
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void MoveDownIcon_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.CharacterSelect != null &&
+            model.SelectedCSSIcon is MexCharacterSelectIcon icon)
+        {
+            int index = IconList.SelectedIndex;
+            if (index < model.CharacterSelect.FighterIcons.Count - 1)
+            {
+                model.CharacterSelect.FighterIcons.Move(index, index + 1);
+                IconList.SelectedIndex = index + 1;
+                ApplySelectTemplate();
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    private void IconPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        ApplySelectTemplate();
+
+        if (args.PropertyName == nameof(MexCharacterSelectIcon.Fighter))
+            IconList.RefreshList(IconList.SelectedIndex);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void ListBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        foreach (MexReactiveObject i in e.RemovedItems)
+        {
+            i.PropertyChanged -= IconPropertyChanged;
+        }
+
+        foreach (MexReactiveObject i in e.AddedItems)
+        {
+            i.PropertyChanged += IconPropertyChanged;
+        }
+
+        SelectScreen.InvalidateVisual();
     }
 }

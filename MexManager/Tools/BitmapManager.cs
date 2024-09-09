@@ -6,6 +6,8 @@ namespace MexManager.Tools
 {
     public static class BitmapManager
     {
+        public static Bitmap CSSTemplate { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://MexManager/Assets/Menu/css_template.png")));
+
         public static Bitmap MissingImage { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://MexManager/Assets/Common/fighter_melee.png")));
 
         public static Bitmap MeleeFighterImage { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://MexManager/Assets/Common/fighter_melee.png")));

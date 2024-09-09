@@ -3,69 +3,20 @@ using HSDRaw.MEX.Menus;
 using mexLib.Attributes;
 using mexLib.MexScubber;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Numerics;
+using System.ComponentModel;
 
 namespace mexLib.Types
 {
-    public class MexCharacterSelectIcon
-    {
-        public readonly static float BaseWidth = 3.5f;
-
-        public readonly static float BaseHeight = 3.4f;
-
-        [MexLink(MexLinkType.Fighter)]
-        public int Fighter { get; set; }
-
-        public int SFXID { get; set; }
-
-        public float X { get; set; } = 0;
-
-        public float Y { get; set; } = 0;
-
-        public float Z { get; set; } = 0;
-
-        public float ScaleX { get; set; } = 1.0f;
-
-        public float ScaleY { get; set; } = 1.0f;
-
-        public float CollisionOffsetX { get; set; } = 0.0f;
-
-        public float CollisionOffsetY { get; set; } = 0.0f;
-
-        public float CollisionSizeX { get; set; } = 6.8f;
-
-        public float CollisionSizeY { get; set; } = 7.0f;
-
-        public MEX_CSSIcon ToIcon(int index)
-        {
-            return new MEX_CSSIcon()
-            {
-                ExternalCharID = (byte)Fighter,
-                SFXID = (byte)SFXID,
-
-                JointID = (byte)(index + 1),
-                UnkID = (byte)(index + 1),
-
-                X1 = X - CollisionSizeX / 2 * ScaleX + CollisionOffsetX,
-                Y1 = Y - CollisionSizeX / 2 * ScaleY + CollisionOffsetY,
-
-                X2 = X + CollisionSizeX / 2 * ScaleX + CollisionOffsetX,
-                Y2 = Y + CollisionSizeX / 2 * ScaleY + CollisionOffsetY,
-            };
-        }
-    }
-
     public class MexCharacterSelect
     {
+        [DisplayName("Cursor Scale")]
         public float CharacterSelectHandScale { get; set; } = 1.0f;
 
-        public float StageSelectCursorStartX { get; set; } = 0;
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        [Browsable(false)]
+        public MexCharacterSelectTemplate Template { get; set; } = new();
 
-        public float StageSelectCursorStartY { get; set; } = -17;
-
-        public float StageSelectCursorStartZ { get; set; } = 0;
-
+        [Browsable(false)]
         public ObservableCollection<MexCharacterSelectIcon> FighterIcons { get; set; } = new();
 
         /// <summary>
@@ -88,7 +39,6 @@ namespace mexLib.Types
                 });
             }
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -96,14 +46,7 @@ namespace mexLib.Types
         public void ToMxDt(MexGenerator gen)
         {
             var tb = gen.Data.MenuTable;
-
-            tb.Parameters = new MEX_MenuParameters()
-            {
-                CSSHandScale = 1.0f,
-                StageSelectCursorStartX = StageSelectCursorStartX,
-                StageSelectCursorStartY = StageSelectCursorStartY,
-                StageSelectCursorStartZ = StageSelectCursorStartZ,
-            };
+            tb.Parameters.CSSHandScale = CharacterSelectHandScale;
 
             tb.CSSIconData = new MEX_IconData()
             {

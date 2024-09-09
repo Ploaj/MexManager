@@ -317,5 +317,9 @@ namespace mexLib.Types
             Functions.FromDOL(dol, index);
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

@@ -97,20 +97,29 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _music, value);
     }
 
+    private MexCharacterSelect? _characterSelect;
+    public MexCharacterSelect? CharacterSelect
+    {
+        get => _characterSelect;
+        set => this.RaiseAndSetIfChanged(ref _characterSelect, value);
+    }
+
+    private bool _autoApplyCSSTemplate = true;
+    public bool AutoApplyCSSTemplate
+    {
+        get => _autoApplyCSSTemplate;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _autoApplyCSSTemplate, value);
+        }
+    }
+
     private object? _selectedCSSIcon;
     public object? SelectedCSSIcon
     {
         get => _selectedCSSIcon;
         set => this.RaiseAndSetIfChanged(ref _selectedCSSIcon, value);
     }
-
-    private ObservableCollection<MexCharacterSelectIcon>? _cssIcon;
-    public ObservableCollection<MexCharacterSelectIcon>? CSSIcons
-    {
-        get => _cssIcon;
-        set => this.RaiseAndSetIfChanged(ref _cssIcon, value);
-    }
-
 
     private object? _selectedCode;
     public object? SelectedCode
@@ -136,6 +145,8 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+
+
     /// <summary>
     /// 
     /// </summary>
@@ -158,7 +169,7 @@ public class MainViewModel : ViewModelBase
             MenuPlaylist = null;
             Series = null;
             Codes = null;
-            CSSIcons = null;
+            CharacterSelect = null;
         }
         else
         {
@@ -168,7 +179,7 @@ public class MainViewModel : ViewModelBase
             MenuPlaylist = Global.Workspace.Project.MenuPlaylist;
             Series = Global.Workspace.Project.Series;
             Codes = Global.Workspace.Project.Codes;
-            CSSIcons = Global.Workspace.Project.CharacterSelect.FighterIcons;
+            CharacterSelect = Global.Workspace.Project.CharacterSelect;
         }
     }
     /// <summary>
