@@ -1,16 +1,12 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"			 
 			 xmlns:views="clr-namespace:MexManager.Views"
 			 xmlns:controls="clr-namespace:MexManager.Controls"
 			 xmlns:converters="clr-namespace:MexManager.Converters"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="MexManager.Views.CSSEditorView">
-
-	<UserControl.Resources>
-		<converters:CSSIconTypeConverter x:Key="CSSIconTypeConverter"/>
-	</UserControl.Resources>
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MexManager.Views.SSSEditorView">
 
 	<DockPanel>
 		<TabControl DockPanel.Dock="Left"
@@ -44,14 +40,9 @@
 						Name="IconList"
 						Height="240"
 						DockPanel.Dock="Top"
-						ItemsSource="{Binding CharacterSelect.FighterIcons}"
-						SelectedItem="{Binding SelectedCSSIcon, Mode=TwoWay}"
+						ItemsSource="{Binding StageSelect.StageIcons}"
+						SelectedItem="{Binding SelectedSSSIcon, Mode=TwoWay}"
 						SelectionChanged="ListBox_SelectionChanged">
-						<ListBox.ItemTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Converter={StaticResource CSSIconTypeConverter}}"/>
-							</DataTemplate>
-						</ListBox.ItemTemplate>
 					</ListBox>
 					<ScrollViewer>
 						<views:PropertyGridExt
@@ -61,11 +52,12 @@
 							AllowQuickFilter="False"
 							AllowFilter="False"
 							AllowToggleView="False"
-							DataContext="{Binding SelectedCSSIcon}">
+							DataContext="{Binding SelectedSSSIcon}">
 						</views:PropertyGridExt>
 					</ScrollViewer>
 				</DockPanel>
 			</TabItem>
+			<!--
 			<TabItem Header=" Layout Template">
 				<DockPanel>
 					<CheckBox
@@ -82,10 +74,12 @@
 					</views:PropertyGridExt>
 				</DockPanel>
 			</TabItem>
+			-->
+			<!--
 			<TabItem Header="Params">
 				<DockPanel>
 					<views:PropertyGridExt
-						DataContext="{ Binding CharacterSelect }"
+						DataContext="{ Binding StageSelect }"
 						Margin="4"
 						AllowQuickFilter="False"
 						AllowFilter="False"
@@ -93,6 +87,8 @@
 					</views:PropertyGridExt>
 				</DockPanel>
 			</TabItem>
+			-->
+			<!--
 			<TabItem Header="Display">
 				<views:PropertyGridExt
 					Name="SelectScreenProperties"
@@ -102,8 +98,10 @@
 					AllowToggleView="False">
 				</views:PropertyGridExt>
 			</TabItem>
+			-->
 		</TabControl>
 		<DockPanel DockPanel.Dock="Right">
+			<!--
 			<Menu DockPanel.Dock="Top"
 					Height="48"
 					IsVisible="False">
@@ -118,18 +116,17 @@
 					IconSource="avares://MexManager/Assets/Common/icon_redo.png"
 					Click="RedoButton_Click"/>
 			</Menu>
+			-->
 			<ScrollViewer>
 				<controls:SelectCanvas
 					Name="SelectScreen"
 					HorizontalAlignment="Left"
 					VerticalAlignment="Top"
-					ItemsSource="{Binding CharacterSelect.FighterIcons}"
-					SelectedIcon="{Binding SelectedCSSIcon, Mode=TwoWay}"
-					SwapMode="{Binding AutoApplyCSSTemplate}"
+					ItemsSource="{Binding StageSelect.StageIcons}"
+					SelectedIcon="{Binding SelectedSSSIcon, Mode=TwoWay}"
 					Width="640"
 					Height="480"/>
 			</ScrollViewer>
 		</DockPanel>
 	</DockPanel>
-		
 </UserControl>

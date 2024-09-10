@@ -32,7 +32,6 @@
 		<Style Selector="TabItem">
 			<Setter Property="FontFamily" Value="Segoe UI"/>
 			<Setter Property="FontSize" Value="16"/>
-			<!-- You can also set other properties like FontWeight, FontStyle, etc. -->
 		</Style>
 		
     </Application.Styles>

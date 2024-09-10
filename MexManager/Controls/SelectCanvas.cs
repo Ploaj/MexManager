@@ -10,6 +10,7 @@ using PropertyModels.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace MexManager.Controls
 {
@@ -57,13 +58,10 @@ namespace MexManager.Controls
         }
     }
 
-    public class SelectCanvas : Control
+    public class SelectCanvas : ItemsControl
     {
-        public static readonly StyledProperty<ObservableCollection<MexCharacterSelectIcon>> IconsProperty =
-            AvaloniaProperty.Register<SelectCanvas, ObservableCollection<MexCharacterSelectIcon>>(nameof(Icons));
-
-        public static readonly StyledProperty<MexCharacterSelectIcon> SelectedIconProperty =
-            AvaloniaProperty.Register<SelectCanvas, MexCharacterSelectIcon>(nameof(Icons));
+        public static readonly StyledProperty<object?> SelectedIconProperty =
+            AvaloniaProperty.Register<SelectCanvas, object?>(nameof(SelectedIcon));
 
         public static readonly StyledProperty<bool> SwapModeProperty =
             AvaloniaProperty.Register<SelectCanvas, bool>(nameof(SwapMode));
@@ -72,17 +70,7 @@ namespace MexManager.Controls
 
         private readonly static float HandHeight = 9.6f;
 
-        public ObservableCollection<MexCharacterSelectIcon> Icons
-        {
-            get => GetValue(IconsProperty);
-            set 
-            {
-                SetValue(IconsProperty, value);
-                InvalidateVisual();
-            }
-        }
-
-        public MexCharacterSelectIcon SelectedIcon
+        public object? SelectedIcon
         {
             get => GetValue(SelectedIconProperty);
             set
@@ -103,10 +91,10 @@ namespace MexManager.Controls
             }
         }
 
-        public delegate void SwapDelegate();
+        public delegate void SwapDelegate(int index1, int index2);
         public SwapDelegate? OnSwap;
 
-        private MexCharacterSelectIcon? _draggingIcon;
+        private MexIconBase? _draggingIcon;
         private double _ghostPointX;
         private double _ghostPointY;
         private Point _dragStart;
@@ -170,9 +158,14 @@ namespace MexManager.Controls
             };
         }
 
-        private void PushState(Stack<ObservableCollection<MexCharacterSelectIcon>> stack)
+        public List<MexIconBase> Icons
         {
-            var iconsCopy = new ObservableCollection<MexCharacterSelectIcon>(Icons);
+            get => Items.OfType<MexIconBase>().ToList();
+        }
+
+        private void PushState(Stack<ObservableCollection<MexIconBase>> stack)
+        {
+            var iconsCopy = new ObservableCollection<MexIconBase>(Icons);
             stack.Push(iconsCopy);
         }
 
@@ -228,7 +221,7 @@ namespace MexManager.Controls
 
             // highlight selected icon
             if (SelectedIcon != null)
-                DrawIconCollision(context, SelectedIcon, Brushes.Yellow);
+                DrawIconCollision(context, SelectedIcon as MexIconBase, Brushes.Yellow);
 
             // draw hand
             //DrawCursorHand(context);
@@ -254,47 +247,60 @@ namespace MexManager.Controls
                 h * 2);
         }
 
-        private readonly Dictionary<MexFighter, Bitmap> fighterToIcon = [];
+        private readonly Dictionary<int, Bitmap> IconBitmapCache = [];
 
-        private Bitmap? GetIconBitmap(MexCharacterSelectIcon icon)
+        public void RefreshImageCache()
+        {
+            IconBitmapCache.Clear();
+        }
+
+        private Bitmap? GetIconBitmap(MexIconBase icon)
         {
             if (Global.Workspace != null)
             {
-                var internalId = MexFighterIDConverter.ToInternalID(icon.Fighter, Global.Workspace.Project.Fighters.Count);
-                var fighter = Global.Workspace.Project.Fighters[internalId];
-
-                if (!fighterToIcon.ContainsKey(fighter))
+                if (!IconBitmapCache.ContainsKey(icon.ImageKey))
                 {
-                    var tex = fighter.Assets.CSSIconAsset.GetTexFile(Global.Workspace);
+                    var tex = icon.GetIconImage(Global.Workspace);
 
                     if (tex != null)
-                    {
-                        var img = tex.ToBitmap();
-                        fighterToIcon.Add(fighter, img);
-                    }
+                        IconBitmapCache.Add(icon.ImageKey, tex.ToBitmap());
                 }
 
-                if (fighterToIcon.ContainsKey(fighter))
-                    return fighterToIcon[fighter];
+                if (IconBitmapCache.ContainsKey(icon.ImageKey))
+                    return IconBitmapCache[icon.ImageKey];
             }
 
             return null;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="icon"></param>
+        /// <param name="color"></param>
+        private void DrawIconCollision(DrawingContext context, MexIconBase? icon, IBrush color)
+        {
+            if (icon == null)
+                return;
 
-        private void DrawIconCollision(DrawingContext context, MexCharacterSelectIcon icon, IBrush color)
-        {
-            var rect = TransformRect(
-                icon.X + icon.CollisionOffsetX, 
-                icon.Y + icon.CollisionOffsetY,
-                icon.CollisionSizeX / 2 * icon.ScaleX, 
-                icon.CollisionSizeY / 2 * icon.ScaleY);
-            var pen = new Pen(color, 2);
-            context.DrawRectangle(Brushes.Transparent, pen, rect);
+            // TODO: collision
+            //var rect = TransformRect(
+            //    icon.X + icon.CollisionOffsetX, 
+            //    icon.Y + icon.CollisionOffsetY,
+            //    icon.CollisionSizeX / 2 * icon.ScaleX, 
+            //    icon.CollisionSizeY / 2 * icon.ScaleY);
+            //var pen = new Pen(color, 2);
+            //context.DrawRectangle(Brushes.Transparent, pen, rect);
         }
-        private void DrawIcon(DrawingContext context, MexCharacterSelectIcon icon)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="icon"></param>
+        private void DrawIcon(DrawingContext context, MexIconBase icon)
         {
-            var width = MexCharacterSelectIcon.BaseWidth * icon.ScaleX;
-            var height = MexCharacterSelectIcon.BaseHeight * icon.ScaleY;
+            var width = icon.BaseWidth * icon.ScaleX;
+            var height = icon.BaseHeight * icon.ScaleY;
 
             var rect = TransformRect(icon.X, icon.Y, width, height);
 
@@ -311,10 +317,15 @@ namespace MexManager.Controls
             if (Properties.ShowCollision)
                 DrawIconCollision(context, icon, Brushes.White);
         }
-        private void DrawIconGhost(DrawingContext context, MexCharacterSelectIcon icon)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="icon"></param>
+        private void DrawIconGhost(DrawingContext context, MexIconBase icon)
         {
-            var width = MexCharacterSelectIcon.BaseWidth * icon.ScaleX;
-            var height = MexCharacterSelectIcon.BaseHeight * icon.ScaleY;
+            var width = icon.BaseWidth * icon.ScaleX;
+            var height = icon.BaseHeight * icon.ScaleY;
 
             var rect = TransformRect((float)_ghostPointX, (float)_ghostPointY, width, height);
 
@@ -337,6 +348,10 @@ namespace MexManager.Controls
                 context.DrawImage(bmp, rect);
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         private void DrawCursorHand(DrawingContext context)
         {
             var width = HandWidth * Properties.Zoom;
@@ -349,12 +364,12 @@ namespace MexManager.Controls
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        private MexCharacterSelectIcon? GetIconAtPosition(Point position)
+        private MexIconBase? GetIconAtPosition(Point position)
         {
             foreach (var icon in Icons)
             {
-                var width = MexCharacterSelectIcon.BaseWidth * icon.ScaleX;
-                var height = MexCharacterSelectIcon.BaseHeight * icon.ScaleY;
+                var width = icon.BaseWidth * icon.ScaleX;
+                var height = icon.BaseHeight * icon.ScaleY;
                 var rect = TransformRect(icon.X, icon.Y, width, height);
 
                 if (rect.Contains(position))
@@ -393,7 +408,10 @@ namespace MexManager.Controls
                 }
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnPointerMoved(PointerEventArgs e)
         {
             base.OnPointerMoved(e);
@@ -419,7 +437,10 @@ namespace MexManager.Controls
                 e.Handled = true;
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnPointerReleased(PointerReleasedEventArgs e)
         {
             base.OnPointerReleased(e);
@@ -435,23 +456,9 @@ namespace MexManager.Controls
                     if (swap_index != -1)
                     {
                         int myIndex = Icons.IndexOf(_draggingIcon);
-                        (Icons[myIndex], Icons[swap_index]) = (Icons[swap_index], Icons[myIndex]);
-                        OnSwap?.Invoke();
+                        OnSwap?.Invoke(myIndex, swap_index);
                         SelectedIcon = _draggingIcon;
                     }
-
-                    //int swap_index = -1;
-                    //foreach (var i in Icons)
-                    //{
-                    //    if (i == _draggingIcon)
-                    //        continue;
-
-                    //    if ((_ghostPointX - i.X) * (_ghostPointX - i.X) + (_ghostPointY - i.Y) * (_ghostPointY - i.Y) < (10 * 10 / Properties.Zoom))
-                    //    {
-                    //        swap_index = Icons.IndexOf(i);
-                    //        break;
-                    //    }
-                    //}
                 }
             }
 

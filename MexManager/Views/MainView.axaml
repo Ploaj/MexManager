@@ -293,7 +293,19 @@
 								Width="32"
 								Height="32"/>
 					</TabItem.Header>
-					<views:CSSEditorView/>
+
+					<TabControl>
+						<TabItem Header="Character Select">
+							<views:CSSEditorView/>
+						</TabItem>
+						<TabItem Header="Stage Select">
+							<views:SSSEditorView/>
+						</TabItem>
+						<TabItem Header="Menu Playlist">
+							<controls:PlaylistEditor
+								Playlist="{Binding MenuPlaylist}"></controls:PlaylistEditor>
+						</TabItem>
+					</TabControl>
 				</TabItem>
 				<TabItem ToolTip.Tip="Codes">
 					<TabItem.Header>

@@ -105,6 +105,13 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _characterSelect, value);
     }
 
+    private object? _selectedCSSIcon;
+    public object? SelectedCSSIcon
+    {
+        get => _selectedCSSIcon;
+        set => this.RaiseAndSetIfChanged(ref _selectedCSSIcon, value);
+    }
+
     private bool _autoApplyCSSTemplate = true;
     public bool AutoApplyCSSTemplate
     {
@@ -115,11 +122,18 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private object? _selectedCSSIcon;
-    public object? SelectedCSSIcon
+    private MexStageSelect? _stageSelect;
+    public MexStageSelect? StageSelect
     {
-        get => _selectedCSSIcon;
-        set => this.RaiseAndSetIfChanged(ref _selectedCSSIcon, value);
+        get => _stageSelect;
+        set => this.RaiseAndSetIfChanged(ref _stageSelect, value);
+    }
+
+    private object? _selectedSSSIcon;
+    public object? SelectedSSSIcon
+    {
+        get => _selectedSSSIcon;
+        set => this.RaiseAndSetIfChanged(ref _selectedSSSIcon, value);
     }
 
     private object? _selectedCode;
@@ -169,6 +183,7 @@ public class MainViewModel : ViewModelBase
             Series = null;
             Codes = null;
             CharacterSelect = null;
+            StageSelect = null;
         }
         else
         {
@@ -179,6 +194,7 @@ public class MainViewModel : ViewModelBase
             Series = Global.Workspace.Project.Series;
             Codes = Global.Workspace.Project.Codes;
             CharacterSelect = Global.Workspace.Project.CharacterSelect;
+            StageSelect = Global.Workspace.Project.StageSelects[0];
         }
     }
     /// <summary>

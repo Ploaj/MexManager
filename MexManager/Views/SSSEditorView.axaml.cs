@@ -1,47 +1,32 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
 using mexLib;
 using mexLib.Types;
 using MexManager.Extensions;
 using MexManager.ViewModels;
-using System;
 using System.ComponentModel;
-using System.Reactive.Linq;
 
 namespace MexManager.Views;
 
-public partial class CSSEditorView : UserControl
+public partial class SSSEditorView : UserControl
 {
-    public CSSEditorView()
+    public SSSEditorView()
     {
         InitializeComponent();
-
-        SelectScreenProperties.DataContext = SelectScreen.Properties;
 
         SelectScreen.OnSwap += (i, j) =>
         {
             if (Global.Workspace != null &&
                 DataContext is MainViewModel model &&
-                model.CharacterSelect != null)
+                model.StageSelect != null)
             {
-                var Icons = model.CharacterSelect.FighterIcons;
+                var Icons = model.StageSelect.StageIcons;
                 (Icons[i], Icons[j]) = (Icons[j], Icons[i]);
             }
-            ApplySelectTemplate();
-        };
 
-        TemplatePropertyGrid.DataContextChanged += (s, e) =>
-        {
-            if (Global.Workspace != null &&
-                DataContext is MainViewModel model &&
-                model.CharacterSelect != null)
-            {
-                model.CharacterSelect.Template.PropertyChanged += (s2, e2) =>
-                {
-                    ApplySelectTemplate();
-                };
-            }
-            SelectScreen.InvalidateVisual();
+            ApplySelectTemplate();
         };
     }
     /// <summary>
@@ -49,49 +34,6 @@ public partial class CSSEditorView : UserControl
     /// </summary>
     private void ApplySelectTemplate()
     {
-        if (Global.Workspace != null &&
-            DataContext is MainViewModel model &&
-            model.CharacterSelect != null)
-        {
-            if (model.AutoApplyCSSTemplate && IconList.SelectedItems != null)
-            {
-                foreach (MexReactiveObject i in IconList.SelectedItems)
-                    i.PropertyChanged -= IconPropertyChanged;
-
-                model.CharacterSelect.Template.Apply(model.CharacterSelect.FighterIcons);
-
-                foreach (MexReactiveObject i in IconList.SelectedItems)
-                    i.PropertyChanged += IconPropertyChanged;
-            }
-            SelectScreen.InvalidateVisual();
-        }
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="args"></param>
-    public void ApplyTemplate_Click(object? sender, RoutedEventArgs args)
-    {
-        ApplySelectTemplate();
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="args"></param>
-    public void UndoButton_Click(object? sender, RoutedEventArgs args)
-    {
-        SelectScreen.Undo();
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="args"></param>
-    public void RedoButton_Click(object? sender, RoutedEventArgs args)
-    {
-        SelectScreen.Redo();
     }
     /// <summary>
     /// 
@@ -102,14 +44,14 @@ public partial class CSSEditorView : UserControl
     {
         if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
-            model.CharacterSelect != null)
+            model.StageSelect != null)
         {
-            model.CharacterSelect.FighterIcons.Add(new MexCharacterSelectIcon()
+            model.StageSelect.StageIcons.Add(new MexStageSelectIcon()
             {
-                
+
             });
 
-            IconList.SelectedIndex = model.CharacterSelect.FighterIcons.Count - 1;
+            IconList.SelectedIndex = model.StageSelect.StageIcons.Count - 1;
 
             if (model.AutoApplyCSSTemplate)
                 ApplySelectTemplate();
@@ -124,8 +66,8 @@ public partial class CSSEditorView : UserControl
     {
         if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
-            model.CharacterSelect != null && 
-            model.SelectedCSSIcon is MexCharacterSelectIcon icon)
+            model.StageSelect != null &&
+            model.SelectedSSSIcon is MexStageSelectIcon icon)
         {
             var res = await MessageBox.Show("Are you sure you want\nto remove this icon?", "Remove Icon", MessageBox.MessageBoxButtons.YesNoCancel);
 
@@ -133,7 +75,7 @@ public partial class CSSEditorView : UserControl
                 return;
 
             int index = IconList.SelectedIndex;
-            model.CharacterSelect.FighterIcons.Remove(icon);
+            model.StageSelect.StageIcons.Remove(icon);
             IconList.SelectedIndex = index;
 
             if (model.AutoApplyCSSTemplate)
@@ -149,12 +91,12 @@ public partial class CSSEditorView : UserControl
     {
         if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
-            model.CharacterSelect != null)
+            model.StageSelect != null)
         {
             int index = IconList.SelectedIndex;
             if (index > 0)
             {
-                model.CharacterSelect.FighterIcons.Move(index, index - 1);
+                model.StageSelect.StageIcons.Move(index, index - 1);
                 IconList.SelectedIndex = index - 1;
 
                 if (model.AutoApplyCSSTemplate)
@@ -171,13 +113,13 @@ public partial class CSSEditorView : UserControl
     {
         if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
-            model.CharacterSelect != null)
+            model.StageSelect != null)
         {
             int index = IconList.SelectedIndex;
             if (index != -1 &&
-                index + 1 < model.CharacterSelect.FighterIcons.Count)
+                index + 1 < model.StageSelect.StageIcons.Count)
             {
-                model.CharacterSelect.FighterIcons.Move(index, index + 1);
+                model.StageSelect.StageIcons.Move(index, index + 1);
                 IconList.SelectedIndex = index + 1;
                 ApplySelectTemplate();
             }
@@ -192,7 +134,7 @@ public partial class CSSEditorView : UserControl
     {
         ApplySelectTemplate();
 
-        if (args.PropertyName == nameof(MexCharacterSelectIcon.Fighter))
+        if (args.PropertyName == nameof(MexStageSelectIcon.StageID))
             IconList.RefreshList(IconList.SelectedIndex);
     }
     /// <summary>
