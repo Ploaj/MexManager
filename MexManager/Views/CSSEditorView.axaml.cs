@@ -1,13 +1,10 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using mexLib;
 using mexLib.Types;
 using MexManager.Extensions;
 using MexManager.ViewModels;
-using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Reactive.Linq;
 
 namespace MexManager.Views;
@@ -17,6 +14,8 @@ public partial class CSSEditorView : UserControl
     public CSSEditorView()
     {
         InitializeComponent();
+
+        SelectScreenProperties.DataContext = SelectScreen.Properties;
 
         SelectScreen.OnSwap += () =>
         {
@@ -34,6 +33,7 @@ public partial class CSSEditorView : UserControl
                     ApplySelectTemplate();
                 };
             }
+            SelectScreen.InvalidateVisual();
         };
     }
     /// <summary>
@@ -141,8 +141,7 @@ public partial class CSSEditorView : UserControl
     {
         if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
-            model.CharacterSelect != null &&
-            model.SelectedCSSIcon is MexCharacterSelectIcon icon)
+            model.CharacterSelect != null)
         {
             int index = IconList.SelectedIndex;
             if (index > 0)
@@ -164,11 +163,11 @@ public partial class CSSEditorView : UserControl
     {
         if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
-            model.CharacterSelect != null &&
-            model.SelectedCSSIcon is MexCharacterSelectIcon icon)
+            model.CharacterSelect != null)
         {
             int index = IconList.SelectedIndex;
-            if (index < model.CharacterSelect.FighterIcons.Count - 1)
+            if (index != -1 &&
+                index + 1 < model.CharacterSelect.FighterIcons.Count)
             {
                 model.CharacterSelect.FighterIcons.Move(index, index + 1);
                 IconList.SelectedIndex = index + 1;

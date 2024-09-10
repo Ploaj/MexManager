@@ -50,8 +50,6 @@ namespace mexLib.Types
 
         public void Apply(ObservableCollection<MexCharacterSelectIcon> icons)
         {
-            int icon_count = icons.Count;
-
             int num_of_rows = (int)Math.Ceiling(icons.Count / (double)IconsPerRow);
 
             float icon_height = IconHeight * Scale;
@@ -78,16 +76,25 @@ namespace mexLib.Types
                 icons[i].Z = 0;
                 icons[i].ScaleX = Scale;
                 icons[i].ScaleY = Scale;
+                icons[i].CollisionSizeX = IconWidth;
+                icons[i].CollisionSizeY = IconHeight;
 
                 if (col == lastRow || col == 0)
                 {
-                    icons[i].X += IconSideDropX;
-                    icons[i].Y += IconSideDropY;
+                    icons[i].X += IconSideDropX * Scale;
+                    icons[i].Y += IconSideDropY * Scale;
                     icons[i].Z += IconSideDropZ;
+
+                    icons[i].CollisionOffsetX = -IconSideDropX;
+                    icons[i].CollisionOffsetY = -IconSideDropY;
+                }
+                else
+                {
+                    icons[i].CollisionOffsetX = 0;
+                    icons[i].CollisionOffsetY = 0;
                 }
             }
-
-            // TODO: calculate collisions
         }
+        
     }
 }

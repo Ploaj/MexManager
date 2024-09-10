@@ -271,8 +271,10 @@ namespace mexLib
             mexData.MetaData._s.SetByte(1, workspace.VersionMinor);
 
             // write menu data
-            mexData.MenuTable = new MEX_MenuTable();
-            mexData.MenuTable.Parameters = new MEX_MenuParameters();
+            mexData.MenuTable = new()
+            {
+                Parameters = new MEX_MenuParameters(),
+            };
             proj.CharacterSelect.ToMxDt(gen);
             proj.StageSelects[0].ToMxDt(gen);
 

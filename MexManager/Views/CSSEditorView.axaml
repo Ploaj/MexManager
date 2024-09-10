@@ -94,10 +94,20 @@
 							</views:PropertyGridExt>
 						</DockPanel>
 					</TabItem>
+					<TabItem Header="Display">
+						<views:PropertyGridExt
+							Name="SelectScreenProperties"
+							Margin="4"
+							AllowQuickFilter="False"
+							AllowFilter="False"
+							AllowToggleView="False">
+						</views:PropertyGridExt>
+					</TabItem>
 				</TabControl>
 				<DockPanel DockPanel.Dock="Right">
 					<Menu DockPanel.Dock="Top"
-						  Height="48">
+						  Height="48"
+						  IsVisible="False">
 						<controls:IconMenuItem
 							Text="Undo"
 							ToolTip.Tip="Undo"
@@ -112,7 +122,6 @@
 					<ScrollViewer>
 						<controls:SelectCanvas
 							Name="SelectScreen"
-							Scale="8"
 							HorizontalAlignment="Left"
 							VerticalAlignment="Top"
 							Icons="{Binding CharacterSelect.FighterIcons}"

@@ -1,8 +1,6 @@
 ﻿using Avalonia.Platform.Storage;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MexManager.Tools
@@ -104,8 +102,11 @@ namespace MexManager.Tools
             if (file == null)
                 return null;
 
-            // return url
-            return file.Path.AbsolutePath;
+            // Get the absolute path and decode URI-encoded characters (like %20 for spaces)
+            var filePath = file.Path?.AbsolutePath;
+
+            // Decode the path
+            return filePath != null ? Uri.UnescapeDataString(filePath) : null;
         }
         /// <summary>
         /// 
@@ -134,8 +135,11 @@ namespace MexManager.Tools
             if (files == null || files.Count == 0)
                 return null;
 
-            // Return the absolute path of the first selected file
-            return files[0]?.Path?.AbsolutePath;
+            // Get the absolute path and decode URI-encoded characters (like %20 for spaces)
+            var filePath = files[0]?.Path?.AbsolutePath;
+
+            // Decode the path
+            return filePath != null ? Uri.UnescapeDataString(filePath) : null;
         }
     }
 }

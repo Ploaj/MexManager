@@ -40,6 +40,9 @@
     <None Remove="Assets\Menu\category_music.png" />
     <None Remove="Assets\Menu\category_sound.png" />
     <None Remove="Assets\Menu\category_stage.png" />
+    <None Remove="Assets\Menu\css_hand_grab.png" />
+    <None Remove="Assets\Menu\css_hand_placed.png" />
+    <None Remove="Assets\Menu\css_hand_point.png" />
     <None Remove="Assets\Menu\css_template.png" />
   </ItemGroup>
 

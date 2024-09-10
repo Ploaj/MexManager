@@ -39,10 +39,10 @@ namespace mexLib.Types
         private float _collisionOffsetY = 0.0f;
         public float CollisionOffsetY { get => _collisionOffsetY; set { _collisionOffsetY = value; OnPropertyChanged(); } }
 
-        private float _collisionSizeX = 6.8f;
+        private float _collisionSizeX = 7.05f; //6.8f;
         public float CollisionSizeX { get => _collisionSizeX; set { _collisionSizeX = value; OnPropertyChanged(); } }
 
-        private float _collisionSizeY = 7.0f;
+        private float _collisionSizeY = 7.2f; //7.0f;
         public float CollisionSizeY { get => _collisionSizeY; set { _collisionSizeY = value; OnPropertyChanged(); } }
 
         public MEX_CSSIcon ToIcon(int index)

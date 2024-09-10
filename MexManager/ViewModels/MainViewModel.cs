@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System;
 using MexManager.Views;
 using mexLib.Types;
+using MexManager.Controls;
 
 namespace MexManager.ViewModels;
 
@@ -144,8 +145,6 @@ public class MainViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _menuPlaylist, value);
         }
     }
-
-
 
     /// <summary>
     /// 
