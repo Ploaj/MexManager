@@ -17,10 +17,10 @@ namespace MexManager
         [PathBrowsable(InitialFileName = "", Filters = "Gamecube ISO (*.iso)|*.iso")]
         public string MeleePath { get; set; } = "";
 
-        //[DisplayName("Dolphin Path")]
-        //[Description("Path to Dolphin emulator")]
-        //[PathBrowsable(InitialFileName = "Dolphin.exe", Filters = "Executable(*.exe)|*.exe")]
-        //public string DolphinPath { get; set; } = "";
+        [DisplayName("Dolphin Path")]
+        [Description("Path to Dolphin emulator")]
+        [PathBrowsable(InitialFileName = "Dolphin.exe", Filters = "Executable(*.exe)|*.exe")]
+        public string DolphinPath { get; set; } = "";
 
         /// <summary>
         /// 

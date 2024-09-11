@@ -30,6 +30,19 @@ namespace mexLib.Types
             }
         }
 
+        private int _group;
+        [Category("0 - Stage")]
+        [DisplayName("Group")]
+        public int Group
+        {
+            get => _group;
+            set
+            {
+                _group = value;
+                OnPropertyChanged();
+            }
+        }
+
         private float _width = 3.1f;
         [Category("1 - Collision")]
         [DisplayName("Width")]
@@ -94,12 +107,6 @@ namespace mexLib.Types
             }
         }
 
-        [Browsable(false)]
-        public List<FOBJKey> AnimX { get; set; } = new List<FOBJKey>();
-
-        [Browsable(false)]
-        public List<FOBJKey> AnimY { get; set; } = new List<FOBJKey>();
-
         public override int ImageKey => StageID;
 
         public override (float, float) CollisionOffset => (0, 0);
@@ -122,11 +129,20 @@ namespace mexLib.Types
         /// </summary>
         /// <param name="jobj"></param>
         /// <param name="animjoint"></param>
-        public void FromJoint(HSD_JOBJ jobj, HSD_AnimJoint animjoint)
+        public void FromJoint(int joint_index, HSD_JOBJ jobj, HSD_AnimJoint animjoint)
         {
             X = jobj.TX;
             Y = jobj.TY;
             Z = jobj.TZ;
+
+            if ((joint_index >= 0 && joint_index <= 6) || (joint_index == 18) || (joint_index == 19))
+                Group = 0;
+
+            if ((joint_index >= 7 && joint_index <= 11) || (joint_index == 17))
+                Group = 1;
+
+            if (joint_index >= 12 && joint_index <= 16)
+                Group = 2;
 
             foreach (var t in animjoint.AOBJ.FObjDesc.List)
             {
@@ -135,11 +151,9 @@ namespace mexLib.Types
                 {
                     case JointTrackType.HSD_A_J_TRAX:
                         X = keys[^1].Value;
-                        AnimX = keys;
                         break;
                     case JointTrackType.HSD_A_J_TRAY:
                         Y = keys[^1].Value;
-                        AnimY = keys;
                         break;
                 }
             }
@@ -159,45 +173,6 @@ namespace mexLib.Types
                 SX = ScaleX,
                 SY = ScaleY,
                 SZ = 1,
-            };
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public HSD_AnimJoint ToJointAnim()
-        {
-            var aobj = new HSD_AOBJ()
-            {
-            };
-
-            if (AnimX.Count > 0)
-            {
-                HSD_FOBJDesc fobj = new();
-                fobj.SetKeys(AnimX, (byte)JointTrackType.HSD_A_J_TRAX);
-                if (aobj.FObjDesc == null)
-                    aobj.FObjDesc = fobj;
-                else
-                    aobj.FObjDesc.Add(fobj);
-
-                aobj.EndFrame = Math.Max(aobj.EndFrame, AnimX.Max(e => e.Frame));
-            }
-
-            if (AnimY.Count > 0)
-            {
-                HSD_FOBJDesc fobj = new();
-                fobj.SetKeys(AnimY, (byte)JointTrackType.HSD_A_J_TRAY);
-                if (aobj.FObjDesc == null)
-                    aobj.FObjDesc = fobj;
-                else
-                    aobj.FObjDesc.Add(fobj);
-
-                aobj.EndFrame = Math.Max(aobj.EndFrame, AnimY.Max(e => e.Frame));
-            }
-
-            return new HSD_AnimJoint()
-            {
-                AOBJ = aobj
             };
         }
         /// <summary>

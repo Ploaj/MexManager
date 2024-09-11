@@ -35,6 +35,14 @@
 				<Separator/>
 				<MenuItem Header="_Exit" Name="ExitMenuItem"/>
 			</MenuItem>
+			<MenuItem Header="Launch">
+				<MenuItem
+					Header="Dolphin"
+					HotKey="Ctrl+R"
+					InputGesture="Ctrl+R"
+					Command="{Binding LaunchCommand}">
+				</MenuItem>
+			</MenuItem>
 			<MenuItem Header="_Config">
 				<MenuItem Header="Edit"
 						  Click="OnConfigClick">

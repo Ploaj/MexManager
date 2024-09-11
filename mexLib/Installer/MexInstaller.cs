@@ -318,7 +318,7 @@ namespace mexLib.Installer
             var nameTOBJs = dataTable.StageNameMatAnimJoint.Child.Child.MaterialAnimation.TextureAnimation.ToTOBJs();
 
             // get random
-            workspace.Project.StageSelects[0].RandomIcon.FromJoint(position_joints[off_random], position_animjoints[off_random]);
+            workspace.Project.StageSelects[0].RandomIcon.FromJoint(0, position_joints[off_random], position_animjoints[off_random]);
             var reserved = workspace.Project.ReservedAssets;
             reserved.SSSNullAsset.SetFromMexImage(workspace, new MexImage(tex0[0]));
             reserved.SSSLockedNullAsset.SetFromMexImage(workspace, new MexImage(tex0[1]));
@@ -337,12 +337,12 @@ namespace mexLib.Installer
                     if (index % 2 == 0)
                     {
                         stage_icon = tex0[index / 2 + 2];
-                        icon.FromJoint(position_joints[index / 2 + off1], position_animjoints[index / 2 + off1]);
+                        icon.FromJoint(index / 2 + off1, position_joints[index / 2 + off1], position_animjoints[index / 2 + off1]);
                     }
                     else
                     {
                         stage_icon = tex0_extra[index / 2 + 2];
-                        icon.FromJoint(position_joints[index / 2 + off1], position_animjoints[index / 2 + off1]);
+                        icon.FromJoint(index / 2 + off1, position_joints[index / 2 + off1], position_animjoints[index / 2 + off1]);
                         icon.Y -= 5.6f;
                         icon.Z -= 0.5f;
                     }
@@ -351,14 +351,14 @@ namespace mexLib.Installer
                 } else if (index < 24) // single icons
                 {
                     stage_icon = tex1[index - 24 + 4];
-                    icon.FromJoint(position_joints[index - 24 + off2], position_animjoints[index - 24 + off2]);
+                    icon.FromJoint(index - 24 + off2, position_joints[index - 24 + off2], position_animjoints[index - 24 + off2]);
                     icon.ScaleX = 1.0f;
                     icon.ScaleY = 1.1f;
                 }
                 else // small icons
                 {
                     stage_icon = tex2[index - 26 + 4];
-                    icon.FromJoint(position_joints[index - 26 + off3], position_animjoints[index - 26 + off3]);
+                    icon.FromJoint(index - 26 + off3, position_joints[index - 26 + off3], position_animjoints[index - 26 + off3]);
                     icon.ScaleX = 0.8f;
                     icon.ScaleY = 0.8f;
                 }

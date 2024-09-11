@@ -1,4 +1,6 @@
 ﻿using HSDRaw;
+using HSDRaw.Common;
+using HSDRaw.Common.Animation;
 using HSDRaw.MEX.Menus;
 using mexLib.MexScubber;
 using System.Collections.ObjectModel;
@@ -23,6 +25,41 @@ namespace mexLib.Types
         [DisplayName("Cursor Start Z")]
         public float StageSelectCursorStartZ { get; set; } = 0;
 
+        [Browsable(false)]
+        public MexStageSelectTemplate Template { get; set; } = new MexStageSelectTemplate();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public HSD_JOBJ GenerateJoint()
+        {
+            HSD_JOBJ jobj = new()
+            {
+                SX = 1,
+                SY = 1,
+                SZ = 1,
+            };
+
+            foreach (var icon in StageIcons)
+                jobj.AddChild(icon.ToJoint());
+
+            jobj.AddChild(RandomIcon.ToJoint());
+
+            jobj.UpdateFlags();
+
+            return jobj;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public HSD_AnimJoint GenerateAnimJoint()
+        {
+            HSD_AnimJoint anim = Template.GenerateJointAnim(StageIcons);
+            anim.AddChild(Template.GenerateJointAnim(RandomIcon));
+            return anim;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -48,7 +85,6 @@ namespace mexLib.Types
                     StageIcons.Add(ico);
             }
         }
-
         /// <summary>
         /// 
         /// </summary>

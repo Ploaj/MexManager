@@ -1,13 +1,8 @@
 ﻿using ReactiveUI;
 using System.Windows.Input;
-using mexLib;
-using Avalonia.Media.Imaging;
-using Avalonia;
 using System.Collections.ObjectModel;
-using System;
-using MexManager.Views;
 using mexLib.Types;
-using MexManager.Controls;
+using System.Diagnostics;
 
 namespace MexManager.ViewModels;
 
@@ -16,6 +11,7 @@ public class MainViewModel : ViewModelBase
     public ICommand SaveCommand { get; }
     public ICommand CloseCommand { get; }
     public ICommand WorkspaceLoadedCommand { get; }
+    public ICommand LaunchCommand { get; }
 
 
     private object? _selectedFighter;
@@ -168,6 +164,7 @@ public class MainViewModel : ViewModelBase
         SaveCommand = new RelayCommand(SaveMenuItem_Click, IsWorkSpaceLoaded);
         CloseCommand = new RelayCommand(CloseMenuItem_Click, IsWorkSpaceLoaded);
         WorkspaceLoadedCommand = new RelayCommand((e) => { }, IsWorkSpaceLoaded);
+        LaunchCommand = new RelayCommand(LaunchMenuItem_Click, IsDolphinPathSet);
     }
     /// <summary>
     /// 
@@ -246,5 +243,59 @@ public class MainViewModel : ViewModelBase
     public static bool IsWorkSpaceLoaded(object? parameter)
     {
         return Global.Workspace != null;
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public static bool IsDolphinPathSet(object? parameter)
+    {
+        return Global.Workspace != null && System.IO.File.Exists(App.Settings.DolphinPath);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public static void LaunchMenuItem_Click(object? parameter)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        // Define the path to the exe and the parameters
+        string exePath = App.Settings.DolphinPath;
+        string parameters = $"\"{Global.Workspace.GetSystemPath("main.dol")}\"";
+
+        // Start a new process
+        ProcessStartInfo processStartInfo = new ProcessStartInfo
+        {
+            FileName = exePath,
+            Arguments = parameters,
+            RedirectStandardOutput = true, // Optional: to capture the output
+            RedirectStandardError = true,  // Optional: to capture errors
+            UseShellExecute = false,       // Needed to redirect output
+            CreateNoWindow = true          // Optional: hide the window
+        };
+
+        using (Process process = new Process())
+        {
+            process.StartInfo = processStartInfo;
+            process.Start();
+
+            // Optionally, read the output
+            //string output = process.StandardOutput.ReadToEnd();
+            //string error = process.StandardError.ReadToEnd();
+
+            //process.WaitForExit();  // Wait for the process to exit
+            //int exitCode = process.ExitCode;  // Get the exit code if needed
+
+            // Optional: handle the output or errors
+            //if (string.IsNullOrEmpty(error))
+            //{
+            //    System.Console.WriteLine("Output: " + output);
+            //}
+            //else
+            //{
+            //    System.Console.WriteLine("Error: " + error);
+            //}
+        }
     }
 }

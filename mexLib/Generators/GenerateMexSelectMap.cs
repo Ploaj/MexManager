@@ -49,25 +49,8 @@ namespace mexLib.Generators
             var project = ws.Project;
             var reserved = project.ReservedAssets;
 
-            HSD_JOBJ jobj = new()
-            {
-                SX = 1,
-                SY = 1,
-                SZ = 1,
-            };
-
-            HSD_AnimJoint anim = new();
-
-            foreach (var icon in ws.Project.StageSelects[0].StageIcons)
-            {
-                jobj.AddChild(icon.ToJoint());
-                anim.AddChild(icon.ToJointAnim());
-            }
-
-            jobj.AddChild(ws.Project.StageSelects[0].RandomIcon.ToJoint());
-            anim.AddChild(ws.Project.StageSelects[0].RandomIcon.ToJointAnim());
-
-            jobj.UpdateFlags();
+            var jobj = ws.Project.StageSelects[0].GenerateJoint();
+            var anim = ws.Project.StageSelects[0].GenerateAnimJoint();
 
             // generate mat anim joint
             List<HSD_TOBJ> icon_images = new();

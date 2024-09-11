@@ -68,6 +68,7 @@
 									AllowQuickFilter="False"
 									AllowFilter="False"
 									AllowToggleView="False"
+									ShowStyle="Builtin"
 									DataContext="{Binding SelectedSSSIcon}">
 								</views:PropertyGridExt>
 							</ScrollViewer>
