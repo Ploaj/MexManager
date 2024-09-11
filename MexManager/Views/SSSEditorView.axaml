@@ -8,54 +8,71 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="MexManager.Views.SSSEditorView">
 
+	<UserControl.Resources>
+		<converters:SSSIconTypeConverter x:Key="SSSIconTypeConverter"/>
+	</UserControl.Resources>
+	
 	<DockPanel>
+		<Border
+			Background="#101010"
+			CornerRadius="10">
 		<TabControl DockPanel.Dock="Left"
-					Width="400">
+					Width="480">
 			<TabItem Header="Icons">
-				<DockPanel>
-					<Menu DockPanel.Dock="Top"
-							Height="48">
-						<controls:IconMenuItem
-							Text="Add"
-							ToolTip.Tip="Add"
-							IconSource="avares://MexManager/Assets/Common/icon_plus.png"
-							Click="AddIcon_Click"/>
-						<controls:IconMenuItem
-							Text="Remove"
-							ToolTip.Tip="Remove"
-							IconSource="avares://MexManager/Assets/Common/icon_delete.png"
-							Click="RemoveIcon_Click"/>
-						<controls:IconMenuItem
-							Text="Move Up"
-							ToolTip.Tip="Move Up"
-							IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
-							Click="MoveUpIcon_Click"/>
-						<controls:IconMenuItem
-							Text="Move Down"
-							ToolTip.Tip="Move Down"
-							IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
-							Click="MoveDownIcon_Click"/>
-					</Menu>
-					<ListBox
-						Name="IconList"
-						Height="240"
-						DockPanel.Dock="Top"
-						ItemsSource="{Binding StageSelect.StageIcons}"
-						SelectedItem="{Binding SelectedSSSIcon, Mode=TwoWay}"
-						SelectionChanged="ListBox_SelectionChanged">
-					</ListBox>
-					<ScrollViewer>
-						<views:PropertyGridExt
-							Name="IconPropertyGrid"
-							DockPanel.Dock="Left"
-							Margin="4"
-							AllowQuickFilter="False"
-							AllowFilter="False"
-							AllowToggleView="False"
-							DataContext="{Binding SelectedSSSIcon}">
-						</views:PropertyGridExt>
-					</ScrollViewer>
-				</DockPanel>
+					<DockPanel>
+						<Menu DockPanel.Dock="Top"
+								Height="48">
+							<controls:IconMenuItem
+								Text="Add"
+								ToolTip.Tip="Add"
+								IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+								Click="AddIcon_Click"/>
+							<controls:IconMenuItem
+								Text="Remove"
+								ToolTip.Tip="Remove"
+								IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+								Click="RemoveIcon_Click"/>
+							<controls:IconMenuItem
+								Text="Move Up"
+								ToolTip.Tip="Move Up"
+								IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
+								Click="MoveUpIcon_Click"/>
+							<controls:IconMenuItem
+								Text="Move Down"
+								ToolTip.Tip="Move Down"
+								IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
+								Click="MoveDownIcon_Click"/>
+						</Menu>
+						<DockPanel>
+							<ScrollViewer DockPanel.Dock="Left">
+								<ListBox
+								Name="IconList"
+								Width="200"
+								DockPanel.Dock="Top"
+								ItemsSource="{Binding StageSelect.StageIcons}"
+								SelectedItem="{Binding SelectedSSSIcon, Mode=TwoWay}"
+								SelectionChanged="ListBox_SelectionChanged">
+									<ListBox.ItemTemplate>
+										<DataTemplate>
+											<TextBlock Text="{Binding Converter={StaticResource SSSIconTypeConverter}}"/>
+										</DataTemplate>
+									</ListBox.ItemTemplate>
+								</ListBox>
+							</ScrollViewer>
+							<ScrollViewer DockPanel.Dock="Right">
+								<views:PropertyGridExt
+									Name="IconPropertyGrid"
+									DockPanel.Dock="Left"
+									Margin="4"
+									NameWidth="96"
+									AllowQuickFilter="False"
+									AllowFilter="False"
+									AllowToggleView="False"
+									DataContext="{Binding SelectedSSSIcon}">
+								</views:PropertyGridExt>
+							</ScrollViewer>
+						</DockPanel>
+					</DockPanel>
 			</TabItem>
 			<!--
 			<TabItem Header=" Layout Template">
@@ -75,7 +92,6 @@
 				</DockPanel>
 			</TabItem>
 			-->
-			<!--
 			<TabItem Header="Params">
 				<DockPanel>
 					<views:PropertyGridExt
@@ -87,7 +103,6 @@
 					</views:PropertyGridExt>
 				</DockPanel>
 			</TabItem>
-			-->
 			<!--
 			<TabItem Header="Display">
 				<views:PropertyGridExt
@@ -100,6 +115,7 @@
 			</TabItem>
 			-->
 		</TabControl>
+		</Border>
 		<DockPanel DockPanel.Dock="Right">
 			<!--
 			<Menu DockPanel.Dock="Top"
@@ -117,16 +133,14 @@
 					Click="RedoButton_Click"/>
 			</Menu>
 			-->
-			<ScrollViewer>
-				<controls:SelectCanvas
-					Name="SelectScreen"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Top"
-					ItemsSource="{Binding StageSelect.StageIcons}"
-					SelectedIcon="{Binding SelectedSSSIcon, Mode=TwoWay}"
-					Width="640"
-					Height="480"/>
-			</ScrollViewer>
+			<controls:SelectCanvas
+				DockPanel.Dock="Top"
+				Name="SelectScreen"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch"
+				TemplateImage="avares://MexManager/Assets/Menu/sss_template.png"
+				ItemsSource="{Binding StageSelect.StageIcons}"
+				SelectedIcon="{Binding SelectedSSSIcon, Mode=TwoWay}"/>
 		</DockPanel>
 	</DockPanel>
 </UserControl>

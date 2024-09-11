@@ -6,8 +6,6 @@ namespace MexManager.Tools
 {
     public static class BitmapManager
     {
-        public static Bitmap CSSTemplate { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://MexManager/Assets/Menu/css_template.png")));
-
         public static Bitmap CSSHandPoint { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://MexManager/Assets/Menu/css_hand_point.png")));
 
 

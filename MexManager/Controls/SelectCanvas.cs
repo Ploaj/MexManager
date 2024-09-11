@@ -60,6 +60,9 @@ namespace MexManager.Controls
 
     public class SelectCanvas : ItemsControl
     {
+        public static readonly StyledProperty<IImage> TemplateImageProperty =
+            AvaloniaProperty.Register<SelectCanvas, IImage>(nameof(TemplateImage));
+
         public static readonly StyledProperty<object?> SelectedIconProperty =
             AvaloniaProperty.Register<SelectCanvas, object?>(nameof(SelectedIcon));
 
@@ -69,6 +72,16 @@ namespace MexManager.Controls
         private readonly static float HandWidth = 7.2f;
 
         private readonly static float HandHeight = 9.6f;
+
+        public IImage TemplateImage
+        {
+            get => GetValue(TemplateImageProperty);
+            set
+            {
+                SetValue(TemplateImageProperty, value);
+                InvalidateVisual();
+            }
+        }
 
         public object? SelectedIcon
         {
@@ -204,7 +217,7 @@ namespace MexManager.Controls
 
             // draw background
             var rect = TransformRect(0, 0, 35.05f, 28.8f);
-            context.DrawImage(BitmapManager.CSSTemplate, rect);
+            context.DrawImage(TemplateImage, rect);
 
             // draw icons
             if (Icons != null)
@@ -229,8 +242,8 @@ namespace MexManager.Controls
 
         private Rect TransformRect(float x, float y, float w, float h)
         {
-            var viewportWidth = Width;
-            var viewportHeight = Height;
+            var viewportWidth = Bounds.Width;
+            var viewportHeight = Bounds.Height;
 
             x *= Properties.Zoom;
             y *= Properties.Zoom;
@@ -283,14 +296,16 @@ namespace MexManager.Controls
             if (icon == null)
                 return;
 
-            // TODO: collision
-            //var rect = TransformRect(
-            //    icon.X + icon.CollisionOffsetX, 
-            //    icon.Y + icon.CollisionOffsetY,
-            //    icon.CollisionSizeX / 2 * icon.ScaleX, 
-            //    icon.CollisionSizeY / 2 * icon.ScaleY);
-            //var pen = new Pen(color, 2);
-            //context.DrawRectangle(Brushes.Transparent, pen, rect);
+            var off = icon.CollisionOffset;
+            var size = icon.CollisionSize;
+
+            var rect = TransformRect(
+                icon.X + off.Item1,
+                icon.Y + off.Item2,
+                size.Item1 * icon.ScaleX,
+                size.Item2 * icon.ScaleY);
+            var pen = new Pen(color, 2);
+            context.DrawRectangle(Brushes.Transparent, pen, rect);
         }
         /// <summary>
         /// 
@@ -313,7 +328,7 @@ namespace MexManager.Controls
             {
                 context.DrawImage(bmp, rect);
             }
-            
+
             if (Properties.ShowCollision)
                 DrawIconCollision(context, icon, Brushes.White);
         }

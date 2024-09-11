@@ -10,6 +10,7 @@ namespace mexLib.Types
 
         public override float BaseHeight => 3.4f;
 
+        [Category("0 - Fighter")]
         [MexLink(MexLinkType.Fighter)]
         public int Fighter { get => _fighter; set { _fighter = value; OnPropertyChanged(); } }
         private int _fighter;
@@ -18,16 +19,27 @@ namespace mexLib.Types
         public int SFXID { get; set; }
 
         private float _collisionOffsetX = 0.0f;
+
+        [Category("2 - Collision")]
+        [Browsable(false)]
         public float CollisionOffsetX { get => _collisionOffsetX; set { _collisionOffsetX = value; OnPropertyChanged(); } }
 
         private float _collisionOffsetY = 0.0f;
+        [Category("2 - Collision")]
+        [Browsable(false)]
         public float CollisionOffsetY { get => _collisionOffsetY; set { _collisionOffsetY = value; OnPropertyChanged(); } }
 
         private float _collisionSizeX = 7.05f; //6.8f;
+        [Category("2 - Collision")]
+        [Browsable(false)]
         public float CollisionSizeX { get => _collisionSizeX; set { _collisionSizeX = value; OnPropertyChanged(); } }
 
         private float _collisionSizeY = 7.2f; //7.0f;
+        [Category("2 - Collision")]
+        [Browsable(false)]
         public float CollisionSizeY { get => _collisionSizeY; set { _collisionSizeY = value; OnPropertyChanged(); } }
+        public override (float, float) CollisionOffset => (CollisionOffsetX, CollisionOffsetY);
+        public override (float, float) CollisionSize => (CollisionSizeX / 2, CollisionSizeY / 2);
 
         /// <summary>
         /// 

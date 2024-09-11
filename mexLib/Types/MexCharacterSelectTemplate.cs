@@ -9,12 +9,19 @@ namespace mexLib.Types
     {
         //public float TotalWidth { get; set; } = 70.1f;
         private int _iconsPerRow = 9;
+        [DisplayName("Icons Per Row")]
         [Range(1, 100)]
         public int IconsPerRow { get => _iconsPerRow; set { _iconsPerRow = value; OnPropertyChanged(); } }
 
-        private float _scale = 1.0f;
+        private float _scalex = 1.0f;
+        [DisplayName("Scale X")]
         [Range(0.01f, 100f)]
-        public float Scale { get => _scale; set { _scale = value; OnPropertyChanged(); } }
+        public float ScaleX { get => _scalex; set { _scalex = value; OnPropertyChanged(); } }
+
+        private float _scaley = 1.0f;
+        [DisplayName("Scale Y")]
+        [Range(0.01f, 100f)]
+        public float ScaleY { get => _scaley; set { _scaley = value; OnPropertyChanged(); } }
 
         private float _centerX = 0.05f;
         [DisplayName("Center X")]
@@ -52,8 +59,8 @@ namespace mexLib.Types
         {
             int num_of_rows = (int)Math.Ceiling(icons.Count / (double)IconsPerRow);
 
-            float icon_height = IconHeight * Scale;
-            float icon_width = IconWidth * Scale;
+            float icon_width = IconWidth * ScaleX;
+            float icon_height = IconHeight * ScaleY;
 
             float total_height = (num_of_rows) * icon_height;
             float total_width = IconsPerRow * icon_width;
@@ -74,15 +81,15 @@ namespace mexLib.Types
                 icons[i].X = CenterX - total_width / 2 + icon_width * col + icon_width / 2;
                 icons[i].Y = CenterY + total_height / 2 - icon_height * row - icon_height / 2;
                 icons[i].Z = 0;
-                icons[i].ScaleX = Scale;
-                icons[i].ScaleY = Scale;
+                icons[i].ScaleX = ScaleX;
+                icons[i].ScaleY = ScaleY;
                 icons[i].CollisionSizeX = IconWidth;
                 icons[i].CollisionSizeY = IconHeight;
 
                 if (col == lastRow || col == 0)
                 {
-                    icons[i].X += IconSideDropX * Scale;
-                    icons[i].Y += IconSideDropY * Scale;
+                    icons[i].X += IconSideDropX * ScaleX;
+                    icons[i].Y += IconSideDropY * ScaleY;
                     icons[i].Z += IconSideDropZ;
 
                     icons[i].CollisionOffsetX = -IconSideDropX;

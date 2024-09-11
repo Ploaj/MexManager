@@ -2,22 +2,25 @@
 using HSDRaw.MEX.Menus;
 using mexLib.MexScubber;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace mexLib.Types
 {
     public class MexStageSelect
     {
-        /// <summary>
-        /// 
-        /// </summary>
+        [Browsable(false)]
         public ObservableCollection<MexStageSelectIcon> StageIcons { get; set; } = new ObservableCollection<MexStageSelectIcon>();
 
+        [Browsable(false)]
         public MexStageSelectIcon RandomIcon { get; set; } = new MexStageSelectIcon();
 
+        [DisplayName("Cursor Start X")]
         public float StageSelectCursorStartX { get; set; } = 0;
 
+        [DisplayName("Cursor Start Y")]
         public float StageSelectCursorStartY { get; set; } = -17;
 
+        [DisplayName("Cursor Start Z")]
         public float StageSelectCursorStartZ { get; set; } = 0;
 
         /// <summary>

@@ -3,36 +3,120 @@ using HSDRaw.Common;
 using HSDRaw.MEX.Menus;
 using HSDRaw.Tools;
 using mexLib.Attributes;
+using System.ComponentModel;
 
 namespace mexLib.Types
 {
     public class MexStageSelectIcon : MexIconBase
     {
-        public override float BaseWidth => 3.5f;
+        public override float BaseWidth => 2.9760742f;
 
-        public override float BaseHeight => 3.4f;
+        public override float BaseHeight => 2.603993f;
 
+        private int _stageID;
+        [Category("0 - Stage")]
+        [DisplayName("Stage")]
         [MexLink(MexLinkType.Stage)]
-        public int StageID { get; set; }
+        public int StageID
+        {
+            get => _stageID;
+            set
+            {
+                if (_stageID != value)
+                {
+                    _stageID = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
+        private float _width = 3.1f;
+        [Category("1 - Collision")]
+        [DisplayName("Width")]
+        public float Width
+        {
+            get => _width;
+            set
+            {
+                if (_width != value)
+                {
+                    _width = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private float _height = 2.70f;
+        [Category("1 - Collision")]
+        [DisplayName("Height")]
+        public float Height
+        {
+            get => _height;
+            set
+            {
+                if (_height != value)
+                {
+                    _height = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private byte _previewID;
+        [Category("0 - Stage")]
+        [DisplayName("Preview ID")]
+        public byte PreviewID
+        {
+            get => _previewID;
+            set
+            {
+                if (_previewID != value)
+                {
+                    _previewID = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private byte _randomSelectID;
+        [Category("0 - Stage")]
+        [DisplayName("Random ID")]
+        public byte RandomSelectID
+        {
+            get => _randomSelectID;
+            set
+            {
+                if (_randomSelectID != value)
+                {
+                    _randomSelectID = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        [Browsable(false)]
         public List<FOBJKey> AnimX { get; set; } = new List<FOBJKey>();
 
+        [Browsable(false)]
         public List<FOBJKey> AnimY { get; set; } = new List<FOBJKey>();
-
-        public float Width { get; set; }
-
-        public float Height { get; set; }
-
-        public float OutlineWidth { get; set; }
-
-        public float OutlineHeight { get; set; }
-
-        public byte PreviewID { get; set; }
-
-        public byte RandomSelectID { get; set; }
 
         public override int ImageKey => StageID;
 
+        public override (float, float) CollisionOffset => (0, 0);
+        public override (float, float) CollisionSize => (Width, Height);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ws"></param>
+        /// <returns></returns>
+        public override MexImage? GetIconImage(MexWorkspace ws)
+        {
+            var internalId = MexStageIDConverter.ToInternalID(StageID);
+            var stage = ws.Project.Stages[internalId];
+
+            return stage.Assets.IconAsset.GetTexFile(ws);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -128,8 +212,6 @@ namespace mexLib.Types
             RandomSelectID = icon.RandomStageSelectID;
             Width = icon.CursorWidth;
             Height = icon.CursorHeight;
-            OutlineWidth = icon.OutlineWidth;
-            OutlineHeight = icon.OutlineHeight;
         }
         /// <summary>
         /// 
@@ -145,19 +227,9 @@ namespace mexLib.Types
                 RandomStageSelectID = RandomSelectID,
                 CursorWidth = Width,
                 CursorHeight = Height,
-                OutlineWidth = OutlineWidth,
-                OutlineHeight = OutlineHeight,
+                OutlineWidth = ScaleX,
+                OutlineHeight = ScaleY,
             };
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ws"></param>
-        /// <returns></returns>
-        public override MexImage? GetIconImage(MexWorkspace ws)
-        {
-            return null; // TODO: stage select icon
         }
     }
 

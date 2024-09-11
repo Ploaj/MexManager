@@ -13,58 +13,65 @@
 	</UserControl.Resources>
 
 	<DockPanel>
-		<TabControl DockPanel.Dock="Left"
-					Width="400">
-			<TabItem Header="Icons">
-				<DockPanel>
-					<Menu DockPanel.Dock="Top"
-							Height="48">
-						<controls:IconMenuItem
-							Text="Add"
-							ToolTip.Tip="Add"
-							IconSource="avares://MexManager/Assets/Common/icon_plus.png"
-							Click="AddIcon_Click"/>
-						<controls:IconMenuItem
-							Text="Remove"
-							ToolTip.Tip="Remove"
-							IconSource="avares://MexManager/Assets/Common/icon_delete.png"
-							Click="RemoveIcon_Click"/>
-						<controls:IconMenuItem
-							Text="Move Up"
-							ToolTip.Tip="Move Up"
-							IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
-							Click="MoveUpIcon_Click"/>
-						<controls:IconMenuItem
-							Text="Move Down"
-							ToolTip.Tip="Move Down"
-							IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
-							Click="MoveDownIcon_Click"/>
-					</Menu>
-					<ListBox
-						Name="IconList"
-						Height="240"
-						DockPanel.Dock="Top"
-						ItemsSource="{Binding CharacterSelect.FighterIcons}"
-						SelectedItem="{Binding SelectedCSSIcon, Mode=TwoWay}"
-						SelectionChanged="ListBox_SelectionChanged">
-						<ListBox.ItemTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Converter={StaticResource CSSIconTypeConverter}}"/>
-							</DataTemplate>
-						</ListBox.ItemTemplate>
-					</ListBox>
-					<ScrollViewer>
-						<views:PropertyGridExt
-							Name="IconPropertyGrid"
-							DockPanel.Dock="Left"
-							Margin="4"
-							AllowQuickFilter="False"
-							AllowFilter="False"
-							AllowToggleView="False"
-							DataContext="{Binding SelectedCSSIcon}">
-						</views:PropertyGridExt>
-					</ScrollViewer>
-				</DockPanel>
+		<Border
+			Background="#101010"
+			CornerRadius="10">
+			<TabControl DockPanel.Dock="Left"
+						Width="480">
+				<TabItem Header="Icons">
+					<DockPanel>
+						<Menu DockPanel.Dock="Top"
+								Height="48">
+							<controls:IconMenuItem
+								Text="Add"
+								ToolTip.Tip="Add"
+								IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+								Click="AddIcon_Click"/>
+							<controls:IconMenuItem
+								Text="Remove"
+								ToolTip.Tip="Remove"
+								IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+								Click="RemoveIcon_Click"/>
+							<controls:IconMenuItem
+								Text="Move Up"
+								ToolTip.Tip="Move Up"
+								IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
+								Click="MoveUpIcon_Click"/>
+							<controls:IconMenuItem
+								Text="Move Down"
+								ToolTip.Tip="Move Down"
+								IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
+								Click="MoveDownIcon_Click"/>
+						</Menu>
+						<DockPanel>
+							<ScrollViewer DockPanel.Dock="Left">
+								<ListBox
+									Name="IconList"
+									Width="200"
+									ItemsSource="{Binding CharacterSelect.FighterIcons}"
+									SelectedItem="{Binding SelectedCSSIcon, Mode=TwoWay}"
+									SelectionChanged="ListBox_SelectionChanged">
+									<ListBox.ItemTemplate>
+										<DataTemplate>
+											<TextBlock Text="{Binding Converter={StaticResource CSSIconTypeConverter}}"/>
+										</DataTemplate>
+									</ListBox.ItemTemplate>
+								</ListBox>
+							</ScrollViewer>
+							<ScrollViewer DockPanel.Dock="Right">
+								<views:PropertyGridExt
+									Name="IconPropertyGrid"
+									Margin="4"
+									AllowQuickFilter="False"
+									AllowFilter="False"
+									AllowToggleView="False"
+									NameWidth="96"
+									ShowStyle="Builtin"
+									DataContext="{Binding SelectedCSSIcon}">
+								</views:PropertyGridExt>
+							</ScrollViewer>
+						</DockPanel>
+					</DockPanel>
 			</TabItem>
 			<TabItem Header=" Layout Template">
 				<DockPanel>
@@ -103,6 +110,7 @@
 				</views:PropertyGridExt>
 			</TabItem>
 		</TabControl>
+		</Border>
 		<DockPanel DockPanel.Dock="Right">
 			<Menu DockPanel.Dock="Top"
 					Height="48"
@@ -118,17 +126,15 @@
 					IconSource="avares://MexManager/Assets/Common/icon_redo.png"
 					Click="RedoButton_Click"/>
 			</Menu>
-			<ScrollViewer>
-				<controls:SelectCanvas
-					Name="SelectScreen"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Top"
-					ItemsSource="{Binding CharacterSelect.FighterIcons}"
-					SelectedIcon="{Binding SelectedCSSIcon, Mode=TwoWay}"
-					SwapMode="{Binding AutoApplyCSSTemplate}"
-					Width="640"
-					Height="480"/>
-			</ScrollViewer>
+			<controls:SelectCanvas
+				DockPanel.Dock="Top"
+				Name="SelectScreen"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch"
+				TemplateImage="avares://MexManager/Assets/Menu/css_template.png"
+				ItemsSource="{Binding CharacterSelect.FighterIcons}"
+				SelectedIcon="{Binding SelectedCSSIcon, Mode=TwoWay}"
+				SwapMode="{Binding AutoApplyCSSTemplate}"/>
 		</DockPanel>
 	</DockPanel>
 		

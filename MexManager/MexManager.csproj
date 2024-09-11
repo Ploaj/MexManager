@@ -44,6 +44,7 @@
     <None Remove="Assets\Menu\css_hand_placed.png" />
     <None Remove="Assets\Menu\css_hand_point.png" />
     <None Remove="Assets\Menu\css_template.png" />
+    <None Remove="Assets\Menu\sss_template.png" />
   </ItemGroup>
 
   <ItemGroup>

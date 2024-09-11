@@ -1,22 +1,22 @@
-﻿using Avalonia.Data.Converters;
+﻿using mexLib.Types;
 using mexLib;
-using mexLib.Types;
 using System;
 using System.Globalization;
+using Avalonia.Data.Converters;
 
 namespace MexManager.Converters
 {
-    public class CSSIconTypeConverter : IValueConverter
+    public class SSSIconTypeConverter : IValueConverter
     {
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (Global.Workspace != null && value is MexCharacterSelectIcon icon)
+            if (Global.Workspace != null && value is MexStageSelectIcon icon)
             {
-                var internalId = MexFighterIDConverter.ToInternalID(icon.Fighter, Global.Workspace.Project.Fighters.Count);
+                var internalId = MexStageIDConverter.ToInternalID(icon.StageID);
 
-                if (internalId < Global.Workspace.Project.Fighters.Count && internalId >= 0)
+                if (internalId >= 0)
                 {
-                    return Global.Workspace.Project.Fighters[internalId].Name;
+                    return Global.Workspace.Project.Stages[internalId].Name;
                 }
             }
             return "Null";
