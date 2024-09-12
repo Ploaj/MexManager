@@ -1,7 +1,6 @@
 ﻿using HSDRaw.Common.Animation;
 using HSDRaw.Common;
 using HSDRaw.MEX.Menus;
-using HSDRaw.Tools;
 using mexLib.Attributes;
 using System.ComponentModel;
 
@@ -135,10 +134,10 @@ namespace mexLib.Types
             Y = jobj.TY;
             Z = jobj.TZ;
 
-            if ((joint_index >= 0 && joint_index <= 6) || (joint_index == 18) || (joint_index == 19))
+            if ((joint_index >= 1 && joint_index <= 6) || (joint_index == 18) || (joint_index == 19))
                 Group = 0;
 
-            if ((joint_index >= 7 && joint_index <= 11) || (joint_index == 17))
+            if ((joint_index >= 7 && joint_index <= 11) || (joint_index == 17) || (joint_index == 0))
                 Group = 1;
 
             if (joint_index >= 12 && joint_index <= 16)
@@ -187,6 +186,8 @@ namespace mexLib.Types
             RandomSelectID = icon.RandomStageSelectID;
             Width = icon.CursorWidth;
             Height = icon.CursorHeight;
+            ScaleX = icon.OutlineWidth;
+            ScaleY = icon.OutlineHeight;
         }
         /// <summary>
         /// 

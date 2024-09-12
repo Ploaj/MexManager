@@ -3,6 +3,7 @@ using mexLib.Types;
 using mexLib.Utilties;
 using MexManager.Views;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace MexManager
@@ -116,6 +117,52 @@ namespace MexManager
                 return;
 
             Workspace = null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void LaunchGameInDolphin()
+        {
+            if (Workspace == null)
+                return;
+
+            // Define the path to the exe and the parameters
+            string exePath = App.Settings.DolphinPath;
+            string parameters = $"--exec=\"{Workspace.GetSystemPath("main.dol")}\"";
+
+            // Start a new process
+            ProcessStartInfo processStartInfo = new ProcessStartInfo
+            {
+                FileName = exePath,
+                Arguments = parameters,
+                RedirectStandardOutput = true, // Optional: to capture the output
+                RedirectStandardError = true,  // Optional: to capture errors
+                UseShellExecute = false,       // Needed to redirect output
+                CreateNoWindow = true          // Optional: hide the window
+            };
+
+            using (Process process = new Process())
+            {
+                process.StartInfo = processStartInfo;
+                process.Start();
+
+                // Optionally, read the output
+                //string output = process.StandardOutput.ReadToEnd();
+                //string error = process.StandardError.ReadToEnd();
+
+                //process.WaitForExit();  // Wait for the process to exit
+                //int exitCode = process.ExitCode;  // Get the exit code if needed
+
+                // Optional: handle the output or errors
+                //if (string.IsNullOrEmpty(error))
+                //{
+                //    System.Console.WriteLine("Output: " + output);
+                //}
+                //else
+                //{
+                //    System.Console.WriteLine("Error: " + error);
+                //}
+            }
         }
     }
 }

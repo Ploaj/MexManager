@@ -36,6 +36,7 @@ namespace mexLib.Types
         {
             HSD_JOBJ jobj = new()
             {
+                Flags = JOBJ_FLAG.CLASSICAL_SCALING,
                 SX = 1,
                 SY = 1,
                 SZ = 1,
@@ -44,7 +45,10 @@ namespace mexLib.Types
             foreach (var icon in StageIcons)
                 jobj.AddChild(icon.ToJoint());
 
-            jobj.AddChild(RandomIcon.ToJoint());
+            var random = RandomIcon.ToJoint();
+            random.SX = 1;
+            random.SY = 1;
+            jobj.AddChild(random);
 
             jobj.UpdateFlags();
 
