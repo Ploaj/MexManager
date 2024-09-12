@@ -29,6 +29,27 @@ namespace mexLib.Types
             }
         }
 
+        public enum StageIconStatus
+        {
+            Hidden,
+            Locked,
+            Unlocked,
+            Random,
+        }
+
+        private StageIconStatus _status = StageIconStatus.Unlocked;
+        [Category("0 - Stage")]
+        [DisplayName("Status")]
+        public StageIconStatus Status
+        {
+            get => _status;
+            set
+            {
+                _status = value;
+                OnPropertyChanged();
+            }
+        }
+
         private int _group;
         [Category("0 - Stage")]
         [DisplayName("Group")]
@@ -106,7 +127,24 @@ namespace mexLib.Types
             }
         }
 
-        public override int ImageKey => StageID;
+        public override int ImageKey
+        {
+            get
+            {
+                switch (Status)
+                {
+                    case StageIconStatus.Random:
+                        return -2;
+                    case StageIconStatus.Locked: 
+                        return -1;
+                    case StageIconStatus.Unlocked: 
+                        return StageID;
+                    case StageIconStatus.Hidden: 
+                    default: 
+                        return -3;
+                }
+            }
+        }
 
         public override (float, float) CollisionOffset => (0, 0);
         public override (float, float) CollisionSize => (Width, Height);
@@ -118,10 +156,20 @@ namespace mexLib.Types
         /// <returns></returns>
         public override MexImage? GetIconImage(MexWorkspace ws)
         {
-            var internalId = MexStageIDConverter.ToInternalID(StageID);
-            var stage = ws.Project.Stages[internalId];
-
-            return stage.Assets.IconAsset.GetTexFile(ws);
+            switch (Status)
+            {
+                case StageIconStatus.Random:
+                    return ws.Project.ReservedAssets.SSSNullAsset.GetTexFile(ws);
+                case StageIconStatus.Locked:
+                    return ws.Project.ReservedAssets.SSSLockedNullAsset.GetTexFile(ws);
+                case StageIconStatus.Unlocked:
+                    var internalId = MexStageIDConverter.ToInternalID(StageID);
+                    var stage = ws.Project.Stages[internalId];
+                    return stage.Assets.IconAsset.GetTexFile(ws);
+                case StageIconStatus.Hidden:
+                default:
+                    return null;
+            }
         }
         /// <summary>
         /// 
@@ -188,6 +236,14 @@ namespace mexLib.Types
             Height = icon.CursorHeight;
             ScaleX = icon.OutlineWidth;
             ScaleY = icon.OutlineHeight;
+
+            if (StageID == 0)
+            {
+                Status = StageIconStatus.Random;
+                PreviewID = 255;
+                ScaleX = 1;
+                ScaleY = 1;
+            }
         }
         /// <summary>
         /// 
@@ -195,17 +251,36 @@ namespace mexLib.Types
         /// <returns></returns>
         public MEX_StageIconData ToIcon()
         {
-            return new MEX_StageIconData()
+            if (StageID == 0)
             {
-                ExternalID = StageID,
-                PreviewModelID = PreviewID,
-                RandomEnabled = false,
-                RandomStageSelectID = RandomSelectID,
-                CursorWidth = Width,
-                CursorHeight = Height,
-                OutlineWidth = ScaleX,
-                OutlineHeight = ScaleY,
-            };
+                return new MEX_StageIconData()
+                {
+                    ExternalID = StageID,
+                    PreviewModelID = 255,
+                    RandomEnabled = false,
+                    RandomStageSelectID = 0,
+                    CursorWidth = Width,
+                    CursorHeight = Height,
+                    OutlineWidth = 1.2f * ScaleX,
+                    OutlineHeight = 1f * ScaleY,
+                    IconState = (byte)Status,
+                };
+            }
+            else
+            {
+                return new MEX_StageIconData()
+                {
+                    ExternalID = StageID,
+                    PreviewModelID = PreviewID,
+                    RandomEnabled = false,
+                    RandomStageSelectID = RandomSelectID,
+                    CursorWidth = Width,
+                    CursorHeight = Height,
+                    OutlineWidth = ScaleX,
+                    OutlineHeight = ScaleY,
+                    IconState = (byte)Status,
+                };
+            }
         }
     }
 

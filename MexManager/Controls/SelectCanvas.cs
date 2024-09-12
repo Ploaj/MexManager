@@ -63,6 +63,12 @@ namespace MexManager.Controls
         public static readonly StyledProperty<IImage> TemplateImageProperty =
             AvaloniaProperty.Register<SelectCanvas, IImage>(nameof(TemplateImage));
 
+        public static readonly StyledProperty<double> TemplateImageWidthProperty =
+            AvaloniaProperty.Register<SelectCanvas, double>(nameof(TemplateImageWidth));
+
+        public static readonly StyledProperty<double> TemplateImageHeightProperty =
+            AvaloniaProperty.Register<SelectCanvas, double>(nameof(TemplateImageHeight));
+
         public static readonly StyledProperty<object?> SelectedIconProperty =
             AvaloniaProperty.Register<SelectCanvas, object?>(nameof(SelectedIcon));
 
@@ -72,6 +78,26 @@ namespace MexManager.Controls
         private readonly static float HandWidth = 7.2f;
 
         private readonly static float HandHeight = 9.6f;
+
+        public double TemplateImageWidth
+        {
+            get => GetValue(TemplateImageWidthProperty);
+            set
+            {
+                SetValue(TemplateImageWidthProperty, value);
+                InvalidateVisual();
+            }
+        }
+
+        public double TemplateImageHeight
+        {
+            get => GetValue(TemplateImageHeightProperty);
+            set
+            {
+                SetValue(TemplateImageHeightProperty, value);
+                InvalidateVisual();
+            }
+        }
 
         public IImage TemplateImage
         {
@@ -144,6 +170,9 @@ namespace MexManager.Controls
 
         public SelectCanvas()
         {
+            TemplateImageWidth = 35.05;
+            TemplateImageHeight = 28.8f;
+
             PointerWheelChanged += (sender, e) =>
             {
                 Properties.Zoom += (float)e.Delta.Y;
@@ -216,7 +245,7 @@ namespace MexManager.Controls
             //using var pop = context.PushTransform(translationMatrix);
 
             // draw background
-            var rect = TransformRect(0, 0, 35.05f, 28.8f);
+            var rect = TransformRect(0, 0, TemplateImageWidth, TemplateImageHeight);
             context.DrawImage(TemplateImage, rect);
 
             // draw icons
@@ -240,7 +269,7 @@ namespace MexManager.Controls
             //DrawCursorHand(context);
         }
 
-        private Rect TransformRect(float x, float y, float w, float h)
+        private Rect TransformRect(double x, double y, double w, double h)
         {
             var viewportWidth = Bounds.Width;
             var viewportHeight = Bounds.Height;

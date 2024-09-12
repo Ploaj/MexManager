@@ -253,7 +253,7 @@ namespace mexLib
             mexData.MetaData = new MEX_Meta()
             {
                 NumOfCSSIcons = proj.CharacterSelect.FighterIcons.Count,
-                NumOfSSSIcons = proj.StageSelects[0].StageIcons.Count + 1,
+                NumOfSSSIcons = proj.StageSelects[0].StageIcons.Count,
                 NumOfEffects = gen.EffectFiles.Count,
                 NumOfSSMs = proj.Soundbanks.Count,
                 NumOfMusic = proj.Music.Count,

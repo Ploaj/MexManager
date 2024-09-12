@@ -318,7 +318,7 @@ namespace mexLib.Installer
             var nameTOBJs = dataTable.StageNameMatAnimJoint.Child.Child.MaterialAnimation.TextureAnimation.ToTOBJs();
 
             // get random
-            workspace.Project.StageSelects[0].RandomIcon.FromJoint(0, position_joints[off_random], position_animjoints[off_random]);
+            //workspace.Project.StageSelects[0].RandomIcon.FromJoint(0, position_joints[off_random], position_animjoints[off_random]);
             var reserved = workspace.Project.ReservedAssets;
             reserved.SSSNullAsset.SetFromMexImage(workspace, new MexImage(tex0[0]));
             reserved.SSSLockedNullAsset.SetFromMexImage(workspace, new MexImage(tex0[1]));
@@ -327,6 +327,12 @@ namespace mexLib.Installer
             // messy
             foreach (var icon in workspace.Project.StageSelects[0].StageIcons)
             {
+                if (icon.StageID == 0)
+                {
+                    icon.FromJoint(0, position_joints[off_random], position_animjoints[off_random]);
+                    continue;
+                }
+
                 var stage = workspace.Project.Stages[MexStageIDConverter.ToInternalID(icon.StageID)];
 
                 // deswizzle icon

@@ -13,9 +13,6 @@ namespace mexLib.Types
         [Browsable(false)]
         public ObservableCollection<MexStageSelectIcon> StageIcons { get; set; } = new ObservableCollection<MexStageSelectIcon>();
 
-        [Browsable(false)]
-        public MexStageSelectIcon RandomIcon { get; set; } = new MexStageSelectIcon();
-
         [DisplayName("Cursor Start X")]
         public float StageSelectCursorStartX { get; set; } = 0;
 
@@ -43,12 +40,15 @@ namespace mexLib.Types
             };
 
             foreach (var icon in StageIcons)
-                jobj.AddChild(icon.ToJoint());
-
-            var random = RandomIcon.ToJoint();
-            random.SX = 1;
-            random.SY = 1;
-            jobj.AddChild(random);
+            {
+                var j = icon.ToJoint();
+                if (icon.StageID == 0)
+                {
+                    j.SX = 1;
+                    j.SY = 1;
+                }
+                jobj.AddChild(j);
+            }
 
             jobj.UpdateFlags();
 
@@ -61,7 +61,6 @@ namespace mexLib.Types
         public HSD_AnimJoint GenerateAnimJoint()
         {
             HSD_AnimJoint anim = Template.GenerateJointAnim(StageIcons);
-            anim.AddChild(Template.GenerateJointAnim(RandomIcon));
             return anim;
         }
         /// <summary>
@@ -83,10 +82,7 @@ namespace mexLib.Types
                 var ico = new MexStageSelectIcon();
                 ico.FromIcon(stage_icon);
 
-                if (i == 29)
-                    RandomIcon = ico;
-                else
-                    StageIcons.Add(ico);
+                StageIcons.Add(ico);
             }
         }
         /// <summary>
@@ -101,7 +97,6 @@ namespace mexLib.Types
             tb.Parameters.StageSelectCursorStartZ = StageSelectCursorStartZ;
 
             var icons = StageIcons.Select(e => e.ToIcon()).ToList();
-            icons.Add(RandomIcon.ToIcon());
 
             // generate icons
             tb.SSSIconData = new HSDArrayAccessor<MEX_StageIconData>()

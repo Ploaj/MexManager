@@ -140,6 +140,8 @@
 				HorizontalAlignment="Stretch"
 				VerticalAlignment="Stretch"
 				TemplateImage="avares://MexManager/Assets/Menu/sss_template.png"
+				TemplateImageWidth="28.59"
+				TemplateImageHeight="23.50"
 				ItemsSource="{Binding StageSelect.StageIcons}"
 				SelectedIcon="{Binding SelectedSSSIcon, Mode=TwoWay}"/>
 		</DockPanel>

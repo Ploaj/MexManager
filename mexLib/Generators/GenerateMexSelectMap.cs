@@ -68,24 +68,29 @@ namespace mexLib.Generators
             for (int i = 0; i < ws.Project.StageSelects[0].StageIcons.Count; i++)
             {
                 var external_id = ws.Project.StageSelects[0].StageIcons[i].StageID;
-                var internal_id = MexStageIDConverter.ToInternalID(external_id);
-                var stage = ws.Project.Stages[internal_id];
 
-                var icon = stage.Assets.IconAsset.GetTexFile(ws);
-                icon ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
+                // check for random
+                if (external_id == 0)
+                {
+                    var randomBanner = reserved.SSSRandomBannerAsset.GetTexFile(ws);
+                    randomBanner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
+                    names_images.Add(randomBanner.ToTObj());
+                }
+                else
+                {
+                    var internal_id = MexStageIDConverter.ToInternalID(external_id);
+                    var stage = ws.Project.Stages[internal_id];
 
-                var banner = stage.Assets.BannerAsset.GetTexFile(ws);
-                banner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
+                    var icon = stage.Assets.IconAsset.GetTexFile(ws);
+                    icon ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
 
-                icon_images.Add(icon.ToTObj());
-                names_images.Add(banner.ToTObj());
+                    var banner = stage.Assets.BannerAsset.GetTexFile(ws);
+                    banner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
+
+                    icon_images.Add(icon.ToTObj());
+                    names_images.Add(banner.ToTObj());
+                }
             }
-
-            // add random banner
-            var randomBanner = reserved.SSSRandomBannerAsset.GetTexFile(ws);
-            randomBanner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
-            names_images.Add(randomBanner.ToTObj());
-
 
             // sss icon could be generated on save
             HSD_JOBJ model;
