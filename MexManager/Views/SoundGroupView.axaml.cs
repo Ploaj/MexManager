@@ -11,6 +11,8 @@ using System.Globalization;
 using System;
 using System.IO;
 using System.Collections;
+using MexManager.Extensions;
+using System.Linq;
 
 namespace MexManager.Views;
 
@@ -202,16 +204,50 @@ public partial class SoundGroupView : UserControl
     /// <param name="e"></param>
     private void AddScript_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: add script
+        if (DataContext is SoundGroupModel model &&
+            model.SelectedSoundGroup is MexSoundGroup group &&
+            group.Scripts != null)
+        {
+            // TODO: initial code
+            group.Scripts.Add(new SEMBankScript()
+            {
+                Name = "SFX_Untitled",
+                Codes = new System.Collections.Generic.List<SEMCode>()
+                {
+                    new SEMCode(SEM_CODE.SET_SFXID),
+                    new SEMCode(SEM_CODE.END_PLAYBACK),
+                }
+            });
+        }
     }
     /// <summary>
     /// 
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void RemoveScript_Click(object? sender, RoutedEventArgs e)
+    private async void RemoveScript_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: remove script
+        if (DataContext is SoundGroupModel model &&
+            model.SelectedSoundGroup is MexSoundGroup group &&
+            group.Scripts != null && 
+            model.SelectedScript is SEMBankScript script)
+        {
+            var check = await MessageBox.Show($"Are you sure you want\nto remove \"{script.Name}\"?", "Remove Script", MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (check != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            var index = group.Scripts.IndexOf(script);
+
+            if (index == -1)
+                return;
+
+            // remove sound
+            group.Scripts.RemoveAt(index);
+
+            // re select index
+            ScriptList.RefreshList(index);
+        }
     }
     /// <summary>
     /// 
@@ -220,7 +256,21 @@ public partial class SoundGroupView : UserControl
     /// <param name="e"></param>
     private void DuplicateScript_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: duplicate script
+        if (DataContext is SoundGroupModel model &&
+            model.SelectedSoundGroup is MexSoundGroup group &&
+            group.Scripts != null &&
+            model.SelectedScript is SEMBankScript script)
+        {
+            var index = group.Scripts.IndexOf(script);
+
+            group.Scripts.Insert(index + 1, new SEMBankScript()
+            {
+                Name = script.Name + "_copy",
+                Codes = script.Codes.Select(e => new SEMCode(e.Pack())).ToList()
+            });
+
+            ScriptList.RefreshList(index);
+        }
     }
     /// <summary>
     /// 
@@ -229,7 +279,18 @@ public partial class SoundGroupView : UserControl
     /// <param name="e"></param>
     private void MoveUpScript_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: move up script
+        if (DataContext is SoundGroupModel model &&
+            model.SelectedSoundGroup is MexSoundGroup group &&
+            group.Scripts != null)
+        {
+            int index = ScriptList.SelectedIndex;
+            if (index > 0)
+            {
+                group.Scripts.Move(index, index - 1);
+                ScriptList.SelectedIndex = index - 1;
+            }
+            ScriptList.RefreshList(index - 1);
+        }
     }
     /// <summary>
     /// 
@@ -238,7 +299,18 @@ public partial class SoundGroupView : UserControl
     /// <param name="e"></param>
     private void MoveDownScript_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: move down script
+        if (DataContext is SoundGroupModel model &&
+            model.SelectedSoundGroup is MexSoundGroup group &&
+            group.Scripts != null)
+        {
+            int index = ScriptList.SelectedIndex;
+            if (index + 1 < group.Scripts.Count)
+            {
+                group.Scripts.Move(index, index + 1);
+                ScriptList.SelectedIndex = index + 1;
+            }
+            ScriptList.RefreshList(index + 1);
+        }
     }
     /// <summary>
     /// 
