@@ -231,15 +231,15 @@ namespace mexLib
                 SSM_LookupTable = new HSDArrayAccessor<MEX_SSMLookup>(),
             };
 
-            mexData.SSMTable.SSM_BufferSizes.Set(proj.Soundbanks.Count, new MEX_SSMSizeAndFlags());// blank entry at end
-            mexData.SSMTable.SSM_LookupTable.Set(proj.Soundbanks.Count, new MEX_SSMLookup());// blank entry at beginning
+            mexData.SSMTable.SSM_BufferSizes.Set(proj.SoundGroups.Count, new MEX_SSMSizeAndFlags());// blank entry at end
+            mexData.SSMTable.SSM_LookupTable.Set(proj.SoundGroups.Count, new MEX_SSMLookup());// blank entry at beginning
 
-            for (int i = 0; i < proj.Soundbanks.Count; i++)
+            for (int i = 0; i < proj.SoundGroups.Count; i++)
             {
-                proj.Soundbanks[i].ToMxDt(gen, i);
+                proj.SoundGroups[i].ToMxDt(gen, i);
             }
 
-            var ssm_runtime_length = proj.Soundbanks.Count * 4;
+            var ssm_runtime_length = proj.SoundGroups.Count * 4;
             HSDStruct rtTable = new (6 * 4);
             rtTable.SetReferenceStruct(0x00, new HSDStruct(Enumerable.Repeat((byte)0x01, 0x180).ToArray()));
             rtTable.SetReferenceStruct(0x04, new HSDStruct(Enumerable.Repeat((byte)0x02, ssm_runtime_length).ToArray()));
@@ -255,7 +255,7 @@ namespace mexLib
                 NumOfCSSIcons = proj.CharacterSelect.FighterIcons.Count,
                 NumOfSSSIcons = proj.StageSelects[0].StageIcons.Count,
                 NumOfEffects = gen.EffectFiles.Count,
-                NumOfSSMs = proj.Soundbanks.Count,
+                NumOfSSMs = proj.SoundGroups.Count,
                 NumOfMusic = proj.Music.Count,
                 NumOfInternalIDs = proj.Fighters.Count,
                 NumOfExternalIDs = proj.Fighters.Count,

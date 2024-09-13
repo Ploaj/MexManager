@@ -45,18 +45,10 @@ namespace mexLib.Installer
             if (plco == null)
                 return new MexInstallerError("Error reading PlCo.dat");
 
-            var semPath = workspace.GetFilePath(@"audio//us//smash2.sem");
-            if (!File.Exists(semPath))
-                return new MexInstallerError("smash2.sem not found");
-            var sem = SEM.ReadSEMFile(semPath);
-
-            var smstPath = workspace.GetFilePath(@"SmSt.dat");
-            if (!File.Exists(smstPath))
-                return new MexInstallerError("SmSt.dat not found");
-            HSDRawFile smstFile = new(smstPath);
-            var smst = smstFile["smSoundTestLoadData"].Data as smSoundTestLoadData;
-            if (smst == null)
-                return new MexInstallerError("Error reading PlCo.dat");
+            //var semPath = workspace.GetFilePath(@"audio//us//smash2.sem");
+            //if (!File.Exists(semPath))
+            //    return new MexInstallerError("smash2.sem not found");
+            //var sem = SEM.ReadSEMFile(semPath);
 
             // init menu playlist
             project.MenuPlaylist.Entries.Add(new MexPlaylistEntry()
@@ -121,17 +113,29 @@ namespace mexLib.Installer
             }
 
             // load sounds
-            var soundNames = smst.SoundNames;
-            var soundids = smst.SoundIDs.ToList();
+            //var smstPath = workspace.GetFilePath(@"SmSt.dat");
+            //if (!File.Exists(smstPath))
+            //    return new MexInstallerError("SmSt.dat not found");
+            //HSDRawFile smstFile = new(smstPath);
+            //var smst = smstFile["smSoundTestLoadData"].Data as smSoundTestLoadData;
+            //if (smst == null)
+            //    return new MexInstallerError("Error reading SmSt.dat");
+
+            //var soundNames = smst.SoundNames;
+            //var groupNames = smst.SoundBankNames;
+            //var soundids = smst.SoundIDs.ToList();
             for (uint i = 0; i < 55; i++)
             {
-                var sound = new MexSoundbank();
+                var sound = new MexSoundGroup()
+                {
+                    //Name = groupNames[i],
+                };
                 sound.FromDOL(dol, i);
-                sound.ScriptBank = sem[(int)i];
+                //sound.ScriptBank = sem[(int)i];
 
                 // extract ssm
-                var ssm = new SSM();
-                ssm.Open(workspace.GetFilePath($"audio//us//{sound.FileName}"));
+                //var ssm = new SSM();
+                //ssm.Open(workspace.GetFilePath($"audio//us//{sound.FileName}"));
 
                 //// export ssm files
                 //var ssmPath = workspace.GetAssetPath($"audio//{i:D3}//");
@@ -143,30 +147,29 @@ namespace mexLib.Installer
                 //}
 
                 // load script meta data
-                for (int j = 0; j < sound.ScriptBank.Scripts.Length; j++)
-                {
-                    // load script name
-                    var sindex = soundids.IndexOf((int)(i * 10000 + j));
-                    if (sindex != -1 && sindex < soundNames.Length)
-                    {
-                        sound.ScriptBank.Scripts[j].Name = soundNames[sindex];
+                //for (int j = 0; j < sound.ScriptBank.Scripts.Length; j++)
+                //{
+                //    // load script name
+                //    var sindex = soundids.IndexOf((int)(i * 10000 + j));
+                //    if (sindex != -1 && sindex < soundNames.Length)
+                //    {
+                //        sound.ScriptBank.Scripts[j].Name = soundNames[sindex];
 
-                        // adjust sound id to relative
-                        if (sound.ScriptBank.Scripts[j].SFXID != -1)
-                            sound.ScriptBank.Scripts[j].SFXID -= ssm.StartIndex;
-                    }
+                //        // adjust sound id to relative
+                //        if (sound.ScriptBank.Scripts[j].SFXID != -1)
+                //            sound.ScriptBank.Scripts[j].SFXID -= ssm.StartIndex;
+                //    }
+                //}
 
-                }
-
-                project.Soundbanks.Add(sound);
+                project.SoundGroups.Add(sound);
             }
 
             // create a null bank
-            project.Soundbanks.Add(new MexSoundbank()
+            project.SoundGroups.Add(new MexSoundGroup()
             {
                 FileName = "null.ssm",
             });
-            new SSM() { Name = "null.ssm", StartIndex = 540000 }.Save(workspace.GetFilePath("audio\\us\\null.ssm"));
+            new SSM() { Name = "null.ssm", StartIndex = 5000 }.Save(workspace.GetFilePath("audio\\us\\null.ssm"));
 
             // load scenes
             project.SceneData = InstallScenes(dol);

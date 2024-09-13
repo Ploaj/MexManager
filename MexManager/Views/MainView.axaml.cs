@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using HSDRaw.MEX.Sounds;
 using MeleeMedia.Audio;
 using mexLib.Types;
 using MexManager.Extensions;
@@ -34,6 +35,11 @@ public partial class MainView : UserControl
         };
 
         GlobalAudio = GlobalAudioView;
+
+        DataContextChanged += (s, e) =>
+        {
+            SoundGroup.DataContext = Context?.SoundViewModel;
+        };
     }
     /// <summary>
     /// 

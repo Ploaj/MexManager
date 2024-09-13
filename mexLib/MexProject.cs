@@ -46,7 +46,7 @@ namespace mexLib
         public ObservableCollection<MexStage> Stages { get; set; } = new ObservableCollection<MexStage>();
 
         [JsonIgnore]
-        public ObservableCollection<MexSoundbank> Soundbanks { get; set; } = new ObservableCollection<MexSoundbank>();
+        public ObservableCollection<MexSoundGroup> SoundGroups { get; set; } = new ObservableCollection<MexSoundGroup>();
 
         [JsonIgnore]
         public ObservableCollection<MexMusic> Music { get; set; } = new ObservableCollection<MexMusic>();
@@ -325,8 +325,8 @@ namespace mexLib
                 proj.Stages.Add(f);
 
             // load sounds
-            foreach (var f in proj.SoundSaveMap.Load<MexSoundbank>(ws.GetDataPath("sounds//")))
-                proj.Soundbanks.Add(f);
+            foreach (var f in proj.SoundSaveMap.Load<MexSoundGroup>(ws.GetDataPath("sounds//")))
+                proj.SoundGroups.Add(f);
 
             // Load main code
             MexJsonSerializer.LoadData<MexCode>(ws.GetDataPath("mex.json"), data => proj.MainCode = data);
@@ -416,7 +416,7 @@ namespace mexLib
             StageSaveMap.Save(Stages, workspace.GetDataPath("stages//"));
 
             // save sounds
-            SoundSaveMap.Save(Soundbanks, workspace.GetDataPath("sounds//"));
+            SoundSaveMap.Save(SoundGroups, workspace.GetDataPath("sounds//"));
 
             // save items
             //{

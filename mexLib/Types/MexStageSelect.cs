@@ -22,7 +22,7 @@ namespace mexLib.Types
         [DisplayName("Cursor Start Z")]
         public float StageSelectCursorStartZ { get; set; } = 0;
 
-        private MexStageSelectTemplate _template = new MexStageSelectTemplate();
+        private MexStageSelectTemplate _template = new ();
         [Browsable(false)]
         public MexStageSelectTemplate Template { get => _template; set { _template = value; OnPropertyChanged(); } }
 

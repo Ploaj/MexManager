@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:MexManager.ViewModels"
+			 xmlns:views="clr-namespace:MexManager.Views"
+			 xmlns:converters="clr-namespace:MexManager.Converters"
+			 xmlns:controls="clr-namespace:MexManager.Controls"
+			 xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
+			 xmlns:pm="clr-namespace:Avalonia.PropertyModels;assembly=Avalonia.PropertyModels"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MexManager.Views.SoundGroupView"
+			 x:DataType="vm:SoundGroupModel">
+
+	<DockPanel>
+		<DockPanel>
+			<Menu
+				DockPanel.Dock="Top"
+				Height="48">
+				<controls:IconMenuItem
+					Text="Add"
+					ToolTip.Tip="Add"
+					IconSource="avares://MexManager/Assets/Common/icon_plus.png"/>
+			</Menu>
+			<ListBox
+				Name="GroupList"
+				DockPanel.Dock="Bottom"
+				ItemsSource="{Binding SoundGroups}"
+				SelectedItem="{Binding SelectedSoundGroup, Mode=TwoWay}"
+				Padding="0"
+				Width="280"
+				SelectedIndex="0">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<StackPanel
+							ToolTip.Tip="{Binding Name}"
+							Orientation="Horizontal"
+							Spacing="4"
+							Height="24">
+							<TextBlock
+								VerticalAlignment="Center">
+								<TextBlock.Text>
+									<Binding Path="." Converter="{StaticResource IndexConverter}"/>
+								</TextBlock.Text>
+							</TextBlock>
+							<TextBlock
+								Text="{Binding Name}"
+								VerticalAlignment="Center"/>
+						</StackPanel>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</DockPanel>
+		
+		<TabControl
+			IsVisible="{Binding SelectedSoundGroup, Converter={StaticResource NullToBoolConverter}}"
+			DockPanel.Dock="Right">
+			<TabItem Header="General">
+				<ScrollViewer>
+					<views:PropertyGridExt
+						Margin="4"
+						AllowQuickFilter="False"
+						DataContext="{Binding SelectedSoundGroup}">
+					</views:PropertyGridExt>
+				</ScrollViewer>
+			</TabItem>
+			<TabItem Header="Scripts">
+			</TabItem>
+			<TabItem Header="Sounds">
+			</TabItem>
+		</TabControl>
+
+	</DockPanel>
+</UserControl>

@@ -294,6 +294,7 @@
 								Width="32"
 								Height="32"/>
 					</TabItem.Header>
+					<views:SoundGroupView Name="SoundGroup"/>
 				</TabItem>
 				<TabItem ToolTip.Tip="Menus">
 					<TabItem.Header>
@@ -341,7 +342,7 @@
 							<ListBox
 								DockPanel.Dock="Top"
 								Name="CodesList"
-								Width="280"
+								Width="400"
 								ItemsSource="{Binding Codes}"
 								SelectedItem="{Binding SelectedCode, Mode=TwoWay}">
 								<ListBox.ItemTemplate>

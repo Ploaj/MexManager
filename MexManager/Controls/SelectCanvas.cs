@@ -162,10 +162,6 @@ namespace MexManager.Controls
             }
         }
 
-        private readonly Stack<ObservableCollection<IconState>> _undoStack = new ();
-        private readonly Stack<ObservableCollection<IconState>> _redoStack = new ();
-
-
         private Point _cursorPosition = new ();
 
         public SelectCanvas()

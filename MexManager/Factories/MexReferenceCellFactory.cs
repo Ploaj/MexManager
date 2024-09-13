@@ -38,7 +38,7 @@ namespace MexManager.Factories
                     coll = Global.Workspace?.Project.Music;
                     break;
                 case MexLinkType.Sound:
-                    coll = Global.Workspace?.Project.Soundbanks;
+                    coll = Global.Workspace?.Project.SoundGroups;
                     break;
                 case MexLinkType.Series:
                     coll = Global.Workspace?.Project.Series;

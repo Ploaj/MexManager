@@ -1,10 +1,8 @@
 ﻿using HSDRaw.Common;
-using HSDRaw.Melee.Pl;
-using MeleeMedia.Audio;
+using mexLib.Attributes;
 using mexLib.MexScubber;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
-using System.Xml.Linq;
 
 namespace mexLib.Types
 {
@@ -19,9 +17,13 @@ namespace mexLib.Types
         Minigame
     }
 
-    public class MexSoundbank
+    public class MexSoundGroup : MexReactiveObject
     {
-        [Category("General"), DisplayName("Filename"), Description("Name of the ssm file")]
+        private string _name;
+        [Category("General"), DisplayName("Name")]
+        public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+
+        [Category("General"), DisplayName("Filename")]
         public string FileName { get; set; } = "";
 
         [Browsable(false)]
@@ -49,37 +51,26 @@ namespace mexLib.Types
         }
 
         [JsonIgnore]
+        [DisplayName("Mushroom Script Offset")]
         public byte GroupFlag3
         {
             get => (byte)(GroupFlags & 0xFF);
             set => GroupFlags = (uint)(GroupFlags & ~0x000000FF | (uint)value & 0xFF);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        [DisplayHex]
         public uint Flags { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        [Browsable(false)]
-        public SEMBank ScriptBank { get; internal set; } = new SEMBank();
-
-        //[Browsable(false), YamlIgnore]
-        //public bool IsMEXSound
-        //{
-        //    get
-        //    {
-        //        return MEX.SoundBanks.IndexOf(this) > 55;
-        //    }
-        //}
-
-
+        /// <param name="dol"></param>
+        /// <param name="index"></param>
         public void FromDOL(MexDOL dol, uint index)
         {
             // SSMFiles
             FileName = dol.GetStruct<string>(0x803bbcfc, index);
+            Name = Path.GetFileNameWithoutExtension(FileName);
 
             // SSM_BufferSizes
             Flags = dol.GetStruct<uint>(0x803BC4E4 + 0x04, index, 8);

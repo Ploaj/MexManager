@@ -3,6 +3,7 @@ using System.Windows.Input;
 using System.Collections.ObjectModel;
 using mexLib.Types;
 using System.Diagnostics;
+using MexManager.Views;
 
 namespace MexManager.ViewModels;
 
@@ -13,6 +14,7 @@ public class MainViewModel : ViewModelBase
     public ICommand WorkspaceLoadedCommand { get; }
     public ICommand LaunchCommand { get; }
 
+    public SoundGroupModel SoundViewModel { get; } = new SoundGroupModel();
 
     private object? _selectedFighter;
 
@@ -198,6 +200,7 @@ public class MainViewModel : ViewModelBase
             Codes = null;
             CharacterSelect = null;
             StageSelect = null;
+            SoundViewModel.SoundGroups = null;
         }
         else
         {
@@ -209,6 +212,7 @@ public class MainViewModel : ViewModelBase
             Codes = Global.Workspace.Project.Codes;
             CharacterSelect = Global.Workspace.Project.CharacterSelect;
             StageSelect = Global.Workspace.Project.StageSelects[0];
+            SoundViewModel.SoundGroups = Global.Workspace.Project.SoundGroups;
         }
     }
     /// <summary>

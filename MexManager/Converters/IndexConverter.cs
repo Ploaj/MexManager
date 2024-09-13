@@ -27,9 +27,9 @@ namespace MexManager.Converters
                 {
                     return $"{Global.Workspace.Project.Stages.IndexOf(stage):D3}.";
                 }
-                if (value is MexSoundbank sound)
+                if (value is MexSoundGroup sound)
                 {
-                    return $"{Global.Workspace.Project.Soundbanks.IndexOf(sound):D3}.";
+                    return $"{Global.Workspace.Project.SoundGroups.IndexOf(sound):D3}.";
                 }
                 if (value is MexSeries series)
                 {
