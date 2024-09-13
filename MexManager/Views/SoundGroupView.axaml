@@ -65,8 +65,82 @@
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Scripts">
+				<DockPanel>
+					<Menu DockPanel.Dock="Top"
+							Height="48">
+						<controls:IconMenuItem
+							Text="Add"
+							ToolTip.Tip="Add"
+							IconSource="avares://MexManager/Assets/Common/icon_plus.png"/>
+						<controls:IconMenuItem
+							Text="Remove"
+							ToolTip.Tip="Remove"
+							IconSource="avares://MexManager/Assets/Common/icon_delete.png"/>
+					</Menu>
+					<DockPanel>
+						<ScrollViewer DockPanel.Dock="Left">
+							<ListBox
+							Name="ScriptList"
+							Width="240"
+							DockPanel.Dock="Top"
+							ItemsSource="{Binding SelectedSoundGroup.Scripts}"
+							SelectedItem="{Binding SelectedScript, Mode=TwoWay}">
+							</ListBox>
+						</ScrollViewer>
+						<ScrollViewer DockPanel.Dock="Right">
+							<views:PropertyGridExt
+								Name="ScriptPropertyGrid"
+								DockPanel.Dock="Left"
+								Margin="4"
+								NameWidth="96"
+								AllowQuickFilter="False"
+								AllowFilter="False"
+								AllowToggleView="False"
+								ShowStyle="Builtin"
+								DataContext="{Binding SelectedScript}">
+							</views:PropertyGridExt>
+						</ScrollViewer>
+					</DockPanel>
+				</DockPanel>
 			</TabItem>
 			<TabItem Header="Sounds">
+				<DockPanel>
+					<Menu DockPanel.Dock="Top"
+							Height="48">
+						<controls:IconMenuItem
+							Text="Add"
+							ToolTip.Tip="Add"
+							IconSource="avares://MexManager/Assets/Common/icon_plus.png"/>
+						<controls:IconMenuItem
+							Text="Remove"
+							ToolTip.Tip="Remove"
+							IconSource="avares://MexManager/Assets/Common/icon_delete.png"/>
+					</Menu>
+					<DockPanel>
+						<ScrollViewer DockPanel.Dock="Left">
+							<ListBox
+							Name="SoundList"
+							Width="240"
+							DockPanel.Dock="Top"
+							ItemsSource="{Binding SelectedSoundGroup.Sounds}"
+							SelectedItem="{Binding SelectedSound, Mode=TwoWay}">
+							</ListBox>
+						</ScrollViewer>
+						<ScrollViewer DockPanel.Dock="Right">
+							<views:PropertyGridExt
+								Name="SoundPropertyGrid"
+								DockPanel.Dock="Left"
+								Margin="4"
+								NameWidth="96"
+								AllowQuickFilter="False"
+								AllowFilter="False"
+								AllowToggleView="False"
+								ShowStyle="Builtin"
+								DataContext="{Binding SelectedSound}">
+							</views:PropertyGridExt>
+						</ScrollViewer>
+					</DockPanel>
+				</DockPanel>
 			</TabItem>
 		</TabControl>
 

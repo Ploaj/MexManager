@@ -1,11 +1,13 @@
 ﻿using GCILib;
-using HSDRaw.Common;
-using HSDRaw.MEX;
+using HSDRaw;
+using HSDRaw.Melee;
+using MeleeMedia.Audio;
 using mexLib.Generators;
 using mexLib.Installer;
 using mexLib.MexScubber;
 using mexLib.Types;
 using mexLib.Utilties;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace mexLib
@@ -193,6 +195,8 @@ namespace mexLib
 
             workspace.Project = MexProject.LoadFromFile(workspace);
 
+            workspace.LoadSoundData();
+
             return true;
         }
         /// <summary>
@@ -201,22 +205,26 @@ namespace mexLib
         public void Save()
         {
             var sw = new Stopwatch();
+            var total = new TimeSpan();
 
             sw.Start();
             MxDtCompiler.Compile(this);
             sw.Stop();
+            total += sw.Elapsed;
 
-            Debug.WriteLine($"Compile MxDt {sw.Elapsed}");
+            Debug.WriteLine($"Compiled MxDt {sw.Elapsed}");
 
             sw.Start();
             GeneratePlCo.Compile(this);
             sw.Stop();
+            total += sw.Elapsed;
 
-            Debug.WriteLine($"Compile PlCo {sw.Elapsed}");
+            Debug.WriteLine($"Compiled PlCo {sw.Elapsed}");
 
             sw.Restart();
             GenerateIfAll.Compile(this);
             sw.Stop();
+            total += sw.Elapsed;
 
             Debug.WriteLine($"Generate IfAll {sw.Elapsed}");
 
@@ -224,6 +232,7 @@ namespace mexLib
             sw.Restart();
             GenerateMexSelectChr.Compile(this);
             sw.Stop();
+            total += sw.Elapsed;
 
             Debug.WriteLine($"Generate MnSlChr {sw.Elapsed}");
 
@@ -231,22 +240,31 @@ namespace mexLib
             sw.Restart();
             GenerateMexSelectMap.Compile(this);
             sw.Stop();
+            total += sw.Elapsed;
 
             Debug.WriteLine($"Generate MnSlMap {sw.Elapsed}");
 
-            // TODO: generate sem/smst/ssm
+            // generate sem/smst/ssm
+            sw.Restart();
+            SaveSoundData();
+            sw.Stop();
+            total += sw.Elapsed;
+
+            Debug.WriteLine($"Compiled sounds {sw.Elapsed}");
 
             // compile codes
             sw.Restart();
             FileManager.Set(GetFilePath("codes.gct"), CodeLoader.ToGCT(Project.GetAllCodes()));
             sw.Stop();
+            total += sw.Elapsed;
 
-            Debug.WriteLine($"Compile codes {sw.Elapsed}");
+            Debug.WriteLine($"Compiled codes {sw.Elapsed}");
 
             // save data
             sw.Restart();
             Project.Save(this);
             sw.Stop();
+            total += sw.Elapsed;
 
             Debug.WriteLine($"Save Project Data {sw.Elapsed}");
 
@@ -254,8 +272,177 @@ namespace mexLib
             sw.Start();
             FileManager.Save();
             sw.Stop();
+            total += sw.Elapsed;
 
             Debug.WriteLine($"Save files {sw.Elapsed}");
+
+            Debug.WriteLine($"Total Save Time {total}");
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        private void SaveSoundData()
+        {
+            // check if sounds are loaded
+            if (!Project.SoundGroups.Any(e => e.Sounds != null))
+                return;
+
+            // generate sem
+            var sem = new List<SEMBank>();
+
+            // generate ssm
+            List<int> soundIds = new List<int>();
+            List<string> soundNames = new List<string>();
+            int soundIndex = 0;
+            int groupOffset = 0;
+            foreach (var group in Project.SoundGroups)
+            {
+                if (group.Sounds == null || group.Scripts == null)
+                {
+                    groupOffset += 10000;
+                    continue;
+                }
+
+                // save ssm
+                var ssm = new SSM()
+                {
+                    Name = group.Name,
+                    StartIndex = soundIndex,
+                };
+                ssm.Sounds = group.Sounds.ToArray();
+                using MemoryStream stream = new();
+                ssm.WriteToStream(stream, out int bufferSize);
+                FileManager.Set(GetFilePath($"audio//us//{group.FileName}"), stream.ToArray());
+
+                // generate sem
+                var semBank = new SEMBank();
+                semBank.Scripts = group.Scripts.Select((e, i) =>
+                {
+                    var script = new SEMBankScript();
+                    script.Name = e.Name;
+                    script.Codes = e.Codes.Select(e => new SEMCode(e.Pack())).ToList();
+                    script.SFXID += soundIndex;
+                    soundNames.Add(e.Name);
+                    soundIds.Add(i + groupOffset);
+                    return script;
+                }).ToArray();
+                sem.Add(semBank);
+
+                // advance indices
+                groupOffset += 10000;
+                soundIndex += group.Sounds.Count;
+            }
+
+            // save smst
+            {
+                // generate smst
+                var f = new HSDRawFile();
+                f.Roots.Add(new HSDRootNode()
+                {
+                    Name = "smSoundTestLoadData",
+                    Data = new smSoundTestLoadData()
+                    {
+                        SoundModeCount = 2,
+                        SoundModes = new string[] { "<<STEREO>>  MONAURAL  ", "  STEREO  <<MONAURAL>>" },
+
+                        SoundBankNames = Project.SoundGroups.Select(e => $"GRPSFX_{Path.GetFileNameWithoutExtension(e.FileName)}").ToArray(),
+                        SoundBankCount = Project.SoundGroups.Select(e =>
+                        {
+                            return e.Scripts == null ? 0 : e.Scripts.Count;
+                        }).ToArray(),
+
+                        ScriptCount = Project.SoundGroups.Sum(e => e.Sounds != null ? e.Sounds.Count : 0),
+                        SoundNames = soundNames.ToArray(),
+                        SoundIDs = soundIds.ToArray(),
+
+                        MusicBanks = Project.Music.Select(e => e.FileName).ToArray(),
+                    },
+                });
+                using MemoryStream stream = new ();
+                f.Save(stream);
+                FileManager.Set(GetFilePath("SmSt.dat"), stream.ToArray());
+            }
+            {
+                using MemoryStream stream = new();
+                SEM.SaveSEMFile(stream, sem);
+                FileManager.Set(GetFilePath($"audio//us//smash2.sem"), stream.ToArray());
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? LoadSoundData()
+        {
+            var semPath = GetFilePath(@"audio//us//smash2.sem");
+            if (!FileManager.Exists(semPath))
+                return "smash2.sem not found";
+
+            var smstPath = GetFilePath(@"SmSt.dat");
+            if (!FileManager.Exists(smstPath))
+                return "SmSt.dat not found";
+
+            HSDRawFile smstFile = new(smstPath);
+            var smst = smstFile["smSoundTestLoadData"].Data as smSoundTestLoadData;
+            if (smst == null)
+                return "Error reading SmSt.dat";
+
+            var sem = SEM.ReadSEMFile(semPath);
+
+            var soundNames = smst.SoundNames;
+            var soundids = smst.SoundIDs.ToList();
+
+            int index = 0;
+            foreach (var sound in Project.SoundGroups)
+            {
+                // load ssm
+                var ssmPath = GetFilePath($"audio//us//{sound.FileName}");
+                int start_index = 0;
+
+                // extract ssm
+                sound.Sounds = new ObservableCollection<DSP>();
+                if (FileManager.Exists(ssmPath))
+                {
+                    // open ssm
+                    var ssm = new SSM();
+                    ssm.Open(sound.FileName, FileManager.GetStream(ssmPath));
+
+                    start_index = ssm.StartIndex;
+
+                    // load sounds from ssm
+                    foreach (var dsp in ssm.Sounds)
+                        sound.Sounds.Add(dsp);
+                }
+
+                // extract sem
+                sound.Scripts = new ObservableCollection<SEMBankScript>();
+                if (index < sem.Count)
+                {
+                    // load script meta data
+                    var scripts = sem[index];
+
+                    // get name and adjust sfx id to be relative to bank
+                    for (int j = 0; j < scripts.Scripts.Length; j++)
+                    {
+                        // load script name
+                        var sindex = soundids.IndexOf(index * 10000 + j);
+                        if (sindex != -1 && sindex < soundNames.Length)
+                        {
+                            scripts.Scripts[j].Name = soundNames[sindex];
+
+                            // adjust sound id to relative
+                            if (scripts.Scripts[j].SFXID != -1)
+                                scripts.Scripts[j].SFXID -= start_index;
+                        }
+
+                        // add script to sound group
+                        sound.Scripts.Add(scripts.Scripts[j]);
+                    }
+                }
+
+                index++;
+            }
+
+            return null;
         }
     }
 }

@@ -25,7 +25,19 @@ namespace MexManager.ViewModels
             set => this.RaiseAndSetIfChanged(ref _selectedSoundGroup, value);
         }
 
+        private object? _selectedSound;
+        public object? SelectedSound
+        {
+            get => _selectedSound;
+            set => this.RaiseAndSetIfChanged(ref _selectedSound, value);
+        }
 
+        private object? _selectedScript;
+        public object? SelectedScript
+        {
+            get => _selectedScript;
+            set => this.RaiseAndSetIfChanged(ref _selectedScript, value);
+        }
 
     }
 }

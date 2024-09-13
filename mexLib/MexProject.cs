@@ -57,8 +57,6 @@ namespace mexLib
         [JsonIgnore]
         public MEX_SceneData SceneData { get; set; } = new MEX_SceneData();
 
-
-
         //public MEX_Item[] CommonItems = new MEX_Item[0];
         //public MEX_Item[] FighterItems = new MEX_Item[0];
         //public MEX_Item[] PokemonItems = new MEX_Item[0];

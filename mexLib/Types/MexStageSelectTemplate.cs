@@ -2,7 +2,6 @@
 using HSDRaw.Tools;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 
 namespace mexLib.Types
 {
@@ -44,16 +43,17 @@ namespace mexLib.Types
 
             public MexStageSelectIconPlacementTemplate Clone()
             {
-                var i = new MexStageSelectIconPlacementTemplate();
-                Group = i.Group;
-                Width = i.Width;
-                Height = i.Height;
-                X = i.X;
-                Y = i.Y;
-                Z = i.Z;
-                ScaleX = i.ScaleX;
-                ScaleY = i.ScaleY;
-                return i;
+                return new MexStageSelectIconPlacementTemplate()
+                {
+                    Group = Group,
+                    Width = Width,
+                    Height = Height,
+                    X = X,
+                    Y = Y,
+                    Z = Z,
+                    ScaleX = ScaleX,
+                    ScaleY = ScaleY,
+                };
             }
         }
         /// <summary>
@@ -61,8 +61,9 @@ namespace mexLib.Types
         /// </summary>
         public MexStageSelectTemplate()
         {
-            foreach (var i in VanillaPlacements)
-                IconPlacements.Add(i.Clone());
+            if (IconPlacements.Count == 0)
+                foreach (var i in VanillaPlacements)
+                    IconPlacements.Add(i.Clone());
         }
         /// <summary>
         /// 

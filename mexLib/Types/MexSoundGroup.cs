@@ -1,6 +1,8 @@
 ﻿using HSDRaw.Common;
+using MeleeMedia.Audio;
 using mexLib.Attributes;
 using mexLib.MexScubber;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
@@ -60,6 +62,14 @@ namespace mexLib.Types
 
         [DisplayHex]
         public uint Flags { get; set; }
+
+        private ObservableCollection<DSP>? _sounds = null;
+        [JsonIgnore]
+        public ObservableCollection<DSP>? Sounds { get => _sounds; set { _sounds = value; OnPropertyChanged(); } }
+
+        private ObservableCollection<SEMBankScript>? _scripts = null;
+        [JsonIgnore]
+        public ObservableCollection<SEMBankScript>? Scripts { get => _scripts; set { _scripts = value; OnPropertyChanged(); } }
 
         /// <summary>
         /// 
