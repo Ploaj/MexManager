@@ -127,24 +127,14 @@ namespace mexLib.Types
             }
         }
 
-        public override int ImageKey
+        public override int ImageKey => Status switch
         {
-            get
-            {
-                switch (Status)
-                {
-                    case StageIconStatus.Random:
-                        return -2;
-                    case StageIconStatus.Locked: 
-                        return -1;
-                    case StageIconStatus.Unlocked: 
-                        return StageID;
-                    case StageIconStatus.Hidden: 
-                    default: 
-                        return -3;
-                }
-            }
-        }
+            StageIconStatus.Random => -2,
+            StageIconStatus.Locked => -1,
+            StageIconStatus.Unlocked => StageID,
+            StageIconStatus.Hidden => -3,
+            _ => -3
+        };
 
         public override (float, float) CollisionOffset => (0, 0);
         public override (float, float) CollisionSize => (Width, Height);

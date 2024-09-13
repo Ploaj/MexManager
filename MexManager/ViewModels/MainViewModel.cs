@@ -132,6 +132,23 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedSSSIcon, value);
     }
 
+    private object? _selectedSSSTemplateIcon;
+    public object? SelectedSSSTemplateIcon
+    {
+        get => _selectedSSSTemplateIcon;
+        set => this.RaiseAndSetIfChanged(ref _selectedSSSTemplateIcon, value);
+    }
+
+    private bool _autoApplySSSTemplate = true;
+    public bool AutoApplySSSTemplate
+    {
+        get => _autoApplySSSTemplate;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _autoApplySSSTemplate, value);
+        }
+    }
+
     private object? _selectedCode;
     public object? SelectedCode
     {

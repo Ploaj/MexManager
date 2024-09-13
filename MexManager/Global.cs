@@ -131,7 +131,7 @@ namespace MexManager
             string parameters = $"--exec=\"{Workspace.GetSystemPath("main.dol")}\"";
 
             // Start a new process
-            ProcessStartInfo processStartInfo = new ProcessStartInfo
+            ProcessStartInfo processStartInfo = new ()
             {
                 FileName = exePath,
                 Arguments = parameters,
@@ -141,7 +141,7 @@ namespace MexManager
                 CreateNoWindow = true          // Optional: hide the window
             };
 
-            using (Process process = new Process())
+            using Process process = new ();
             {
                 process.StartInfo = processStartInfo;
                 process.Start();

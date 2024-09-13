@@ -166,7 +166,7 @@ namespace MexManager.Controls
         private readonly Stack<ObservableCollection<IconState>> _redoStack = new ();
 
 
-        private Point _cursorPosition = new Point();
+        private Point _cursorPosition = new ();
 
         public SelectCanvas()
         {
@@ -410,8 +410,10 @@ namespace MexManager.Controls
         /// <returns></returns>
         private MexIconBase? GetIconAtPosition(Point position)
         {
-            foreach (var icon in Icons)
+            var icons = Icons;
+            for (int i = icons.Count - 1; i >= 0; i--)
             {
+                var icon = icons[i];
                 var width = icon.BaseWidth * icon.ScaleX;
                 var height = icon.BaseHeight * icon.ScaleY;
                 var rect = TransformRect(icon.X, icon.Y, width, height);

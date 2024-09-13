@@ -3,6 +3,7 @@ using HSDRaw.Common;
 using HSDRaw.Melee.Mn;
 using HSDRaw;
 using HSDRaw.MEX.Stages;
+using HSDRaw.MEX.Menus;
 
 namespace mexLib.Generators
 {
@@ -25,6 +26,9 @@ namespace mexLib.Generators
             using MemoryStream stream = new ();
             file.Save(stream);
             ws.FileManager.Set(path, stream.ToArray());
+
+            //GenerateStageSelect(ws, file);
+
             return true;
         }
         /// <summary>
@@ -36,6 +40,36 @@ namespace mexLib.Generators
 
             // TODO: remove old name tags
             // TODO: remove old icons animation
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private static void GenerateStageSelect(MexWorkspace ws, HSDRawFile file)
+        {
+            var ss = new MEX_StageSelect()
+            {
+                PageCount = 2,
+                Pages = new HSDFixedLengthPointerArrayAccessor<MEX_mexMapData>()
+                {
+                    Array = new MEX_mexMapData[]
+                    {
+                        GenerateMexSelect(ws, file),
+                        GenerateMexSelect(ws, file),
+                    }
+                }
+            };
+
+            var f = new HSDRawFile();
+            f.Roots.Add(new HSDRootNode()
+            {
+                Name = "mexMapSelect",
+                Data = ss,
+            });
+            using var stream = new MemoryStream();
+            f.Save(stream);
+
+            ws.FileManager.Set(ws.GetFilePath("MxSlMap.dat"), stream.ToArray());
         }
         /// <summary>
         /// 
@@ -142,7 +176,7 @@ namespace mexLib.Generators
                             }
                         }
                     }
-                }
+                },
             };
         }
     }

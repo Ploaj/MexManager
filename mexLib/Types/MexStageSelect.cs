@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace mexLib.Types
 {
-    public class MexStageSelect
+    public class MexStageSelect : MexReactiveObject
     {
         [Browsable(false)]
         public ObservableCollection<MexStageSelectIcon> StageIcons { get; set; } = new ObservableCollection<MexStageSelectIcon>();
@@ -22,8 +22,9 @@ namespace mexLib.Types
         [DisplayName("Cursor Start Z")]
         public float StageSelectCursorStartZ { get; set; } = 0;
 
+        private MexStageSelectTemplate _template = new MexStageSelectTemplate();
         [Browsable(false)]
-        public MexStageSelectTemplate Template { get; set; } = new MexStageSelectTemplate();
+        public MexStageSelectTemplate Template { get => _template; set { _template = value; OnPropertyChanged(); } }
 
         /// <summary>
         /// 

@@ -75,24 +75,74 @@
 						</DockPanel>
 					</DockPanel>
 			</TabItem>
-			<!--
 			<TabItem Header=" Layout Template">
 				<DockPanel>
+					<Menu DockPanel.Dock="Top"
+						  Height="48">
+						<controls:IconMenuItem
+							  Text="Import"
+							  ToolTip.Tip="Import"
+							  IconSource="avares://MexManager/Assets/Common/file_import.png"
+							  Click="ImportTemplate_Click"/>
+						<controls:IconMenuItem
+							  Text="Export"
+							  ToolTip.Tip="Export"
+							  IconSource="avares://MexManager/Assets/Common/file_export.png"
+							  Click="ExportTemplate_Click"/>
+						<controls:IconMenuItem
+							  Text="Create"
+							  ToolTip.Tip="Create"
+							  IconSource="avares://MexManager/Assets/Common/icon_create.png"
+							  Click="CreateTemplate_Click"/>
+						<controls:IconMenuItem
+							  Text="Apply"
+							  ToolTip.Tip="Apply"
+							  IconSource="avares://MexManager/Assets/Common/icon_copy.png"
+							  Click="ApplyTemplate_Click"/>
+					</Menu>
 					<CheckBox
-						IsChecked="{Binding AutoApplyCSSTemplate}"
+						IsChecked="{Binding AutoApplySSSTemplate}"
 						Content="Use Template"
 						DockPanel.Dock="Top"/>
-					<views:PropertyGridExt
-						Name="TemplatePropertyGrid"
-						DataContext="{ Binding CharacterSelect.Template }"
-						Margin="4"
-						AllowQuickFilter="False"
-						AllowFilter="False"
-						AllowToggleView="False">
-					</views:PropertyGridExt>
-				</DockPanel>
-			</TabItem>
-			-->
+					<TabControl>
+						<TabItem Header="General">
+							<views:PropertyGridExt
+									Name="TemplatePropertyGrid"
+									DataContext="{ Binding StageSelect.Template }"
+									Margin="4"
+									AllowQuickFilter="False"
+									AllowFilter="False"
+									AllowToggleView="False"
+									DockPanel.Dock="Top">
+							</views:PropertyGridExt>
+						</TabItem>
+						<TabItem Header="Placements">
+							<DockPanel>
+								<ScrollViewer DockPanel.Dock="Left">
+									<ListBox
+									Width="200"
+									DockPanel.Dock="Top"
+									ItemsSource="{Binding StageSelect.Template.IconPlacements}"
+									SelectedItem="{Binding SelectedSSSTemplateIcon, Mode=TwoWay}">
+									</ListBox>
+								</ScrollViewer>
+								<ScrollViewer DockPanel.Dock="Right">
+									<views:PropertyGridExt
+										DockPanel.Dock="Left"
+										Margin="4"
+										NameWidth="96"
+										AllowQuickFilter="False"
+										AllowFilter="False"
+										AllowToggleView="False"
+										ShowStyle="Builtin"
+										DataContext="{Binding SelectedSSSTemplateIcon}">
+									</views:PropertyGridExt>
+								</ScrollViewer>
+							</DockPanel>
+						</TabItem>
+					</TabControl>
+					</DockPanel>
+				</TabItem>
 			<TabItem Header="Params">
 				<DockPanel>
 					<views:PropertyGridExt
@@ -104,7 +154,6 @@
 					</views:PropertyGridExt>
 				</DockPanel>
 			</TabItem>
-			<!--
 			<TabItem Header="Display">
 				<views:PropertyGridExt
 					Name="SelectScreenProperties"
@@ -114,7 +163,6 @@
 					AllowToggleView="False">
 				</views:PropertyGridExt>
 			</TabItem>
-			-->
 		</TabControl>
 		</Border>
 		<DockPanel DockPanel.Dock="Right">
@@ -143,7 +191,8 @@
 				TemplateImageWidth="28.59"
 				TemplateImageHeight="23.50"
 				ItemsSource="{Binding StageSelect.StageIcons}"
-				SelectedIcon="{Binding SelectedSSSIcon, Mode=TwoWay}"/>
+				SelectedIcon="{Binding SelectedSSSIcon, Mode=TwoWay}"
+				SwapMode="{Binding AutoApplySSSTemplate}"/>
 		</DockPanel>
 	</DockPanel>
 </UserControl>

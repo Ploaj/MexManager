@@ -4,7 +4,9 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using mexLib;
 using mexLib.Types;
+using mexLib.Utilties;
 using MexManager.Extensions;
+using MexManager.Tools;
 using MexManager.ViewModels;
 using System.ComponentModel;
 
@@ -15,6 +17,8 @@ public partial class SSSEditorView : UserControl
     public SSSEditorView()
     {
         InitializeComponent();
+
+        SelectScreenProperties.DataContext = SelectScreen.Properties;
 
         SelectScreen.OnSwap += (i, j) =>
         {
@@ -34,6 +38,23 @@ public partial class SSSEditorView : UserControl
     /// </summary>
     private void ApplySelectTemplate()
     {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.StageSelect != null)
+        {
+            if (model.AutoApplySSSTemplate && 
+                IconList.SelectedItems != null)
+            {
+                foreach (MexReactiveObject i in IconList.SelectedItems)
+                    i.PropertyChanged -= IconPropertyChanged;
+
+                model.StageSelect.Template.ApplyTemplate(model.StageSelect.StageIcons);
+
+                foreach (MexReactiveObject i in IconList.SelectedItems)
+                    i.PropertyChanged += IconPropertyChanged;
+            }
+            SelectScreen.InvalidateVisual();
+        }
     }
     /// <summary>
     /// 
@@ -155,5 +176,79 @@ public partial class SSSEditorView : UserControl
         }
 
         SelectScreen.InvalidateVisual();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void CreateTemplate_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.StageSelect != null)
+        {
+            model.StageSelect.Template.MakeTemplate(model.StageSelect.StageIcons);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public void ApplyTemplate_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.StageSelect != null)
+        {
+            model.StageSelect.Template.ApplyTemplate(model.StageSelect.StageIcons);
+            SelectScreen.InvalidateVisual();
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public async void ImportTemplate_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.StageSelect != null)
+        {
+            var template = await FileIO.TryOpenFile("Stage Select Template", "template.json", FileIO.FilterJson);
+
+            if (template == null)
+                return;
+
+            var tem = MexJsonSerializer.Deserialize<MexStageSelectTemplate>(template);
+
+            if (tem != null)
+            {
+                model.StageSelect.Template = tem;
+            }
+            else
+            {
+                await MessageBox.Show("Error importing template", "Import Template", MessageBox.MessageBoxButtons.Ok);
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public async void ExportTemplate_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.StageSelect != null)
+        {
+            var file = await FileIO.TrySaveFile("Stage Select Template", "template.json", FileIO.FilterJson);
+
+            if (file != null)
+                System.IO.File.WriteAllText(file, MexJsonSerializer.Serialize(model.StageSelect.Template));
+        }
     }
 }
