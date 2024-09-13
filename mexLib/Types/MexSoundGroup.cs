@@ -21,11 +21,12 @@ namespace mexLib.Types
 
     public class MexSoundGroup : MexReactiveObject
     {
-        private string _name;
+        private string _name = "";
         [Category("General"), DisplayName("Name")]
         public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
 
-        [Category("General"), DisplayName("Filename")]
+        [Category("General"), DisplayName("File")]
+        [MexFilePathValidator(MexFilePathType.Audio)]
         public string FileName { get; set; } = "";
 
         [Browsable(false)]
@@ -63,9 +64,8 @@ namespace mexLib.Types
         [DisplayHex]
         public uint Flags { get; set; }
 
-        private ObservableCollection<DSP>? _sounds = null;
-        [JsonIgnore]
-        public ObservableCollection<DSP>? Sounds { get => _sounds; set { _sounds = value; OnPropertyChanged(); } }
+        private ObservableCollection<MexSound> _sounds = new ObservableCollection<MexSound>();
+        public ObservableCollection<MexSound> Sounds { get => _sounds; set { _sounds = value; OnPropertyChanged(); } }
 
         private ObservableCollection<SEMBankScript>? _scripts = null;
         [JsonIgnore]

@@ -12,14 +12,22 @@
 		<!-- <FontFamily x:Key="FolkProH">avares://MexManager/Assets/Fonts/A_OTF_Folk_Pro_H.otf#A-OTF Folk Pro H</FontFamily>-->
 		
 		<!-- Register the IndexConverter -->
-		<!-- <converters:IndexConverter x:Key="IndexConverter" /> -->
-		<converters:IndexConverter x:Key="IndexConverter"/>
+		<converters:ListBoxIndexConverter x:Key="ListBoxIndexConverter"/>
 		<converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
 
 		<!-- DataTemplate for ListBox items -->
 		<DataTemplate x:Key="IndexedItemTemplate">
 			<StackPanel Orientation="Horizontal">
-				<TextBlock Text="{Binding ., Converter={StaticResource IndexConverter}}" Margin="0,0,10,0"/>
+				<TextBlock
+					VerticalAlignment="Center"
+					Margin="0,0,10,0">
+					<TextBlock.Text>
+						<MultiBinding Converter="{StaticResource ListBoxIndexConverter}">
+							<Binding Path="." />
+							<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
+						</MultiBinding>
+					</TextBlock.Text>
+				</TextBlock>
 				<TextBlock Text="{Binding}"/>
 			</StackPanel>
 		</DataTemplate>

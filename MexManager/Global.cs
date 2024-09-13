@@ -1,4 +1,5 @@
-﻿using mexLib;
+﻿using MeleeMedia.Audio;
+using mexLib;
 using mexLib.Types;
 using mexLib.Utilties;
 using MexManager.Views;
@@ -50,6 +51,16 @@ namespace MexManager
                     MessageBox.Show($"Could not find \"{music.FileName}\"", "File not found", MessageBox.MessageBoxButtons.Ok);
                 }
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dsp"></param>
+        public static void PlaySound(DSP dsp)
+        {
+            MainView.GlobalAudio?.LoadDSP(dsp);
+            MainView.GlobalAudio?.Play();
         }
 
         public static void StopMusic()

@@ -1,16 +1,12 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
 using mexLib;
 using mexLib.Types;
 using mexLib.Utilties;
+using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
-using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Text;
 
 namespace MexManager.Views;
@@ -41,6 +37,7 @@ public partial class FighterView : UserControl
         {
             await MessageBox.Show("Failed to add new fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
         }
+        FighterList.RefreshList();
     }
     /// <summary>
     /// 
@@ -66,6 +63,7 @@ public partial class FighterView : UserControl
                 await MessageBox.Show($"Could not remove \"{fighter.Name}\"\nYou cannot remove base game fighters", "Remove Fighter Error", MessageBox.MessageBoxButtons.Ok);
             }
         }
+        FighterList.RefreshList();
     }
     /// <summary>
     /// 
@@ -91,6 +89,7 @@ public partial class FighterView : UserControl
             {
                 await MessageBox.Show("Failed to add new fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
             }
+            FighterList.RefreshList();
         }
     }
     /// <summary>

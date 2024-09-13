@@ -26,12 +26,22 @@ public partial class AudioView : UserControl
     /// 
     /// </summary>
     /// <param name="hps"></param>
-    public void LoadHPS(byte[] hps)
+    public void LoadDSP(DSP dsp)
     {
         if (DataContext is AudioPlayerModel model)
         {
-            model.LoadDSP(HPS.ToDSP(hps));
+            model.LoadDSP(dsp);
         }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="hps"></param>
+    public void LoadHPS(byte[] hps)
+    {
+        var dsp = HPS.ToDSP(hps);
+        dsp.LoopSound = true;
+        LoadDSP(dsp);
     }
     /// <summary>
     /// 

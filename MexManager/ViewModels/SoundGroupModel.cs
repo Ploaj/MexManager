@@ -1,4 +1,5 @@
-﻿using mexLib.Types;
+﻿using MeleeMedia.Audio;
+using mexLib.Types;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -18,26 +19,36 @@ namespace MexManager.ViewModels
             set => this.RaiseAndSetIfChanged(ref _soundGroups, value);
         }
 
-        private object? _selectedSoundGroup;
-        public object? SelectedSoundGroup
+        private MexSoundGroup? _selectedSoundGroup;
+        public MexSoundGroup? SelectedSoundGroup
         {
             get => _selectedSoundGroup;
             set => this.RaiseAndSetIfChanged(ref _selectedSoundGroup, value);
         }
 
-        private object? _selectedSound;
-        public object? SelectedSound
+        private MexSound? _selectedSound;
+        public MexSound? SelectedSound
         {
             get => _selectedSound;
             set => this.RaiseAndSetIfChanged(ref _selectedSound, value);
         }
 
-        private object? _selectedScript;
-        public object? SelectedScript
+        private SEMBankScript? _selectedScript;
+        public SEMBankScript? SelectedScript
         {
             get => _selectedScript;
             set => this.RaiseAndSetIfChanged(ref _selectedScript, value);
         }
 
+        public int ScriptOffset
+        {
+            get
+            {
+                if (SoundGroups == null || SelectedSoundGroup == null)
+                    return 0;
+
+                return SoundGroups.IndexOf(SelectedSoundGroup) * 10000;
+            }
+        }
     }
 }

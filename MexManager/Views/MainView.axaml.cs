@@ -243,7 +243,7 @@ public partial class MainView : UserControl
             if (path != null && file != null)
             {
                 var dsp = HPS.ToDSP(Global.Files.Get(path));
-                Global.Files.Set(file, dsp.ToWAVE().ToFile());
+                System.IO.File.WriteAllBytes(file, dsp.ToWAVE().ToFile());
             }
         }
     }

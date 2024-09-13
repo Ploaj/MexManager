@@ -55,6 +55,8 @@ namespace MexManager.Tools
 
         private readonly Timer? _loopTimer;
 
+        private bool _hasLoop = false;
+
         /// <summary>
         /// 
         /// </summary>
@@ -111,6 +113,8 @@ namespace MexManager.Tools
         {
             if (!Initialize)
                 return;
+
+            _hasLoop = dsp.LoopSound;
 
             // regenerate sources
             AL.SourceStop(_source);
@@ -176,7 +180,7 @@ namespace MexManager.Tools
             if (!Initialize)
                 return;
 
-            if (!EnableLoop)
+            if (!EnableLoop || !_hasLoop)
                 return;
 
             if (!_manualstop &&

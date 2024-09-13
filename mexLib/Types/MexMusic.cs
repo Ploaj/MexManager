@@ -10,8 +10,8 @@ namespace mexLib.Types
         [Category("General"), DisplayName("Name"), Description("The name label used in-game to refer to the track")]
         public string Name { get; set; } = "";
 
-        [Category("General"), DisplayName("Filename"), Description("Name of the file in audio folder")]
-        //[MexFilePathValidator(MexFilePathType.Audio)]
+        [Category("General"), DisplayName("File"), Description("Name of the file in audio folder")]
+        [MexFilePathValidator(MexFilePathType.Audio)]
         public string FileName { get; set; } = "";
 
         public void FromDOL(MexDOL dol, uint index)

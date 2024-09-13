@@ -291,8 +291,8 @@ namespace mexLib
             var sem = new List<SEMBank>();
 
             // generate ssm
-            List<int> soundIds = new List<int>();
-            List<string> soundNames = new List<string>();
+            List<int> soundIds = new ();
+            List<string> soundNames = new ();
             int soundIndex = 0;
             int groupOffset = 0;
             foreach (var group in Project.SoundGroups)
@@ -309,7 +309,7 @@ namespace mexLib
                     Name = group.Name,
                     StartIndex = soundIndex,
                 };
-                ssm.Sounds = group.Sounds.ToArray();
+                ssm.Sounds = group.Sounds.Select(e=>e.DSP).ToArray();
                 using MemoryStream stream = new();
                 ssm.WriteToStream(stream, out int bufferSize);
                 FileManager.Set(GetFilePath($"audio//us//{group.FileName}"), stream.ToArray());
@@ -399,7 +399,6 @@ namespace mexLib
                 int start_index = 0;
 
                 // extract ssm
-                sound.Sounds = new ObservableCollection<DSP>();
                 if (FileManager.Exists(ssmPath))
                 {
                     // open ssm
@@ -409,8 +408,13 @@ namespace mexLib
                     start_index = ssm.StartIndex;
 
                     // load sounds from ssm
-                    foreach (var dsp in ssm.Sounds)
-                        sound.Sounds.Add(dsp);
+                    for (int i = 0; i < ssm.Sounds.Length; i++)
+                    {
+                        while (i >= sound.Sounds.Count)
+                            sound.Sounds.Add(new MexSound());
+
+                        sound.Sounds[i].DSP = ssm.Sounds[i];
+                    }
                 }
 
                 // extract sem
@@ -432,6 +436,16 @@ namespace mexLib
                             // adjust sound id to relative
                             if (scripts.Scripts[j].SFXID != -1)
                                 scripts.Scripts[j].SFXID -= start_index;
+                        }
+
+                        // give sound name if it's null
+                        if (string.IsNullOrEmpty(sound.Sounds[scripts.Scripts[j].SFXID].Name))
+                        {
+                            var sound_name = soundNames[sindex];
+                            sound_name = sound_name.Replace("SFX", "").Trim();
+                            if (sound_name.StartsWith("_"))
+                                sound_name = sound_name[1..];
+                            sound.Sounds[scripts.Scripts[j].SFXID].Name = sound_name;
                         }
 
                         // add script to sound group

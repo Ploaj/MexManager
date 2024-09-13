@@ -20,36 +20,33 @@
 				<controls:IconMenuItem
 					Text="Add"
 					ToolTip.Tip="Add"
-					IconSource="avares://MexManager/Assets/Common/icon_plus.png"/>
+					IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+					Click="AddGroup_Click"/>
+				<controls:IconMenuItem
+					Text="Remove"
+					ToolTip.Tip="Remove"
+					IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+					Click="RemoveGroup_Click"/>
+				<controls:IconMenuItem
+					Text="Import"
+					ToolTip.Tip="Import"
+					IconSource="avares://MexManager/Assets/Common/file_import.png"
+					Click="ImportGroup_Click"/>
+				<controls:IconMenuItem
+					Text="Export"
+					ToolTip.Tip="Export"
+					IconSource="avares://MexManager/Assets/Common/file_export.png"
+					Click="ExportGroup_Click"/>
 			</Menu>
 			<ListBox
 				Name="GroupList"
 				DockPanel.Dock="Bottom"
 				ItemsSource="{Binding SoundGroups}"
 				SelectedItem="{Binding SelectedSoundGroup, Mode=TwoWay}"
+				ItemTemplate="{StaticResource IndexedItemTemplate}"
 				Padding="0"
 				Width="280"
-				SelectedIndex="0">
-				<ListBox.ItemTemplate>
-					<DataTemplate>
-						<StackPanel
-							ToolTip.Tip="{Binding Name}"
-							Orientation="Horizontal"
-							Spacing="4"
-							Height="24">
-							<TextBlock
-								VerticalAlignment="Center">
-								<TextBlock.Text>
-									<Binding Path="." Converter="{StaticResource IndexConverter}"/>
-								</TextBlock.Text>
-							</TextBlock>
-							<TextBlock
-								Text="{Binding Name}"
-								VerticalAlignment="Center"/>
-						</StackPanel>
-					</DataTemplate>
-				</ListBox.ItemTemplate>
-			</ListBox>
+				SelectedIndex="0"/>
 		</DockPanel>
 		
 		<TabControl
@@ -71,21 +68,63 @@
 						<controls:IconMenuItem
 							Text="Add"
 							ToolTip.Tip="Add"
-							IconSource="avares://MexManager/Assets/Common/icon_plus.png"/>
+							IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+							Click="AddScript_Click"/>
 						<controls:IconMenuItem
 							Text="Remove"
 							ToolTip.Tip="Remove"
-							IconSource="avares://MexManager/Assets/Common/icon_delete.png"/>
+							IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+							Click="RemoveScript_Click"/>
+						<controls:IconMenuItem
+							Text="Duplicate"
+							ToolTip.Tip="Duplicate"
+							IconSource="avares://MexManager/Assets/Common/icon_copy.png"
+							Click="DuplicateScript_Click"/>
+						<controls:IconMenuItem
+							Text="Move Up"
+							ToolTip.Tip="Move Up"
+							IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
+							Click="MoveUpScript_Click"/>
+						<controls:IconMenuItem
+							Text="Move Down"
+							ToolTip.Tip="Move Down"
+							IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
+							Click="MoveDownScript_Click"/>
 					</Menu>
 					<DockPanel>
 						<ScrollViewer DockPanel.Dock="Left">
 							<ListBox
-							Name="ScriptList"
-							Width="240"
-							DockPanel.Dock="Top"
-							ItemsSource="{Binding SelectedSoundGroup.Scripts}"
-							SelectedItem="{Binding SelectedScript, Mode=TwoWay}">
-							</ListBox>
+								Name="ScriptList"
+								Width="280"
+								DockPanel.Dock="Top"
+								ItemsSource="{Binding SelectedSoundGroup.Scripts}"
+								SelectedItem="{Binding SelectedScript, Mode=TwoWay}"
+								DoubleTapped="ScriptList_DoubleTapped">
+								<ListBox.ItemTemplate>
+									<DataTemplate>
+										<DockPanel
+											ToolTip.Tip="{Binding Name}">
+											<TextBlock
+												DockPanel.Dock="Left"
+												VerticalAlignment="Center">
+												<TextBlock.Text>
+													<MultiBinding
+														Converter="{StaticResource ListBoxIndexConverter}">
+														<Binding Path="." />
+														<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
+														<Binding RelativeSource="{RelativeSource AncestorType=UserControl}" 
+																 Path="DataContext.ScriptOffset"/>
+													</MultiBinding>
+												</TextBlock.Text>
+											</TextBlock>
+											<TextBlock
+												DockPanel.Dock="Left"
+												Text="{Binding Name}"
+												VerticalAlignment="Center"/>
+										</DockPanel>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+								</ListBox>
 						</ScrollViewer>
 						<ScrollViewer DockPanel.Dock="Right">
 							<views:PropertyGridExt
@@ -108,22 +147,67 @@
 					<Menu DockPanel.Dock="Top"
 							Height="48">
 						<controls:IconMenuItem
-							Text="Add"
-							ToolTip.Tip="Add"
-							IconSource="avares://MexManager/Assets/Common/icon_plus.png"/>
+							Text="Import"
+							ToolTip.Tip="Import"
+							IconSource="avares://MexManager/Assets/Common/file_import.png"
+							Click="ImportSound_Click"/>
+						<controls:IconMenuItem
+							Text="Export"
+							ToolTip.Tip="Export"
+							IconSource="avares://MexManager/Assets/Common/file_export.png"
+							Click="ExportSound_Click"/>
+						<controls:IconMenuItem
+							Text="Edit"
+							ToolTip.Tip="Edit"
+							IconSource="avares://MexManager/Assets/Common/icon_edit.png"
+							Click="EditSound_Click"/>
 						<controls:IconMenuItem
 							Text="Remove"
 							ToolTip.Tip="Remove"
-							IconSource="avares://MexManager/Assets/Common/icon_delete.png"/>
+							IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+							Click="RemoveSound_Click"/>
+						<controls:IconMenuItem
+							Text="Preview"
+							ToolTip.Tip="Preview"
+							IconSource="avares://MexManager/Assets/Common/audio_play.png"
+							Click="PreviewSound_Click"/>
 					</Menu>
 					<DockPanel>
 						<ScrollViewer DockPanel.Dock="Left">
 							<ListBox
 							Name="SoundList"
-							Width="240"
+							Width="400"
 							DockPanel.Dock="Top"
 							ItemsSource="{Binding SelectedSoundGroup.Sounds}"
-							SelectedItem="{Binding SelectedSound, Mode=TwoWay}">
+							SelectedItem="{Binding SelectedSound, Mode=TwoWay}"
+							DoubleTapped="ListBox_DoubleTapped">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<DockPanel
+										ToolTip.Tip="{Binding Name}">
+										<TextBlock
+											DockPanel.Dock="Left"
+											VerticalAlignment="Center">
+											<TextBlock.Text>
+												<MultiBinding 
+													Converter="{StaticResource ListBoxIndexConverter}">
+													<Binding Path="." />
+													<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
+												</MultiBinding>
+											</TextBlock.Text>
+										</TextBlock>
+										<TextBlock
+											DockPanel.Dock="Left"
+											Text="{Binding Name}"
+											VerticalAlignment="Center"/>
+										<TextBlock
+											DockPanel.Dock="Right"
+											HorizontalAlignment="Right"
+											Text="{Binding SampleRate}"
+											VerticalAlignment="Center"/>
+									</DockPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
 							</ListBox>
 						</ScrollViewer>
 						<ScrollViewer DockPanel.Dock="Right">

@@ -62,7 +62,8 @@
 			<TabControl Margin="0"
 						Padding="0"
 						TabStripPlacement="Left">
-				<TabItem ToolTip.Tip="Fighters">
+				<TabItem ToolTip.Tip="Fighters"
+						 ToolTip.ShowDelay="0">
 					<TabItem.Header>
 						<Image Source="avares://MexManager/Assets/Menu/category_fighter.png"
 								Width="32"
@@ -71,7 +72,8 @@
 					<views:FighterView
 						Name="FighterPageView"/>
 				</TabItem>
-				<TabItem ToolTip.Tip="Stages">
+				<TabItem ToolTip.Tip="Stages"
+						 ToolTip.ShowDelay="0">
 					<TabItem.Header>
 						<Image Source="avares://MexManager/Assets/Menu/category_stage.png"
 								Width="32"
@@ -161,7 +163,8 @@
 						</TabControl>
 					</DockPanel>
 				</TabItem>
-				<TabItem ToolTip.Tip="Series">
+				<TabItem ToolTip.Tip="Series"
+						 ToolTip.ShowDelay="0">
 					<TabItem.Header>
 						<Image Source="avares://MexManager/Assets/Menu/category_series.png"
 								Width="32"
@@ -212,7 +215,8 @@
 						</TabControl>
 					</DockPanel>
 				</TabItem>
-				<TabItem ToolTip.Tip="Music">
+				<TabItem ToolTip.Tip="Music"
+						 ToolTip.ShowDelay="0">
 					<TabItem.Header>
 						<Image Source="avares://MexManager/Assets/Menu/category_music.png"
 								Width="32"
@@ -288,7 +292,8 @@
 						</DockPanel>
 					</DockPanel>
 				</TabItem>
-				<TabItem ToolTip.Tip="Sounds">
+				<TabItem ToolTip.Tip="Sounds"
+						 ToolTip.ShowDelay="0">
 					<TabItem.Header>
 						<Image Source="avares://MexManager/Assets/Menu/category_sound.png"
 								Width="32"
@@ -296,7 +301,8 @@
 					</TabItem.Header>
 					<views:SoundGroupView Name="SoundGroup"/>
 				</TabItem>
-				<TabItem ToolTip.Tip="Menus">
+				<TabItem ToolTip.Tip="Menus"
+						 ToolTip.ShowDelay="0">
 					<TabItem.Header>
 						<Image Source="avares://MexManager/Assets/Menu/category_menu.png"
 								Width="32"
@@ -316,7 +322,8 @@
 						</TabItem>
 					</TabControl>
 				</TabItem>
-				<TabItem ToolTip.Tip="Codes">
+				<TabItem ToolTip.Tip="Codes"
+						 ToolTip.ShowDelay="0">
 					<TabItem.Header>
 						<Image Source="avares://MexManager/Assets/Menu/category_code.png"
 								Width="32"

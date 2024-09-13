@@ -65,7 +65,10 @@
 							<TextBlock
 								VerticalAlignment="Center">
 								<TextBlock.Text>
-									<Binding Path="." Converter="{StaticResource IndexConverter}"/>
+									<MultiBinding Converter="{StaticResource ListBoxIndexConverter}">
+										<Binding Path="." />
+										<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
+									</MultiBinding>
 								</TextBlock.Text>
 							</TextBlock>
 							<Image

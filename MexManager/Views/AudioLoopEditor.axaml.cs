@@ -82,8 +82,6 @@ public partial class AudioLoopEditor : Window
         }
     }
 
-    
-
     public AudioLoopEditor()
     {
         InitializeComponent();
