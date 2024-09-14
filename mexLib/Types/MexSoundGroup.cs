@@ -64,7 +64,7 @@ namespace mexLib.Types
         [DisplayHex]
         public uint Flags { get; set; }
 
-        private ObservableCollection<MexSound> _sounds = new ObservableCollection<MexSound>();
+        private ObservableCollection<MexSound> _sounds = new ();
         public ObservableCollection<MexSound> Sounds { get => _sounds; set { _sounds = value; OnPropertyChanged(); } }
 
         private ObservableCollection<SEMBankScript>? _scripts = null;
@@ -97,11 +97,15 @@ namespace mexLib.Types
         {
             var st = gen.Data.SSMTable;
 
+            var bufferSize = (int)gen.Workspace.GetFileSize("audio//us//" + FileName);
+            if (bufferSize % 0x20 != 0)
+                bufferSize += 0x20 - (bufferSize % 0x20);
+
             st.SSM_SSMFiles.Set(index, new HSD_String(FileName));
             st.SSM_BufferSizes.Set(index, new HSDRaw.MEX.MEX_SSMSizeAndFlags()
             {
                 Flag = (int)Flags,
-                SSMFileSize = (int)gen.Workspace.GetFileSize("audio//us//" + FileName),
+                SSMFileSize = bufferSize,
             });
             st.SSM_LookupTable.Set(index, new HSDRaw.MEX.MEX_SSMLookup()
             {

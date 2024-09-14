@@ -91,6 +91,9 @@
 			</TabItem>
 			<TabItem Header="Params">
 				<DockPanel>
+					<Button Content="Apply Compression"
+							DockPanel.Dock="Top"
+							Click="ApplyCompression_Click"/>
 					<views:PropertyGridExt
 						DataContext="{ Binding CharacterSelect }"
 						Margin="4"

@@ -129,8 +129,8 @@ namespace MexManager.Tools
             var wave = dsp.ToWAVE();
             var raw = wave.RawData.ToArray();
 
-            _totalSize = raw.Length / 2;
-            _loopPoint = (int)Math.Ceiling((double)dsp.Channels[0].LoopStart / 2f * 1.75f);
+            _totalSize = raw.Length / dsp.Channels.Count;
+            _loopPoint = (int)Math.Ceiling((double)dsp.Channels[0].LoopStart / dsp.Channels.Count * 1.75f);
             LoopPoint = TimeSpan.FromMilliseconds(dsp.LoopPointMilliseconds);
 
             // Pin the managed array so that the GC doesn't move it

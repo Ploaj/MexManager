@@ -98,6 +98,20 @@ public partial class CSSEditorView : UserControl
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
+    public void ApplyCompression_Click(object? sender, RoutedEventArgs args)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.CharacterSelect != null)
+        {
+            model.CharacterSelect.ApplyCompression(Global.Workspace);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     public void AddIcon_Click(object? sender, RoutedEventArgs args)
     {
         if (Global.Workspace != null &&

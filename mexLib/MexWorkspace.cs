@@ -122,6 +122,8 @@ namespace mexLib
 
                 File.WriteAllBytes(workspace.GetFilePath("MnSlChr.usd"), iso.GetFileData("MnSlChr.usd"));
                 File.WriteAllBytes(workspace.GetFilePath("MnSlMap.usd"), iso.GetFileData("MnSlMap.usd"));
+                File.WriteAllBytes(workspace.GetFilePath("SmSt.dat"), iso.GetFileData("SmSt.dat"));
+                File.WriteAllBytes(workspace.GetFilePath("audio/us/smash2.sem"), iso.GetFileData("audio/us/smash2.sem"));
 
                 // TODO: write files
                 //int index = 0;
@@ -161,6 +163,9 @@ namespace mexLib
             workspace.Project.MainCode = mainCode;
             foreach (var c in defaultCodes)
                 workspace.Project.Codes.Add(c);
+
+            workspace.LoadSoundData();
+
             workspace.Save();
 
             return workspace;
@@ -284,7 +289,7 @@ namespace mexLib
         private void SaveSoundData()
         {
             // check if sounds are loaded
-            if (!Project.SoundGroups.Any(e => e.Sounds != null))
+            if (!Project.SoundGroups.Any(e => e.Scripts != null))
                 return;
 
             // generate sem
@@ -308,24 +313,30 @@ namespace mexLib
                 {
                     Name = group.Name,
                     StartIndex = soundIndex,
+                    Sounds = group.Sounds.Select(e => e.DSP).ToArray()
                 };
-                ssm.Sounds = group.Sounds.Select(e=>e.DSP).ToArray();
+
                 using MemoryStream stream = new();
                 ssm.WriteToStream(stream, out int bufferSize);
                 FileManager.Set(GetFilePath($"audio//us//{group.FileName}"), stream.ToArray());
 
                 // generate sem
-                var semBank = new SEMBank();
-                semBank.Scripts = group.Scripts.Select((e, i) =>
+                var semBank = new SEMBank()
                 {
-                    var script = new SEMBankScript();
-                    script.Name = e.Name;
-                    script.Codes = e.Codes.Select(e => new SEMCode(e.Pack())).ToList();
-                    script.SFXID += soundIndex;
-                    soundNames.Add(e.Name);
-                    soundIds.Add(i + groupOffset);
-                    return script;
-                }).ToArray();
+                    Scripts = group.Scripts.Select((e, i) =>
+                    {
+                        var script = new SEMBankScript()
+                        {
+                            Name = e.Name,
+                            Codes = e.Codes.Select(e => new SEMCode(e.Pack())).ToList(),
+
+                        };
+                        script.SFXID += soundIndex;
+                        soundNames.Add(e.Name);
+                        soundIds.Add(i + groupOffset);
+                        return script;
+                    }).ToArray()
+                };
                 sem.Add(semBank);
 
                 // advance indices

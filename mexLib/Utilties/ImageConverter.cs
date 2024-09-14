@@ -11,6 +11,115 @@ namespace mexLib.Utilties
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="tex"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public static MexImage Resize(MexImage tex, int width, int height)
+        {
+            var new_tex = ResizeBGRA(tex.GetBGRA(), tex.Width, tex.Height, width, height);
+            return new MexImage(new_tex, width, height, tex.Format, tex.TlutFormat);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="originalImage"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="newWidth"></param>
+        /// <param name="newHeight"></param>
+        /// <returns></returns>
+        public static byte[] ResizeBGRA(byte[] originalImage, int width, int height, int newWidth, int newHeight)
+        {
+            // Create a new byte array to hold the resized image
+            byte[] resizedImage = new byte[newWidth * newHeight * 4]; // BGRA format, so 4 bytes per pixel
+
+            // Calculate the horizontal and vertical scale factors
+            float xRatio = (float)(width - 1) / newWidth;
+            float yRatio = (float)(height - 1) / newHeight;
+
+            for (int newY = 0; newY < newHeight; newY++)
+            {
+                for (int newX = 0; newX < newWidth; newX++)
+                {
+                    // Get the source coordinates in the original image
+                    float srcX = newX * xRatio;
+                    float srcY = newY * yRatio;
+
+                    // Get the integer part and the fractional part
+                    int xL = (int)Math.Floor(srcX);
+                    int yL = (int)Math.Floor(srcY);
+                    float xFrac = srcX - xL;
+                    float yFrac = srcY - yL;
+
+                    // Get the positions of the 4 surrounding pixels
+                    int xR = Math.Min(xL + 1, width - 1);
+                    int yR = Math.Min(yL + 1, height - 1);
+
+                    // Get the indices for the four surrounding pixels in the original image
+                    int indexTL = (yL * width + xL) * 4; // Top-left
+                    int indexTR = (yL * width + xR) * 4; // Top-right
+                    int indexBL = (yR * width + xL) * 4; // Bottom-left
+                    int indexBR = (yR * width + xR) * 4; // Bottom-right
+
+                    // Perform bilinear interpolation for each color channel (B, G, R, A)
+                    for (int channel = 0; channel < 4; channel++)
+                    {
+                        float top = originalImage[indexTL + channel] * (1 - xFrac) + originalImage[indexTR + channel] * xFrac;
+                        float bottom = originalImage[indexBL + channel] * (1 - xFrac) + originalImage[indexBR + channel] * xFrac;
+                        float color = top * (1 - yFrac) + bottom * yFrac;
+
+                        // Assign the interpolated color to the resized image
+                        resizedImage[(newY * newWidth + newX) * 4 + channel] = (byte)color;
+                    }
+                }
+            }
+
+            return resizedImage;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="originalImage"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="newWidth"></param>
+        /// <param name="newHeight"></param>
+        /// <returns></returns>
+        public static byte[] ResizeBGRA_Nearest(byte[] originalImage, int width, int height, int newWidth, int newHeight)
+        {
+            // Create a new byte array for the resized image
+            byte[] resizedImage = new byte[newWidth * newHeight * 4]; // BGRA format, 4 bytes per pixel
+
+            // Calculate the ratio between the original size and the new size
+            float xRatio = (float)(width) / newWidth;
+            float yRatio = (float)(height) / newHeight;
+
+            for (int newY = 0; newY < newHeight; newY++)
+            {
+                for (int newX = 0; newX < newWidth; newX++)
+                {
+                    // Calculate the source pixel position in the original image
+                    int srcX = (int)(newX * xRatio);
+                    int srcY = (int)(newY * yRatio);
+
+                    // Ensure the source coordinates are within bounds
+                    srcX = Math.Min(srcX, width - 1);
+                    srcY = Math.Min(srcY, height - 1);
+
+                    // Get the index of the nearest pixel in the original image
+                    int srcIndex = (srcY * width + srcX) * 4;
+
+                    // Copy the pixel data from the original image to the resized image
+                    int destIndex = (newY * newWidth + newX) * 4;
+                    Array.Copy(originalImage, srcIndex, resizedImage, destIndex, 4);
+                }
+            }
+
+            return resizedImage;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="png"></param>
         /// <returns></returns>
         public static MexImage FromPNG(Stream stream, GXTexFmt fmt, GXTlutFmt tlutFmt)

@@ -1,23 +1,21 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
-using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using MeleeMedia.Audio;
 using mexLib.Types;
 using MexManager.Tools;
 using MexManager.ViewModels;
-using System.Globalization;
-using System;
 using System.IO;
-using System.Collections;
 using MexManager.Extensions;
 using System.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace MexManager.Views;
 
 public partial class SoundGroupView : UserControl
 {
+    public IEnumerable<SEM_CODE>? SEMCodes => Enum.GetValues(typeof(SEM_CODE)) as SEM_CODE[];
+
     /// <summary>
     /// 
     /// </summary>
@@ -208,13 +206,15 @@ public partial class SoundGroupView : UserControl
             model.SelectedSoundGroup is MexSoundGroup group &&
             group.Scripts != null)
         {
-            // TODO: initial code
             group.Scripts.Add(new SEMBankScript()
             {
                 Name = "SFX_Untitled",
-                Codes = new System.Collections.Generic.List<SEMCode>()
+                Codes = 
                 {
                     new SEMCode(SEM_CODE.SET_SFXID),
+                    new SEMCode(SEM_CODE.SET_REVERB1) { Value = 1 },
+                    new SEMCode(SEM_CODE.SET_PRIORITY) { Value = 15 },
+                    new SEMCode(SEM_CODE.PLAY) { Value = 255 },
                     new SEMCode(SEM_CODE.END_PLAYBACK),
                 }
             });
@@ -311,6 +311,24 @@ public partial class SoundGroupView : UserControl
             }
             ScriptList.RefreshList(index + 1);
         }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void AddCommand_Click(object? sender, RoutedEventArgs e)
+    {
+        // TODO: add command
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void RemoveCommand_Click(object? sender, RoutedEventArgs e)
+    {
+        // TODO: remove command
     }
     /// <summary>
     /// 

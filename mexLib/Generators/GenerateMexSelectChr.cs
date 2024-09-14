@@ -6,6 +6,7 @@ using HSDRaw;
 using HSDRaw.GX;
 using HSDRaw.Melee.Mn;
 using mexLib.Types;
+using System.Diagnostics;
 
 namespace mexLib.Generators
 {
@@ -65,6 +66,9 @@ namespace mexLib.Generators
             List<FOBJKey> keys = new();
             List<HSD_TOBJ> icons = new();
 
+            // compression info
+            ws.Project.CharacterSelect.ApplyCompression(ws);
+
             // gather reserved icons
             for (int internalId = 0; internalId < stride; internalId++)
             {
@@ -74,6 +78,7 @@ namespace mexLib.Generators
                 foreach (var c in f.Costumes)
                 {
                     var textureAsset = c.CSPAsset.GetTexFile(ws);
+
                     if (textureAsset != null)
                     {
                         keys.Add(new FOBJKey()

@@ -105,14 +105,23 @@ namespace mexLib.AssetTypes
         /// </summary>
         /// <param name="workspace"></param>
         /// <returns></returns>
-        public MexImage? GetSourceImage(MexWorkspace workspace)
+        private Stream? GetSourceImageStream(MexWorkspace workspace)
         {
             if (AssetFileName == null)
                 return null;
 
             var path = GetFullPath(workspace);
 
-            using var stream = workspace.FileManager.GetStream(path + ".png");
+            return workspace.FileManager.GetStream(path + ".png");
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <returns></returns>
+        public MexImage? GetSourceImage(MexWorkspace workspace)
+        {
+            using var stream = GetSourceImageStream(workspace);
 
             if (stream == null)
                 return null;
@@ -152,6 +161,28 @@ namespace mexLib.AssetTypes
 
             workspace.FileManager.Remove(path + ".png");
             workspace.FileManager.Remove(path + ".tex");
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="csp_width"></param>
+        /// <param name="csp_height"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        internal MexImage? Resize(MexWorkspace workspace, int csp_width, int csp_height)
+        {
+            var source = GetSourceImage(workspace);
+
+            if (source != null)
+            {
+                var resized = ImageConverter.Resize(source, csp_width, csp_height);
+
+                var path = GetFullPath(workspace);
+                workspace.FileManager.Set(path + ".tex", resized.ToByteArray());
+
+                return resized;
+            }
+
+            return null;
         }
     }
 }
