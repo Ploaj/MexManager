@@ -4,7 +4,6 @@ using mexLib;
 using mexLib.Types;
 using MexManager.Extensions;
 using MexManager.ViewModels;
-using System;
 using System.ComponentModel;
 using System.Reactive.Linq;
 

@@ -461,6 +461,7 @@ namespace mexLib
 
                         // add script to sound group
                         sound.Scripts.Add(scripts.Scripts[j]);
+                        sound.CleanScripts();
                     }
                 }
 

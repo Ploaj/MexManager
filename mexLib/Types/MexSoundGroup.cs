@@ -120,5 +120,18 @@ namespace mexLib.Types
         {
             return FileName;
         }
+        /// <summary>
+        /// Removes all unused null codes from sound scripts
+        /// </summary>
+        internal void CleanScripts()
+        {
+            if (Scripts == null)
+                return;
+
+            foreach (var s in Scripts)
+            {
+                s.Codes.RemoveAll(e => e.Code == SEM_CODE.NULL);
+            }
+        }
     }
 }

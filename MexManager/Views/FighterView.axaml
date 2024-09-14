@@ -118,70 +118,64 @@
 			</TabItem>
 			<TabItem Header="Costumes">
 				<DockPanel>
+					<Menu DockPanel.Dock="Top"
+							  Height="48">
+						<controls:IconMenuItem
+							Text="Import"
+							ToolTip.Tip="Import"
+							IsEnabled="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"
+							IconSource="avares://MexManager/Assets/Common/file_import.png"
+							Click="ImportCostumeMenuItem_Click"/>
+						<controls:IconMenuItem
+							Text="Export"
+							ToolTip.Tip="Export"
+							IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
+							IconSource="avares://MexManager/Assets/Common/file_export.png"
+							Click="ExportCostumeMenuItem_Click"/>
+						<controls:IconMenuItem
+							Text="Duplicate"
+							ToolTip.Tip="Duplicate"
+							IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
+							IconSource="avares://MexManager/Assets/Common/icon_duplicate.png"
+							Click="DuplicateCostumeMenuItem_Click"/>
+						<controls:IconMenuItem
+							Text="Remove"
+							ToolTip.Tip="Remove"
+							IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
+							IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+							Click="RemoveCostumeMenuItem_Click"/>
+						<controls:IconMenuItem
+							Text="Move Up"
+							ToolTip.Tip="Move Up"
+							IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
+							IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
+							Click="MoveUpCostumeMenuItem_Click"/>
+						<controls:IconMenuItem
+							Text="Move Down"
+							ToolTip.Tip="Move Down"
+							IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
+							IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
+							Click="MoveDownCostumeMenuItem_Click"/>
+					</Menu>
 					<DockPanel>
-						<Menu DockPanel.Dock="Top"
-							  Height="48">
-							<controls:IconMenuItem
-								Text="Import"
-								ToolTip.Tip="Import"
-								IsEnabled="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"
-								IconSource="avares://MexManager/Assets/Common/file_import.png"
-								Click="ImportCostumeMenuItem_Click"/>
-							<controls:IconMenuItem
-								Text="Export"
-								ToolTip.Tip="Export"
-								IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
-								IconSource="avares://MexManager/Assets/Common/file_export.png"
-								Click="ExportCostumeMenuItem_Click"/>
-							<controls:IconMenuItem
-								Text="Duplicate"
-								ToolTip.Tip="Duplicate"
-								IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
-								IconSource="avares://MexManager/Assets/Common/icon_duplicate.png"
-								Click="DuplicateCostumeMenuItem_Click"/>
-							<controls:IconMenuItem
-								Text="Remove"
-								ToolTip.Tip="Remove"
-								IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
-								IconSource="avares://MexManager/Assets/Common/icon_delete.png"
-								Click="RemoveCostumeMenuItem_Click"/>
-						</Menu>
-						<Menu DockPanel.Dock="Top"
-							  Height="48">
-							<controls:IconMenuItem
-								Text="Move Up"
-								ToolTip.Tip="Move Up"
-								IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
-								IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
-								Click="MoveUpCostumeMenuItem_Click"/>
-							<controls:IconMenuItem
-								Text="Move Down"
-								ToolTip.Tip="Move Down"
-								IsEnabled="{Binding SelectedFighterCostume, Converter={StaticResource NullToBoolConverter}}"
-								IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
-								Click="MoveDownCostumeMenuItem_Click"/>
-						</Menu>
 						<ListBox
 							Name="CostumeList"
 							DockPanel.Dock="Left"
+							Width="240"
 							ItemsSource="{Binding SelectedFighter.Costumes}"
-							SelectedItem="{Binding SelectedFighterCostume, Mode=TwoWay}">
-
-							<ListBox.ItemTemplate>
-								<DataTemplate>
-									<TextBlock Text="{Binding Name}" />
-								</DataTemplate>
-							</ListBox.ItemTemplate>
+							SelectedItem="{Binding SelectedFighterCostume, Mode=TwoWay}"
+							ItemTemplate="{StaticResource IndexedItemTemplate}">
 						</ListBox>
+						<ScrollViewer>
+							<pgc:PropertyGrid
+								DockPanel.Dock="Left"
+								AllowQuickFilter="False"
+								AllowFilter="False"
+								AllowToggleView="False"
+								ShowStyle="Builtin"
+								DataContext="{ Binding SelectedFighterCostume }"/>
+						</ScrollViewer>
 					</DockPanel>
-					<ScrollViewer>
-						<pgc:PropertyGrid
-							AllowQuickFilter="False"
-							AllowFilter="False"
-							AllowToggleView="False"
-							ShowStyle="Builtin"
-							DataContext="{ Binding SelectedFighterCostume }"/>
-					</ScrollViewer>
 				</DockPanel>
 			</TabItem>
 			<TabItem Header="Items">

@@ -67,11 +67,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="GCILib">
+      <HintPath>..\MexManager.Desktop\GCILib.dll</HintPath>
+    </Reference>
     <Reference Include="HSDRaw">
       <HintPath>..\MexManager.Desktop\HSDRaw.dll</HintPath>
     </Reference>
     <Reference Include="MeleeMedia">
       <HintPath>..\MexManager.Desktop\MeleeMedia.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\BannerEditor.axaml" />
   </ItemGroup>
 </Project>

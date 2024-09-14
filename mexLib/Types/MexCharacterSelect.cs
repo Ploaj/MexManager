@@ -61,11 +61,11 @@ namespace mexLib.Types
         /// <param name="ws"></param>
         public void ApplyCompression(MexWorkspace ws)
         {
-            int csp_width = (int)(136 * ws.Project.CharacterSelect.CSPCompression);
-            int csp_height = (int)(188 * ws.Project.CharacterSelect.CSPCompression);
+            int csp_width = (int)(136 * CSPCompression);
+            int csp_height = (int)(188 * CSPCompression);
 
             // Create a list of tasks
-            ManualResetEvent doneEvent = new ManualResetEvent(false);
+            ManualResetEvent doneEvent = new (false);
             int remainingImages = ws.Project.Fighters.Sum(e => e.Costumes.Count);
 
             foreach (var fighter in ws.Project.Fighters)

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using mexLib.Types;
 using System.Diagnostics;
 using MexManager.Views;
+using GCILib;
 
 namespace MexManager.ViewModels;
 
@@ -13,6 +14,7 @@ public class MainViewModel : ViewModelBase
     public ICommand CloseCommand { get; }
     public ICommand WorkspaceLoadedCommand { get; }
     public ICommand LaunchCommand { get; }
+    public ICommand EditBannerCommand { get; }
 
     public SoundGroupModel SoundViewModel { get; } = new SoundGroupModel();
 
@@ -184,6 +186,37 @@ public class MainViewModel : ViewModelBase
         CloseCommand = new RelayCommand(CloseMenuItem_Click, IsWorkSpaceLoaded);
         WorkspaceLoadedCommand = new RelayCommand((e) => { }, IsWorkSpaceLoaded);
         LaunchCommand = new RelayCommand(LaunchMenuItem_Click, IsDolphinPathSet);
+
+        EditBannerCommand = new RelayCommand(async (s) =>
+        {
+            if (Global.Workspace == null)
+                return;
+
+            var bannerFilePath = Global.Workspace.GetFilePath("opening.bnr");
+
+            if (!Global.Workspace.FileManager.Exists(bannerFilePath))
+                return;
+
+            var bannerFile = Global.Workspace.FileManager.Get(bannerFilePath);
+
+            if (bannerFile == null) return;
+
+            GCBanner banner = new(bannerFile);
+            var popup = new BannerEditor();
+            popup.SetBanner(banner);
+
+            if (App.MainWindow != null)
+            {
+                await popup.ShowDialog(App.MainWindow);
+
+                var newBanner = popup.GetBanner();
+
+                if (popup.SaveChanges && newBanner != null)
+                {
+                    Global.Workspace.FileManager.Set(bannerFilePath, newBanner.GetData());
+                }
+            }
+        }, IsWorkSpaceLoaded);
     }
     /// <summary>
     /// 

@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="clr-namespace:MexManager.ViewModels"
+		xmlns:views="clr-namespace:MexManager.Views"
+		xmlns:controls="clr-namespace:MexManager.Controls"
+		xmlns:converters="clr-namespace:MexManager.Converters"
+        xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="MexManager.Views.BannerEditor"
+        Title="Banner Editor"
+        Width="500" Height="500"
+        WindowStartupLocation="CenterOwner">
+    <DockPanel>
+		<StackPanel
+			DockPanel.Dock="Top"
+			Orientation="Vertical"
+			Margin="4"
+			Spacing="4">
+			<Image
+				Name="BannerImage"
+				Width="192"
+				Height="64"/>
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Button
+					Grid.Column="0"
+					Content="Import Banner Image"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					Height="48"
+					HorizontalAlignment="Stretch"
+					Click="ImportButton_Click"/>
+				<Button
+					Grid.Column="1"
+					Content="Export Banner Image"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					Height="48"
+					HorizontalAlignment="Stretch"
+					Click="ExportButton_Click"/>
+			</Grid>
+		</StackPanel>
+		<Button
+			DockPanel.Dock="Bottom"
+			Content="Save Changes"
+			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Center"
+			VerticalContentAlignment="Center"
+			Height="48"
+			Click="Button_Click"/>
+		<pgc:PropertyGrid
+			DockPanel.Dock="Left"
+			Name="BannerPropertyGrid"
+			HorizontalContentAlignment="Stretch"
+			VerticalAlignment="Top"
+			AllowFilter="False"
+			AllowQuickFilter="False"
+			ShowStyle="Builtin"
+			Margin="4"/>
+	</DockPanel>
+</Window>
