@@ -4,7 +4,7 @@
              xmlns:converters="clr-namespace:MexManager.Converters"
 			 x:Class="MexManager.App"
 			 xmlns:views="clr-namespace:MexManager.Views"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Dark">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 	
 	<Application.Resources>

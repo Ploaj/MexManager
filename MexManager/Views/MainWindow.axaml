@@ -6,7 +6,7 @@
         xmlns:views="clr-namespace:MexManager.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="MexManager.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/mextool.ico"
         Title="MexManager">
         <views:MainView />
 </Window>
