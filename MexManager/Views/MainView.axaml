@@ -153,11 +153,17 @@
 							</TabItem>
 							<TabItem Header="Assets">
 								<ScrollViewer>
-									<views:PropertyGridExt
-										Margin="4"
-										AllowQuickFilter="False"
-										DataContext="{Binding SelectedStage.Assets}">
-									</views:PropertyGridExt>
+									<StackPanel Orientation="Vertical">
+										<Button Content="Generate Banner"
+												Click="StageGenerateBanner_Click"
+												IsVisible="False"/>
+										<views:PropertyGridExt
+											Name="StageAssetPropertyGrid"
+											Margin="4"
+											AllowQuickFilter="False"
+											DataContext="{Binding SelectedStage.Assets}">
+										</views:PropertyGridExt>
+									</StackPanel>
 								</ScrollViewer>
 							</TabItem>
 							<TabItem Header="Playlist">

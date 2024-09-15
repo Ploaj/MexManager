@@ -84,6 +84,23 @@ namespace MexManager.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
+        public void StageGenerateBanner_Click(object? sender, RoutedEventArgs args)
+        {
+            if (Global.Workspace != null &&
+                DataContext is MainViewModel model &&
+                model.SelectedStage is MexStage stage)
+            {
+                var tex = Tools.StageBannerGenerator.DrawTextToImageAsync(stage.Location, stage.Name);
+                stage.Assets.BannerAsset.SetFromMexImage(Global.Workspace, tex);
+                StageAssetPropertyGrid.DataContext = null;
+                StageAssetPropertyGrid.DataContext = stage.Assets;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void StageImportMenuItem_Click(object? sender, RoutedEventArgs args)
         {
             // TODO: stage import

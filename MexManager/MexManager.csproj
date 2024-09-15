@@ -35,6 +35,7 @@
     <None Remove="Assets\Common\icon_undo.png" />
     <None Remove="Assets\Data\bgm.dat" />
     <None Remove="Assets\dol.patch" />
+    <None Remove="Assets\Fonts\palatino-linotype-bold.ttf" />
     <None Remove="Assets\Menu\category_code.png" />
     <None Remove="Assets\Menu\category_fighter.png" />
     <None Remove="Assets\Menu\category_filesystem.png" />

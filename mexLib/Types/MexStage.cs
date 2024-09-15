@@ -14,6 +14,9 @@ namespace mexLib.Types
         [Category("0 - General"), DisplayName("Name")]
         public string Name { get; set; } = "";
 
+        [Category("0 - General"), DisplayName("Location")]
+        public string Location { get; set; } = "";
+
         [Category("0 - General"), DisplayName("Series")]
         [MexLink(MexLinkType.Series)]
         public int SeriesID { get; set; } = 0;
