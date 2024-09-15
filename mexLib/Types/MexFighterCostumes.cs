@@ -3,7 +3,6 @@ using HSDRaw.MEX;
 using mexLib.MexScubber;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing;
 
 namespace mexLib.Types
 {

@@ -381,9 +381,35 @@ public partial class SoundGroupView : UserControl
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void RemoveGroup_Click(object? sender, RoutedEventArgs e)
+    private async void RemoveGroup_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: remove sound group
+        if (Global.Workspace != null &&
+            DataContext is SoundGroupModel model &&
+            model.SelectedSoundGroup is MexSoundGroup group)
+        {
+            var res =
+                await MessageBox.Show(
+                    $"Are you sure you want to\nremove \"{group.Name}\"?",
+                    "Remove Sound Group",
+                    MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (res != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            int selected = SoundList.SelectedIndex;
+            if (Global.Workspace.Project.RemoveSoundGroup(group))
+            {
+                SoundList.RefreshList();
+                SoundList.SelectedIndex = selected;
+            }
+            else
+            {
+                await MessageBox.Show(
+                    $"Failed to remove group \"{group.Name}\"\nBase game sounds cannot be removed",
+                    "Remove Sound Failed",
+                    MessageBox.MessageBoxButtons.Ok);
+            }
+        }
     }
     /// <summary>
     /// 

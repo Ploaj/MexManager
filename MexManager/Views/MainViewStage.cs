@@ -16,7 +16,8 @@ namespace MexManager.Views
         /// <param name="args"></param>
         public void StageAddMenuItem_Click(object? sender, RoutedEventArgs args)
         {
-            if (DataContext is MainViewModel model && 
+            if (Global.Workspace != null && 
+                DataContext is MainViewModel model && 
                 model.Stages != null)
             {
                 var stage = new MexStage()
@@ -34,9 +35,12 @@ namespace MexManager.Views
                             
                     }
                 };
-                model.Stages.Add(stage);
-                StagesList.RefreshList();
-                StagesList.SelectedItem = stage;
+
+                if (Global.Workspace.Project.AddStage(stage))
+                {
+                    StagesList.RefreshList();
+                    StagesList.SelectedItem = stage;
+                }
             }
         }
         /// <summary>

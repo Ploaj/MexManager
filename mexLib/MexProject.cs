@@ -1,6 +1,4 @@
-﻿using HSDRaw.MEX.Misc;
-using HSDRaw.MEX.Scenes;
-using HSDRaw.MEX.Sounds;
+﻿using HSDRaw.MEX.Scenes;
 using mexLib.Types;
 using mexLib.Utilties;
 using System.Collections.ObjectModel;
@@ -167,6 +165,16 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="stage"></param>
+        /// <returns></returns>
+        public bool AddStage(MexStage stage)
+        {
+            Stages.Add(stage);
+            return true;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="internalId"></param>
         /// <returns></returns>
         public bool RemoveStage(int internalId)
@@ -294,6 +302,51 @@ namespace mexLib
                     s.SeriesID = 0;
                 else if (s.SeriesID > index)
                     s.SeriesID -= 1;
+            }
+
+            return true;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        public bool AddSoundGroup(MexSoundGroup group)
+        {
+            SoundGroups.Add(group);
+            return true;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        public bool RemoveSoundGroup(MexSoundGroup group)
+        {
+            var soundIndex = SoundGroups.IndexOf(group);
+
+            if (soundIndex == -1 || 
+                !MexSoundGroupIDConverter.IsMexSoundGroup(soundIndex))
+                return false;
+
+            SoundGroups.RemoveAt(soundIndex);
+
+            // fighter
+            foreach (var fighter in Fighters)
+            {
+                if (fighter.SoundBank == soundIndex)
+                    fighter.SoundBank = 55;
+                else if (fighter.SoundBank > soundIndex)
+                    fighter.SoundBank -= 1;
+            }
+
+            // stage
+            foreach (var stage in Stages)
+            {
+                if (stage.SoundBank == soundIndex)
+                    stage.SoundBank = 55;
+                else if (stage.SoundBank > soundIndex)
+                    stage.SoundBank -= 1;
             }
 
             return true;
