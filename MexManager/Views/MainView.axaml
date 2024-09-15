@@ -90,9 +90,32 @@
 								DockPanel.Dock="Top"
 								Height="48">
 								<controls:IconMenuItem
-									Text="Add"
-									ToolTip.Tip="Add"
-									IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+									Text="File"
+									ToolTip.Tip="File"
+									IconSource="avares://MexManager/Assets/Common/icon_file.png">
+									<MenuItem
+										Header="_Import Stage"
+										ToolTip.Tip="Import Stage"
+										Click="StageImportMenuItem_Click">
+										<MenuItem.Icon>
+											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_package.png" />
+										</MenuItem.Icon>
+									</MenuItem>
+									<MenuItem
+										Header="_Export Stage"
+										ToolTip.Tip="Export Stage"
+										IsEnabled="{Binding SelectedStage, Converter={StaticResource NullToBoolConverter}}"
+										Click="StageExportMenuItem_Click">
+										<MenuItem.Icon>
+											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/file_export.png" />
+										</MenuItem.Icon>
+									</MenuItem>
+								</controls:IconMenuItem>
+								
+								<controls:IconMenuItem
+									Text="Create"
+									ToolTip.Tip="Create"
+									IconSource="avares://MexManager/Assets/Common/icon_create.png"
 									Click="StageAddMenuItem_Click"/>
 								<controls:IconMenuItem
 									Text="Remove"
@@ -100,17 +123,6 @@
 									IsEnabled="{Binding SelectedStage, Converter={StaticResource NullToBoolConverter}}"
 									IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 									Click="StageRemoveMenuItem_Click"/>
-								<controls:IconMenuItem
-									Text="Import"
-									ToolTip.Tip="Import"
-									IconSource="avares://MexManager/Assets/Common/file_import.png"
-									Click="StageImportMenuItem_Click"/>
-								<controls:IconMenuItem
-									Text="Export"
-									ToolTip.Tip="Export"
-									IsEnabled="{Binding SelectedStage, Converter={StaticResource NullToBoolConverter}}"
-									IconSource="avares://MexManager/Assets/Common/file_export.png"
-									Click="StageExportMenuItem_Click"/>
 							</Menu>
 							<ListBox
 								DockPanel.Dock="Top"
@@ -193,6 +205,7 @@
 								<controls:IconMenuItem
 									Text="Remove"
 									ToolTip.Tip="Remove"
+									IsEnabled="{Binding SelectedSeries, Converter={StaticResource NullToBoolConverter}}"
 									IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 									Click="SeriesList_Remove"/>
 							</Menu>
@@ -234,25 +247,30 @@
 						<DockPanel>
 							<Menu DockPanel.Dock="Top"
 								  Height="48">
-								<MenuItem ToolTip.Tip="Import"
-										  Click="MusicImportButton_Click">
-									<MenuItem.Header>
-										<StackPanel>
-											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_import_music.png" />
-											<TextBlock>Import</TextBlock>
-										</StackPanel>
-									</MenuItem.Header>
-								</MenuItem>
-								<MenuItem ToolTip.Tip="Export"
-										  Click="MusicExportButton_Click">
-									<MenuItem.Header>
-										<StackPanel>
-											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_export.png" />
-											<TextBlock>Export</TextBlock>
-										</StackPanel>
-									</MenuItem.Header>
-								</MenuItem>
+								<controls:IconMenuItem
+									Text="File"
+									ToolTip.Tip="File"
+									IconSource="avares://MexManager/Assets/Common/icon_file.png">
+									<MenuItem
+										Header="_Import"
+										ToolTip.Tip="Import"
+										Click="MusicImportButton_Click">
+										<MenuItem.Icon>
+											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/file_import.png" />
+										</MenuItem.Icon>
+									</MenuItem>
+									<MenuItem
+										Header="_Export"
+										ToolTip.Tip="Export"
+										IsEnabled="{Binding SelectedMusic, Converter={StaticResource NullToBoolConverter}}"
+										Click="MusicExportButton_Click">
+										<MenuItem.Icon>
+											<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/file_export.png" />
+										</MenuItem.Icon>
+									</MenuItem>
+								</controls:IconMenuItem>
 								<MenuItem ToolTip.Tip="Edit"
+										  IsEnabled="{Binding SelectedMusic, Converter={StaticResource NullToBoolConverter}}"
 										  Click="MusicEditButton_Click">
 									<MenuItem.Header>
 										<StackPanel>
@@ -262,6 +280,7 @@
 									</MenuItem.Header>
 								</MenuItem>
 								<MenuItem ToolTip.Tip="Delete"
+										  IsEnabled="{Binding SelectedMusic, Converter={StaticResource NullToBoolConverter}}"
 										  Click="MusicDeleteButton_Click">
 									<MenuItem.Header>
 										<StackPanel>
@@ -271,6 +290,7 @@
 									</MenuItem.Header>
 								</MenuItem>
 								<MenuItem ToolTip.Tip="Preview"
+										  IsEnabled="{Binding SelectedMusic, Converter={StaticResource NullToBoolConverter}}"
 										  Click="MusicPlayButton_Click">
 									<MenuItem.Header>
 										<StackPanel>

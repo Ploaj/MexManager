@@ -24,9 +24,31 @@
 				DockPanel.Dock="Top"
 				Height="48">
 				<controls:IconMenuItem
-					Text="Add"
-					ToolTip.Tip="Add"
-					IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+					Text="File"
+					ToolTip.Tip="File"
+					IconSource="avares://MexManager/Assets/Common/icon_file.png">
+					<MenuItem
+						Header="_Import Fighter"
+						ToolTip.Tip="Import Fighter"
+						Click="ImportFighterMenuItem_Click">
+						<MenuItem.Icon>
+							<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/icon_package.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem
+						Header="_Export Fighter"
+						ToolTip.Tip="Export Fighter"
+						IsEnabled="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"
+						Click="ExportFighterMenuItem_Click">
+						<MenuItem.Icon>
+							<Image Width="24" Height="24" Source="avares://MexManager/Assets/Common/file_export.png" />
+						</MenuItem.Icon>
+					</MenuItem>
+				</controls:IconMenuItem>
+				<controls:IconMenuItem
+					Text="Create"
+					ToolTip.Tip="Create"
+					IconSource="avares://MexManager/Assets/Common/icon_create.png"
 					Click="AddFighterMenuItem_Click"/>
 				<controls:IconMenuItem
 					Text="Remove"
@@ -34,17 +56,6 @@
 					IsEnabled="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"
 					IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 					Click="RemoveFighterMenuItem_Click"/>
-				<controls:IconMenuItem
-					Text="Import"
-					ToolTip.Tip="Import"
-					IconSource="avares://MexManager/Assets/Common/file_import.png"
-					Click="ImportFighterMenuItem_Click"/>
-				<controls:IconMenuItem
-					Text="Export"
-					ToolTip.Tip="Export"
-					IsEnabled="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"
-					IconSource="avares://MexManager/Assets/Common/file_export.png"
-					Click="ExportFighterMenuItem_Click"/>
 			</Menu>
 			<ListBox
 				Name="FighterList"

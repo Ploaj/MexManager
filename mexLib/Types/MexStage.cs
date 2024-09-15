@@ -157,7 +157,8 @@ namespace mexLib.Types
         /// <param name="index"></param>
         public void FromDOL(MexDOL dol, uint index)
         {
-            Name = MexDefaultData.Stage_Names[index];
+            Name = MexDefaultData.Stage_Names[index].Item1;
+            Location = MexDefaultData.Stage_Names[index].Item2;
             SeriesID = MexDefaultData.Stage_Series[index];
 
             // load stage data

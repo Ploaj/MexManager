@@ -1,6 +1,5 @@
 ﻿using mexLib.AssetTypes;
 using System.IO.Compression;
-using System.Text.Json;
 
 namespace mexLib.Utilties
 {

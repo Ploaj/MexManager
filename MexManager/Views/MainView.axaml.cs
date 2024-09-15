@@ -14,6 +14,8 @@ namespace MexManager.Views;
 
 public partial class MainView : UserControl
 {
+    // TODO: hide editor until workspace is loaded
+
     private MainViewModel? Context => this.DataContext as MainViewModel;
 
     public static AudioView? GlobalAudio { get; internal set; }

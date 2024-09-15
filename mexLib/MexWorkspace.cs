@@ -125,7 +125,7 @@ namespace mexLib
                 File.WriteAllBytes(workspace.GetFilePath("SmSt.dat"), iso.GetFileData("SmSt.dat"));
                 File.WriteAllBytes(workspace.GetFilePath("audio/us/smash2.sem"), iso.GetFileData("audio/us/smash2.sem"));
 
-                // TODO: write files
+                // TODO: write iso files
                 //int index = 0;
                 //foreach (var file in iso.GetAllFilePaths())
                 //{
@@ -144,7 +144,7 @@ namespace mexLib
                 //ReportProgress(null, new ProgressChangedEventArgs(100, null));
             }
 
-            // copy codes
+            // create data and asset directories
             Directory.CreateDirectory(workspace.GetDataPath(""));
             Directory.CreateDirectory(workspace.GetAssetPath(""));
 
