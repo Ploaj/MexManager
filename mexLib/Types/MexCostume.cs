@@ -1,12 +1,9 @@
 ﻿using mexLib.AssetTypes;
-using mexLib.Attributes;
 using mexLib.Utilties;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json.Serialization;
-using System.Xml.Linq;
 
 namespace mexLib
 {

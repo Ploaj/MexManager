@@ -232,6 +232,17 @@
 					</views:PropertyGridExt>
 				</ScrollViewer>
 			</TabItem>
+			<TabItem
+				Header="GaW Colors"
+				IsVisible="{Binding SelectedFighter.GaWData, Converter={StaticResource NullToBoolConverter}}">
+				<pgc:PropertyGrid
+					DockPanel.Dock="Left"
+					AllowQuickFilter="False"
+					AllowFilter="False"
+					AllowToggleView="False"
+					ShowStyle="Builtin"
+					DataContext="{ Binding SelectedFighter.GaWData }"/>
+			</TabItem>
 		</TabControl>
 		
 	</DockPanel>

@@ -1,9 +1,7 @@
 ﻿using HSDRaw;
 using HSDRaw.Common;
-using HSDRaw.Melee;
 using HSDRaw.MEX;
 using HSDRaw.MEX.Menus;
-using HSDRaw.MEX.Sounds;
 using HSDRaw.MEX.Stages;
 using mexLib.Installer;
 using mexLib.Types;
@@ -277,12 +275,6 @@ namespace mexLib
             };
             proj.CharacterSelect.ToMxDt(gen);
             proj.StageSelects[0].ToMxDt(gen);
-
-            // write misc data
-            mexData.MiscData = new HSDRaw.MEX.Misc.MEX_Misc()
-            {
-                GawColors = new HSDArrayAccessor<HSDRaw.MEX.Misc.MEX_GawColor>() { Array = proj.GawColors.ToArray() }
-            };
 
             // save files
             gen.Save();

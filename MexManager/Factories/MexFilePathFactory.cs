@@ -49,7 +49,7 @@ namespace MexManager.Factories
             var control = new DockPanel();
 
             TextBox stringControl = (TextBox)new Avalonia.PropertyGrid.Controls.Factories.Builtins.StringCellEditFactory().HandleNewProperty(context);
-            stringControl.HorizontalAlignment = HorizontalAlignment.Stretch; 
+            stringControl.HorizontalAlignment = HorizontalAlignment.Stretch;
             stringControl.Background = ThemeExtensions.SystemAccentColor;
             stringControl.TextChanged += (s, e) =>
             {

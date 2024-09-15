@@ -450,7 +450,8 @@ namespace mexLib
                         }
 
                         // give sound name if it's null
-                        if (string.IsNullOrEmpty(sound.Sounds[scripts.Scripts[j].SFXID].Name))
+                        if (scripts.Scripts[j].SFXID < sound.Sounds.Count && 
+                            string.IsNullOrEmpty(sound.Sounds[scripts.Scripts[j].SFXID].Name))
                         {
                             var sound_name = soundNames[sindex];
                             sound_name = sound_name.Replace("SFX", "").Trim();

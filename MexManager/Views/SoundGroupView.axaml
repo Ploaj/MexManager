@@ -248,6 +248,11 @@
 							ToolTip.Tip="Preview"
 							IconSource="avares://MexManager/Assets/Common/audio_play.png"
 							Click="PreviewSound_Click"/>
+						<controls:IconMenuItem
+							Text="Import SSM"
+							ToolTip.Tip="Import SSM"
+							IconSource="avares://MexManager/Assets/Common/icon_package.png"
+							Click="ReplaceSSM_Click"/>
 					</Menu>
 					<DockPanel>
 						<ScrollViewer DockPanel.Dock="Left">

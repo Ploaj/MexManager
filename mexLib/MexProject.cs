@@ -21,8 +21,6 @@ namespace mexLib
 
         public int TrophySDOffset { get; set; } = 302;
 
-        public ObservableCollection<MEX_GawColor> GawColors { get; set; } = new ObservableCollection<MEX_GawColor>(); // TODO: better support game and watch colors
-
         public MexPlaylist MenuPlaylist { get; set; } = new MexPlaylist();
 
         public MexReservedAssets ReservedAssets { get; set; } = new MexReservedAssets();

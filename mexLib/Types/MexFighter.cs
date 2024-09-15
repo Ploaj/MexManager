@@ -7,6 +7,8 @@ using mexLib.Attributes;
 using mexLib.Installer;
 using mexLib.MexScubber;
 using System.Collections.ObjectModel;
+using HSDRaw.MEX.Misc;
+using System.Drawing;
 
 namespace mexLib.Types
 {
@@ -113,6 +115,23 @@ namespace mexLib.Types
 
             // create costume strings
             fd.CostumeFileSymbols.Set(internalId, CostumesToMxDt());
+
+            // gaw colors hack
+            if (GaWData != null)
+            {
+                // write misc data
+                mexData.MiscData = new MEX_Misc()
+                {
+                    GawColors = new HSDArrayAccessor<MEX_GawColor>() 
+                    { 
+                        Array = GaWData.Colors.Select(e=>new MEX_GawColor()
+                        {
+                            FillColor = Color.FromArgb((int)e.Fill),
+                            OutlineColor = Color.FromArgb((int)e.Outline),
+                        }).ToArray()
+                    }
+                };
+            }
 
             // create costume runtime
             fd.CostumePointers.Set(internalId, new MEX_CostumeRuntimePointers()
@@ -312,6 +331,9 @@ namespace mexLib.Types
 
             // css
             CostumesFromDOL(dol, index);
+
+            // ext
+            LoadExtFromDol(dol, index);
 
             // Functions
             Functions.FromDOL(dol, index);

@@ -9,6 +9,8 @@ using MexManager.Extensions;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using Avalonia.Platform.Storage;
+using Avalonia.Media.TextFormatting.Unicode;
 
 namespace MexManager.Views;
 
@@ -310,6 +312,41 @@ public partial class SoundGroupView : UserControl
                 ScriptList.SelectedIndex = index + 1;
             }
             ScriptList.RefreshList(index + 1);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void ReplaceSSM_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is SoundGroupModel model &&
+            model.SelectedSoundGroup is MexSoundGroup group)
+        {
+            var file = await FileIO.TryOpenFile("Import SSM", "",
+            [
+                new FilePickerFileType("SSM")
+                {
+                    Patterns = [ "*.ssm", ],
+                }
+            ]);
+
+            if (file == null)
+                return;
+
+            var check = await MessageBox.Show(
+                $"Are you sure you want to\n" +
+                $"replace all sounds with sounds\n" +
+                $"from \"{Path.GetFileName(file)}\"?", 
+                "Replace Sounds", 
+                MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (check != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            group.ImportSSM(Global.Workspace, file);
         }
     }
     /// <summary>

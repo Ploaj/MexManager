@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace mexLib.Types
 {
-    public enum MexSoundbankType
+    public enum MexSoundGroupGroup
     {
         Null,
         Constant,
@@ -16,7 +16,27 @@ namespace mexLib.Types
         Menu,
         Fighter,
         Stage,
-        Minigame
+        Ending,
+    }
+
+    public enum MexSoundGroupType
+    {
+        Menu,
+        Ending,
+        Melee,
+        Unused,
+        Narrator,
+        Constant,
+    }
+
+    public enum MexSoundGroupSubType
+    {
+        NarratorConstant,
+        Special, // persists after fighter is unloaded?
+        Stage,
+        Fighter,
+        Narrator,
+        Constant,
     }
 
     public class MexSoundGroup : MexReactiveObject
@@ -27,48 +47,52 @@ namespace mexLib.Types
 
         [Category("General"), DisplayName("File")]
         [MexFilePathValidator(MexFilePathType.Audio)]
+        [ReadOnly(true)]
         public string FileName { get; set; } = "";
 
         [Browsable(false)]
         public uint GroupFlags { get; set; }
 
         [JsonIgnore]
-        public MexSoundbankType Type
+        public MexSoundGroupGroup Group
         {
-            get => (MexSoundbankType)(GroupFlags >> 24 & 0xFF);
+            get => (MexSoundGroupGroup)(GroupFlags >> 24 & 0xFF);
             set => GroupFlags = GroupFlags & ~0xFF000000 | ((uint)value & 0xFF) << 24;
         }
 
         [JsonIgnore]
-        public byte GroupFlag1
+        public MexSoundGroupType Type
         {
-            get => (byte)(GroupFlags >> 16 & 0xFF);
+            get => (MexSoundGroupType)(GroupFlags >> 16 & 0xFF);
             set => GroupFlags = (uint)(GroupFlags & ~0x00FF0000 | ((uint)value & 0xFF) << 16);
         }
 
         [JsonIgnore]
-        public byte GroupFlag2
+        public MexSoundGroupSubType SubType
         {
-            get => (byte)(GroupFlags >> 8 & 0xFF);
+            get => (MexSoundGroupSubType)(GroupFlags >> 8 & 0xFF);
             set => GroupFlags = (uint)(GroupFlags & ~0x0000FF00 | ((uint)value & 0xFF) << 8);
         }
 
         [JsonIgnore]
         [DisplayName("Mushroom Script Offset")]
-        public byte GroupFlag3
+        public byte Mushroom
         {
             get => (byte)(GroupFlags & 0xFF);
             set => GroupFlags = (uint)(GroupFlags & ~0x000000FF | (uint)value & 0xFF);
         }
 
         [DisplayHex]
-        public uint Flags { get; set; }
+        [Browsable(false)]
+        public uint Flags { get; set; } = 0;
 
         private ObservableCollection<MexSound> _sounds = new ();
+        [Browsable(false)]
         public ObservableCollection<MexSound> Sounds { get => _sounds; set { _sounds = value; OnPropertyChanged(); } }
 
         private ObservableCollection<SEMBankScript>? _scripts = null;
         [JsonIgnore]
+        [Browsable(false)]
         public ObservableCollection<SEMBankScript>? Scripts { get => _scripts; set { _scripts = value; OnPropertyChanged(); } }
 
         /// <summary>
@@ -132,6 +156,24 @@ namespace mexLib.Types
             {
                 s.Codes.RemoveAll(e => e.Code == SEM_CODE.NULL);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="newValue"></param>
+        /// <returns></returns>
+        public void ImportSSM(MexWorkspace workspace, string fullPath)
+        {
+            var ssm = new SSM();
+            ssm.Open(Path.GetFileName(fullPath), workspace.FileManager.GetStream(fullPath));
+
+            Sounds.Clear();
+            int index = 0;
+            foreach (var s in ssm.Sounds)
+                Sounds.Add(new MexSound() { Name = $"Sound_{index++:D3}", DSP = s });
+
+            OnPropertyChanged(nameof(Sounds));
         }
     }
 }

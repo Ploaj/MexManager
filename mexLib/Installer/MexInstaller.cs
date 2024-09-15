@@ -136,9 +136,6 @@ namespace mexLib.Installer
             project.StageSelects.Add(sss);
             InstallSSS(workspace);
 
-            // load misc
-            InstallMisc(project);
-
             return null;
         }
         /// <summary>
@@ -516,21 +513,6 @@ namespace mexLib.Installer
             }
 
             return scene;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="data"></param>
-        private static void InstallMisc(MexProject project)
-        {
-            project.GawColors = new System.Collections.ObjectModel.ObservableCollection<MEX_GawColor>()
-            {
-                new () { FillColor = Color.FromArgb(0xFF, 0x00, 0x00, 0x00), OutlineColor = Color.FromArgb(0x80, 0xFF, 0xFF, 0xFF) },
-                new () { FillColor = Color.FromArgb(0xFF, 0x6E, 0x00, 0x00), OutlineColor = Color.FromArgb(0x80, 0xFF, 0xFF, 0xFF) },
-                new () { FillColor = Color.FromArgb(0xFF, 0x00, 0x00, 0x6E), OutlineColor = Color.FromArgb(0x80, 0xFF, 0xFF, 0xFF) },
-                new () { FillColor = Color.FromArgb(0xFF, 0x00, 0x6E, 0x00), OutlineColor = Color.FromArgb(0x80, 0xFF, 0xFF, 0xFF) },
-            };
         }
     }
 }
