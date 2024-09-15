@@ -40,6 +40,16 @@ namespace mexLib.Utilties
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="f"></param>
+        /// <returns></returns>
+        public static T? Deserialize<T>(byte[] data)
+        {
+            return JsonSerializer.Deserialize<T>(data, _serializeoptions);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="projectPath"></param>
         /// <param name="relativePath"></param>
         /// <param name="assign"></param>

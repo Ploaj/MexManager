@@ -15,6 +15,7 @@ using System.ComponentModel;
 using PropertyModels.ComponentModel.DataAnnotations;
 using mexLib.Attributes;
 using System.Threading.Tasks;
+using mexLib;
 
 namespace MexManager.Views;
 
@@ -321,9 +322,8 @@ public partial class SoundGroupView : UserControl
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private async void ReplaceSSM_Click(object? sender, RoutedEventArgs e)
+    /// <param name="replace"></param>
+    private async void ImportSSM(bool replace)
     {
         if (Global.Workspace != null &&
             DataContext is SoundGroupModel model &&
@@ -340,15 +340,55 @@ public partial class SoundGroupView : UserControl
             if (file == null)
                 return;
 
-            var check = await MessageBox.Show(
-                $"Import and Replace all\nwith \"{Path.GetFileName(file)}\"?",
-                "Import/Replace Sounds", 
-                MessageBox.MessageBoxButtons.YesNoCancel);
+            group.ImportSSM(Global.Workspace, file, replace);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void ImportSSM_Click(object? sender, RoutedEventArgs e)
+    {
+        ImportSSM(false);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void ReplaceSSM_Click(object? sender, RoutedEventArgs e)
+    {
+        ImportSSM(true);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void ExportSSM_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is SoundGroupModel model &&
+            model.SelectedSoundGroup is MexSoundGroup group)
+        {
+            var file = await FileIO.TrySaveFile("Export SSM", group.FileName,
+            [
+                new FilePickerFileType("SSM")
+                {
+                    Patterns = [ "*.ssm", ],
+                }
+            ]);
 
-            if (check != MessageBox.MessageBoxResult.Yes)
+            if (file == null)
                 return;
 
-            group.ImportSSM(Global.Workspace, file);
+            var ssm = new SSM()
+            {
+                Name = group.Name,
+                Sounds = group.Sounds.Select(e => e.DSP).ToArray(),
+            };
+            ssm.Save(file, out int bufferSize);
         }
     }
     /// <summary>
@@ -403,12 +443,12 @@ public partial class SoundGroupView : UserControl
         public SoundGroupPresets TypePresets { get; set; } = SoundGroupPresets.Fighter;
 
         [Category("Options")]
-        [DisplayName("Use Base Group")]
+        [DisplayName("Import From Group")]
         [ConditionTarget]
         public bool CopySoundsAndScripts { get; set; } = false;
 
         [Category("Options")]
-        [DisplayName("Base Group")]
+        [DisplayName("Import Group")]
         [VisibilityPropertyCondition(nameof(CopySoundsAndScripts), true)]
         [MexLink(MexLinkType.Sound)]
         public int SourceGroup { get; set; }
@@ -431,7 +471,7 @@ public partial class SoundGroupView : UserControl
             {
                 Name = Name,
                 FileName = FileName,
-                Scripts = new(),
+                Scripts = [],
             };
 
             if (CopySoundsAndScripts)
@@ -509,6 +549,15 @@ public partial class SoundGroupView : UserControl
             DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup is MexSoundGroup group)
         {
+            if (!MexSoundGroupIDConverter.IsMexSoundGroup(GroupList.SelectedIndex))
+            {
+                await MessageBox.Show(
+                    $"Base game sounds cannot be removed",
+                    $"Failed to remove group \"{group.Name}\"",
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+
             var res =
                 await MessageBox.Show(
                     $"Are you sure you want to\nremove \"{group.Name}\"?",
@@ -518,18 +567,18 @@ public partial class SoundGroupView : UserControl
             if (res != MessageBox.MessageBoxResult.Yes)
                 return;
 
-            int selected = SoundList.SelectedIndex;
+            int selected = GroupList.SelectedIndex;
             if (Global.Workspace.Project.RemoveSoundGroup(group))
             {
-                SoundList.RefreshList();
-                SoundList.SelectedIndex = selected;
-            }
-            else
-            {
-                await MessageBox.Show(
-                    $"Failed to remove group \"{group.Name}\"\nBase game sounds cannot be removed",
-                    "Remove Sound Failed",
-                    MessageBox.MessageBoxButtons.Ok);
+                res = await MessageBox.Show(
+                    $"Would you like to delete\n\"{group.FileName}\" as well?",
+                    "Delete File",
+                    MessageBox.MessageBoxButtons.YesNoCancel);
+                if (res == MessageBox.MessageBoxResult.Yes)
+                    Global.Workspace.FileManager.Remove(Global.Workspace.GetFilePath($"audio\\us\\{group.FileName}"));
+
+                GroupList.RefreshList();
+                GroupList.SelectedIndex = selected;
             }
         }
     }
@@ -538,17 +587,49 @@ public partial class SoundGroupView : UserControl
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void ImportGroup_Click(object? sender, RoutedEventArgs e)
+    private async void ImportGroup_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: import sound group
+        if (Global.Workspace != null)
+        {
+            var file = await FileIO.TryOpenFile("Import Sound Group", "", FileIO.FilterZip);
+
+            if (file == null)
+                return;
+
+            using var fs = new FileStream(file, FileMode.Open);
+            var res = MexSoundGroup.FromPackage(Global.Workspace, fs, out MexSoundGroup? group);
+            if (res == null)
+            {
+                if (group != null)
+                {
+                    Global.Workspace.Project.AddSoundGroup(group);
+                    GroupList.SelectedItem = group;
+                }
+            }
+            else
+            {
+                await MessageBox.Show(res.Message, "Import Sound Failed", MessageBox.MessageBoxButtons.Ok);
+            }
+        }
     }
     /// <summary>
     /// 
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void ExportGroup_Click(object? sender, RoutedEventArgs e)
+    private async void ExportGroup_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: export sound group
+        if (Global.Workspace != null &&
+            DataContext is SoundGroupModel model &&
+            model.SelectedSoundGroup is MexSoundGroup group)
+        {
+            var file = await FileIO.TrySaveFile("Export Sound Group", group.Name, FileIO.FilterZip);
+
+            if (file == null)
+                return;
+
+            using var fs = new FileStream(file, FileMode.Create);
+            MexSoundGroup.ToPackage(Global.Workspace, group, fs);
+        }
     }
 }

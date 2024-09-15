@@ -1,10 +1,12 @@
 ﻿using HSDRaw.Common;
 using MeleeMedia.Audio;
 using mexLib.Attributes;
+using mexLib.Installer;
 using mexLib.MexScubber;
 using mexLib.Utilties;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO.Compression;
 using System.Text.Json.Serialization;
 
 namespace mexLib.Types
@@ -148,7 +150,7 @@ namespace mexLib.Types
         /// <returns></returns>
         public override string ToString()
         {
-            return FileName;
+            return string.IsNullOrEmpty(Name) ? FileName : Name;
         }
         /// <summary>
         /// Removes all unused null codes from sound scripts
@@ -163,18 +165,34 @@ namespace mexLib.Types
                 s.Codes.RemoveAll(e => e.Code == SEM_CODE.NULL);
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public byte[] PackSSM()
+        {
+            var ssm = new SSM()
+            {
+                Name = Name,
+                Sounds = Sounds.Select(e => e.DSP).ToArray(),
+            };
 
+            using var stream = new MemoryStream();
+            ssm.WriteToStream(stream, out int bs);
+            return stream.ToArray();
+        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="newValue"></param>
         /// <returns></returns>
-        public void ImportSSM(MexWorkspace workspace, string fullPath)
+        public void ImportSSM(MexWorkspace workspace, string fullPath, bool replace)
         {
             var ssm = new SSM();
             ssm.Open(Path.GetFileName(fullPath), workspace.FileManager.GetStream(fullPath));
 
-            Sounds.Clear();
+            if (replace)
+                Sounds.Clear();
             int index = 0;
             foreach (var s in ssm.Sounds)
                 Sounds.Add(new MexSound() { Name = $"Sound_{index++:D3}", DSP = s });
@@ -243,6 +261,106 @@ namespace mexLib.Types
                     NibbleCount = e.NibbleCount,
                 }).ToList()
             };
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void ToPackage(MexWorkspace workspace, MexSoundGroup group, Stream stream)
+        {
+            using var zip = new ZipWriter(stream);
+            zip.WriteAsJson("group.json", group);
+            if (group.Scripts != null)
+            {
+                using var scriptStream = new MemoryStream();
+                SEM.SaveSEMFile(scriptStream, new List<SEMBank>() { new () { Scripts = group.Scripts.ToArray() } });
+                zip.Write("scripts.sem", scriptStream.ToArray());
+
+                zip.WriteAsJson("scripts.json", group.Scripts.Select(e => e.Name).ToArray());
+            }
+            zip.Write(group.FileName, group.PackSSM());
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public static MexInstallerError? FromPackage(MexWorkspace workspace, Stream packageStream, out MexSoundGroup? group)
+        {
+            group = null;
+
+            using ZipArchive zip = new (packageStream);
+
+            // load group entry
+            var entry = zip.GetEntry("group.json");
+            if (entry == null)
+                return new MexInstallerError("\"group.json\" was not found in zip");
+
+            // parse group entry
+            group = MexJsonSerializer.Deserialize<MexSoundGroup>(entry.Extract());
+            if (group == null)
+                return new MexInstallerError("Error parsing \"group.json\"");
+
+            // load sounds
+            {
+                var sound_entry = zip.GetEntry(group.FileName);
+                if (sound_entry != null)
+                {
+                    var ssm = new SSM();
+                    using var ms = new MemoryStream(sound_entry.Extract());
+                    ssm.Open(group.Name, ms);
+
+                    for (int i = 0; i < ssm.Sounds.Length; i++)
+                    {
+                        if (i < group.Sounds.Count)
+                        {
+                            group.Sounds[i].DSP = ssm.Sounds[i];
+                        }
+                        else
+                        {
+                            group.Sounds.Add(new MexSound()
+                            {
+                                Name = $"Sound_{i:D3}",
+                                DSP = ssm.Sounds[i],
+                            });
+                        }
+                    }
+                }
+            }
+
+            // load scripts
+            {
+                var script_entry = zip.GetEntry("scripts.sem");
+                var script_names_entry = zip.GetEntry("scripts.json");
+                string[]? script_names = null;
+                
+                if (script_names_entry != null)
+                {
+                    script_names = MexJsonSerializer.Deserialize<string[]>(script_names_entry.Extract());
+                }
+
+                if (script_entry != null)
+                {
+                    using var e = new MemoryStream(script_entry.Extract());
+                    var sem = SEM.ReadSEMFile(e)[0];
+                    group.Scripts = new ObservableCollection<SEMBankScript>();
+                    for (int i = 0; i < sem.Scripts.Length; i++)
+                    {
+                        // load name
+                        if (script_names != null &&
+                            i < script_names.Length)
+                            sem.Scripts[i].Name = script_names[i];
+
+                        group.Scripts.Add(sem.Scripts[i]);
+                    }
+                }
+            }
+
+            // create ssm path
+            var ssmPath = workspace.FileManager.GetUniqueFilePath(workspace.GetFilePath($"audio\\us\\{group.FileName}"));
+            group.FileName = Path.GetFileName(ssmPath);
+
+            // save ssm file
+            workspace.FileManager.Set(ssmPath, group.PackSSM());
+
+            return null;
         }
     }
 }

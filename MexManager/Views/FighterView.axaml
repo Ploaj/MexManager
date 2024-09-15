@@ -20,11 +20,6 @@
 	
 	<DockPanel>
 		<DockPanel>
-			<TextBlock DockPanel.Dock="Top"
-					   FontSize="16"
-					   Margin="0 5 0 0"
-					   HorizontalAlignment="Center">Fighters</TextBlock>
-			<Separator DockPanel.Dock="Top"></Separator>
 			<Menu
 				DockPanel.Dock="Top"
 				Height="48">

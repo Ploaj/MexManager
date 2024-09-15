@@ -14,34 +14,40 @@
 
 	<DockPanel>
 		<DockPanel>
-			<TextBlock DockPanel.Dock="Top"
-					   FontSize="16"
-					   Margin="0 5 0 0"
-					   HorizontalAlignment="Center">Sound Groups</TextBlock>
-			<Separator DockPanel.Dock="Top"></Separator>
 			<Menu
 				DockPanel.Dock="Top"
 				Height="48">
+				<controls:IconMenuItem
+					Text="File"
+					ToolTip.Tip="File"
+					IconSource="avares://MexManager/Assets/Common/icon_file.png">
+					<MenuItem
+						Header="Import Group"
+						ToolTip.Tip="Import"
+						Click="ImportGroup_Click">
+						<MenuItem.Icon>
+							<Image Source="avares://MexManager/Assets/Common/icon_package.png"/>
+						</MenuItem.Icon>
+					</MenuItem>
+					<MenuItem
+						Header="Export Group"
+						ToolTip.Tip="Export Sounds and Scripts"
+						Click="ExportGroup_Click">
+						<MenuItem.Icon>
+							<Image Source="avares://MexManager/Assets/Common/file_export.png"/>
+						</MenuItem.Icon>
+					</MenuItem>
+				</controls:IconMenuItem>
 				<controls:IconMenuItem
 					Text="Create"
 					ToolTip.Tip="Create"
 					IconSource="avares://MexManager/Assets/Common/icon_create.png"
 					Click="AddGroup_Click"/>
 				<controls:IconMenuItem
-					Text="Remove"
-					ToolTip.Tip="Remove"
+					Text="Delete"
+					ToolTip.Tip="Delete"
 					IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 					Click="RemoveGroup_Click"/>
-				<controls:IconMenuItem
-					Text="Import"
-					ToolTip.Tip="Import"
-					IconSource="avares://MexManager/Assets/Common/file_import.png"
-					Click="ImportGroup_Click"/>
-				<controls:IconMenuItem
-					Text="Export"
-					ToolTip.Tip="Export"
-					IconSource="avares://MexManager/Assets/Common/file_export.png"
-					Click="ExportGroup_Click"/>
 			</Menu>
 			<ListBox
 				Name="GroupList"
@@ -244,8 +250,8 @@
 							IconSource="avares://MexManager/Assets/Common/icon_edit.png"
 							Click="EditSound_Click"/>
 						<controls:IconMenuItem
-							Text="Remove"
-							ToolTip.Tip="Remove"
+							Text="Delete"
+							ToolTip.Tip="Delete"
 							IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 							Click="RemoveSound_Click"/>
 						<controls:IconMenuItem
@@ -254,10 +260,33 @@
 							IconSource="avares://MexManager/Assets/Common/audio_play.png"
 							Click="PreviewSound_Click"/>
 						<controls:IconMenuItem
-							Text="Import SSM"
-							ToolTip.Tip="Import SSM"
-							IconSource="avares://MexManager/Assets/Common/icon_package.png"
-							Click="ReplaceSSM_Click"/>
+							Text="SSM"
+							IconSource="avares://MexManager/Assets/Common/icon_package.png">
+							<MenuItem
+								Header="Import"
+								ToolTip.Tip="Imports all sounds from an SSM file"
+								Click="ImportSSM_Click">
+								<MenuItem.Icon>
+									<Image Source="avares://MexManager/Assets/Common/file_import.png"/>
+								</MenuItem.Icon>
+							</MenuItem>
+							<MenuItem
+								Header="Export"
+								ToolTip.Tip="Exports all sounds to an SSM file"
+								Click="ExportSSM_Click">
+								<MenuItem.Icon>
+									<Image Source="avares://MexManager/Assets/Common/file_export.png"/>
+								</MenuItem.Icon>
+							</MenuItem>
+							<MenuItem
+								Header="Replace"
+								ToolTip.Tip="Replace's all sounds with sounds from an SSM file"
+								Click="ReplaceSSM_Click">
+								<MenuItem.Icon>
+									<Image Source="avares://MexManager/Assets/Common/icon_replace.png"/>
+								</MenuItem.Icon>
+							</MenuItem>
+						</controls:IconMenuItem>
 					</Menu>
 					<DockPanel>
 						<ScrollViewer DockPanel.Dock="Left">

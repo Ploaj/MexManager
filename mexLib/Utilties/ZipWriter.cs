@@ -1,5 +1,6 @@
 ﻿using mexLib.AssetTypes;
 using System.IO.Compression;
+using System.Text.Json;
 
 namespace mexLib.Utilties
 {
@@ -12,10 +13,17 @@ namespace mexLib.Utilties
         /// 
         /// </summary>
         /// <param name="zipPath"></param>
-        public ZipWriter(string zipPath)
+        public ZipWriter(Stream stream)
         {
-            _fileStream = new FileStream(zipPath, FileMode.Create);
+            _fileStream = stream;
             _zipArchive = new ZipArchive(_fileStream, ZipArchiveMode.Create, true);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="zipPath"></param>
+        public ZipWriter(string zipPath) : this(new FileStream(zipPath, FileMode.Create))
+        {
         }
         /// <summary>
         /// 
@@ -60,6 +68,15 @@ namespace mexLib.Utilties
             var zipArchiveEntry = _zipArchive.CreateEntry(fileName, CompressionLevel.Fastest);
             using var zipStream = zipArchiveEntry.Open();
             zipStream.Write(data, 0, data.Length);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="o"></param>
+        public void WriteAsJson(string fileName, object o)
+        {
+            Write(fileName, MexJsonSerializer.Serialize(o).ToArray().Select(e => (byte)e).ToArray());
         }
         /// <summary>
         /// 

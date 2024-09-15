@@ -26,6 +26,7 @@
     <None Remove="Assets\Common\icon_duplicate.png" />
     <None Remove="Assets\Common\icon_edit.png" />
     <None Remove="Assets\Common\icon_export.png" />
+    <None Remove="Assets\Common\icon_file.png" />
     <None Remove="Assets\Common\icon_hamburger.png" />
     <None Remove="Assets\Common\icon_import_music.png" />
     <None Remove="Assets\Common\icon_minus.png" />
