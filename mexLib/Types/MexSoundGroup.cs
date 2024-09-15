@@ -2,6 +2,7 @@
 using MeleeMedia.Audio;
 using mexLib.Attributes;
 using mexLib.MexScubber;
+using mexLib.Utilties;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
@@ -42,17 +43,19 @@ namespace mexLib.Types
     public class MexSoundGroup : MexReactiveObject
     {
         private string _name = "";
-        [Category("General"), DisplayName("Name")]
+        [Category("General")]
+        [DisplayName("Name")]
         public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
 
-        [Category("General"), DisplayName("File")]
-        [MexFilePathValidator(MexFilePathType.Audio)]
+        [Category("General")]
+        [DisplayName("FileName")]
         [ReadOnly(true)]
         public string FileName { get; set; } = "";
 
         [Browsable(false)]
         public uint GroupFlags { get; set; }
 
+        [Category("General")]
         [JsonIgnore]
         public MexSoundGroupGroup Group
         {
@@ -60,6 +63,7 @@ namespace mexLib.Types
             set => GroupFlags = GroupFlags & ~0xFF000000 | ((uint)value & 0xFF) << 24;
         }
 
+        [Category("General")]
         [JsonIgnore]
         public MexSoundGroupType Type
         {
@@ -67,6 +71,7 @@ namespace mexLib.Types
             set => GroupFlags = (uint)(GroupFlags & ~0x00FF0000 | ((uint)value & 0xFF) << 16);
         }
 
+        [Category("General")]
         [JsonIgnore]
         public MexSoundGroupSubType SubType
         {
@@ -74,6 +79,7 @@ namespace mexLib.Types
             set => GroupFlags = (uint)(GroupFlags & ~0x0000FF00 | ((uint)value & 0xFF) << 8);
         }
 
+        [Category("General")]
         [JsonIgnore]
         [DisplayName("Mushroom Script Offset")]
         public byte Mushroom
@@ -174,6 +180,69 @@ namespace mexLib.Types
                 Sounds.Add(new MexSound() { Name = $"Sound_{index++:D3}", DSP = s });
 
             OnPropertyChanged(nameof(Sounds));
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="group"></param>
+        public void CopyFrom(MexSoundGroup group)
+        {
+            if (Scripts != null &&
+                group.Scripts != null)
+            {
+                Scripts.Clear();
+                foreach (var s in group.Scripts)
+                {
+                    Scripts.Add(new SEMBankScript()
+                    {
+                        SFXID = s.SFXID,
+                        Name = s.Name,
+                        Codes = s.Codes.Select(e => new SEMCode(e.Pack())).ToList()
+                    });
+                }
+            }
+
+            Sounds.Clear();
+            foreach (var s in group.Sounds)
+            {
+                Sounds.Add(new MexSound()
+                {
+                    Name = s.Name,
+                    DSP = CloneDSP(s.DSP),
+                });
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        private DSP? CloneDSP(DSP? source)
+        {
+            if (source == null) return null;
+
+            return new DSP()
+            {
+                Frequency = source.Frequency,
+                LoopSound = source.LoopSound,
+                LoopPointMilliseconds = source.LoopPointMilliseconds,
+                Channels = source.Channels.Select(e => new DSPChannel()
+                {
+                    Format = e.Format,
+                    COEF = e.COEF,
+                    Data = (byte[])e.Data.Clone(),
+                    LoopFlag = e.LoopFlag,
+                    Gain = e.Gain,
+                    InitialPredictorScale = e.InitialPredictorScale,
+                    InitialSampleHistory1 = e.InitialSampleHistory1,
+                    InitialSampleHistory2 = e.InitialSampleHistory2,
+                    LoopPredictorScale = e.LoopPredictorScale,
+                    LoopSampleHistory1 = e.LoopSampleHistory1,
+                    LoopSampleHistory2 = e.LoopSampleHistory2,
+                    LoopStart = e.LoopStart,
+                    NibbleCount = e.NibbleCount,
+                }).ToList()
+            };
         }
     }
 }

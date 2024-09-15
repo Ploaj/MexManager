@@ -14,6 +14,8 @@ public partial class PropertyGridPopup : Window
     /// </summary>
     private PropertyGrid? PropertyGridItem => this.FindControl<PropertyGrid>("PropertyGrid");
 
+    private Button? FindConfirmButton => this.FindControl<Button>("ConfirmButton");
+
     /// <summary>
     /// 
     /// </summary>
@@ -32,10 +34,13 @@ public partial class PropertyGridPopup : Window
     /// 
     /// </summary>
     /// <param name="o"></param>
-    public void SetObject(object? o)
+    public void SetObject(string title, string confirm_text, object? o)
     {
-        if (PropertyGridItem == null)
+        if (PropertyGridItem == null || FindConfirmButton == null)
             return;
+
+        Title = title;
+        FindConfirmButton.Content = confirm_text;
 
         PropertyGridItem.DataContext = o;
     }

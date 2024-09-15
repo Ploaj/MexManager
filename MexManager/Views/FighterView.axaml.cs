@@ -1,11 +1,16 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using mexLib;
+using mexLib.Attributes;
 using mexLib.Types;
 using mexLib.Utilties;
 using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
+using PropertyModels.ComponentModel;
+using PropertyModels.ComponentModel.DataAnnotations;
+using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 
@@ -20,6 +25,26 @@ public partial class FighterView : UserControl
     {
         InitializeComponent();
     }
+    public class AddFighterOptions : ReactiveObject
+    {
+        [Category("Fighter")]
+        [DisplayName("Use Fighter Base")]
+        [ConditionTarget]
+        public bool UseFighterBase { get; set; }
+
+        [DisplayName("Fighter Base")]
+        [VisibilityPropertyCondition(nameof(UseFighterBase), true)]
+        [MexLink(MexLinkType.Fighter)]
+        public int FighterBase { get; set; }
+
+        // TODO: create soundbank
+
+        // TODO: convert sound ids to mex
+
+        // TODO: convert effect ids to mex
+
+        // TODO: extract and create demo files ftDemoIntroMotionFile
+    }
     /// <summary>
     /// 
     /// </summary>
@@ -27,17 +52,31 @@ public partial class FighterView : UserControl
     /// <param name="e"></param>
     private async void AddFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        var popup = new PropertyGridPopup();
+        var options = new AddFighterOptions();
+        popup.SetObject("Add Fighter", "Confirm", options);
+
+        if (App.MainWindow != null)
+        {
+            await popup.ShowDialog(App.MainWindow);
+
+            if (popup.Confirmed)
+            {
+
+            }
+        }
+
         // add new fighter
-        var addfighter = Global.Workspace?.Project.AddNewFighter(new MexFighter());
-        if (addfighter == null)
-        {
-            await MessageBox.Show("Failed to add new fighter\nNo workspace is currently loaded.", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
-        }
-        else if (addfighter == false)
-        {
-            await MessageBox.Show("Failed to add new fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
-        }
-        FighterList.RefreshList();
+        //var addfighter = Global.Workspace?.Project.AddNewFighter(new MexFighter());
+        //if (addfighter == null)
+        //{
+        //    await MessageBox.Show("Failed to add new fighter\nNo workspace is currently loaded.", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
+        //}
+        //else if (addfighter == false)
+        //{
+        //    await MessageBox.Show("Failed to add new fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
+        //}
+        //FighterList.RefreshList();
     }
     /// <summary>
     /// 

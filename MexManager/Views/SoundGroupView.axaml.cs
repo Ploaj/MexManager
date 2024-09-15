@@ -10,7 +10,11 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using Avalonia.Platform.Storage;
-using Avalonia.Media.TextFormatting.Unicode;
+using PropertyModels.ComponentModel;
+using System.ComponentModel;
+using PropertyModels.ComponentModel.DataAnnotations;
+using mexLib.Attributes;
+using System.Threading.Tasks;
 
 namespace MexManager.Views;
 
@@ -337,10 +341,8 @@ public partial class SoundGroupView : UserControl
                 return;
 
             var check = await MessageBox.Show(
-                $"Are you sure you want to\n" +
-                $"replace all sounds with sounds\n" +
-                $"from \"{Path.GetFileName(file)}\"?", 
-                "Replace Sounds", 
+                $"Import and Replace all\nwith \"{Path.GetFileName(file)}\"?",
+                "Import/Replace Sounds", 
                 MessageBox.MessageBoxButtons.YesNoCancel);
 
             if (check != MessageBox.MessageBoxResult.Yes)
@@ -370,11 +372,131 @@ public partial class SoundGroupView : UserControl
     /// <summary>
     /// 
     /// </summary>
+    public class AddGroupOptions : ReactiveObject
+    {
+        public enum SoundGroupPresets
+        {
+            Fighter,
+            Stage,
+            Scene,
+            Constant,
+        }
+
+        [Category("Options")]
+        public string Name
+        {
+            get => _name; 
+            set
+            {
+                _name = value;
+                FileName = FileIO.SanitizeFilename($"{_name.ToLower()}.ssm");
+                RaisePropertyChanged(nameof(FileName));
+            }
+        }
+        private string _name = "New";
+
+        [Category("Options")]
+        public string FileName { get; internal set; } = "new.ssm";
+
+        [Category("Options")]
+        [DisplayName("Type Preset")]
+        public SoundGroupPresets TypePresets { get; set; } = SoundGroupPresets.Fighter;
+
+        [Category("Options")]
+        [DisplayName("Use Base Group")]
+        [ConditionTarget]
+        public bool CopySoundsAndScripts { get; set; } = false;
+
+        [Category("Options")]
+        [DisplayName("Base Group")]
+        [VisibilityPropertyCondition(nameof(CopySoundsAndScripts), true)]
+        [MexLink(MexLinkType.Sound)]
+        public int SourceGroup { get; set; }
+
+        public async Task<MexSoundGroup?> CreateSoundGroup()
+        {
+            if (Global.Workspace == null)
+                return null;
+
+            if (Global.Workspace.FileManager.Exists(Global.Workspace.GetFilePath($"audio\\us\\{FileName}")))
+            {
+                await MessageBox.Show(
+                    $"File \"{FileName}\" already exists\nPlease choose another name!",
+                    "Create Sound Group",
+                    MessageBox.MessageBoxButtons.Ok);
+                return null;
+            }
+
+            var group = new MexSoundGroup()
+            {
+                Name = Name,
+                FileName = FileName,
+                Scripts = new(),
+            };
+
+            if (CopySoundsAndScripts)
+            {
+                var source = Global.Workspace.Project.SoundGroups[SourceGroup];
+                group.CopyFrom(source);
+            }
+
+            switch (TypePresets)
+            {
+                case SoundGroupPresets.Fighter:
+                    group.Group = MexSoundGroupGroup.Fighter;
+                    group.Type = MexSoundGroupType.Melee;
+                    group.SubType = MexSoundGroupSubType.Fighter;
+                    break;
+                case SoundGroupPresets.Stage:
+                    group.Group = MexSoundGroupGroup.Stage;
+                    group.Type = MexSoundGroupType.Melee;
+                    group.SubType = MexSoundGroupSubType.Stage;
+                    break;
+                case SoundGroupPresets.Scene:
+                    group.Group = MexSoundGroupGroup.Menu;
+                    group.Type = MexSoundGroupType.Narrator;
+                    group.SubType = MexSoundGroupSubType.Narrator;
+                    break;
+                case SoundGroupPresets.Constant:
+                    group.Group = MexSoundGroupGroup.Constant;
+                    group.Type = MexSoundGroupType.Constant;
+                    group.SubType = MexSoundGroupSubType.Constant;
+                    break;
+            }
+
+            return group;
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void AddGroup_Click(object? sender, RoutedEventArgs e)
+    private async void AddGroup_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: add sound group
+        if (Global.Workspace != null)
+        {
+            var popup = new PropertyGridPopup();
+            var options = new AddGroupOptions()
+            {
+                SourceGroup = GroupList.SelectedIndex >= 0 ? GroupList.SelectedIndex : 0,
+                CopySoundsAndScripts = GroupList.SelectedIndex >= 0,
+            };
+            popup.SetObject("Create Sound Group", "Confirm", options);
+
+            if (App.MainWindow != null)
+            {
+                await popup.ShowDialog(App.MainWindow);
+
+                if (popup.Confirmed)
+                {
+                    var group = await options.CreateSoundGroup();
+
+                    if (group != null)
+                        Global.Workspace.Project.AddSoundGroup(group);
+                }
+            }
+        }
     }
     /// <summary>
     /// 

@@ -1,6 +1,8 @@
 ﻿using Avalonia.Platform.Storage;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MexManager.Tools
@@ -140,6 +142,32 @@ namespace MexManager.Tools
 
             // Decode the path
             return filePath != null ? Uri.UnescapeDataString(filePath) : null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public static string SanitizeFilename(string filename)
+        {
+            // Define a regular expression to match invalid filename characters
+            string invalidChars = Regex.Escape(new string(Path.GetInvalidFileNameChars()));
+            string invalidRegex = $"[{invalidChars}]";
+
+            // Remove invalid characters
+            string sanitizedFilename = Regex.Replace(filename, invalidRegex, "");
+
+            // Optionally, you can also replace spaces with underscores or dashes to make it more URL-safe
+            sanitizedFilename = sanitizedFilename.Replace(" ", "_");
+
+            // Trim the filename to a reasonable length (e.g., 255 characters, common limit)
+            if (sanitizedFilename.Length > 255)
+            {
+                sanitizedFilename = sanitizedFilename[0..255];
+            }
+
+            // Return the sanitized filename
+            return sanitizedFilename;
         }
     }
 }

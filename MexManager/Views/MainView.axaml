@@ -86,6 +86,11 @@
 					<DockPanel>
 						<DockPanel
 								DockPanel.Dock="Left">
+							<TextBlock DockPanel.Dock="Top"
+									   FontSize="16"
+									   Margin="0 5 0 0"
+									   HorizontalAlignment="Center">Stages</TextBlock>
+							<Separator DockPanel.Dock="Top"></Separator>
 							<Menu
 								DockPanel.Dock="Top"
 								Height="48">
@@ -182,6 +187,11 @@
 					<DockPanel>
 						<DockPanel
 								DockPanel.Dock="Left">
+							<TextBlock DockPanel.Dock="Top"
+									   FontSize="16"
+									   Margin="0 5 0 0"
+									   HorizontalAlignment="Center">Series</TextBlock>
+							<Separator DockPanel.Dock="Top"></Separator>
 							<Menu
 								DockPanel.Dock="Top"
 								Height="48">
@@ -232,6 +242,11 @@
 					</TabItem.Header>
 					<DockPanel>
 						<DockPanel>
+							<TextBlock DockPanel.Dock="Top"
+									   FontSize="16"
+									   Margin="0 5 0 0"
+									   HorizontalAlignment="Center">Music</TextBlock>
+							<Separator DockPanel.Dock="Top"></Separator>
 							<Menu DockPanel.Dock="Top"
 								  Height="48">
 								<MenuItem ToolTip.Tip="Import"
@@ -337,6 +352,11 @@
 					<DockPanel>
 						<DockPanel
 								DockPanel.Dock="Left">
+							<TextBlock DockPanel.Dock="Top"
+									   FontSize="16"
+									   Margin="0 5 0 0"
+									   HorizontalAlignment="Center">Codes</TextBlock>
+							<Separator DockPanel.Dock="Top"></Separator>
 							<Menu
 								DockPanel.Dock="Top"
 								Height="48">

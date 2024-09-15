@@ -14,13 +14,18 @@
 
 	<DockPanel>
 		<DockPanel>
+			<TextBlock DockPanel.Dock="Top"
+					   FontSize="16"
+					   Margin="0 5 0 0"
+					   HorizontalAlignment="Center">Sound Groups</TextBlock>
+			<Separator DockPanel.Dock="Top"></Separator>
 			<Menu
 				DockPanel.Dock="Top"
 				Height="48">
 				<controls:IconMenuItem
-					Text="Add"
-					ToolTip.Tip="Add"
-					IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+					Text="Create"
+					ToolTip.Tip="Create"
+					IconSource="avares://MexManager/Assets/Common/icon_create.png"
 					Click="AddGroup_Click"/>
 				<controls:IconMenuItem
 					Text="Remove"

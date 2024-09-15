@@ -6,26 +6,26 @@
         Width="500" Height="500"
         WindowStartupLocation="CenterOwner">
 	<DockPanel>
+		
+		<!-- Confirm Button -->
+		<Button DockPanel.Dock="Bottom"
+				Name="ConfirmButton"
+				Content="Save Changes"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Center"
+				Margin="10"
+				Click="ConfirmButton_Click"/>
+		
 		<!-- PropertyGrid -->
-		<pgc:PropertyGrid Name="PropertyGrid"
+		<pgc:PropertyGrid
+                          DockPanel.Dock="Left"
+						  Name="PropertyGrid"
                           Margin="10"
-                          DockPanel.Dock="Top"
-						  Height="400"
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Stretch"
 						  AllowFilter="False"
+						  AllowQuickFilter="False"
 						  />
-		
-		<!-- Confirm Button -->
-		<StackPanel Orientation="Horizontal" 
-					DockPanel.Dock="Bottom" 
-					HorizontalAlignment="Right" 
-					Margin="10">
-			<!-- Confirm Button -->
-			<Button Content="Save Changes"
-					HorizontalAlignment="Center"
-					Margin="10"
-					Click="ConfirmButton_Click"/>
-		</StackPanel>
+
 	</DockPanel>
 </Window>

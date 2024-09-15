@@ -47,7 +47,7 @@ public partial class MainView : UserControl
     {
         var popup = new PropertyGridPopup();
 
-        popup.SetObject(App.Settings);
+        popup.SetObject("Application Settings", "Save Changes", App.Settings);
 
         if (App.MainWindow != null)
         {
