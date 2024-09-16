@@ -10,13 +10,11 @@ namespace MexManager.Tools
 {
     internal class ObjRasterizer
     {
-        private MexOBJAsset _asset;
+        private readonly MexOBJAsset _asset;
 
         private StreamGeometry? _render;
 
         private Size _renderSize;
-
-        private Size _renderOffset;
 
         /// <summary>
         /// 

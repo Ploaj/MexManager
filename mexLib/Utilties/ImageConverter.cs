@@ -3,6 +3,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Png;
+using System.Runtime.Intrinsics.X86;
 
 namespace mexLib.Utilties
 {
@@ -120,23 +121,31 @@ namespace mexLib.Utilties
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="png"></param>
-        /// <returns></returns>
-        public static MexImage FromPNG(Stream stream, GXTexFmt fmt, GXTlutFmt tlutFmt)
+        /// <param name="bgra"></param>
+        /// <param name="fmt"></param>
+        /// <param name="tlutFmt"></param>
+        private static void ProcessIA(ref byte[] bgra, GXTexFmt fmt, GXTlutFmt tlutFmt)
         {
-            using Image<Rgba32> image = Image.Load<Rgba32>(stream);
-            var bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
-
-            if (fmt == GXTexFmt.I4)
+            if (fmt == GXTexFmt.I4 || fmt == GXTexFmt.I8)
             {
-                for (int i = 0; i < bgra.Length; i+=4)
+                for (int i = 0; i < bgra.Length; i += 4)
                 {
                     bgra[i] = bgra[i + 3];
                     bgra[i + 1] = bgra[i + 3];
                     bgra[i + 2] = bgra[i + 3];
                 }
             }
-
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="png"></param>
+        /// <returns></returns>
+        public static MexImage FromPNG(Stream stream, GXTexFmt fmt, GXTlutFmt tlutFmt)
+        {
+            using Image<Rgba32> image = Image.Load<Rgba32>(stream);
+            var bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
+            ProcessIA(ref bgra, fmt, tlutFmt);
             return new MexImage(bgra, w, h, fmt, tlutFmt);
         }
         /// <summary>
@@ -152,6 +161,7 @@ namespace mexLib.Utilties
             if (image.Width > width || image.Height > height)
                 ResizeImage(image, width, height);
             var bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
+            ProcessIA(ref bgra, fmt, tlutFmt);
             return new MexImage(bgra, w, h, fmt, tlutFmt);
         }
         /// <summary>

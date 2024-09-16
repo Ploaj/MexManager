@@ -9,7 +9,7 @@ namespace MexManager.Controls
 {
     public class ObjControl : Control
     {
-        private ObjRasterizer Raster;
+        private readonly ObjRasterizer Raster;
 
         private Size _controlSize;
 
