@@ -393,11 +393,8 @@ public partial class MainView : UserControl
                 return;
 
             int currentIndex = SeriesList.SelectedIndex;
-            Global.Workspace.Project.RemoveSeries(series);
-            //if (series is MexAssetContainerBase con)
-            //{
-            //    con.RemoveAssets(Global.Workspace);
-            //}
+            Global.Workspace.Project.RemoveSeries(Global.Workspace, series);
+
             SeriesList.RefreshList();
             SeriesList.SelectedIndex = currentIndex;
         }

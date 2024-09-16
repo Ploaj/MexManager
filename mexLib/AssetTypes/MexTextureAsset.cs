@@ -1,5 +1,6 @@
 ﻿using HSDRaw.GX;
 using mexLib.Utilties;
+using System.IO.Compression;
 
 namespace mexLib.AssetTypes
 {
@@ -183,6 +184,27 @@ namespace mexLib.AssetTypes
             }
 
             return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="zip"></param>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public bool SetFromPackage(MexWorkspace workspace, ZipArchive zip, string filename)
+        {
+            var entry = zip.GetEntry(filename);
+
+            if (entry == null)
+                return false;
+
+            AssetFileName = null;
+
+            using var img = new MemoryStream(entry.Extract());
+            SetFromImageFile(workspace, img);
+
+            return true;
         }
     }
 }

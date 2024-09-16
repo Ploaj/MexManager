@@ -333,7 +333,7 @@ namespace mexLib.Types
             CostumesFromDOL(dol, index);
 
             // ext
-            LoadExtFromDol(dol, index);
+            LoadExtFromDol(index);
 
             // Functions
             Functions.FromDOL(dol, index);

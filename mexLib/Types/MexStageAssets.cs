@@ -1,11 +1,8 @@
 ﻿using mexLib.AssetTypes;
-using System;
-using System.Collections.Generic;
+using mexLib.Utilties;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
+using System.IO.Compression;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace mexLib.Types
 {
@@ -46,6 +43,24 @@ namespace mexLib.Types
                 Height = 56,
                 Format = HSDRaw.GX.GXTexFmt.I4,
             };
+
+            public void ToPackage(MexWorkspace workspace, ZipWriter zip)
+            {
+                zip.TryWriteTextureAsset(workspace, IconAsset, "icon.png");
+                zip.TryWriteTextureAsset(workspace, BannerAsset, "banner.png");
+            }
+
+            public void FromPackage(MexWorkspace workspace, ZipArchive zip)
+            {
+                IconAsset.SetFromPackage(workspace, zip, "icon.png");
+                BannerAsset.SetFromPackage(workspace, zip, "banner.png");
+            }
+
+            public void Delete(MexWorkspace workspace)
+            {
+                IconAsset.Delete(workspace);
+                BannerAsset.Delete(workspace);
+            }
         }
     }
 }

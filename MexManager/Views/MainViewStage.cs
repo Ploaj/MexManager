@@ -2,8 +2,9 @@
 using Avalonia.Interactivity;
 using mexLib.Types;
 using MexManager.Extensions;
+using MexManager.Tools;
 using MexManager.ViewModels;
-using System.Collections.ObjectModel;
+using System.IO;
 
 namespace MexManager.Views
 {
@@ -36,7 +37,7 @@ namespace MexManager.Views
                     }
                 };
 
-                if (Global.Workspace.Project.AddStage(stage))
+                if (Global.Workspace.Project.AddStage(stage) != -1)
                 {
                     StagesList.RefreshList();
                     StagesList.SelectedItem = stage;
@@ -65,7 +66,7 @@ namespace MexManager.Views
                     return;
 
                 var sel = StagesList.SelectedIndex;
-                if (Global.Workspace.Project.RemoveStage(StagesList.SelectedIndex))
+                if (Global.Workspace.Project.RemoveStage(Global.Workspace, StagesList.SelectedIndex))
                 {
                     StagesList.RefreshList();
                     StagesList.SelectedIndex = sel;
@@ -101,18 +102,49 @@ namespace MexManager.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        public void StageImportMenuItem_Click(object? sender, RoutedEventArgs args)
+        public async void StageImportMenuItem_Click(object? sender, RoutedEventArgs args)
         {
-            // TODO: stage import
+            if (Global.Workspace != null)
+            {
+                var file = await FileIO.TryOpenFile("Import Stage", "", FileIO.FilterZip);
+
+                if (file == null)
+                    return;
+
+                using var fs = new FileStream(file, FileMode.Open);
+                var res = MexStage.FromPackage(fs, Global.Workspace, out MexStage? stage);
+                if (res == null)
+                {
+                    if (stage != null)
+                    {
+                        StagesList.SelectedIndex = Global.Workspace.Project.AddStage(stage);
+                    }
+                }
+                else
+                {
+                    await MessageBox.Show(res.Message, "Import Stage Failed", MessageBox.MessageBoxButtons.Ok);
+                }
+            }
         }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        public void StageExportMenuItem_Click(object? sender, RoutedEventArgs args)
+        public async void StageExportMenuItem_Click(object? sender, RoutedEventArgs args)
         {
-            // TODO: stage export
+            if (Global.Workspace != null &&
+                DataContext is MainViewModel model &&
+                model.SelectedStage is MexStage stage)
+            {
+                var file = await FileIO.TrySaveFile("Export Stage", stage.Name, FileIO.FilterZip);
+
+                if (file == null)
+                    return;
+
+                using var fs = new FileStream(file, FileMode.Create);
+                MexStage.ToPackage(fs, Global.Workspace, stage);
+            }
         }
         /// <summary>
         /// 

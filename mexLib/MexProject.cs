@@ -167,17 +167,17 @@ namespace mexLib
         /// </summary>
         /// <param name="stage"></param>
         /// <returns></returns>
-        public bool AddStage(MexStage stage)
+        public int AddStage(MexStage stage)
         {
             Stages.Add(stage);
-            return true;
+            return Stages.Count - 1;
         }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="internalId"></param>
         /// <returns></returns>
-        public bool RemoveStage(int internalId)
+        public bool RemoveStage(MexWorkspace ws, int internalId)
         {
             // deny remove vanilla stages
             if (internalId <= 70)
@@ -185,6 +185,9 @@ namespace mexLib
 
             // get stages external id
             var externalId = MexStageIDConverter.ToExternalID(internalId);
+
+            //
+            Stages[internalId].Delete(ws);
 
             // remove stage
             Stages.RemoveAt(internalId);
@@ -275,14 +278,15 @@ namespace mexLib
         /// </summary>
         /// <param name="series"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public bool RemoveSeries(MexSeries series)
+        public bool RemoveSeries(MexWorkspace workspace, MexSeries series)
         {
             var index = Series.IndexOf(series);
 
-            // check if music is in project
+            // check if series is in project
             if (index == -1)
                 return false;
 
+            series.Delete(workspace);
             Series.Remove(series);
 
             // remove assets
@@ -311,10 +315,10 @@ namespace mexLib
         /// </summary>
         /// <param name="group"></param>
         /// <returns></returns>
-        public bool AddSoundGroup(MexSoundGroup group)
+        public int AddSoundGroup(MexSoundGroup group)
         {
             SoundGroups.Add(group);
-            return true;
+            return SoundGroups.Count - 1;
         }
         /// <summary>
         /// 

@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using mexLib.Attributes;
 using HSDRaw.Common;
 using mexLib.Installer;
+using mexLib.Utilties;
+using System.IO.Compression;
 
 namespace mexLib.Types
 {
@@ -26,6 +28,9 @@ namespace mexLib.Types
         public string? FileName { get => _fileName; set => _fileName = string.IsNullOrEmpty(value) ? null : value; }
 
         private string? _fileName;
+
+        [Category("0 - General"), DisplayName("Additional Files")]
+        public BindingList<string> AdditionalFiles { get; set; } = new BindingList<string>();
 
         [Category("1 - Sound"), DisplayName("Sound Bank")]
         [MexLink(MexLinkType.Sound)]
@@ -193,6 +198,140 @@ namespace mexLib.Types
 
             // collision materials
             CollisionMaterials = dol.GetStruct<uint>(0x803BF248 + 0x04, index, 0x08);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="workspace"></param>
+        /// <param name="stage"></param>
+        /// <param name="options"></param>
+        public static void ToPackage(Stream s, MexWorkspace workspace, MexStage stage)
+        {
+            using var zip = new ZipWriter(s);
+
+            // write stage
+            zip.WriteAsJson("stage.json", stage);
+
+            // write assets
+            stage.Assets.ToPackage(workspace, zip);
+
+            // write files
+            if (stage.FileName != null)
+                zip.TryWriteFile(workspace, stage.FileName, stage.FileName);
+
+            // write additional files
+            foreach (var f in stage.AdditionalFiles)
+                zip.TryWriteFile(workspace, f, f);
+
+            // write playlist music??
+
+            // write soundbank
+            if (stage.SoundBank != 55)
+            {
+                using var ms = new MemoryStream();
+                MexSoundGroup.ToPackage(workspace.Project.SoundGroups[stage.SoundBank], ms);
+                zip.Write("sound.zip", ms.ToArray());
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="workspace"></param>
+        /// <param name="stage"></param>
+        /// <returns></returns>
+        public static MexInstallerError? FromPackage(Stream s, MexWorkspace workspace, out MexStage? stage)
+        {
+            stage = null;
+            using ZipArchive zip = new(s);
+
+            // load group entry
+            {
+                var entry = zip.GetEntry("stage.json");
+                if (entry == null)
+                    return new MexInstallerError("\"stage.json\" was not found in zip");
+
+                // parse group entry
+                stage = MexJsonSerializer.Deserialize<MexStage>(entry.Extract());
+                if (stage == null)
+                    return new MexInstallerError("Error parsing \"stage.json\"");
+
+                // init stage data
+                stage.SoundBank = 55;
+
+                // init playlist
+                stage.Playlist = new MexPlaylist()
+                {
+                    Entries = 
+                    {
+                        new ()
+                        {
+                            MusicID = 0,
+                            ChanceToPlay = 50,
+                        }
+                    }
+                };
+
+                // load assets
+                stage.Assets.FromPackage(workspace, zip);
+            }
+
+            // load files
+            if (stage.FileName != null)
+            {
+                var stage_file = zip.GetEntry(stage.FileName);
+                if (stage_file != null)
+                {
+                    var fullPath = workspace.GetFilePath(stage.FileName);
+                    fullPath = workspace.FileManager.GetUniqueFilePath(fullPath);
+                    workspace.FileManager.Set(fullPath, stage_file.Extract());
+                    stage.FileName = Path.GetFileName(fullPath);
+                }
+            }
+
+            // additional files
+            foreach (var f in stage.AdditionalFiles)
+            {
+                var stage_file = zip.GetEntry(f);
+                if (stage_file != null)
+                {
+                    var fullPath = workspace.GetFilePath(f);
+                    fullPath = workspace.FileManager.GetUniqueFilePath(fullPath);
+                    workspace.FileManager.Set(fullPath, stage_file.Extract());
+                }
+            }
+
+            // load soundbank
+            {
+                var entry = zip.GetEntry("sound.zip");
+
+                if (entry != null)
+                {
+                    using var ms = new MemoryStream(entry.Extract());
+                    MexSoundGroup.FromPackage(workspace, ms, out MexSoundGroup? group);
+                    if (group != null)
+                    {
+                        stage.SoundBank = workspace.Project.AddSoundGroup(group);
+                    }
+                }
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ws"></param>
+        public void Delete(MexWorkspace ws)
+        {
+            if (FileName != null)
+                ws.FileManager.Remove(ws.GetFilePath(FileName));
+
+            foreach (var f in AdditionalFiles)
+                ws.FileManager.Remove(ws.GetFilePath(f));
+
+            Assets.Delete(ws);
         }
     }
 }

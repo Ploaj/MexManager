@@ -1,5 +1,9 @@
 ﻿using mexLib.AssetTypes;
+using mexLib.Installer;
+using mexLib.Utilties;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO.Compression;
 using System.Text.Json.Serialization;
 
 namespace mexLib.Types
@@ -12,14 +16,6 @@ namespace mexLib.Types
 
         [Browsable(false)]
         public MexPlaylist Playlist { get; set; } = new MexPlaylist();
-
-        //[Category("General"), DisplayName("Series Icon")]
-        //[MexTextureAsset]
-        //[MexTextureFormat(HSDRaw.GX.GXTexFmt.I4)]
-        //[MexTextureSize(80, 64)]
-        //[MexFilePathValidator(MexFilePathType.Assets)]
-        //public string Icon { get => _icon; set { _icon = value; } }
-        //private string _icon = "";
 
         [Browsable(false)]
         [JsonInclude]
@@ -36,22 +32,60 @@ namespace mexLib.Types
 
         // TODO: 3d emblem
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="ws"></param>
-        //public override void GenerateAssetPaths(MexWorkspace ws)
-        //{
-        //    Icon = GeneratePathIfNotExists(ws, Icon, "series", "icon", ".png");
-        //}
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="ws"></param>
-        //public override void RemoveAssets(MexWorkspace ws)
-        //{
-        //    RemoveTexAsset(ws, Icon);
-        //}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="workspace"></param>
+        /// <param name="stage"></param>
+        public static void ToPackage(Stream s, MexWorkspace workspace, MexSeries stage)
+        {
+            using var zip = new ZipWriter(s);
+
+            zip.WriteAsJson("stage.json", stage);
+            zip.TryWriteTextureAsset(workspace, stage.IconAsset, "icon.png");
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="workspace"></param>
+        /// <returns></returns>
+        public static MexInstallerError? FromPackage(Stream s, MexWorkspace workspace, out MexSeries? series)
+        {
+            series = null;
+            using ZipArchive zip = new(s);
+
+            {
+                var entry = zip.GetEntry("series.json");
+                if (entry == null)
+                    return new MexInstallerError("\"series.json\" was not found in zip");
+
+                // parse group entry
+                series = MexJsonSerializer.Deserialize<MexSeries>(entry.Extract());
+                if (series == null)
+                    return new MexInstallerError("Error parsing \"series.json\"");
+
+                // init playlist
+                series.Playlist = new MexPlaylist()
+                {
+                    Entries = new ObservableCollection<MexPlaylistEntry>()
+                };
+
+                //
+                series.IconAsset.SetFromPackage(workspace, zip, "icon.png");
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        public void Delete(MexWorkspace workspace)
+        {
+            IconAsset.Delete(workspace);
+        }
         /// <summary>
         /// 
         /// </summary>

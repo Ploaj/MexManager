@@ -235,7 +235,7 @@ namespace mexLib.Types
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        private DSP? CloneDSP(DSP? source)
+        private static DSP? CloneDSP(DSP? source)
         {
             if (source == null) return null;
 
@@ -265,7 +265,7 @@ namespace mexLib.Types
         /// <summary>
         /// 
         /// </summary>
-        public static void ToPackage(MexWorkspace workspace, MexSoundGroup group, Stream stream)
+        public static void ToPackage(MexSoundGroup group, Stream stream)
         {
             using var zip = new ZipWriter(stream);
             zip.WriteAsJson("group.json", group);

@@ -81,7 +81,7 @@ public partial class CSSEditorView : UserControl
     /// <param name="args"></param>
     public void UndoButton_Click(object? sender, RoutedEventArgs args)
     {
-        SelectScreen.Undo();
+        //SelectScreen.Undo();
     }
     /// <summary>
     /// 
@@ -90,7 +90,7 @@ public partial class CSSEditorView : UserControl
     /// <param name="args"></param>
     public void RedoButton_Click(object? sender, RoutedEventArgs args)
     {
-        SelectScreen.Redo();
+        //SelectScreen.Redo();
     }
     /// <summary>
     /// 

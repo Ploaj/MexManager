@@ -14,7 +14,6 @@ using PropertyModels.ComponentModel;
 using System.ComponentModel;
 using PropertyModels.ComponentModel.DataAnnotations;
 using mexLib.Attributes;
-using System.Threading.Tasks;
 using mexLib;
 
 namespace MexManager.Views;
@@ -429,57 +428,59 @@ public partial class SoundGroupView : UserControl
             set
             {
                 _name = value;
-                FileName = FileIO.SanitizeFilename($"{_name.ToLower()}.ssm");
-                RaisePropertyChanged(nameof(FileName));
+                File = FileIO.SanitizeFilename($"{_name.ToLower()}.ssm");
+                RaisePropertyChanged(nameof(File));
             }
         }
         private string _name = "New";
 
         [Category("Options")]
-        public string FileName { get; internal set; } = "new.ssm";
+        [DisplayName("File")]
+        [Browsable(false)]
+        public string File { get; internal set; } = "new.ssm";
 
         [Category("Options")]
-        [DisplayName("Type Preset")]
+        [DisplayName("Type")]
         public SoundGroupPresets TypePresets { get; set; } = SoundGroupPresets.Fighter;
 
         [Category("Options")]
-        [DisplayName("Import From Group")]
+        [DisplayName("Import From Existing")]
         [ConditionTarget]
         public bool CopySoundsAndScripts { get; set; } = false;
 
         [Category("Options")]
-        [DisplayName("Import Group")]
+        [DisplayName("Select Source Bank")]
         [VisibilityPropertyCondition(nameof(CopySoundsAndScripts), true)]
         [MexLink(MexLinkType.Sound)]
         public int SourceGroup { get; set; }
 
-        public async Task<MexSoundGroup?> CreateSoundGroup()
+        public MexSoundGroup? CreateSoundGroup()
         {
             if (Global.Workspace == null)
                 return null;
 
-            if (Global.Workspace.FileManager.Exists(Global.Workspace.GetFilePath($"audio\\us\\{FileName}")))
-            {
-                await MessageBox.Show(
-                    $"File \"{FileName}\" already exists\nPlease choose another name!",
-                    "Create Sound Group",
-                    MessageBox.MessageBoxButtons.Ok);
-                return null;
-            }
+            // get unique path
+            var uniquePath = Global.Workspace.FileManager.GetUniqueFilePath(Global.Workspace.GetFilePath($"audio\\us\\{File}"));
 
+            // generate group
             var group = new MexSoundGroup()
             {
                 Name = Name,
-                FileName = FileName,
+                FileName = Path.GetFileName(uniquePath),
                 Scripts = [],
             };
 
+            // optionally copy sounds and scripts
             if (CopySoundsAndScripts)
             {
                 var source = Global.Workspace.Project.SoundGroups[SourceGroup];
                 group.CopyFrom(source);
             }
 
+            // add new ssm to workspace
+            Global.Workspace.FileManager.Set(uniquePath, []);
+
+            // 
             switch (TypePresets)
             {
                 case SoundGroupPresets.Fighter:
@@ -522,7 +523,7 @@ public partial class SoundGroupView : UserControl
                 SourceGroup = GroupList.SelectedIndex >= 0 ? GroupList.SelectedIndex : 0,
                 CopySoundsAndScripts = GroupList.SelectedIndex >= 0,
             };
-            popup.SetObject("Create Sound Group", "Confirm", options);
+            popup.SetObject("Create SoundBank", "Confirm", options);
 
             if (App.MainWindow != null)
             {
@@ -530,7 +531,7 @@ public partial class SoundGroupView : UserControl
 
                 if (popup.Confirmed)
                 {
-                    var group = await options.CreateSoundGroup();
+                    var group = options.CreateSoundGroup();
 
                     if (group != null)
                         Global.Workspace.Project.AddSoundGroup(group);
@@ -629,7 +630,7 @@ public partial class SoundGroupView : UserControl
                 return;
 
             using var fs = new FileStream(file, FileMode.Create);
-            MexSoundGroup.ToPackage(Global.Workspace, group, fs);
+            MexSoundGroup.ToPackage(group, fs);
         }
     }
 }

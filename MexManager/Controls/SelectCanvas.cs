@@ -75,9 +75,9 @@ namespace MexManager.Controls
         public static readonly StyledProperty<bool> SwapModeProperty =
             AvaloniaProperty.Register<SelectCanvas, bool>(nameof(SwapMode));
 
-        private readonly static float HandWidth = 7.2f;
+        //private readonly static float HandWidth = 7.2f;
 
-        private readonly static float HandHeight = 9.6f;
+        //private readonly static float HandHeight = 9.6f;
 
         public double TemplateImageWidth
         {
@@ -140,11 +140,16 @@ namespace MexManager.Controls
 
         private class IconState
         {
-            public MexCharacterSelectIcon Icon;
+            public MexCharacterSelectIcon? Icon;
 
             public float X;
             public float Y;
             public float Z;
+
+            public IconState()
+            {
+                Icon = null;
+            }
 
             public IconState(MexCharacterSelectIcon icon)
             {
@@ -201,36 +206,36 @@ namespace MexManager.Controls
             get => Items.OfType<MexIconBase>().ToList();
         }
 
-        private void PushState(Stack<ObservableCollection<MexIconBase>> stack)
-        {
-            var iconsCopy = new ObservableCollection<MexIconBase>(Icons);
-            stack.Push(iconsCopy);
-        }
+        //private void PushState(Stack<ObservableCollection<MexIconBase>> stack)
+        //{
+        //    var iconsCopy = new ObservableCollection<MexIconBase>(Icons);
+        //    stack.Push(iconsCopy);
+        //}
 
-        public void Undo()
-        {
-            //if (_undoStack.Count > 0)
-            //{
-            //    PushState(_redoStack); // Save current state to redo stack
-            //    Icons = _undoStack.Pop(); // Restore state from undo stack
-            //}
-        }
+        //public void Undo()
+        //{
+        //    //if (_undoStack.Count > 0)
+        //    //{
+        //    //    PushState(_redoStack); // Save current state to redo stack
+        //    //    Icons = _undoStack.Pop(); // Restore state from undo stack
+        //    //}
+        //}
 
-        public void Redo()
-        {
-            //if (_redoStack.Count > 0)
-            //{
-            //    PushState(_undoStack); // Save current state to undo stack
-            //    Icons = _redoStack.Pop(); // Restore state from redo stack
-            //}
-        }
+        //public void Redo()
+        //{
+        //    //if (_redoStack.Count > 0)
+        //    //{
+        //    //    PushState(_undoStack); // Save current state to undo stack
+        //    //    Icons = _redoStack.Pop(); // Restore state from redo stack
+        //    //}
+        //}
 
-        public void BeginChange()
-        {
-            //Debug.WriteLine("Begin");
-            //PushState(_undoStack); // Save current state to undo stack
-            //_redoStack.Clear(); // Clear redo stack
-        }
+        //public void BeginChange()
+        //{
+        //    //Debug.WriteLine("Begin");
+        //    //PushState(_undoStack); // Save current state to undo stack
+        //    //_redoStack.Clear(); // Clear redo stack
+        //}
 
         public override void Render(DrawingContext context)
         {
@@ -392,13 +397,13 @@ namespace MexManager.Controls
         /// 
         /// </summary>
         /// <param name="context"></param>
-        private void DrawCursorHand(DrawingContext context)
-        {
-            var width = HandWidth * Properties.Zoom;
-            var height = HandHeight * Properties.Zoom;
-            var rect = new Rect((float)_cursorPosition.X - width / 2, (float)_cursorPosition.Y - height / 2, width, height);
-            context.DrawImage(BitmapManager.CSSHandPoint, rect);
-        }
+        //private void DrawCursorHand(DrawingContext context)
+        //{
+        //    var width = HandWidth * Properties.Zoom;
+        //    var height = HandHeight * Properties.Zoom;
+        //    var rect = new Rect((float)_cursorPosition.X - width / 2, (float)_cursorPosition.Y - height / 2, width, height);
+        //    context.DrawImage(BitmapManager.CSSHandPoint, rect);
+        //}
         /// <summary>
         /// 
         /// </summary>
@@ -433,7 +438,7 @@ namespace MexManager.Controls
             if (Icons == null)
                 return;
 
-            BeginChange(); // Begin a new change for undo/redo
+            //BeginChange(); // Begin a new change for undo/redo
 
             if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             {

@@ -38,7 +38,7 @@ namespace mexLib.Types
         /// </summary>
         /// <param name="dol"></param>
         /// <param name="index"></param>
-        private void LoadExtFromDol(MexDOL dol, uint index)
+        private void LoadExtFromDol(uint index)
         {
             // game and watch colors
             if (index == 24)
