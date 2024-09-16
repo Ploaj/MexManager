@@ -83,4 +83,10 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\BannerEditor.axaml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\ProgressWindow.axaml.cs">
+      <DependentUpon>ProgressWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

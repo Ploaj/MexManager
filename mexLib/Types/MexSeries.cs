@@ -30,7 +30,15 @@ namespace mexLib.Types
             Format = HSDRaw.GX.GXTexFmt.I4,
         };
 
-        // TODO: 3d emblem
+        [Browsable(false)]
+        [JsonInclude]
+        public string? Model { get => ModelAsset.AssetFileName; internal set => ModelAsset.AssetFileName = value; }
+
+        [JsonIgnore]
+        public MexOBJAsset ModelAsset { get; set; } = new MexOBJAsset()
+        {
+            AssetPath = "series/emblem",
+        };
 
         /// <summary>
         /// 
@@ -44,6 +52,7 @@ namespace mexLib.Types
 
             zip.WriteAsJson("stage.json", stage);
             zip.TryWriteTextureAsset(workspace, stage.IconAsset, "icon.png");
+            // TODO: write obj asset zip.Write("icon.obj", stage.ModelAsset.get);
         }
         /// <summary>
         /// 
@@ -74,6 +83,7 @@ namespace mexLib.Types
 
                 //
                 series.IconAsset.SetFromPackage(workspace, zip, "icon.png");
+                series.ModelAsset.SetFromPackage(workspace, zip, "icon.obj");
             }
 
             return null;
@@ -85,6 +95,7 @@ namespace mexLib.Types
         public void Delete(MexWorkspace workspace)
         {
             IconAsset.Delete(workspace);
+            ModelAsset.Delete(workspace);
         }
         /// <summary>
         /// 

@@ -126,6 +126,17 @@ namespace mexLib.Utilties
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(stream);
             var bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
+
+            if (fmt == GXTexFmt.I4)
+            {
+                for (int i = 0; i < bgra.Length; i+=4)
+                {
+                    bgra[i] = bgra[i + 3];
+                    bgra[i + 1] = bgra[i + 3];
+                    bgra[i + 2] = bgra[i + 3];
+                }
+            }
+
             return new MexImage(bgra, w, h, fmt, tlutFmt);
         }
         /// <summary>

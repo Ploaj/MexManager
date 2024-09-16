@@ -8,6 +8,7 @@ using mexLib.MexScubber;
 using mexLib.Types;
 using mexLib.Utilties;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace mexLib
@@ -472,6 +473,27 @@ namespace mexLib
             }
 
             return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        public void ExportISO(string file, ProgressChangedEventHandler args)
+        {
+            using var iso = new GCISO(
+                FileManager.Get(GetSystemPath("boot.bin")),
+                FileManager.Get(GetSystemPath("bi2.bin")),
+                FileManager.Get(GetSystemPath("apploader.img")),
+                FileManager.Get(GetSystemPath("main.dol")));
+
+            var root = GetFilePath("");
+            foreach (var f in Directory.GetFiles(root, "*", SearchOption.AllDirectories))
+            {
+                iso.AddFile(f[root.Length..], f);
+            }
+
+            iso.SetAddressTable(MeleeFilelist.FileList);
+            iso.Rebuild(file, false, args);
         }
     }
 }

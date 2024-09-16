@@ -438,4 +438,29 @@ public partial class MainView : UserControl
             CodesList.SelectedIndex = currentIndex;
         }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void SeriesGenerateIconButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            SeriesList.SelectedItem is MexSeries series)
+        {
+            var obj = series.ModelAsset.GetOBJFile(Global.Workspace);
+
+            if (obj == null)
+                return;
+
+            var raster = new ObjRasterizer(series.ModelAsset);
+            var png = raster.SaveDrawingToPng(80, 64);
+
+            using var stream = new MemoryStream(png);
+            series.IconAsset.SetFromImageFile(Global.Workspace, stream);
+
+            SeriesList.SelectedItem = null;
+            SeriesList.SelectedItem = series;
+        }
+    }
 }

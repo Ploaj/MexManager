@@ -9,6 +9,14 @@ namespace MexManager.Tools
 {
     public static class FileIO
     {
+        public static readonly FilePickerFileType[] FilterISO =
+        [
+            new ("Gamecube ISO")
+            {
+                Patterns = [ "*.iso" ],
+            },
+        ];
+
         public static readonly FilePickerFileType[] FilterAll =
         [
             new ("All Files")

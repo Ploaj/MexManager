@@ -26,10 +26,14 @@
 						  HotKey="Ctrl+O"
 						  InputGesture="Ctrl+O"
 						  Click="OnOpenClick"/>
+				<Separator/>
 				<MenuItem Header="_Save" 
 						  HotKey="Ctrl+S"
 						  InputGesture="Ctrl+S"
 						  Command="{Binding SaveCommand}"/>
+				<MenuItem Header="_Export ISO"
+						Command="{Binding ExportISOCommand}"/>
+				<Separator/>
 				<MenuItem Header="_Close Workspace"
 						  Command="{Binding CloseCommand}"/>
 				<Separator/>
@@ -209,18 +213,21 @@
 									IconSource="avares://MexManager/Assets/Common/icon_delete.png"
 									Click="SeriesList_Remove"/>
 							</Menu>
-							<ListBox 
-								DockPanel.Dock="Top"
-								Name="SeriesList"
-								Width="280"
-								ItemsSource="{Binding Series}"
-								ItemTemplate="{StaticResource IndexedItemTemplate}"
-								SelectedItem="{Binding SelectedSeries, Mode=TwoWay}"/>
+							<ScrollViewer>
+								<ListBox
+									DockPanel.Dock="Top"
+									Name="SeriesList"
+									Width="280"
+									ItemsSource="{Binding Series}"
+									ItemTemplate="{StaticResource IndexedItemTemplate}"
+									SelectedItem="{Binding SelectedSeries, Mode=TwoWay}"/>
+							</ScrollViewer>
 						</DockPanel>
 						<TabControl>
 							<TabItem Header="General">
 								<ScrollViewer>
-									<pgc:PropertyGrid
+									<StackPanel Orientation="Vertical">
+										<pgc:PropertyGrid
 										DockPanel.Dock="Left"
 										VerticalAlignment="Top"
 										AllowFilter="False"
@@ -228,6 +235,10 @@
 										ShowStyle="Builtin"
 										Margin="4"
 										DataContext="{Binding SelectedSeries}"/>
+										<Button
+											Content="Generate Icon from Model"
+											Click="SeriesGenerateIconButton_Click"/>
+									</StackPanel>
 								</ScrollViewer>
 							</TabItem>
 							<TabItem Header="Playlist">

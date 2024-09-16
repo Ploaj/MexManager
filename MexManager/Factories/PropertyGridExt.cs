@@ -9,6 +9,7 @@ namespace MexManager.Views
         static PropertyGridExt()
         {
             CellEditFactoryService.Default.AddFactory(new MexTextureAssetFactory());
+            CellEditFactoryService.Default.AddFactory(new MexObjFactory());
             CellEditFactoryService.Default.AddFactory(new MexReferenceCellFactory());
             CellEditFactoryService.Default.AddFactory(new MediaImageFactory());
             CellEditFactoryService.Default.AddFactory(new HexCellFactory());

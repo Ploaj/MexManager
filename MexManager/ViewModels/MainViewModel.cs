@@ -5,6 +5,8 @@ using mexLib.Types;
 using System.Diagnostics;
 using MexManager.Views;
 using GCILib;
+using MexManager.Tools;
+using System.ComponentModel;
 
 namespace MexManager.ViewModels;
 
@@ -15,6 +17,7 @@ public class MainViewModel : ViewModelBase
     public ICommand WorkspaceLoadedCommand { get; }
     public ICommand LaunchCommand { get; }
     public ICommand EditBannerCommand { get; }
+    public ICommand ExportISOCommand { get; }
 
     public SoundGroupModel SoundViewModel { get; } = new SoundGroupModel();
 
@@ -186,6 +189,7 @@ public class MainViewModel : ViewModelBase
         CloseCommand = new RelayCommand(CloseMenuItem_Click, IsWorkSpaceLoaded);
         WorkspaceLoadedCommand = new RelayCommand((e) => { }, IsWorkSpaceLoaded);
         LaunchCommand = new RelayCommand(LaunchMenuItem_Click, IsDolphinPathSet);
+        ExportISOCommand = new RelayCommand(ExportISO_Click, IsDolphinPathSet);
 
         EditBannerCommand = new RelayCommand(async (s) =>
         {
@@ -312,5 +316,50 @@ public class MainViewModel : ViewModelBase
     public static void LaunchMenuItem_Click(object? parameter)
     {
         Global.LaunchGameInDolphin();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public static async void ExportISO_Click(object? parameter)
+    {
+        if (Global.Workspace == null ||
+            App.MainWindow == null)
+            return;
+
+        var res = await MessageBox.Show("Save Changes before exporting?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
+
+        var file = await FileIO.TrySaveFile("Export ISO", "game.iso", FileIO.FilterISO);
+        if (file == null)
+            return;
+
+        if (res == MessageBox.MessageBoxResult.Yes)
+            Global.SaveWorkspace();
+
+
+        ProgressWindow progressWindow = new ();
+        BackgroundWorker backgroundWorker = new ()
+        {
+            WorkerReportsProgress = true,
+        };
+
+        backgroundWorker.DoWork += (s, e) =>
+        {
+            Global.Workspace.ExportISO(file, (r, t)=>
+            {
+                Debug.WriteLine(t.ProgressPercentage);
+                backgroundWorker.ReportProgress(t.ProgressPercentage);
+            });
+        };
+        backgroundWorker.ProgressChanged += (s, e) =>
+        {
+            progressWindow.UpdateProgress(s, e);
+        };
+
+        // Start the BackgroundWorker task
+        backgroundWorker.RunWorkerAsync();
+
+        // Create and show the progress window
+        await progressWindow.ShowDialog(App.MainWindow);
+
     }
 }

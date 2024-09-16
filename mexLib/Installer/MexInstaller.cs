@@ -401,6 +401,21 @@ namespace mexLib.Installer
                     workspace.Project.ReservedAssets.RstNoContestAsset.SetFromMexImage(workspace, new MexImage(big_banners[(int)key.Value]));
             }
 
+            // extract 3d series emblems
+            var flmsce = file["flmsce"].Data as HSD_SOBJ;
+            if (flmsce == null)
+                return new MexInstallerError("Error reading GmRst.usd");
+            var emblem_joints = flmsce.JOBJDescs[0].RootJoint.TreeList[5].Children;
+
+            for (int i = 0; i < emblem_joints.Length; i++)
+            {
+                if (i < workspace.Project.Series.Count)
+                {
+                    workspace.Project.Series[i].ModelAsset.SetFromDObj(workspace, emblem_joints[i].Dobj);
+                }
+            }
+
+
             return null;
         }
         /// <summary>

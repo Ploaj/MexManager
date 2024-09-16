@@ -2,26 +2,14 @@
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform.Storage;
 using Avalonia.PropertyGrid.Controls;
 using Avalonia.PropertyGrid.Controls.Factories;
-using Avalonia.PropertyGrid.Utils;
 using MeleeMedia.Video;
 using mexLib.Attributes;
-using MexManager.Converters;
 using MexManager.Tools;
-using Octokit;
-using PropertyModels.ComponentModel;
 using PropertyModels.Extensions;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MexManager.Factories
 {
