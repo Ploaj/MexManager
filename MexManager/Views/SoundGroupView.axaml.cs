@@ -397,7 +397,7 @@ public partial class SoundGroupView : UserControl
     /// <param name="e"></param>
     private void AddCommand_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: add command
+        // TODO: add sound command
     }
     /// <summary>
     /// 
@@ -406,7 +406,7 @@ public partial class SoundGroupView : UserControl
     /// <param name="e"></param>
     private void RemoveCommand_Click(object? sender, RoutedEventArgs e)
     {
-        // TODO: remove command
+        // TODO: remove sound command
     }
     /// <summary>
     /// 

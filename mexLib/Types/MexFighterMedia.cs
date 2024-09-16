@@ -18,6 +18,14 @@ namespace mexLib.Types
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
 
+            internal void Delete(MexWorkspace workspace)
+            {
+                workspace.FileManager.Remove(workspace.GetFilePath(EndClassicFile));
+                workspace.FileManager.Remove(workspace.GetFilePath(EndAdventureFile));
+                workspace.FileManager.Remove(workspace.GetFilePath(EndAllStarFile));
+                workspace.FileManager.Remove(workspace.GetFilePath(EndMovieFile));
+            }
+
             private string _endClassicFile = "";
             private string _endAdventureFile = "";
             private string _endAllStarFile = "";

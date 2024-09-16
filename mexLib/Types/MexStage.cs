@@ -198,6 +198,15 @@ namespace mexLib.Types
 
             // collision materials
             CollisionMaterials = dol.GetStruct<uint>(0x803BF248 + 0x04, index, 0x08);
+
+            // install additional stage files
+            if (index == 16) //  (Pokemon Stadium)
+            {
+                AdditionalFiles.Add("GrPs1.dat");
+                AdditionalFiles.Add("GrPs2.dat");
+                AdditionalFiles.Add("GrPs3.dat");
+                AdditionalFiles.Add("GrPs4.dat");
+            }
         }
         /// <summary>
         /// 
@@ -314,6 +323,14 @@ namespace mexLib.Types
                     {
                         stage.SoundBank = workspace.Project.AddSoundGroup(group);
                     }
+                    else
+                    {
+                        stage.SoundBank = 55;
+                    }
+                }
+                else
+                {
+                    stage.SoundBank = 55;
                 }
             }
 

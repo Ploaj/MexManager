@@ -249,6 +249,8 @@ namespace mexLib
 
             Debug.WriteLine($"Generate MnSlMap {sw.Elapsed}");
 
+            // TODO: generate result screen
+
             // generate sem/smst/ssm
             sw.Restart();
             SaveSoundData();

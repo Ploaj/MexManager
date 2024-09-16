@@ -1,13 +1,16 @@
 ﻿using mexLib.Attributes;
+using mexLib.Installer;
+using mexLib.Utilties;
 using System.ComponentModel;
+using System.IO.Compression;
 
 namespace mexLib.Types
 {
     public partial class MexFighter
     {
-
         [Browsable(false)]
         public FighterFiles Files { get; set; } = new FighterFiles();
+
         public class FighterFiles
         {
             [Category("0 - Fighter Data"), DisplayName("FighterData FileName"), Description("File containing fighter's data")]
@@ -67,6 +70,35 @@ namespace mexLib.Types
 
             [Category("4 - Kirby Data"), DisplayName("Kirby Effect Symbol"), Description("Symbol in Kirby effect file to load")]
             public string KirbyEffectSymbol { get; set; } = "";
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="workspace"></param>
+            public void Delete(MexWorkspace workspace)
+            {
+                // TODO: delete fighter files
+            }
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="workspace"></param>
+            /// <param name="zip"></param>
+            public MexInstallerError? ToPackage(MexWorkspace workspace, ZipWriter zip)
+            {
+                // TODO: fighter files to package
+                return null;
+            }
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="workspace"></param>
+            /// <param name="zip"></param>
+            public MexInstallerError? FromPackage(MexWorkspace workspace, ZipArchive zip)
+            {
+                // TODO: fighter files from package
+                return null;
+            }
         }
     }
 }

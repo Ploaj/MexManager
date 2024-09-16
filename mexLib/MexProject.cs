@@ -128,13 +128,14 @@ namespace mexLib
         /// 
         /// </summary>
         /// <returns></returns>
-        public bool RemoveFighter(int internalId)
+        public bool RemoveFighter(MexWorkspace workspace, int internalId)
         {
             if (!MexFighterIDConverter.IsMexFighter(internalId, Fighters.Count))
                 return false;
 
             var externalId = MexFighterIDConverter.ToExternalID(internalId, Fighters.Count);
 
+            Fighters[internalId].Delete(workspace);
             Fighters.RemoveAt(internalId);
 
             // fighter

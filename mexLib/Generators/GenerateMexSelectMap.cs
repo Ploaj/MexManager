@@ -3,7 +3,6 @@ using HSDRaw.Common;
 using HSDRaw.Melee.Mn;
 using HSDRaw;
 using HSDRaw.MEX.Stages;
-using HSDRaw.MEX.Menus;
 
 namespace mexLib.Generators
 {

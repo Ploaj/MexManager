@@ -2,11 +2,9 @@
 using HSDRaw.Common;
 using HSDRaw.Melee;
 using HSDRaw.Melee.Mn;
-using HSDRaw.MEX.Misc;
 using HSDRaw.MEX.Scenes;
 using MeleeMedia.Audio;
 using mexLib.MexScubber;
-using System.Drawing;
 using mexLib.Types;
 
 namespace mexLib.Installer
@@ -135,6 +133,9 @@ namespace mexLib.Installer
             sss.FromDOL(dol);
             project.StageSelects.Add(sss);
             InstallSSS(workspace);
+
+            // extract result screen
+            InstallResultScreen(workspace);
 
             return null;
         }
@@ -324,6 +325,80 @@ namespace mexLib.Installer
 
                 // set banner
                 stage.Assets.BannerAsset.SetFromMexImage(workspace, new MexImage(nameTOBJs[icon.PreviewID]));
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <returns></returns>
+        private static MexInstallerError? InstallResultScreen(MexWorkspace workspace)
+        {
+            var rstFile = workspace.GetFilePath("GmRst.usd");
+            if (!File.Exists(rstFile))
+                return new MexInstallerError("GmRst.usd not found");
+
+            var file = new HSDRawFile(rstFile);
+            var pnlsce = file["pnlsce"].Data as HSD_SOBJ;
+            if (pnlsce == null)
+                return new MexInstallerError("Error reading GmRst.usd");
+
+            var matanim_joints = pnlsce.JOBJDescs[0].MaterialAnimations[0].TreeList;
+
+            // get the nodes to extract from
+            var big_banners = matanim_joints[10].MaterialAnimation.Next.TextureAnimation.ToTOBJs();
+            var big_banner_keys = matanim_joints[10].MaterialAnimation.Next.TextureAnimation.AnimationObject.FObjDesc.GetDecodedKeys();
+            var small_banners = matanim_joints[33].MaterialAnimation.TextureAnimation.ToTOBJs();
+            var small_banners_keys = matanim_joints[33].MaterialAnimation.TextureAnimation.AnimationObject.FObjDesc.GetDecodedKeys();
+
+            // fighter assets are external with sheik at end (>=19 0-=1) (=19->29)
+            for (int internalId = 0; internalId < 0x21; internalId++)
+            {
+                // get fighter  external id
+                int externalId = MexFighterIDConverter.ToExternalID(internalId, 0x21);
+
+                // sheik hack
+                if (externalId == 19)
+                    externalId = 25;
+                else if (externalId > 19)
+                    externalId -= 1;
+
+                // search and set asset for fighter
+                var fighter = workspace.Project.Fighters[internalId];
+                {
+                    var key = big_banner_keys.Find(e => e.Frame == externalId);
+                    if (key != null)
+                        fighter.Assets.ResultBannerBigAsset.SetFromMexImage(workspace, new MexImage(big_banners[(int)key.Value]));
+                }
+                {
+                    var key = small_banners_keys.Find(e => e.Frame == externalId);
+                    if (key != null)
+                        fighter.Assets.ResultBannerSmallAsset.SetFromMexImage(workspace, new MexImage(small_banners[(int)key.Value]));
+                }
+            }
+
+            // additional assets red 181, blue 182, green 183, nocontest 184
+            {
+                var key = big_banner_keys.Find(e => e.Frame == 181);
+                if (key != null)
+                    workspace.Project.ReservedAssets.RstRedTeamAsset.SetFromMexImage(workspace, new MexImage(big_banners[(int)key.Value]));
+            }
+            {
+                var key = big_banner_keys.Find(e => e.Frame == 182);
+                if (key != null)
+                    workspace.Project.ReservedAssets.RstBlueTeamAsset.SetFromMexImage(workspace, new MexImage(big_banners[(int)key.Value]));
+            }
+            {
+                var key = big_banner_keys.Find(e => e.Frame == 183);
+                if (key != null)
+                    workspace.Project.ReservedAssets.RstGreenTeamAsset.SetFromMexImage(workspace, new MexImage(big_banners[(int)key.Value]));
+            }
+            {
+                var key = big_banner_keys.Find(e => e.Frame == 184);
+                if (key != null)
+                    workspace.Project.ReservedAssets.RstNoContestAsset.SetFromMexImage(workspace, new MexImage(big_banners[(int)key.Value]));
             }
 
             return null;

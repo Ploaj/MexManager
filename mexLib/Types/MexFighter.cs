@@ -9,6 +9,8 @@ using mexLib.MexScubber;
 using System.Collections.ObjectModel;
 using HSDRaw.MEX.Misc;
 using System.Drawing;
+using mexLib.Utilties;
+using System.IO.Compression;
 
 namespace mexLib.Types
 {
@@ -29,7 +31,6 @@ namespace mexLib.Types
 
         [Category("0 - General"), DisplayName("Sub-Fighter Behavior"), Description("The association between this fighter and the sub-fighter")]
         public SubCharacterBehavior SubCharacterBehavior { get; set; }
-
 
         [Category("1 - Audio"), DisplayName("SoundBank")]
         [MexLink(MexLinkType.Sound)]
@@ -55,7 +56,6 @@ namespace mexLib.Types
         [Category("1 - Audio"), DisplayName("Fighter Music 2"), Description("Possible music to play for fighter credits")]
         [MexLink(MexLinkType.Music)]
         public int FighterMusic2 { get; set; }
-
 
         [Category("2 - Single Player"), DisplayName("Target Test Stage"), Description("The stage id of the target test stage for this fighter")]
         [MexLink(MexLinkType.Stage)]
@@ -232,7 +232,6 @@ namespace mexLib.Types
             }
             mexData.FighterData.FighterItemLookup.Set(internalId, new MEX_ItemLookup() { Entries = itemEntries });
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -338,10 +337,159 @@ namespace mexLib.Types
             // Functions
             Functions.FromDOL(dol, index);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return Name;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="zip"></param>
+        public MexInstallerError? ToPackage(MexWorkspace workspace, Stream stream)
+        {
+            // create zip
+            using var zip = new ZipWriter(stream);
+
+            // fighter to package
+            zip.WriteAsJson("fighter.json", this);
+
+            // write files
+            Files.ToPackage(workspace, zip);
+
+            // write assets
+            Assets.ToPackage(workspace, zip);
+
+            // write media
+            {
+                zip.TryWriteFile(workspace, Media.EndAllStarFile, Media.EndAllStarFile);
+                zip.TryWriteFile(workspace, Media.EndClassicFile, Media.EndClassicFile);
+                zip.TryWriteFile(workspace, Media.EndAdventureFile, Media.EndAdventureFile);
+                zip.TryWriteFile(workspace, Media.EndMovieFile, Media.EndMovieFile);
+            }
+
+            // write soundbank
+            if (SoundBank != 55)
+            {
+                using var ms = new MemoryStream();
+                MexSoundGroup.ToPackage(workspace.Project.SoundGroups[SoundBank], ms);
+                zip.Write("sound.zip", ms.ToArray());
+            }
+
+            // write costumes
+            foreach (var c in Costumes)
+            {
+                using var s = new MemoryStream();
+                c.PackToZip(workspace, s);
+                zip.Write(Path.GetFileNameWithoutExtension(c.File.FileName) + ".zip", s.ToArray());
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="zip"></param>
+        public static MexInstallerError? FromPackage(MexWorkspace workspace, Stream stream, out MexFighter? fighter)
+        {
+            fighter = null;
+
+            // load zip
+            using var zip = new ZipArchive(stream);
+
+            // import fighter from package
+            {
+                var entry = zip.GetEntry("fighter.json");
+                if (entry == null)
+                    return new MexInstallerError("\"fighter.json\" was not found in zip");
+
+                // parse group entry
+                fighter = MexJsonSerializer.Deserialize<MexFighter>(entry.Extract());
+                if (fighter == null)
+                    return new MexInstallerError("Error parsing \"fighter.json\"");
+
+                // load assets
+                fighter.Assets.FromPackage(workspace, zip);
+
+                // load media
+                {
+                    fighter.Media.EndClassicFile = zip.TryReadFile(workspace, fighter.Media.EndClassicFile);
+                    fighter.Media.EndAdventureFile = zip.TryReadFile(workspace, fighter.Media.EndAdventureFile);
+                    fighter.Media.EndAllStarFile = zip.TryReadFile(workspace, fighter.Media.EndAllStarFile);
+                    fighter.Media.EndMovieFile = zip.TryReadFile(workspace, fighter.Media.EndMovieFile);
+                }
+
+                // init defaults
+                fighter.TargetTestStage = MexStageIDConverter.ToExternalID(40);
+                fighter.VictoryTheme = 10;
+                fighter.FighterMusic1 = 0;
+                fighter.FighterMusic2 = 0;
+                fighter.AnnouncerCall = 540000;
+                fighter.ClassicTrophyId = 0;
+                fighter.AdventureTrophyId = 1;
+                fighter.AllStarTrophyId = 2;
+            }
+
+            // load soundbank
+            {
+                var entry = zip.GetEntry("sound.zip");
+
+                if (entry != null)
+                {
+                    using var ms = new MemoryStream(entry.Extract());
+                    MexSoundGroup.FromPackage(workspace, ms, out MexSoundGroup? group);
+                    if (group != null)
+                    {
+                        fighter.SoundBank = workspace.Project.AddSoundGroup(group);
+                    }
+                    else
+                    {
+                        fighter.SoundBank = 55;
+                    }
+                }
+                else
+                {
+                    fighter.SoundBank = 55;
+                }
+            }
+
+            // import costumes
+            var costumes = fighter.Costumes.Select(e => e.File.FileName).ToList();
+            fighter.Costumes.Clear();
+            foreach (var costume in costumes)
+            {
+                var entry = zip.GetEntry(Path.GetFileNameWithoutExtension(costume) + ".zip");
+                if (entry != null)
+                {
+                    using var cstream = new MemoryStream(entry.Extract());
+                    var log = new System.Text.StringBuilder();
+                    foreach (var c in MexCostume.FromZip(workspace, cstream, log))
+                        fighter.Costumes.Add(c);
+                }
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        public void Delete(MexWorkspace workspace)
+        {
+            //Files.Delete(workspace); // TODO: delete files that are not used by other fighter
+            Assets.Delete(workspace);
+            Media.Delete(workspace);
+
+            foreach (var c in Costumes)
+            {
+                c.DeleteAssets(workspace);
+                //c.DeleteFiles(workspace);// TODO: delete files that are not used by other fighter
+            }
         }
     }
 }

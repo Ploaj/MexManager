@@ -12,6 +12,7 @@ using PropertyModels.ComponentModel.DataAnnotations;
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 
 namespace MexManager.Views;
@@ -66,7 +67,7 @@ public partial class FighterView : UserControl
             }
         }
 
-        // add new fighter
+        // TODO: add new fighter
         //var addfighter = Global.Workspace?.Project.AddNewFighter(new MexFighter());
         //if (addfighter == null)
         //{
@@ -97,7 +98,7 @@ public partial class FighterView : UserControl
             if (res != MessageBox.MessageBoxResult.Yes)
                 return;
 
-            if (!Global.Workspace.Project.RemoveFighter(FighterList.SelectedIndex))
+            if (!Global.Workspace.Project.RemoveFighter(Global.Workspace, FighterList.SelectedIndex))
             {
                 await MessageBox.Show($"Could not remove \"{fighter.Name}\"\nYou cannot remove base game fighters", "Remove Fighter Error", MessageBox.MessageBoxButtons.Ok);
             }
@@ -111,24 +112,26 @@ public partial class FighterView : UserControl
     /// <param name="e"></param>
     private async void ImportFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        // TODO: import fighter zip
         if (Global.Workspace == null)
-        {
-            await MessageBox.Show("Please open a workspace", "Workspace Error", MessageBox.MessageBoxButtons.Ok);
-        }
+            return;
 
-        var file = await FileIO.TryOpenFile("Import Fighter", "", FileIO.FilterJson);
+        var file = await FileIO.TryOpenFile("Import Fighter", "", FileIO.FilterZip);
         if (file != null)
         {
-            var mario = MexJsonSerializer.Deserialize<MexFighter>(file);
-            if (mario == null)
-                return;
-            var addfighter = Global.Workspace?.Project.AddNewFighter(mario);
-            if (addfighter == null || addfighter == false)
+            using var stream = new FileStream(file, FileMode.Open);
+
+            var res = MexFighter.FromPackage(Global.Workspace, stream, out MexFighter fighter);
+
+            if (res == null)
             {
-                await MessageBox.Show("Failed to add new fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
+                var addfighter = Global.Workspace?.Project.AddNewFighter(fighter);
+                FighterList.RefreshList();
+                FighterList.SelectedItem = fighter;
             }
-            FighterList.RefreshList();
+            else
+            {
+                await MessageBox.Show(res.Message, "Import Fighter Error", MessageBox.MessageBoxButtons.Ok);
+            }
         }
     }
     /// <summary>
@@ -138,13 +141,14 @@ public partial class FighterView : UserControl
     /// <param name="e"></param>
     private async void ExportFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        // TODO: export fighter zip
-        if (FighterList.SelectedItem is MexFighter fighter)
+        if (Global.Workspace != null &&
+            FighterList.SelectedItem is MexFighter fighter)
         {
-            var file = await FileIO.TrySaveFile("Export Fighter", "", FileIO.FilterJson);
+            var file = await FileIO.TrySaveFile("Export Fighter", fighter.Name + ".zip", FileIO.FilterZip);
             if (file != null)
             {
-                File.WriteAllText(file, MexJsonSerializer.Serialize(fighter));
+                using var stream = new FileStream(file, FileMode.Create);
+                fighter.ToPackage(Global.Workspace, stream);
             }
         }
     }
@@ -209,8 +213,9 @@ public partial class FighterView : UserControl
             {
                 case ".zip":
                     {
+                        using var stream = new FileStream(zipPath, FileMode.Open);
                         StringBuilder log = new ();
-                        var costume = MexCostume.FromZip(Global.Workspace, zipPath, log);
+                        var costume = MexCostume.FromZip(Global.Workspace, stream, log);
 
                         if (log.Length != 0)
                             await MessageBox.Show(log.ToString(), "Import Log", MessageBox.MessageBoxButtons.Ok);
@@ -249,7 +254,8 @@ public partial class FighterView : UserControl
 
             if (zipPath == null) return;
 
-            costume.PackToZip(Global.Workspace, zipPath);
+            using var stream = new FileStream(zipPath, FileMode.Create);
+            costume.PackToZip(Global.Workspace, stream);
         }
     }
     /// <summary>

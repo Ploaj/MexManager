@@ -1,4 +1,6 @@
 ﻿using mexLib.AssetTypes;
+using mexLib.Installer;
+using mexLib.Types;
 using mexLib.Utilties;
 using System.ComponentModel;
 using System.IO.Compression;
@@ -78,12 +80,12 @@ namespace mexLib
         /// 
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<MexCostume> FromZip(MexWorkspace workspace, string zipPath, StringBuilder log)
+        public static IEnumerable<MexCostume> FromZip(MexWorkspace workspace, Stream zipstream, StringBuilder log)
         {
             Dictionary<string, MexCostume> costumes = new ();
 
             // first scan file for dat files
-            using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Read))
+            using (ZipArchive zip = new (zipstream, ZipArchiveMode.Read, true))
             {
                 foreach (ZipArchiveEntry entry in zip.Entries)
                 {
@@ -129,8 +131,10 @@ namespace mexLib
                 }
             }
 
+            zipstream.Position = 0;
+
             // search for assets
-            using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Read))
+            using (ZipArchive zip = new (zipstream))
                 foreach (ZipArchiveEntry entry in zip.Entries)
                 {
                     using var fstream = entry.Open();
@@ -220,10 +224,10 @@ namespace mexLib
         /// </summary>
         /// <param name="zipPath"></param>
         /// <param name="workspace"></param>
-        public void PackToZip(MexWorkspace workspace, string zipPath)
+        public void PackToZip(MexWorkspace workspace, Stream stream)
         {
             // costume pack to zip
-            using var zip = new ZipWriter(zipPath);
+            using var zip = new ZipWriter(stream);
             zip.TryWriteFile(workspace, File.FileName, File.FileName);
             zip.TryWriteFile(workspace, KirbyFile.FileName, KirbyFile.FileName);
             zip.TryWriteTextureAsset(workspace, IconAsset, "stc.png");

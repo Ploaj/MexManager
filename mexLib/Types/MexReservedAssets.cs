@@ -145,5 +145,46 @@ namespace mexLib.Types
             Format = HSDRaw.GX.GXTexFmt.I4,
         };
 
+        // result
+        [JsonInclude]
+        public string? RstRedTeam { get => RstRedTeamAsset.AssetFileName; internal set => RstRedTeamAsset.AssetFileName = value; }
+        public MexTextureAsset RstRedTeamAsset = new()
+        {
+            AssetPath = "rst/team_red",
+            Width = 256,
+            Height = 28,
+            Format = HSDRaw.GX.GXTexFmt.I4,
+            TlutFormat = HSDRaw.GX.GXTlutFmt.IA8,
+        };
+        [JsonInclude]
+        public string? RstGreenTeam { get => RstGreenTeamAsset.AssetFileName; internal set => RstGreenTeamAsset.AssetFileName = value; }
+        public MexTextureAsset RstGreenTeamAsset = new()
+        {
+            AssetPath = "rst/team_green",
+            Width = 256,
+            Height = 28,
+            Format = HSDRaw.GX.GXTexFmt.I4,
+            TlutFormat = HSDRaw.GX.GXTlutFmt.IA8,
+        };
+        [JsonInclude]
+        public string? RstBlueTeam { get => RstBlueTeamAsset.AssetFileName; internal set => RstBlueTeamAsset.AssetFileName = value; }
+        public MexTextureAsset RstBlueTeamAsset = new()
+        {
+            AssetPath = "rst/team_blue",
+            Width = 256,
+            Height = 28,
+            Format = HSDRaw.GX.GXTexFmt.I4,
+            TlutFormat = HSDRaw.GX.GXTlutFmt.IA8,
+        };
+        [JsonInclude]
+        public string? RstNoContest { get => RstNoContestAsset.AssetFileName; internal set => RstNoContestAsset.AssetFileName = value; }
+        public MexTextureAsset RstNoContestAsset = new()
+        {
+            AssetPath = "rst/team_blue",
+            Width = 256,
+            Height = 28,
+            Format = HSDRaw.GX.GXTexFmt.I4,
+            TlutFormat = HSDRaw.GX.GXTlutFmt.IA8,
+        };
     }
 }
