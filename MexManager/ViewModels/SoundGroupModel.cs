@@ -1,5 +1,6 @@
 ﻿using MeleeMedia.Audio;
 using mexLib.Types;
+using mexLib.Utilties;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -33,8 +34,8 @@ namespace MexManager.ViewModels
             set => this.RaiseAndSetIfChanged(ref _selectedSound, value);
         }
 
-        private SEMBankScript? _selectedScript;
-        public SEMBankScript? SelectedScript
+        private SemScript? _selectedScript;
+        public SemScript? SelectedScript
         {
             get => _selectedScript;
             set => this.RaiseAndSetIfChanged(ref _selectedScript, value);

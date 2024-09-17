@@ -4,6 +4,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Png;
 using System.Runtime.Intrinsics.X86;
+using HSDRaw.Tools;
 
 namespace mexLib.Utilties
 {
@@ -124,7 +125,7 @@ namespace mexLib.Utilties
         /// <param name="bgra"></param>
         /// <param name="fmt"></param>
         /// <param name="tlutFmt"></param>
-        private static void ProcessIA(ref byte[] bgra, GXTexFmt fmt, GXTlutFmt tlutFmt)
+        private static void ProcessIA(ref byte[] bgra, GXTexFmt fmt)
         {
             if (fmt == GXTexFmt.I4 || fmt == GXTexFmt.I8)
             {
@@ -145,7 +146,7 @@ namespace mexLib.Utilties
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(stream);
             var bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
-            ProcessIA(ref bgra, fmt, tlutFmt);
+            ProcessIA(ref bgra, fmt);
             return new MexImage(bgra, w, h, fmt, tlutFmt);
         }
         /// <summary>
@@ -161,7 +162,7 @@ namespace mexLib.Utilties
             if (image.Width > width || image.Height > height)
                 ResizeImage(image, width, height);
             var bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
-            ProcessIA(ref bgra, fmt, tlutFmt);
+            ProcessIA(ref bgra, fmt);
             return new MexImage(bgra, w, h, fmt, tlutFmt);
         }
         /// <summary>

@@ -296,7 +296,7 @@ namespace mexLib
                 return;
 
             // generate sem
-            var sem = new List<SEMBank>();
+            var sem = new List<SemScript[]>();
 
             // generate ssm
             List<int> soundIds = new ();
@@ -324,23 +324,15 @@ namespace mexLib
                 FileManager.Set(GetFilePath($"audio//us//{group.FileName}"), stream.ToArray());
 
                 // generate sem
-                var semBank = new SEMBank()
+                var scripts = group.Scripts.Select((e, i) =>
                 {
-                    Scripts = group.Scripts.Select((e, i) =>
-                    {
-                        var script = new SEMBankScript()
-                        {
-                            Name = e.Name,
-                            Codes = e.Codes.Select(e => new SEMCode(e.Pack())).ToList(),
-
-                        };
-                        script.SFXID += soundIndex;
-                        soundNames.Add(e.Name);
-                        soundIds.Add(i + groupOffset);
-                        return script;
-                    }).ToArray()
-                };
-                sem.Add(semBank);
+                    var script = new SemScript(e);
+                    script.AdjustSoundOffset(soundIndex);
+                    soundNames.Add(e.Name);
+                    soundIds.Add(i + groupOffset);
+                    return script;
+                }).ToArray();
+                sem.Add(scripts);
 
                 // advance indices
                 groupOffset += 10000;
@@ -378,7 +370,7 @@ namespace mexLib
             }
             {
                 using MemoryStream stream = new();
-                SEM.SaveSEMFile(stream, sem);
+                SemFile.Compile(stream, sem);
                 FileManager.Set(GetFilePath($"audio//us//smash2.sem"), stream.ToArray());
             }
         }
@@ -400,7 +392,10 @@ namespace mexLib
             if (smst == null)
                 return "Error reading SmSt.dat";
 
-            var sem = SEM.ReadSEMFile(semPath);
+            using var semStream = FileManager.GetStream(semPath);
+            if (semStream == null)
+                return "Error reading smash2.sem";
+            var sem = SemFile.Decompile(semStream).ToArray();
 
             var soundNames = smst.SoundNames;
             var soundids = smst.SoundIDs.ToList();
@@ -432,40 +427,39 @@ namespace mexLib
                 }
 
                 // extract sem
-                sound.Scripts = new ObservableCollection<SEMBankScript>();
-                if (index < sem.Count)
+                sound.Scripts = new ObservableCollection<SemScript>();
+                if (index < sem.Length)
                 {
                     // load script meta data
                     var scripts = sem[index];
 
                     // get name and adjust sfx id to be relative to bank
-                    for (int j = 0; j < scripts.Scripts.Length; j++)
+                    for (int j = 0; j < scripts.Length; j++)
                     {
                         // load script name
                         var sindex = soundids.IndexOf(index * 10000 + j);
                         if (sindex != -1 && sindex < soundNames.Length)
                         {
-                            scripts.Scripts[j].Name = soundNames[sindex];
+                            scripts[j].Name = soundNames[sindex];
 
                             // adjust sound id to relative
-                            if (scripts.Scripts[j].SFXID != -1)
-                                scripts.Scripts[j].SFXID -= start_index;
+                            scripts[j].AdjustSoundOffset(-start_index);
                         }
 
                         // give sound name if it's null
-                        if (scripts.Scripts[j].SFXID < sound.Sounds.Count && 
-                            string.IsNullOrEmpty(sound.Sounds[scripts.Scripts[j].SFXID].Name))
+                        if (scripts[j].Script.Find(e => e.SemCode == SemCode.Sound)?.Value is int sfxid &&
+                            sfxid < sound.Sounds.Count && 
+                            string.IsNullOrEmpty(sound.Sounds[sfxid].Name))
                         {
                             var sound_name = soundNames[sindex];
                             sound_name = sound_name.Replace("SFX", "").Trim();
                             if (sound_name.StartsWith("_"))
                                 sound_name = sound_name[1..];
-                            sound.Sounds[scripts.Scripts[j].SFXID].Name = sound_name;
+                            sound.Sounds[sfxid].Name = sound_name;
                         }
 
                         // add script to sound group
-                        sound.Scripts.Add(scripts.Scripts[j]);
-                        sound.CleanScripts();
+                        sound.Scripts.Add(scripts[j]);
                     }
                 }
 

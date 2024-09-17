@@ -125,6 +125,11 @@ namespace MexManager.Tools
             _source = AL.GenSource();
             Debug.WriteLine($"Audio: buffer {_buffer} source {_source}");
 
+            //AL.Source(_source, ALSourcef.Pitch, 1 + 1000 / 1000f); // pitch
+            // volume
+            // padding
+            // unknown
+            // reverb
 
             var wave = dsp.ToWAVE();
             var raw = wave.RawData.ToArray();

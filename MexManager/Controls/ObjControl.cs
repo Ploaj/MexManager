@@ -11,8 +11,6 @@ namespace MexManager.Controls
     {
         private readonly ObjRasterizer Raster;
 
-        private Size _controlSize;
-
         /// <summary>
         /// 
         /// </summary>
@@ -54,7 +52,6 @@ namespace MexManager.Controls
             // Refresh render when the size changes
             if (e.Property == WidthProperty || e.Property == HeightProperty)
             {
-                _controlSize = new Size(Width, Height);
                 RefreshRender();
                 InvalidateVisual(); // Request a redraw
             }

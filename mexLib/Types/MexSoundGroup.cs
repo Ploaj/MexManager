@@ -98,10 +98,10 @@ namespace mexLib.Types
         [Browsable(false)]
         public ObservableCollection<MexSound> Sounds { get => _sounds; set { _sounds = value; OnPropertyChanged(); } }
 
-        private ObservableCollection<SEMBankScript>? _scripts = null;
+        private ObservableCollection<SemScript>? _scripts = null;
         [JsonIgnore]
         [Browsable(false)]
-        public ObservableCollection<SEMBankScript>? Scripts { get => _scripts; set { _scripts = value; OnPropertyChanged(); } }
+        public ObservableCollection<SemScript>? Scripts { get => _scripts; set { _scripts = value; OnPropertyChanged(); } }
 
         /// <summary>
         /// 
@@ -153,19 +153,6 @@ namespace mexLib.Types
             return string.IsNullOrEmpty(Name) ? FileName : Name;
         }
         /// <summary>
-        /// Removes all unused null codes from sound scripts
-        /// </summary>
-        internal void CleanScripts()
-        {
-            if (Scripts == null)
-                return;
-
-            foreach (var s in Scripts)
-            {
-                s.Codes.RemoveAll(e => e.Code == SEM_CODE.NULL);
-            }
-        }
-        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
@@ -210,14 +197,7 @@ namespace mexLib.Types
             {
                 Scripts.Clear();
                 foreach (var s in group.Scripts)
-                {
-                    Scripts.Add(new SEMBankScript()
-                    {
-                        SFXID = s.SFXID,
-                        Name = s.Name,
-                        Codes = s.Codes.Select(e => new SEMCode(e.Pack())).ToList()
-                    });
-                }
+                    Scripts.Add(new SemScript(s));
             }
 
             Sounds.Clear();
@@ -272,7 +252,7 @@ namespace mexLib.Types
             if (group.Scripts != null)
             {
                 using var scriptStream = new MemoryStream();
-                SEM.SaveSEMFile(scriptStream, new List<SEMBank>() { new () { Scripts = group.Scripts.ToArray() } });
+                SemFile.Compile(scriptStream, new List<SemScript[]>{ group.Scripts.ToArray() });
                 zip.Write("scripts.sem", scriptStream.ToArray());
 
                 zip.WriteAsJson("scripts.json", group.Scripts.Select(e => e.Name).ToArray());
@@ -339,16 +319,16 @@ namespace mexLib.Types
                 if (script_entry != null)
                 {
                     using var e = new MemoryStream(script_entry.Extract());
-                    var sem = SEM.ReadSEMFile(e)[0];
-                    group.Scripts = new ObservableCollection<SEMBankScript>();
-                    for (int i = 0; i < sem.Scripts.Length; i++)
+                    var sem = SemFile.Decompile(e).ToArray()[0];
+                    group.Scripts = new ObservableCollection<SemScript>();
+                    for (int i = 0; i < sem.Length; i++)
                     {
                         // load name
                         if (script_names != null &&
                             i < script_names.Length)
-                            sem.Scripts[i].Name = script_names[i];
+                            sem[i].Name = script_names[i];
 
-                        group.Scripts.Add(sem.Scripts[i]);
+                        group.Scripts.Add(sem[i]);
                     }
                 }
             }

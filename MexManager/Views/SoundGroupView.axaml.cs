@@ -15,13 +15,12 @@ using System.ComponentModel;
 using PropertyModels.ComponentModel.DataAnnotations;
 using mexLib.Attributes;
 using mexLib;
+using mexLib.Utilties;
 
 namespace MexManager.Views;
 
 public partial class SoundGroupView : UserControl
 {
-    public IEnumerable<SEM_CODE>? SEMCodes => Enum.GetValues(typeof(SEM_CODE)) as SEM_CODE[];
-
     /// <summary>
     /// 
     /// </summary>
@@ -51,11 +50,11 @@ public partial class SoundGroupView : UserControl
     private void ScriptList_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
     {
         if (DataContext is SoundGroupModel model &&
-            model.SelectedScript is SEMBankScript script &&
+            model.SelectedScript is SemScript script &&
             model.SelectedSoundGroup is MexSoundGroup group &&
             group.Sounds != null)
         {
-            var soundId = script.SFXID;
+            var soundId = script.GetFirstSoundID();
             if (soundId >= 0 && 
                 soundId < group.Sounds.Count)
             {
@@ -190,11 +189,7 @@ public partial class SoundGroupView : UserControl
             // adjust scripts
             foreach (var script in group.Scripts)
             {
-                if (script.SFXID == index)
-                    script.SFXID = 0;
-                else
-                if (script.SFXID > index)
-                    script.SFXID -= 1;
+                script.RemoveSoundID(index);
             }
 
             // re select index
@@ -212,16 +207,16 @@ public partial class SoundGroupView : UserControl
             model.SelectedSoundGroup is MexSoundGroup group &&
             group.Scripts != null)
         {
-            group.Scripts.Add(new SEMBankScript()
+            group.Scripts.Add(new SemScript()
             {
                 Name = "SFX_Untitled",
-                Codes = 
+                Script = 
                 {
-                    new SEMCode(SEM_CODE.SET_SFXID),
-                    new SEMCode(SEM_CODE.SET_REVERB1) { Value = 1 },
-                    new SEMCode(SEM_CODE.SET_PRIORITY) { Value = 15 },
-                    new SEMCode(SEM_CODE.PLAY) { Value = 255 },
-                    new SEMCode(SEM_CODE.END_PLAYBACK),
+                    new SemCommand(SemCode.Sound, 0),
+                    new SemCommand(SemCode.SetReverb, 1),
+                    new SemCommand(SemCode.SetPriority, 15),
+                    new SemCommand(SemCode.SetVolume, 255),
+                    new SemCommand(SemCode.End, 0),
                 }
             });
         }
@@ -236,7 +231,7 @@ public partial class SoundGroupView : UserControl
         if (DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup is MexSoundGroup group &&
             group.Scripts != null && 
-            model.SelectedScript is SEMBankScript script)
+            model.SelectedScript is SemScript script)
         {
             var check = await MessageBox.Show($"Are you sure you want\nto remove \"{script.Name}\"?", "Remove Script", MessageBox.MessageBoxButtons.YesNoCancel);
 
@@ -265,15 +260,11 @@ public partial class SoundGroupView : UserControl
         if (DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup is MexSoundGroup group &&
             group.Scripts != null &&
-            model.SelectedScript is SEMBankScript script)
+            model.SelectedScript is SemScript script)
         {
             var index = group.Scripts.IndexOf(script);
 
-            group.Scripts.Insert(index + 1, new SEMBankScript()
-            {
-                Name = script.Name + "_copy",
-                Codes = script.Codes.Select(e => new SEMCode(e.Pack())).ToList()
-            });
+            group.Scripts.Insert(index + 1, new SemScript(script));
 
             ScriptList.RefreshList(index);
         }
