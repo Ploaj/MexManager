@@ -1,13 +1,15 @@
 ﻿using HSDRaw;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace mexLib.Utilties
 {
     public enum SemCode
     {
-        Timer,
+        Wait,
         Sound,
-        LoopStart,
-        LoopEnd,
+        SetLoop,
+        EndLoop,
         SetPriority,
         AddPriority,
         SetVolume,
@@ -34,6 +36,34 @@ namespace mexLib.Utilties
 
     public class SemCommand : MexReactiveObject
     {
+        public static ObservableCollection<SemCode> SelectableCodes => new ()
+        {
+            SemCode.Wait,
+            SemCode.Sound,
+            //SemCode.SetLoop,
+            //SemCode.EndLoop,
+            SemCode.SetPriority,
+            SemCode.AddPriority,
+            SemCode.SetVolume,
+            SemCode.AddVolume,
+            SemCode.SetPanning,
+            SemCode.AddPanning,
+            SemCode.SetUnused1,
+            SemCode.AddUnused1,
+            SemCode.SetPitch,
+            SemCode.AddPitch,
+            SemCode.End,
+            SemCode.Stop,
+            SemCode.SetReverb,
+            SemCode.AddReverb,
+            SemCode.SetUnused2,
+            SemCode.AddUnused2,
+            SemCode.StarReverb,
+            SemCode.Unused3,
+        };
+
+        public ObservableCollection<SemCode> Selectable => SelectableCodes;
+
         /// <summary>
         /// 
         /// </summary>
@@ -44,10 +74,17 @@ namespace mexLib.Utilties
         /// </summary>
         public int MaxValue => SemCode switch
         {
-            SemCode.Timer or SemCode.ForcedTimer or
-            SemCode.Sound => 0xFFFFFF,
+            SemCode.Wait or
+            SemCode.ForcedTimer or
+            SemCode.Sound or
+            SemCode.EndLoop or 
+            SemCode.SetLoop => 0xFFFF,
+
             SemCode.SetPriority or SemCode.AddPriority => 28,
-            SemCode.SetPitch or SemCode.AddPitch => 2400,
+
+            SemCode.AddPitch => 2400,
+            SemCode.SetPitch => short.MaxValue,
+
             SemCode.SetVolume or SemCode.AddVolume or
             SemCode.SetPanning or SemCode.AddPanning or
             SemCode.SetUnused1 or SemCode.AddUnused1 or
@@ -55,8 +92,7 @@ namespace mexLib.Utilties
             SemCode.SetUnused2 or SemCode.AddUnused2 or
             SemCode.StarReverb or
             SemCode.Unused3 => 255,
-            SemCode.LoopStart or
-            SemCode.LoopEnd or
+
             SemCode.Stop => 0,
             _ => 0
         };
@@ -65,10 +101,11 @@ namespace mexLib.Utilties
         /// </summary>
         public int MinValue => SemCode switch
         {
-            SemCode.Timer or SemCode.ForcedTimer or
+            SemCode.Wait or SemCode.ForcedTimer or
             SemCode.Sound => 0,
             SemCode.AddPriority or SemCode.SetPriority => 5,
-            SemCode.AddPitch or SemCode.SetPitch => -10800,
+            SemCode.AddPitch => -10800,
+            SemCode.SetPitch => short.MinValue,
             SemCode.SetVolume or SemCode.AddVolume or
             SemCode.SetPanning or SemCode.AddPanning or
             SemCode.SetUnused1 or SemCode.AddUnused1 or
@@ -76,8 +113,8 @@ namespace mexLib.Utilties
             SemCode.SetUnused2 or SemCode.AddUnused2 or
             SemCode.StarReverb or
             SemCode.Unused3 => 0,
-            SemCode.LoopStart or
-            SemCode.LoopEnd or
+            SemCode.SetLoop or
+            SemCode.EndLoop or
             SemCode.Stop => 0,
             _ => 0
         };
@@ -86,10 +123,12 @@ namespace mexLib.Utilties
         /// </summary>
         public bool HasValue => SemCode switch
         {
-            SemCode.LoopEnd or
+            //SemCode.EndLoop or
+            SemCode.End or
             SemCode.Stop => false,
             _ => true
         };
+        public bool CanChangeCode => SemCode != SemCode.EndLoop && SemCode != SemCode.SetLoop;
         /// <summary>
         /// 
         /// </summary>
@@ -200,11 +239,11 @@ namespace mexLib.Utilties
                     s.WriteByte((byte)((Value >> 8) & 0xFF));
                     s.WriteByte((byte)(Value & 0xFF));
                     break;
-                case SemCode.Timer:
+                case SemCode.Wait:
                 case SemCode.ForcedTimer:
                 case SemCode.Sound:
-                case SemCode.LoopStart:
-                case SemCode.LoopEnd:
+                case SemCode.SetLoop:
+                case SemCode.EndLoop:
                 case SemCode.Stop:
                 case SemCode.End:
                 case SemCode.SetUnused2:
@@ -229,7 +268,8 @@ namespace mexLib.Utilties
         public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
         private string _name = "SFX";
 
-        public List<SemCommand> Script { get; set; } = new List<SemCommand>();
+        [Browsable(false)]
+        public ObservableCollection<SemCommand> Script { get; set; } = new ObservableCollection<SemCommand>();
 
         /// <summary>
         /// 
@@ -245,7 +285,10 @@ namespace mexLib.Utilties
         public SemScript(SemScript copyfrom)
         {
             _name = copyfrom._name;
-            Script.AddRange(copyfrom.Script.Select(e => new SemCommand(e)));
+            foreach (var v in copyfrom.Script)
+            {
+                Script.Add(new SemCommand(v));
+            }
         }
         /// <summary>
         /// 
@@ -270,31 +313,34 @@ namespace mexLib.Utilties
                 // read timer and values
                 switch (command)
                 {
-                    case SemCode.Timer:
+                    case SemCode.Wait:
                         value = 0;
                         timer = ((data[i + 1] & 0xFF) << 16) | ((data[i + 2] & 0xFF) << 8) | (data[i + 3] & 0xFF);
                         break;
                     case SemCode.SetPriority:
-                    case SemCode.AddPriority:
                     case SemCode.SetVolume:
-                    case SemCode.AddVolume:
                     case SemCode.SetPanning:
-                    case SemCode.AddPanning:
                     case SemCode.SetUnused1:
-                    case SemCode.AddUnused1:
                     case SemCode.SetReverb:
-                    case SemCode.AddReverb:
                         timer = ((data[i + 1] & 0xFF) << 8) | (data[i + 2] & 0xFF);
                         value = data[i + 3];
+                        break;
+                    case SemCode.AddPriority:
+                    case SemCode.AddVolume:
+                    case SemCode.AddPanning:
+                    case SemCode.AddUnused1:
+                    case SemCode.AddReverb:
+                        timer = ((data[i + 1] & 0xFF) << 8) | (data[i + 2] & 0xFF);
+                        value = (sbyte)data[i + 3];
                         break;
                     case SemCode.SetPitch:
                     case SemCode.AddPitch:
                         timer = (data[i + 1] & 0xFF);
-                        value = ((data[i + 2] & 0xFF) << 8) | (data[i + 3] & 0xFF);
+                        value = (short)(((data[i + 2] & 0xFF) << 8) | (data[i + 3] & 0xFF));
                         break;
                     case SemCode.Sound:
-                    case SemCode.LoopStart:
-                    case SemCode.LoopEnd:
+                    case SemCode.SetLoop:
+                    case SemCode.EndLoop:
                     case SemCode.Stop:
                     case SemCode.End:
                     case SemCode.SetUnused2:
@@ -307,17 +353,17 @@ namespace mexLib.Utilties
                         break;
                 }
 
-                if (command == SemCode.Timer)
+                if (command == SemCode.Wait)
                 {
                     Script.Add(new SemCommand(SemCode.ForcedTimer, timer));
                 }
                 else
                 if (timer != 0)
                 {
-                    Script.Add(new SemCommand(SemCode.Timer, timer));
+                    Script.Add(new SemCommand(SemCode.Wait, timer));
                 }
 
-                if (command != SemCode.Timer)
+                if (command != SemCode.Wait)
                 {
                     Script.Add(new SemCommand(command, value));
                 }
@@ -377,9 +423,13 @@ namespace mexLib.Utilties
             foreach (var v in Script)
             {
                 if (v.SemCode == SemCode.ForcedTimer)
-                    v.SemCode = SemCode.Timer;
+                    v.SemCode = SemCode.Wait;
             }
-            Script.RemoveAll(e => e.SemCode == SemCode.Null);
+            for (int i = Script.Count - 1; i >= 0; i--)
+            {
+                if (Script[i].SemCode == SemCode.Null)
+                    Script.RemoveAt(i);
+            }
         }
         /// <summary>
         /// 
@@ -389,11 +439,42 @@ namespace mexLib.Utilties
         {
             using var stream = new MemoryStream();
 
+            // make sure to manually set execute loops function
+            for (int i = 1; i < Script.Count; i++)
+            {
+                var scr = Script[i];
+
+                if (scr.SemCode == SemCode.EndLoop)
+                {
+                    // backwards search for start loop
+                    int loop_value = 0;
+                    for (int j = i - 1; j >= 0; j--)
+                    {
+                        if (Script[j].SemCode == SemCode.EndLoop)
+                        {
+                            loop_value++;
+                        }
+                        if (Script[j].SemCode == SemCode.SetLoop)
+                        {
+                            if (loop_value == 0)
+                            {
+                                scr.Value = i - j - 1;
+                                break;
+                            }
+                            else
+                            {
+                                loop_value--;
+                            }
+                        }
+                    }
+                }
+            }
+
             // write commands
             int pending_timer_value = 0;
             for (int i = 0; i < Script.Count; i++)
             {
-                if (Script[i].SemCode == SemCode.Timer &&
+                if (Script[i].SemCode == SemCode.Wait &&
                     i + 1 < Script.Count &&
                     Script[i + 1].CanHoldTime(Script[i].Value))
                 {
@@ -410,8 +491,8 @@ namespace mexLib.Utilties
             {
                 var endScriptCode = Script[^1].SemCode;
 
-                if (endScriptCode != SemCode.End ||
-                    endScriptCode != SemCode.Stop ||
+                if (endScriptCode != SemCode.End &&
+                    endScriptCode != SemCode.Stop &&
                     endScriptCode != SemCode.Null)
                 {
                     new SemCommand(SemCode.End, 0).Pack(stream, pending_timer_value);

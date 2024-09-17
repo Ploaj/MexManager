@@ -447,7 +447,7 @@ namespace mexLib
                         }
 
                         // give sound name if it's null
-                        if (scripts[j].Script.Find(e => e.SemCode == SemCode.Sound)?.Value is int sfxid &&
+                        if (scripts[j].Script.FirstOrDefault(e => e.SemCode == SemCode.Sound)?.Value is int sfxid &&
                             sfxid < sound.Sounds.Count && 
                             string.IsNullOrEmpty(sound.Sounds[sfxid].Name))
                         {
@@ -457,6 +457,9 @@ namespace mexLib
                                 sound_name = sound_name[1..];
                             sound.Sounds[sfxid].Name = sound_name;
                         }
+
+                        // clean script
+                        scripts[j].CleanScripts();
 
                         // add script to sound group
                         sound.Scripts.Add(scripts[j]);

@@ -1,0 +1,142 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="clr-namespace:MexManager.Views"
+			 xmlns:controls="clr-namespace:MexManager.Controls"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MexManager.Controls.SemScriptEditor">
+
+	<UserControl.Resources>
+		<controls:SemLoopOffsetConverter x:Key="SemLoopOffsetConverter" />
+	</UserControl.Resources>
+	
+	<DockPanel>
+		<views:PropertyGridExt
+			Name="ScriptPropertyGrid"
+			DockPanel.Dock="Top"
+			Margin="4"
+			NameWidth="96"
+			AllowQuickFilter="False"
+			AllowFilter="False"
+			AllowToggleView="False"
+			ShowStyle="Builtin"
+			DataContext="{Binding}">
+		</views:PropertyGridExt>
+		<Separator
+			DockPanel.Dock="Top"/>
+		<TextBlock 
+			Text="Sound Script"
+			Margin="10"
+			FontSize="16"
+			DockPanel.Dock="Top"/>
+		<Separator
+			DockPanel.Dock="Top"/>
+		<Menu Height="48"
+			DockPanel.Dock="Top">
+			<controls:IconMenuItem
+				Text="Add Code"
+				ToolTip.Tip="Add Code"
+				IconSource="avares://MexManager/Assets/Common/icon_plus.png"
+				Click="AddCommand_Click"/>
+			<controls:IconMenuItem
+				Text="Add Loop"
+				ToolTip.Tip="Add Loop"
+				IconSource="avares://MexManager/Assets/Common/icon_replace.png"
+				Click="AddLoopCommand_Click"/>
+			<controls:IconMenuItem
+				Text="Remove"
+				ToolTip.Tip="Remove"
+				IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+				Click="RemoveCommand_Click"/>
+			<controls:IconMenuItem
+				Text="Duplicate"
+				ToolTip.Tip="Duplicate"
+				IconSource="avares://MexManager/Assets/Common/icon_copy.png"
+				Click="DuplicateCommand_Click"/>
+			<controls:IconMenuItem
+				Text="Move Up"
+				ToolTip.Tip="Move Up"
+				IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
+				Click="MoveUpCommand_Click"/>
+			<controls:IconMenuItem
+				Text="Move Down"
+				ToolTip.Tip="Move Down"
+				IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
+				Click="MoveDownCommand_Click"/>
+		</Menu>
+		<ScrollViewer
+			DockPanel.Dock="Left">
+			<ListBox
+			Margin="4"
+			Width="400"
+			HorizontalAlignment="Left"
+			Name="ScriptCommandList"
+			ItemsSource="{Binding Script}">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<Grid
+							Height="24"
+							Margin="4">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition>
+									<ColumnDefinition.Width>
+										<MultiBinding Converter="{StaticResource SemLoopOffsetConverter}">
+											<Binding Path="." />
+											<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
+										</MultiBinding>
+									</ColumnDefinition.Width>
+								</ColumnDefinition>
+								<ColumnDefinition Width="32" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+
+							<TextBlock
+								Grid.Column="1"
+								DockPanel.Dock="Left"
+								VerticalAlignment="Center">
+								<TextBlock.Text>
+									<MultiBinding
+										Converter="{StaticResource ListBoxIndexConverter}">
+										<Binding Path="." />
+										<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
+									</MultiBinding>
+								</TextBlock.Text>
+							</TextBlock>
+
+							<ComboBox
+								Grid.Column="2"
+								Margin="2"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Stretch"
+								ItemsSource="{Binding Selectable}}"
+								SelectedItem="{Binding SemCode, Mode=TwoWay}"
+								SelectionChanged="ComboBox_SelectionChanged"
+								IsVisible="{Binding CanChangeCode}"/>
+
+							<TextBlock 
+								Grid.Column="2"
+								Text="{Binding SemCode}"
+								Margin="2"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Stretch"
+								IsVisible="{Binding CanChangeCode, Converter={StaticResource BooleanInverterConverter}}"/>
+
+							<NumericUpDown
+								Grid.Column="3"
+								Margin="2"
+								IsVisible="{Binding HasValue}"
+								Value="{Binding Value, Mode=TwoWay}"
+								Maximum="{Binding MaxValue}"
+								Minimum="{Binding MinValue}"
+								Increment="1"
+								VerticalAlignment="Center"
+								HorizontalAlignment="Stretch"/>
+						</Grid>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</ScrollViewer>
+	</DockPanel>
+</UserControl>

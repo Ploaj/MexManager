@@ -89,4 +89,8 @@
       <DependentUpon>ProgressWindow.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Controls\SemScriptEditor.axaml" />
+  </ItemGroup>
 </Project>

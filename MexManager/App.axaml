@@ -14,6 +14,7 @@
 		<!-- Register the IndexConverter -->
 		<converters:ListBoxIndexConverter x:Key="ListBoxIndexConverter"/>
 		<converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
+		<converters:BooleanInverterConverter x:Key="BooleanInverterConverter"/>
 
 		<!-- DataTemplate for ListBox items -->
 		<DataTemplate x:Key="IndexedItemTemplate">

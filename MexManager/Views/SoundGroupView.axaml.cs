@@ -384,24 +384,6 @@ public partial class SoundGroupView : UserControl
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void AddCommand_Click(object? sender, RoutedEventArgs e)
-    {
-        // TODO: add sound command
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void RemoveCommand_Click(object? sender, RoutedEventArgs e)
-    {
-        // TODO: remove sound command
-    }
-    /// <summary>
-    /// 
-    /// </summary>
     public class AddGroupOptions : ReactiveObject
     {
         public enum SoundGroupPresets

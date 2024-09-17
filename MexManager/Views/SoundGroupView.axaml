@@ -137,96 +137,9 @@
 								</ListBox.ItemTemplate>
 								</ListBox>
 						</ScrollViewer>
-						<ScrollViewer DockPanel.Dock="Right">
-							<StackPanel Orientation="Vertical">
-								<views:PropertyGridExt
-								Name="ScriptPropertyGrid"
-								DockPanel.Dock="Left"
-								Margin="4"
-								NameWidth="96"
-								AllowQuickFilter="False"
-								AllowFilter="False"
-								AllowToggleView="False"
-								ShowStyle="Builtin"
-								DataContext="{Binding SelectedScript}">
-								</views:PropertyGridExt>
-								<Menu>
-									<controls:IconMenuItem
-										Text="Add"
-										ToolTip.Tip="Add"
-										IconSource="avares://MexManager/Assets/Common/icon_plus.png"
-										Click="AddCommand_Click"/>
-									<controls:IconMenuItem
-										Text="Remove"
-										ToolTip.Tip="Remove"
-										IconSource="avares://MexManager/Assets/Common/icon_delete.png"
-										Click="RemoveCommand_Click"/>
-								</Menu>
-								<ListBox
-									Name="ScriptCommandList"
-									DockPanel.Dock="Top"
-									ItemsSource="{Binding SelectedScript.Codes}">
-									<ListBox.ItemTemplate>
-										<DataTemplate>
-											<Grid
-												Height="16">
-												<Grid.ColumnDefinitions>
-													<ColumnDefinition Width="32" />
-													<ColumnDefinition Width="200" />
-													<ColumnDefinition Width="*" />
-													<ColumnDefinition Width="*" />
-												</Grid.ColumnDefinitions>
-
-												<TextBlock
-													Grid.Column="0"
-													DockPanel.Dock="Left"
-													VerticalAlignment="Center">
-													<TextBlock.Text>
-														<MultiBinding
-															Converter="{StaticResource ListBoxIndexConverter}">
-															<Binding Path="." />
-															<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
-														</MultiBinding>
-													</TextBlock.Text>
-												</TextBlock>
-
-												<ComboBox
-													Grid.Column="1"
-													ItemsSource="{Binding Path=SEMCodes, RelativeSource={RelativeSource AncestorType=UserControl}}"
-													SelectedItem="{Binding Code, Mode=TwoWay}"/>
-
-												<StackPanel
-													Grid.Column="2"
-													Orientation="Vertical"
-													HorizontalAlignment="Stretch"
-													IsVisible="{Binding HasValue}">
-													<NumericUpDown
-														IsVisible="{Binding HasValue}"
-														Value="{Binding Value, Mode=TwoWay}"
-														Maximum="{Binding MaxValue}"
-														Minimum="{Binding MinValue}"
-														Increment="1"
-														HorizontalAlignment="Stretch"/>
-												</StackPanel>
-
-												<StackPanel 
-													Grid.Column="3"
-													Orientation="Vertical"
-													HorizontalAlignment="Stretch"
-													IsVisible="{Binding HasTimer}">
-													<NumericUpDown
-														Value="{Binding Timer, Mode=TwoWay}"
-														Maximum="{Binding MaxTimer}"
-														Minimum="0"
-														Increment="1"
-														HorizontalAlignment="Stretch"/>
-												</StackPanel>
-											</Grid>
-										</DataTemplate>
-									</ListBox.ItemTemplate>
-								</ListBox>
-							</StackPanel>
-						</ScrollViewer>
+						<controls:SemScriptEditor
+							DockPanel.Dock="Right"
+							DataContext="{Binding SelectedScript}"/>
 					</DockPanel>
 				</DockPanel>
 			</TabItem>
