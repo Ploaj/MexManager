@@ -12,6 +12,10 @@
              x:Class="MexManager.Views.SoundGroupView"
 			 x:DataType="vm:SoundGroupModel">
 
+	<UserControl.Resources>
+		<converters:DataGridIndexConverter x:Key="DataGridIndexConverter"/>
+	</UserControl.Resources>
+
 	<DockPanel>
 		<DockPanel>
 			<Menu
@@ -32,7 +36,8 @@
 					<MenuItem
 						Header="Export Group"
 						ToolTip.Tip="Export Sounds and Scripts"
-						Click="ExportGroup_Click">
+						Click="ExportGroup_Click"
+					IsEnabled="{Binding SelectedSoundGroup, Converter={StaticResource NullToBoolConverter}}">
 						<MenuItem.Icon>
 							<Image Source="avares://MexManager/Assets/Common/file_export.png"/>
 						</MenuItem.Icon>
@@ -44,9 +49,16 @@
 					IconSource="avares://MexManager/Assets/Common/icon_create.png"
 					Click="AddGroup_Click"/>
 				<controls:IconMenuItem
+					Text="Copy"
+					ToolTip.Tip="Copy"
+					IconSource="avares://MexManager/Assets/Common/icon_copy.png"
+					IsEnabled="{Binding SelectedSoundGroup, Converter={StaticResource NullToBoolConverter}}"
+					Click="CopyGroup_Click"/>
+				<controls:IconMenuItem
 					Text="Delete"
 					ToolTip.Tip="Delete"
 					IconSource="avares://MexManager/Assets/Common/icon_delete.png"
+					IsEnabled="{Binding SelectedSoundGroup, Converter={StaticResource NullToBoolConverter}}"
 					Click="RemoveGroup_Click"/>
 			</Menu>
 			<ListBox
@@ -217,56 +229,77 @@
 						</controls:IconMenuItem>
 					</Menu>
 					<DockPanel>
-						<ScrollViewer DockPanel.Dock="Left">
-							<ListBox
+						<DataGrid
+							DockPanel.Dock="Left"
+								Name="SoundList"
+								Margin="20" 
+								ItemsSource="{Binding SelectedSoundGroup.Sounds}"
+								SelectedItem="{Binding SelectedSound, Mode=TwoWay}"
+								DoubleTapped="ListBox_DoubleTapped"
+								CanUserReorderColumns="True"
+								CanUserResizeColumns="True"
+								CanUserSortColumns="True"
+								GridLinesVisibility="All"
+								BorderThickness="1" 
+								BorderBrush="Gray">
+							<DataGrid.Columns>
+								<DataGridTemplateColumn Header="Index">
+									<DataGridTemplateColumn.CellTemplate>
+										<DataTemplate>
+											<TextBlock>
+												<TextBlock.Text>
+													<MultiBinding Converter="{StaticResource DataGridIndexConverter}">
+														<Binding Path="." />
+														<Binding Path="DataContext.SelectedSoundGroup.Sounds" RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
+													</MultiBinding>
+												</TextBlock.Text>
+											</TextBlock>
+										</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
+								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+								<DataGridTextColumn Header="Sample Rate" Binding="{Binding SampleRate}" />
+								<DataGridTextColumn Header="Channel Type" Binding="{Binding ChannelType}" />
+								<DataGridCheckBoxColumn Header="Has Loop" Binding="{Binding Loop, Mode=TwoWay}"/>
+								<DataGridTextColumn Header="Loop Point" Binding="{Binding LoopPoint}"/>
+								<DataGridTextColumn Header="Length" Binding="{Binding Length}" Width="*"/>
+							</DataGrid.Columns>
+						</DataGrid>
+							<!--<ListBox
 							Name="SoundList"
-							Width="400"
 							DockPanel.Dock="Top"
 							ItemsSource="{Binding SelectedSoundGroup.Sounds}"
 							SelectedItem="{Binding SelectedSound, Mode=TwoWay}"
 							DoubleTapped="ListBox_DoubleTapped">
-							<ListBox.ItemTemplate>
-								<DataTemplate>
-									<DockPanel
-										ToolTip.Tip="{Binding Name}">
-										<TextBlock
-											DockPanel.Dock="Left"
-											VerticalAlignment="Center">
-											<TextBlock.Text>
-												<MultiBinding 
-													Converter="{StaticResource ListBoxIndexConverter}">
-													<Binding Path="." />
-													<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
-												</MultiBinding>
-											</TextBlock.Text>
-										</TextBlock>
-										<TextBlock
-											DockPanel.Dock="Left"
-											Text="{Binding Name}"
-											VerticalAlignment="Center"/>
-										<TextBlock
-											DockPanel.Dock="Right"
-											HorizontalAlignment="Right"
-											Text="{Binding SampleRate}"
-											VerticalAlignment="Center"/>
-									</DockPanel>
-								</DataTemplate>
-							</ListBox.ItemTemplate>
+								<ListBox.ItemTemplate>
+									<DataTemplate>
+										<DockPanel
+											ToolTip.Tip="{Binding Name}">
+											<TextBlock
+												DockPanel.Dock="Left"
+												VerticalAlignment="Center">
+												<TextBlock.Text>
+													<MultiBinding 
+														Converter="{StaticResource ListBoxIndexConverter}">
+														<Binding Path="." />
+														<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
+													</MultiBinding>
+												</TextBlock.Text>
+											</TextBlock>
+											<TextBlock
+												DockPanel.Dock="Left"
+												Text="{Binding Name}"
+												VerticalAlignment="Center"/>
+											<TextBlock
+												DockPanel.Dock="Right"
+												HorizontalAlignment="Right"
+												Text="{Binding SampleRate}"
+												VerticalAlignment="Center"/>
+										</DockPanel>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
 							</ListBox>
-						</ScrollViewer>
-						<ScrollViewer DockPanel.Dock="Right">
-							<views:PropertyGridExt
-								Name="SoundPropertyGrid"
-								DockPanel.Dock="Left"
-								Margin="4"
-								NameWidth="96"
-								AllowQuickFilter="False"
-								AllowFilter="False"
-								AllowToggleView="False"
-								ShowStyle="Builtin"
-								DataContext="{Binding SelectedSound}">
-							</views:PropertyGridExt>
-						</ScrollViewer>
+							-->
 					</DockPanel>
 				</DockPanel>
 			</TabItem>

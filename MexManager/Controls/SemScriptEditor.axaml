@@ -12,6 +12,13 @@
 	</UserControl.Resources>
 	
 	<DockPanel>
+		<TextBlock
+			Text="Sound Script"
+			Margin="10"
+			FontSize="16"
+			DockPanel.Dock="Top"/>
+		<Separator
+			DockPanel.Dock="Top"/>
 		<views:PropertyGridExt
 			Name="ScriptPropertyGrid"
 			DockPanel.Dock="Top"
@@ -21,17 +28,9 @@
 			AllowFilter="False"
 			AllowToggleView="False"
 			ShowStyle="Builtin"
+			ShowTitle="False"
 			DataContext="{Binding}">
 		</views:PropertyGridExt>
-		<Separator
-			DockPanel.Dock="Top"/>
-		<TextBlock 
-			Text="Sound Script"
-			Margin="10"
-			FontSize="16"
-			DockPanel.Dock="Top"/>
-		<Separator
-			DockPanel.Dock="Top"/>
 		<Menu Height="48"
 			DockPanel.Dock="Top">
 			<controls:IconMenuItem

@@ -7,13 +7,9 @@ using MexManager.ViewModels;
 using System.IO;
 using MexManager.Extensions;
 using System.Linq;
-using System.Collections.Generic;
-using System;
 using Avalonia.Platform.Storage;
 using PropertyModels.ComponentModel;
 using System.ComponentModel;
-using PropertyModels.ComponentModel.DataAnnotations;
-using mexLib.Attributes;
 using mexLib;
 using mexLib.Utilties;
 
@@ -154,8 +150,6 @@ public partial class SoundGroupView : UserControl
                     if (newdsp != null)
                     {
                         sound.DSP = newdsp;
-                        SoundPropertyGrid.DataContext = null;
-                        SoundPropertyGrid.DataContext = sound;
                     }
                 }
             }
@@ -193,7 +187,14 @@ public partial class SoundGroupView : UserControl
             }
 
             // re select index
-            SoundList.SelectedIndex = index;
+            var source = SoundList.ItemsSource;
+            SoundList.ItemsSource = null;
+            SoundList.ItemsSource = source;
+            if (index >= 0 && index < group.Sounds.Count)
+            {
+                SoundList.SelectedItem = group.Sounds[index];
+                SoundList.ScrollIntoView(group.Sounds[index], null);
+            }
         }
     }
     /// <summary>
@@ -207,10 +208,10 @@ public partial class SoundGroupView : UserControl
             model.SelectedSoundGroup is MexSoundGroup group &&
             group.Scripts != null)
         {
-            group.Scripts.Add(new SemScript()
+            var newScript = new SemScript()
             {
                 Name = "SFX_Untitled",
-                Script = 
+                Script =
                 {
                     new SemCommand(SemCode.Sound, 0),
                     new SemCommand(SemCode.SetReverb, 1),
@@ -218,7 +219,9 @@ public partial class SoundGroupView : UserControl
                     new SemCommand(SemCode.SetVolume, 255),
                     new SemCommand(SemCode.End, 0),
                 }
-            });
+            };
+            group.Scripts.Add(newScript);
+            ScriptList.SelectedItem = newScript;
         }
     }
     /// <summary>
@@ -416,17 +419,6 @@ public partial class SoundGroupView : UserControl
         [DisplayName("Type")]
         public SoundGroupPresets TypePresets { get; set; } = SoundGroupPresets.Fighter;
 
-        [Category("Options")]
-        [DisplayName("Import From Existing")]
-        [ConditionTarget]
-        public bool CopySoundsAndScripts { get; set; } = false;
-
-        [Category("Options")]
-        [DisplayName("Select Source Bank")]
-        [VisibilityPropertyCondition(nameof(CopySoundsAndScripts), true)]
-        [MexLink(MexLinkType.Sound)]
-        public int SourceGroup { get; set; }
-
         public MexSoundGroup? CreateSoundGroup()
         {
             if (Global.Workspace == null)
@@ -442,13 +434,6 @@ public partial class SoundGroupView : UserControl
                 FileName = Path.GetFileName(uniquePath),
                 Scripts = [],
             };
-
-            // optionally copy sounds and scripts
-            if (CopySoundsAndScripts)
-            {
-                var source = Global.Workspace.Project.SoundGroups[SourceGroup];
-                group.CopyFrom(source);
-            }
 
             // add new ssm to workspace
             Global.Workspace.FileManager.Set(uniquePath, []);
@@ -491,11 +476,8 @@ public partial class SoundGroupView : UserControl
         if (Global.Workspace != null)
         {
             var popup = new PropertyGridPopup();
-            var options = new AddGroupOptions()
-            {
-                SourceGroup = GroupList.SelectedIndex >= 0 ? GroupList.SelectedIndex : 0,
-                CopySoundsAndScripts = GroupList.SelectedIndex >= 0,
-            };
+            var options = new AddGroupOptions();
+
             popup.SetObject("Create SoundBank", "Confirm", options);
 
             if (App.MainWindow != null)
@@ -508,6 +490,86 @@ public partial class SoundGroupView : UserControl
 
                     if (group != null)
                         Global.Workspace.Project.AddSoundGroup(group);
+
+                    GroupList.SelectedItem = group;
+                }
+            }
+        }
+    }
+    public class CopyGroupOptions : ReactiveObject
+    {
+        [Category("Options")]
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                File = FileIO.SanitizeFilename($"{_name.ToLower()}.ssm");
+                RaisePropertyChanged(nameof(File));
+            }
+        }
+        private string _name = "New";
+
+        [Category("Options")]
+        [DisplayName("File")]
+        [Browsable(false)]
+        public string File { get; internal set; } = "new.ssm";
+
+        public MexSoundGroup? CreateSoundGroup(MexSoundGroup sourceGroup)
+        {
+            if (Global.Workspace == null)
+                return null;
+
+            // get unique path
+            var uniquePath = Global.Workspace.FileManager.GetUniqueFilePath(Global.Workspace.GetFilePath($"audio\\us\\{File}"));
+
+            // generate group
+            var group = new MexSoundGroup()
+            {
+                Name = Name,
+                FileName = Path.GetFileName(uniquePath),
+                Scripts = [],
+            };
+
+            // copy sounds and scripts
+            group.CopyFrom(sourceGroup);
+
+            // add new ssm to workspace
+            Global.Workspace.FileManager.Set(uniquePath, []);
+
+            return group;
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void CopyGroup_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            GroupList.SelectedItem is MexSoundGroup source)
+        {
+            var popup = new PropertyGridPopup();
+            var options = new CopyGroupOptions()
+            {
+                Name = source.Name + "_copy",
+            };
+            popup.SetObject("Duplicate SoundBank", "Confirm", options);
+
+            if (App.MainWindow != null)
+            {
+                await popup.ShowDialog(App.MainWindow);
+
+                if (popup.Confirmed)
+                {
+                    var group = options.CreateSoundGroup(source);
+
+                    if (group != null)
+                        Global.Workspace.Project.AddSoundGroup(group);
+
+                    GroupList.SelectedItem = group;
                 }
             }
         }

@@ -50,7 +50,7 @@ namespace mexLib.Types
         public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
 
         [Category("General")]
-        [DisplayName("FileName")]
+        [DisplayName("File")]
         [ReadOnly(true)]
         public string FileName { get; set; } = "";
 
@@ -192,6 +192,12 @@ namespace mexLib.Types
         /// <param name="group"></param>
         public void CopyFrom(MexSoundGroup group)
         {
+            Flags = group.Flags;
+            Group = group.Group;
+            Type = group.Type;
+            SubType = group.SubType;
+            Mushroom = group.Mushroom;
+
             if (Scripts != null &&
                 group.Scripts != null)
             {
