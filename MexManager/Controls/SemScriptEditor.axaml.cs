@@ -235,13 +235,4 @@ public partial class SemScriptEditor : UserControl
             }
         }
     }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void ComboBox_SelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
-    {
-        // TODO: ensure loop end sanity
-    }
 }

@@ -335,7 +335,6 @@ public class MainViewModel : ViewModelBase
         if (res == MessageBox.MessageBoxResult.Yes)
             Global.SaveWorkspace();
 
-
         ProgressWindow progressWindow = new ();
         BackgroundWorker backgroundWorker = new ()
         {

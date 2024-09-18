@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using mexLib.AssetTypes;
 using MexManager.Controls;
 using Avalonia.Platform.Storage;
+using mexLib.Utilties;
 
 namespace MexManager.Factories
 {
@@ -79,7 +80,12 @@ namespace MexManager.Factories
 
                 if (file != null)
                 {
-                    asset.SetFromData(Global.Workspace, File.ReadAllBytes(file));
+                    var obj = new ObjFile();
+                    using var fs = new FileStream(file, FileMode.Open);
+                    obj.Load(fs);
+                    obj.FlipFaces();
+
+                    asset.SetFromObjFile(Global.Workspace, obj);
                     objControl.RefreshRender();
                 }
             };

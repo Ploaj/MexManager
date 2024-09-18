@@ -260,7 +260,7 @@
 								<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
 								<DataGridTextColumn Header="Sample Rate" Binding="{Binding SampleRate}" />
 								<DataGridTextColumn Header="Channel Type" Binding="{Binding ChannelType}" />
-								<DataGridCheckBoxColumn Header="Has Loop" Binding="{Binding Loop, Mode=TwoWay}"/>
+								<DataGridCheckBoxColumn Header="Use Loop" Binding="{Binding Loop, Mode=TwoWay}"/>
 								<DataGridTextColumn Header="Loop Point" Binding="{Binding LoopPoint}"/>
 								<DataGridTextColumn Header="Length" Binding="{Binding Length}" Width="*"/>
 							</DataGrid.Columns>

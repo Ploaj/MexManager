@@ -52,7 +52,13 @@ namespace mexLib.Types
 
             zip.WriteAsJson("stage.json", stage);
             zip.TryWriteTextureAsset(workspace, stage.IconAsset, "icon.png");
-            // TODO: write obj asset zip.Write("icon.obj", stage.ModelAsset.get);
+            var obj = stage.ModelAsset.GetOBJFile(workspace);
+            if (obj != null)
+            {
+                using var objStream = new MemoryStream();
+                obj.Write(objStream);
+                zip.Write("icon.obj", objStream.ToArray());
+            }
         }
         /// <summary>
         /// 

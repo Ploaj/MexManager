@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using MeleeMedia.Audio;
@@ -8,10 +9,35 @@ using mexLib.Types;
 using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System;
 using System.IO;
 
 namespace MexManager.Views;
 
+public class MusicIndexConverter : IMultiValueConverter
+{
+    public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (values.Count < 2)
+            return null;
+
+        if (values[0] is not MexMusic music)
+            return null;
+
+        if (values[1] is not ObservableCollection<MexMusic> list)
+            return null;
+
+        return $"{list.IndexOf(music):D3}";
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
 public partial class MainView : UserControl
 {
     // TODO: hide editor until workspace is loaded
@@ -287,7 +313,9 @@ public partial class MainView : UserControl
                     Global.Files.Remove(Global.Workspace.GetFilePath($"audio\\{music.FileName}"));
                 }
 
-                MusicList.RefreshList();
+                var source = MusicList.ItemsSource;
+                MusicList.ItemsSource = null;
+                MusicList.ItemsSource = source;
             }
         }
     }

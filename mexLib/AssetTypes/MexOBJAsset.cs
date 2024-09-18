@@ -74,6 +74,20 @@ namespace mexLib.AssetTypes
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="obj"></param>
+        public void SetFromObjFile(MexWorkspace workspace, ObjFile obj)
+        {
+            var path = GetFullPath(workspace);
+
+            // set data
+            using var stream = new MemoryStream();
+            obj.Write(stream);
+            workspace.FileManager.Set(path + ".obj", stream.ToArray());
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="dobj"></param>
         public void SetFromDObj(MexWorkspace workspace, HSD_DOBJ dobj)
         {

@@ -121,12 +121,13 @@ namespace mexLib
                 File.WriteAllBytes(Path.Combine(sys, "boot.bin"), iso.Boot);
                 File.WriteAllBytes(Path.Combine(sys, "bi2.bin"), iso.Boot2);
 
+                File.WriteAllBytes(workspace.GetFilePath("GmRst.usd"), iso.GetFileData("GmRst.usd"));
                 File.WriteAllBytes(workspace.GetFilePath("MnSlChr.usd"), iso.GetFileData("MnSlChr.usd"));
                 File.WriteAllBytes(workspace.GetFilePath("MnSlMap.usd"), iso.GetFileData("MnSlMap.usd"));
                 File.WriteAllBytes(workspace.GetFilePath("SmSt.dat"), iso.GetFileData("SmSt.dat"));
                 File.WriteAllBytes(workspace.GetFilePath("audio/us/smash2.sem"), iso.GetFileData("audio/us/smash2.sem"));
 
-                // TODO: write iso files
+                // TODO: extract iso files
                 //int index = 0;
                 //foreach (var file in iso.GetAllFilePaths())
                 //{
@@ -250,7 +251,13 @@ namespace mexLib
 
             Debug.WriteLine($"Generate MnSlMap {sw.Elapsed}");
 
-            // TODO: generate result screen
+            // generate result screen
+            sw.Restart();
+            GenerateGmRst.Compile(this);
+            sw.Stop();
+            total += sw.Elapsed;
+
+            Debug.WriteLine($"Generate GmRst {sw.Elapsed}");
 
             // generate sem/smst/ssm
             sw.Restart();

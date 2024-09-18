@@ -31,7 +31,7 @@ namespace MexManager
 
         public static void Initialize()
         {
-            // TODO: check update for codes and tool
+            // TODO: check update for tool
             //Updater.UpdateCodes();
         }
 

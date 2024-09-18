@@ -111,7 +111,6 @@
 								HorizontalAlignment="Stretch"
 								ItemsSource="{Binding Selectable}}"
 								SelectedItem="{Binding SemCode, Mode=TwoWay}"
-								SelectionChanged="ComboBox_SelectionChanged"
 								IsVisible="{Binding CanChangeCode}"/>
 
 							<TextBlock 

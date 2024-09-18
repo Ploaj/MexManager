@@ -17,6 +17,10 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
+	<UserControl.Resources>
+		<views:MusicIndexConverter x:Key="MusicIndexConverter"/>
+	</UserControl.Resources>
+
 	<DockPanel>
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
@@ -311,23 +315,39 @@
 									</MenuItem.Header>
 								</MenuItem>
 							</Menu>
-							<pgc:PropertyGrid
-								DockPanel.Dock="Bottom"
-								x:Name="MusicPropertyGrid"
-								AllowFilter="False"
-								AllowQuickFilter="False"
-								ShowStyle="Builtin"
-								Margin="4"
-								DataContext="{Binding SelectedMusic}"
-								Height="120"/>
-							<ListBox
+							
+							<DataGrid
 								DockPanel.Dock="Left"
 								Name="MusicList"
+								Margin="20"
 								DoubleTapped="MusicList_DoubleClicked"
 								ItemsSource="{Binding Music}"
-								ItemTemplate="{StaticResource IndexedItemTemplate}"
-								SelectedItem="{Binding SelectedMusic, Mode=TwoWay}">
-							</ListBox>
+								SelectedItem="{Binding SelectedMusic, Mode=TwoWay}"
+								CanUserReorderColumns="True"
+								CanUserResizeColumns="True"
+								CanUserSortColumns="False"
+								GridLinesVisibility="All"
+								BorderThickness="1"
+								BorderBrush="Gray">
+								<DataGrid.Columns>
+									<DataGridTemplateColumn Header="Index">
+										<DataGridTemplateColumn.CellTemplate>
+											<DataTemplate>
+												<TextBlock>
+													<TextBlock.Text>
+														<MultiBinding Converter="{StaticResource MusicIndexConverter}">
+															<Binding Path="." />
+															<Binding Path="DataContext.Music" RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
+														</MultiBinding>
+													</TextBlock.Text>
+												</TextBlock>
+											</DataTemplate>
+										</DataGridTemplateColumn.CellTemplate>
+									</DataGridTemplateColumn>
+									<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+									<DataGridTextColumn Header="File" Binding="{Binding FileName}" Width="*" IsReadOnly="True"/>
+								</DataGrid.Columns>
+							</DataGrid>
 						</DockPanel>
 					</DockPanel>
 				</TabItem>

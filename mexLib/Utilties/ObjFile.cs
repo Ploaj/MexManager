@@ -130,5 +130,13 @@ namespace mexLib.Utilties
             }
             return face;
         }
+
+        public void FlipFaces()
+        {
+            foreach (var face in Faces)
+            {
+                face.Vertices.Reverse();
+            }
+        }
     }
 }

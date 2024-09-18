@@ -94,7 +94,8 @@ namespace mexLib
             yield return MainCode;
 
             foreach (var c in Codes)
-                yield return c;
+                if (c.Enabled)
+                    yield return c;
         }
         /// <summary>
         /// 
