@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Security;
 using MexManager.Extensions;
+using System.Linq;
 
 namespace MexManager.Controls;
 
@@ -44,7 +45,7 @@ public class SemLoopOffsetConverter : IMultiValueConverter
         int offset = 0;
         int offset_size = 24;
 
-        foreach (SemCommand? command in list.Items)
+        foreach (SemCommand? command in list.Items.Cast<SemCommand>())
         {
             if (command == null)
                 continue;

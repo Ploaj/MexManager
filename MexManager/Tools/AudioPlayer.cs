@@ -3,6 +3,7 @@ using OpenTK.Audio.OpenAL;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -31,14 +32,15 @@ namespace MexManager.Tools
 
         public TimeSpan LoopPoint { get; internal set; }
 
-        public double LoopPointMilliseconds
+        public double LoopPointPercentage
         {
             set
             {
-                LoopPoint = TimeSpan.FromMilliseconds(value);
                 _loopPoint = (int)(_totalSize * value);
             }
         }
+
+        public double EndPercentage { get; set; } = 1.0;
 
         public bool EnableLoop { get; set; } = true;
 
@@ -184,6 +186,15 @@ namespace MexManager.Tools
         {
             if (!Initialize)
                 return;
+
+            // trim end loop point
+            if (Percentage >= EndPercentage)
+            {
+                var isPlaying = State == ALSourceState.Playing;
+                Stop();
+                AL.Source(_source, ALSourcei.SampleOffset, _loopPoint);
+                AL.SourcePlay(_source);
+            }
 
             if (!EnableLoop || !_hasLoop)
                 return;

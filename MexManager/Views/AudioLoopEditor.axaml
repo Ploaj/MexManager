@@ -32,12 +32,6 @@
 				</MenuItem.Header>
 			</MenuItem>
 		</Menu>
-		<Canvas Name="WaveformCanvas"
-				Width="640"
-				Height="200"
-				Background="Black"
-				DockPanel.Dock="Top">
-		</Canvas>
 		<Button
 			HorizontalAlignment="Stretch"
 			HorizontalContentAlignment="Center"
@@ -58,7 +52,7 @@
 				   Name="PlayPauseImage"/>
 		</Button>
 		<DockPanel
-			DockPanel.Dock="Top">
+			DockPanel.Dock="Bottom">
 			<StackPanel
 			Margin="5"
 			Orientation="Vertical"
@@ -89,5 +83,11 @@
 					Name="EndTimeSpanPicker"/>
 			</StackPanel>
 		</DockPanel>
+		<Canvas Name="WaveformCanvas"
+				Width="640"
+				Height="200"
+				Background="Black"
+				DockPanel.Dock="Left">
+		</Canvas>
 	</DockPanel>
 </Window>

@@ -1,18 +1,9 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Layout;
-using Avalonia.Media.Imaging;
 using Avalonia.PropertyGrid.Controls;
-using Avalonia;
 using Avalonia.PropertyGrid.Controls.Factories;
-using MeleeMedia.Video;
-using mexLib.Attributes;
 using MexManager.Tools;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using mexLib.AssetTypes;
 using MexManager.Controls;
 using Avalonia.Platform.Storage;
@@ -54,8 +45,8 @@ namespace MexManager.Factories
 
             var objControl = new ObjControl(asset)
             {
-                HorizontalAlignment=HorizontalAlignment.Stretch,
-                Height = 240,
+                HorizontalAlignment=HorizontalAlignment.Left,
+                Height = 320,
             };
 
             // Create the Image control
@@ -63,7 +54,7 @@ namespace MexManager.Factories
             var importButton = new Button()
             {
                 Content = "Import OBJ",
-                HorizontalAlignment = HorizontalAlignment.Stretch
+                HorizontalAlignment = HorizontalAlignment.Center
             };
             importButton.Click += async (s, e) =>
             {
@@ -92,7 +83,7 @@ namespace MexManager.Factories
             var exportButton = new Button()
             {
                 Content = "Export OBJ",
-                HorizontalAlignment = HorizontalAlignment.Stretch
+                HorizontalAlignment = HorizontalAlignment.Center
             };
             exportButton.Click += async (s, e) =>
             {
@@ -116,7 +107,6 @@ namespace MexManager.Factories
                     }
                 }
             };
-
             var optionStack = new StackPanel
             {
                 Orientation = Orientation.Horizontal,

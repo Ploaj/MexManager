@@ -123,9 +123,9 @@ namespace MexManager.ViewModels
             {
                 OffsetX = (int)(_soundPlayer.Percentage * Width);
             }
-            var l = _soundPlayer?.LoopPoint;
-            if (l != null)
-                StartTime = $"Loop Point: {l.Value.Minutes}:{l.Value.Seconds}";
+            //var l = _soundPlayer?.LoopPoint;
+            //if (l != null)
+            //    StartTime = $"Loop Point: {l.Value.Minutes}:{l.Value.Seconds}";
         }
         /// <summary>
         /// 

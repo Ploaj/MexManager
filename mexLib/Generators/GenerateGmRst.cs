@@ -48,10 +48,10 @@ namespace mexLib.Generators
             if (sobj.JOBJDescs.Length < 1)
                 return;
 
-            List<FOBJKey> largekeys = new List<FOBJKey>();
-            List<HSD_TOBJ> largetobjs = new List<HSD_TOBJ>();
-            List<FOBJKey> smallkeys = new List<FOBJKey>();
-            List<HSD_TOBJ> smalltobjs = new List<HSD_TOBJ>();
+            List<FOBJKey> largekeys = new ();
+            List<HSD_TOBJ> largetobjs = new ();
+            List<FOBJKey> smallkeys = new ();
+            List<HSD_TOBJ> smalltobjs = new ();
             // loop through fighters
             for (int internalId = 0; internalId < workspace.Project.Fighters.Count; internalId++)
             {
@@ -128,10 +128,7 @@ namespace mexLib.Generators
 
                 // edit timg track
                 var timg = joint.TextureAnimation.AnimationObject.FObjDesc.List.Find(e => e.TexTrackType == TexTrackType.HSD_A_T_TIMG);
-                if (timg != null)
-                {
-                    timg.SetKeys(largekeys.OrderBy(e => e.Frame).ToList(), timg.TrackType);
-                }
+                timg?.SetKeys(largekeys.OrderBy(e => e.Frame).ToList(), timg.TrackType);
             }
 
             // add small name banners
@@ -166,10 +163,7 @@ namespace mexLib.Generators
 
                     // edit timg track
                     var timg = joint.TextureAnimation.AnimationObject.FObjDesc.List.Find(e => e.TexTrackType == TexTrackType.HSD_A_T_TIMG);
-                    if (timg != null)
-                    {
-                        timg.SetKeys(smallkeys.OrderBy(e => e.Frame).ToList(), timg.TrackType);
-                    }
+                    timg?.SetKeys(smallkeys.OrderBy(e => e.Frame).ToList(), timg.TrackType);
                 }
             }
         }

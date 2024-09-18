@@ -48,6 +48,7 @@ public partial class AudioLoopEditor : Window
                 value = LoopPoint;
 
             _endPercentage = value;
+            player.EndPercentage = value;
             var pos = value * WaveformCanvas.Bounds.Width;
             if (endLine != null && DSP != null)
             {
@@ -72,7 +73,7 @@ public partial class AudioLoopEditor : Window
             if (DSP != null && loopLine != null && LoopTimeSpanPicker != null)
             {
                 DSP.LoopPointMilliseconds = value * DSP.TotalMilliseconds;
-                player.LoopPointMilliseconds = value;
+                player.LoopPointPercentage = value;
                 var pos = value * WaveformCanvas.Bounds.Width;
                 loopLine.StartPoint = new Point(pos, 0);
                 loopLine.EndPoint = new Point(pos, WaveformCanvas.Bounds.Height);
@@ -144,15 +145,6 @@ public partial class AudioLoopEditor : Window
         positionUpdateTimer = new Timer(30); // Update every second
         positionUpdateTimer.Elapsed += async (sender, e) =>
         {
-            // trim end loop point
-            if (player.Percentage >= EndPercentage)
-            {
-                var isPlaying = player.State == OpenTK.Audio.OpenAL.ALSourceState.Playing;
-                player.SeekPercentage(LoopPoint);
-                if (isPlaying)
-                    player.Play();
-            }
-
             // Update the current position based on the sound player's playback position
             currentPosition = player.Percentage * totalDuration; // Replace with actual method to get position
 
