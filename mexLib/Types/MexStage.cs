@@ -11,7 +11,7 @@ using System.IO.Compression;
 
 namespace mexLib.Types
 {
-    public partial class MexStage
+    public partial class MexStage : MexReactiveObject
     {
         [Category("0 - General"), DisplayName("Name")]
         public string Name { get; set; } = "";
@@ -34,7 +34,9 @@ namespace mexLib.Types
 
         [Category("1 - Sound"), DisplayName("Sound Bank")]
         [MexLink(MexLinkType.Sound)]
-        public int SoundBank { get; set; }
+        public int SoundBank { get => _soundBank; set { _soundBank = value; OnPropertyChanged(); } }
+
+        private int _soundBank;
 
         [Category("1 - Sound"), DisplayName("Reverb 1")]
         public int ReverbValue1 { get; set; }
@@ -211,11 +213,24 @@ namespace mexLib.Types
         /// <summary>
         /// 
         /// </summary>
+        public class StagePackOptions
+        {
+            [Category("Options")]
+            [DisplayName("Make Copy of File")]
+            public bool ExportFiles { get; set; }
+
+            [Category("Options")]
+            [DisplayName("Make Copy of SoundBank")]
+            public bool ExportSound { get; set; }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="s"></param>
         /// <param name="workspace"></param>
         /// <param name="stage"></param>
         /// <param name="options"></param>
-        public static void ToPackage(Stream s, MexWorkspace workspace, MexStage stage)
+        public static void ToPackage(Stream s, MexWorkspace workspace, MexStage stage, StagePackOptions options)
         {
             using var zip = new ZipWriter(s);
 
@@ -224,23 +239,29 @@ namespace mexLib.Types
 
             // write assets
             stage.Assets.ToPackage(workspace, zip);
+            
+            if (options.ExportFiles)
+            {
+                // write files
+                if (stage.FileName != null)
+                    zip.TryWriteFile(workspace, stage.FileName, stage.FileName);
 
-            // write files
-            if (stage.FileName != null)
-                zip.TryWriteFile(workspace, stage.FileName, stage.FileName);
-
-            // write additional files
-            foreach (var f in stage.AdditionalFiles)
-                zip.TryWriteFile(workspace, f, f);
+                // write additional files
+                foreach (var f in stage.AdditionalFiles)
+                    zip.TryWriteFile(workspace, f, f);
+            }
 
             // write playlist music??
 
-            // write soundbank
-            if (stage.SoundBank != 55)
+            if (options.ExportSound)
             {
-                using var ms = new MemoryStream();
-                MexSoundGroup.ToPackage(workspace.Project.SoundGroups[stage.SoundBank], ms);
-                zip.Write("sound.zip", ms.ToArray());
+            // write soundbank
+                if (stage.SoundBank != 55)
+                {
+                    using var ms = new MemoryStream();
+                    MexSoundGroup.ToPackage(workspace.Project.SoundGroups[stage.SoundBank], ms);
+                    zip.Write("sound.zip", ms.ToArray());
+                }
             }
         }
         /// <summary>

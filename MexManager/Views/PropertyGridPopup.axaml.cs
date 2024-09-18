@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.PropertyGrid.Controls;
+using System.Threading.Tasks;
 
 namespace MexManager.Views;
 
@@ -53,5 +54,23 @@ public partial class PropertyGridPopup : Window
     {
         Confirmed = true;
         this.Close();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="title"></param>
+    /// <param name="confirm_text"></param>
+    /// <param name="o"></param>
+    /// <returns></returns>
+    public async static Task<bool> ShowDialog(string title, string confirm_text, object? o)
+    {
+        var popup = new PropertyGridPopup();
+        popup.SetObject(title, confirm_text, o);
+        if (App.MainWindow != null)
+        {
+            await popup.ShowDialog(App.MainWindow);
+            return popup.Confirmed;
+        }
+        return false;
     }
 }
