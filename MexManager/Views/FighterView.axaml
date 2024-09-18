@@ -51,6 +51,12 @@
 					IconSource="avares://MexManager/Assets/Common/icon_create.png"
 					Click="AddFighterMenuItem_Click"/>
 				<controls:IconMenuItem
+					Text="Duplicate"
+					ToolTip.Tip="Duplicate"
+					IconSource="avares://MexManager/Assets/Common/icon_copy.png"
+					IsEnabled="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"
+					Click="DuplicateFighterMenuItem_Click"/>
+				<controls:IconMenuItem
 					Text="Remove"
 					ToolTip.Tip="Remove"
 					IsEnabled="{Binding SelectedFighter, Converter={StaticResource NullToBoolConverter}}"

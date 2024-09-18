@@ -26,58 +26,20 @@ public partial class FighterView : UserControl
     {
         InitializeComponent();
     }
-    public class AddFighterOptions : ReactiveObject
-    {
-        [Category("Fighter")]
-        [DisplayName("Use Fighter Base")]
-        [ConditionTarget]
-        public bool UseFighterBase { get; set; }
-
-        [DisplayName("Fighter Base")]
-        [VisibilityPropertyCondition(nameof(UseFighterBase), true)]
-        [MexLink(MexLinkType.Fighter)]
-        public int FighterBase { get; set; }
-
-        // TODO: create soundbank
-
-        // TODO: convert sound ids to mex
-
-        // TODO: convert effect ids to mex
-
-        // TODO: extract and create demo files ftDemoIntroMotionFile
-    }
     /// <summary>
     /// 
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private async void AddFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void AddFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        var popup = new PropertyGridPopup();
-        var options = new AddFighterOptions();
-        popup.SetObject("Add Fighter", "Confirm", options);
-
-        if (App.MainWindow != null)
+        if (Global.Workspace != null)
         {
-            await popup.ShowDialog(App.MainWindow);
-
-            if (popup.Confirmed)
+            Global.Workspace.Project.AddNewFighter(new MexFighter()
             {
-
-            }
+                Name = "NewFighter"
+            });
         }
-
-        // TODO: add new fighter
-        //var addfighter = Global.Workspace?.Project.AddNewFighter(new MexFighter());
-        //if (addfighter == null)
-        //{
-        //    await MessageBox.Show("Failed to add new fighter\nNo workspace is currently loaded.", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
-        //}
-        //else if (addfighter == false)
-        //{
-        //    await MessageBox.Show("Failed to add new fighter", "Add Fighter Error", MessageBox.MessageBoxButtons.Ok);
-        //}
-        //FighterList.RefreshList();
     }
     /// <summary>
     /// 
@@ -147,8 +109,45 @@ public partial class FighterView : UserControl
             var file = await FileIO.TrySaveFile("Export Fighter", fighter.Name + ".zip", FileIO.FilterZip);
             if (file != null)
             {
+                var options = new MexFighter.FighterPackOptions();
+
+                if (!await PropertyGridPopup.ShowDialog("Fighter Export Options", "Export Fighter", options))
+                    return;
+
                 using var stream = new FileStream(file, FileMode.Create);
-                fighter.ToPackage(Global.Workspace, stream);
+                fighter.ToPackage(Global.Workspace, stream, options);
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void DuplicateFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            FighterList.SelectedItem is MexFighter fighter)
+        {
+            var options = new MexFighter.FighterPackOptions()
+            {
+                ExportFiles = false,
+                ExportCostumes = false,
+                ExportMedia = false,
+                ExportSoundBank = false,
+            };
+
+            if (!await PropertyGridPopup.ShowDialog("Fighter Duplicate Options", "Duplicate Fighter", options))
+                return;
+
+            using var stream = new MemoryStream();
+            fighter.ToPackage(Global.Workspace, stream, options);
+            stream.Position = 0;
+            MexFighter.FromPackage(Global.Workspace, stream, out MexFighter? newfighgter);
+            if (newfighgter != null)
+            {
+                Global.Workspace.Project.AddNewFighter(newfighgter);
+                FighterList.SelectedItem = newfighgter;
             }
         }
     }

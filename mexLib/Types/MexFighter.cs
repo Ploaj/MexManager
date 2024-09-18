@@ -345,12 +345,36 @@ namespace mexLib.Types
         {
             return Name;
         }
+        public class FighterPackOptions
+        {
+            [Category("Options")]
+            [DisplayName("Include Files")]
+            public bool ExportFiles { get; set; } = true;
+
+            [Category("Options")]
+            [DisplayName("Include Soundbank")]
+            public bool ExportSoundBank { get; set; } = true;
+
+            [Category("Options")]
+            [DisplayName("Include Media")]
+            public bool ExportMedia { get; set; } = true;
+
+            [Category("Options")]
+            [DisplayName("Include Media")]
+            public bool ExportCostumes { get; set; } = true;
+
+            // TODO: convert sound ids to mex
+            // TODO: convert effect ids to mex
+
+            // TODO: extract and create demo files ftDemoIntroMotionFile
+
+        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="zip"></param>
-        public MexInstallerError? ToPackage(MexWorkspace workspace, Stream stream)
+        public MexInstallerError? ToPackage(MexWorkspace workspace, Stream stream, FighterPackOptions options)
         {
             // create zip
             using var zip = new ZipWriter(stream);
@@ -359,12 +383,14 @@ namespace mexLib.Types
             zip.WriteAsJson("fighter.json", this);
 
             // write files
-            Files.ToPackage(workspace, zip);
+            if (options.ExportFiles)
+                Files.ToPackage(workspace, zip);
 
             // write assets
             Assets.ToPackage(workspace, zip);
 
             // write media
+            if (options.ExportMedia)
             {
                 zip.TryWriteFile(workspace, Media.EndAllStarFile, Media.EndAllStarFile);
                 zip.TryWriteFile(workspace, Media.EndClassicFile, Media.EndClassicFile);
@@ -373,20 +399,22 @@ namespace mexLib.Types
             }
 
             // write soundbank
-            if (SoundBank != 55)
-            {
-                using var ms = new MemoryStream();
-                MexSoundGroup.ToPackage(workspace.Project.SoundGroups[SoundBank], ms);
-                zip.Write("sound.zip", ms.ToArray());
-            }
+            if (options.ExportSoundBank)
+                if (SoundBank != 55)
+                {
+                    using var ms = new MemoryStream();
+                    MexSoundGroup.ToPackage(workspace.Project.SoundGroups[SoundBank], ms);
+                    zip.Write("sound.zip", ms.ToArray());
+                }
 
             // write costumes
-            foreach (var c in Costumes)
-            {
-                using var s = new MemoryStream();
-                c.PackToZip(workspace, s);
-                zip.Write(Path.GetFileNameWithoutExtension(c.File.FileName) + ".zip", s.ToArray());
-            }
+            if (options.ExportCostumes)
+                foreach (var c in Costumes)
+                {
+                    using var s = new MemoryStream();
+                    c.PackToZip(workspace, s);
+                    zip.Write(Path.GetFileNameWithoutExtension(c.File.FileName) + ".zip", s.ToArray());
+                }
 
             return null;
         }

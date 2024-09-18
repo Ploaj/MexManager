@@ -216,11 +216,11 @@ namespace mexLib.Types
         public class StagePackOptions
         {
             [Category("Options")]
-            [DisplayName("Make Copy of File")]
+            [DisplayName("Include File")]
             public bool ExportFiles { get; set; }
 
             [Category("Options")]
-            [DisplayName("Make Copy of SoundBank")]
+            [DisplayName("Include SoundBank")]
             public bool ExportSound { get; set; }
         }
         /// <summary>
