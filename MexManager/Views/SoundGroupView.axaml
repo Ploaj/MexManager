@@ -126,6 +126,7 @@
 								<ListBox.ItemTemplate>
 									<DataTemplate>
 										<DockPanel
+											Height="24"
 											ToolTip.Tip="{Binding Name}">
 											<TextBlock
 												DockPanel.Dock="Left"
@@ -232,7 +233,7 @@
 						<DataGrid
 							DockPanel.Dock="Left"
 								Name="SoundList"
-								Margin="20" 
+								Margin="10" 
 								ItemsSource="{Binding SelectedSoundGroup.Sounds}"
 								SelectedItem="{Binding SelectedSound, Mode=TwoWay}"
 								DoubleTapped="ListBox_DoubleTapped"

@@ -251,7 +251,7 @@ namespace mexLib
             mexData.MetaData = new MEX_Meta()
             {
                 NumOfCSSIcons = proj.CharacterSelect.FighterIcons.Count,
-                NumOfSSSIcons = proj.StageSelects[0].StageIcons.Count,
+                NumOfSSSIcons = proj.StageSelects.Sum(e=>e.StageIcons.Count),
                 NumOfEffects = gen.EffectFiles.Count,
                 NumOfSSMs = proj.SoundGroups.Count,
                 NumOfMusic = proj.Music.Count,
@@ -268,13 +268,34 @@ namespace mexLib
             mexData.MetaData._s.SetByte(0, workspace.VersionMajor);
             mexData.MetaData._s.SetByte(1, workspace.VersionMinor);
 
+            // get stage selects icons
+            var icons = proj.StageSelects.SelectMany(e => e.StageIcons.Select(e => e.ToIcon())).ToList();
+
+            // generate random bitfield
+            var bitfield = new byte[icons.Count / 8 + 1];
+            for (int i = 0; i < bitfield.Length; i++)
+                bitfield[i] = 0xFF;
+
             // write menu data
             mexData.MenuTable = new()
             {
-                Parameters = new MEX_MenuParameters(),
+                Parameters = new MEX_MenuParameters()
+                {
+                    CSSHandScale = proj.CharacterSelect.CharacterSelectHandScale,
+                    StageSelectCursorStartX = workspace.Project.StageSelectParams.StageSelectCursorStartX,
+                    StageSelectCursorStartY = workspace.Project.StageSelectParams.StageSelectCursorStartY,
+                    StageSelectCursorStartZ = workspace.Project.StageSelectParams.StageSelectCursorStartZ,
+                },
+                CSSIconData = new MEX_IconData()
+                {
+                    Icons = proj.CharacterSelect.FighterIcons.Select((e, i) => e.ToIcon(i)).ToArray()
+                },
+                SSSIconData = new HSDArrayAccessor<MEX_StageIconData>()
+                {
+                    Array = icons.ToArray(),
+                },
+                SSSBitField = new SSSBitfield() { Array = bitfield }
             };
-            proj.CharacterSelect.ToMxDt(gen);
-            proj.StageSelects[0].ToMxDt(gen);
 
             // save files
             gen.Save();

@@ -44,20 +44,6 @@ namespace mexLib.Types
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="gen"></param>
-        public void ToMxDt(MexGenerator gen)
-        {
-            var tb = gen.Data.MenuTable;
-            tb.Parameters.CSSHandScale = CharacterSelectHandScale;
-
-            tb.CSSIconData = new MEX_IconData()
-            {
-                Icons = FighterIcons.Select((e, i) => e.ToIcon(i)).ToArray()
-            };
-        }
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="ws"></param>
         public void ApplyCompression(MexWorkspace ws)
         {

@@ -72,7 +72,8 @@
 			DockPanel.Dock="Bottom"
 			HorizontalAlignment="Stretch"/>
 		
-		<DockPanel>
+		<DockPanel
+			IsVisible="{Binding Fighters, Converter={StaticResource NullToBoolConverter}}">
 			<TabControl Margin="0"
 						Padding="0"
 						TabStripPlacement="Left">
@@ -140,6 +141,7 @@
 										Margin="4"
 										DataContext="{Binding SelectedSeries}"/>
 										<Button
+											IsVisible="{Binding SelectedSeries, Converter={StaticResource NullToBoolConverter}}"
 											Content="Generate Icon from Model"
 											Click="SeriesGenerateIconButton_Click"/>
 									</StackPanel>
@@ -219,7 +221,7 @@
 							<DataGrid
 								DockPanel.Dock="Left"
 								Name="MusicList"
-								Margin="20"
+								Margin="10"
 								DoubleTapped="MusicList_DoubleClicked"
 								ItemsSource="{Binding Music}"
 								SelectedItem="{Binding SelectedMusic, Mode=TwoWay}"

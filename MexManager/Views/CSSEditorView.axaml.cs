@@ -24,6 +24,7 @@ public partial class CSSEditorView : UserControl
                 model.CharacterSelect != null)
             {
                 var Icons = model.CharacterSelect.FighterIcons;
+                //Icons.Move(i, j);
                 (Icons[i], Icons[j]) = (Icons[j], Icons[i]);
             }
             ApplySelectTemplate();

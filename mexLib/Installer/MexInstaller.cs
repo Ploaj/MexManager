@@ -129,7 +129,7 @@ namespace mexLib.Installer
             InstallCSS(workspace);
 
             // extract sss
-            var sss = new MexStageSelect();
+            var sss = new MexStageSelect() { Name = "Melee" };
             sss.FromDOL(dol);
             project.StageSelects.Add(sss);
             InstallSSS(workspace);

@@ -32,6 +32,20 @@ namespace mexLib
         [JsonIgnore]
         public MexCharacterSelect CharacterSelect { get; set; } = new MexCharacterSelect();
 
+        public class MexStageSelectParams
+        {
+            [DisplayName("Cursor Start X")]
+            public float StageSelectCursorStartX { get; set; } = 0;
+
+            [DisplayName("Cursor Start Y")]
+            public float StageSelectCursorStartY { get; set; } = -17;
+
+            [DisplayName("Cursor Start Z")]
+            public float StageSelectCursorStartZ { get; set; } = 0;
+        }
+
+        public MexStageSelectParams StageSelectParams { get; set; } = new MexStageSelectParams();
+
         [JsonIgnore]
         public ObservableCollection<MexStageSelect> StageSelects { get; set; } = new ObservableCollection<MexStageSelect>();
 
@@ -52,6 +66,7 @@ namespace mexLib
 
         [JsonIgnore]
         public MEX_SceneData SceneData { get; set; } = new MEX_SceneData();
+
 
         //public MEX_Item[] CommonItems = new MEX_Item[0];
         //public MEX_Item[] FighterItems = new MEX_Item[0];

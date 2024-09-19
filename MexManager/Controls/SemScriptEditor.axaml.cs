@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace MexManager.Controls;
 
-// TODO: icon converter
+// TODO: icon converter for sem commands
 public class SemCommandIconConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)

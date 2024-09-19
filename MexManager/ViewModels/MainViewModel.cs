@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace MexManager.ViewModels;
 
-public class MainViewModel : ViewModelBase
+public partial class MainViewModel : ViewModelBase
 {
     public ICommand SaveCommand { get; }
     public ICommand CloseCommand { get; }
@@ -125,37 +125,6 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private MexStageSelect? _stageSelect;
-    public MexStageSelect? StageSelect
-    {
-        get => _stageSelect;
-        set => this.RaiseAndSetIfChanged(ref _stageSelect, value);
-    }
-
-    private object? _selectedSSSIcon;
-    public object? SelectedSSSIcon
-    {
-        get => _selectedSSSIcon;
-        set => this.RaiseAndSetIfChanged(ref _selectedSSSIcon, value);
-    }
-
-    private object? _selectedSSSTemplateIcon;
-    public object? SelectedSSSTemplateIcon
-    {
-        get => _selectedSSSTemplateIcon;
-        set => this.RaiseAndSetIfChanged(ref _selectedSSSTemplateIcon, value);
-    }
-
-    private bool _autoApplySSSTemplate = true;
-    public bool AutoApplySSSTemplate
-    {
-        get => _autoApplySSSTemplate;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _autoApplySSSTemplate, value);
-        }
-    }
-
     private object? _selectedCode;
     public object? SelectedCode
     {
@@ -190,6 +159,11 @@ public class MainViewModel : ViewModelBase
         WorkspaceLoadedCommand = new RelayCommand((e) => { }, IsWorkSpaceLoaded);
         LaunchCommand = new RelayCommand(LaunchMenuItem_Click, IsDolphinPathSet);
         ExportISOCommand = new RelayCommand(ExportISO_Click, IsDolphinPathSet);
+
+        AddStagePageCommand = new RelayCommand(AddStagePage, null);
+        DeleteStagePageCommand = new RelayCommand(DeleteStagePage, IsWorkSpaceLoaded);
+        MoveLeftStagePageCommand = new RelayCommand(MoveStagePageLeft, IsWorkSpaceLoaded);
+        MoveRightStagePageCommand = new RelayCommand(MoveStagePageRight, IsWorkSpaceLoaded);
 
         EditBannerCommand = new RelayCommand(async (s) =>
         {
@@ -236,6 +210,7 @@ public class MainViewModel : ViewModelBase
             Series = null;
             Codes = null;
             CharacterSelect = null;
+            StagePages = null;
             StageSelect = null;
             SoundViewModel.SoundGroups = null;
         }
@@ -248,7 +223,9 @@ public class MainViewModel : ViewModelBase
             Series = Global.Workspace.Project.Series;
             Codes = Global.Workspace.Project.Codes;
             CharacterSelect = Global.Workspace.Project.CharacterSelect;
-            StageSelect = Global.Workspace.Project.StageSelects[0];
+            StagePages = Global.Workspace.Project.StageSelects;
+            if (StagePages.Count > 0)
+                StageSelect = StagePages[0];
             SoundViewModel.SoundGroups = Global.Workspace.Project.SoundGroups;
         }
     }

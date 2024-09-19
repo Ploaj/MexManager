@@ -10,60 +10,17 @@ namespace mexLib.Types
 {
     public class MexStageSelect : MexReactiveObject
     {
-        [Browsable(false)]
-        public ObservableCollection<MexStageSelectIcon> StageIcons { get; set; } = new ObservableCollection<MexStageSelectIcon>();
-
-        [DisplayName("Cursor Start X")]
-        public float StageSelectCursorStartX { get; set; } = 0;
-
-        [DisplayName("Cursor Start Y")]
-        public float StageSelectCursorStartY { get; set; } = -17;
-
-        [DisplayName("Cursor Start Z")]
-        public float StageSelectCursorStartZ { get; set; } = 0;
+        [DisplayName("Name")]
+        public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+        private string _name = "New Page";
 
         private MexStageSelectTemplate _template = new ();
         [Browsable(false)]
         public MexStageSelectTemplate Template { get => _template; set { _template = value; OnPropertyChanged(); } }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public HSD_JOBJ GenerateJoint()
-        {
-            HSD_JOBJ jobj = new()
-            {
-                Flags = JOBJ_FLAG.CLASSICAL_SCALING,
-                SX = 1,
-                SY = 1,
-                SZ = 1,
-            };
+        [Browsable(false)]
+        public ObservableCollection<MexStageSelectIcon> StageIcons { get; set; } = new ObservableCollection<MexStageSelectIcon>();
 
-            foreach (var icon in StageIcons)
-            {
-                var j = icon.ToJoint();
-                if (icon.StageID == 0)
-                {
-                    j.SX = 1;
-                    j.SY = 1;
-                }
-                jobj.AddChild(j);
-            }
-
-            jobj.UpdateFlags();
-
-            return jobj;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public HSD_AnimJoint GenerateAnimJoint()
-        {
-            HSD_AnimJoint anim = Template.GenerateJointAnim(StageIcons);
-            return anim;
-        }
         /// <summary>
         /// 
         /// </summary>
@@ -89,29 +46,10 @@ namespace mexLib.Types
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="gen"></param>
-        public void ToMxDt(MexGenerator gen)
+        /// <returns></returns>
+        public override string ToString()
         {
-            var tb = gen.Data.MenuTable;
-            tb.Parameters.StageSelectCursorStartX = StageSelectCursorStartX;
-            tb.Parameters.StageSelectCursorStartY = StageSelectCursorStartY;
-            tb.Parameters.StageSelectCursorStartZ = StageSelectCursorStartZ;
-
-            var icons = StageIcons.Select(e => e.ToIcon()).ToList();
-
-            // generate icons
-            tb.SSSIconData = new HSDArrayAccessor<MEX_StageIconData>()
-            {
-                Array = icons.ToArray(),
-            };
-
-            // generate random bitfield
-            var bitfield = new byte[StageIcons.Count / 8 + 1];
-            for (int i = 0; i < bitfield.Length; i++)
-                bitfield[i] = 0xFF;
-            tb.SSSBitField = new SSSBitfield() { Array = bitfield };
-
-            gen.Data.MenuTable = tb;
+            return Name;
         }
     }
 }

@@ -33,13 +33,10 @@ public partial class FighterView : UserControl
     /// <param name="e"></param>
     private void AddFighterMenuItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (Global.Workspace != null)
+        Global.Workspace?.Project.AddNewFighter(new MexFighter()
         {
-            Global.Workspace.Project.AddNewFighter(new MexFighter()
-            {
-                Name = "NewFighter"
-            });
-        }
+            Name = "NewFighter"
+        });
     }
     /// <summary>
     /// 

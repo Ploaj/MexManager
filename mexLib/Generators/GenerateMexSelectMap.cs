@@ -3,6 +3,7 @@ using HSDRaw.Common;
 using HSDRaw.Melee.Mn;
 using HSDRaw;
 using HSDRaw.MEX.Stages;
+using HSDRaw.Tools;
 
 namespace mexLib.Generators
 {
@@ -40,36 +41,97 @@ namespace mexLib.Generators
             // TODO: remove old name tags
             // TODO: remove old icons animation
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        //private static void GenerateStageSelect(MexWorkspace ws, HSDRawFile file)
-        //{
-        //    var ss = new MEX_StageSelect()
-        //    {
-        //        PageCount = 2,
-        //        Pages = new HSDFixedLengthPointerArrayAccessor<MEX_mexMapData>()
-        //        {
-        //            Array = new MEX_mexMapData[]
-        //            {
-        //                GenerateMexSelect(ws, file),
-        //                GenerateMexSelect(ws, file),
-        //            }
-        //        }
-        //    };
+        private static HSD_JOBJ GenerateJoint(MexWorkspace workspace)
+        {
+            HSD_JOBJ jobj = new()
+            {
+                Flags = JOBJ_FLAG.CLASSICAL_SCALING,
+                SX = 1,
+                SY = 1,
+                SZ = 1,
+            };
 
-        //    var f = new HSDRawFile();
-        //    f.Roots.Add(new HSDRootNode()
-        //    {
-        //        Name = "mexMapSelect",
-        //        Data = ss,
-        //    });
-        //    using var stream = new MemoryStream();
-        //    f.Save(stream);
+            foreach (var ss in workspace.Project.StageSelects)
+            {
+                foreach (var icon in ss.StageIcons)
+                {
+                    var j = icon.ToJoint();
+                    if (icon.StageID == 0 && icon.Status != Types.MexStageSelectIcon.StageIconStatus.Locked)
+                    {
+                        j.SX = 1;
+                        j.SY = 1;
+                    }
+                    jobj.AddChild(j);
+                }
+            }
 
-        //    ws.FileManager.Set(ws.GetFilePath("MxSlMap.dat"), stream.ToArray());
-        //}
+            jobj.UpdateFlags();
+            return jobj;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private static HSD_AnimJoint GenerateDummyAnimJoint()
+        {
+            var dummyKeys = new HSD_FOBJDesc();
+
+            dummyKeys.SetKeys(new ()
+            {
+                new ()
+                {
+                    Frame = 0,
+                    Value = 1000,
+                    InterpolationType = GXInterpolationType.HSD_A_OP_KEY
+                }
+            }, (int)JointTrackType.HSD_A_J_TRAX);
+
+            return new HSD_AnimJoint()
+            {
+                AOBJ = new HSD_AOBJ()
+                {
+                    FObjDesc = dummyKeys
+                }
+            };
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private static List<HSD_AnimJoint> GenerateAnimJoint(MexWorkspace workspace)
+        {
+            var anims = new List<HSD_AnimJoint>();
+            int total_count = workspace.Project.StageSelects.Sum(e => e.StageIcons.Count);
+            int offset = 0;
+
+            // process all stage pages
+            foreach (var ss in workspace.Project.StageSelects)
+            {
+                HSD_AnimJoint root = new ();
+
+                // add dummies before
+                for (int i = 0; i < offset; i++)
+                    root.AddChild(GenerateDummyAnimJoint());
+
+                // add this page's icon animation
+                HSD_AnimJoint anim = ss.Template.GenerateJointAnim(ss.StageIcons);
+                root.AddChild(anim.Child);
+                offset += ss.StageIcons.Count;
+
+                // add dummies after
+                for (int i = offset; i < total_count; i++)
+                    root.AddChild(GenerateDummyAnimJoint());
+
+                anims.Add(root);
+            }
+
+            return anims;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -82,8 +144,9 @@ namespace mexLib.Generators
             var project = ws.Project;
             var reserved = project.ReservedAssets;
 
-            var jobj = ws.Project.StageSelects[0].GenerateJoint();
-            var anim = ws.Project.StageSelects[0].GenerateAnimJoint();
+            // merge jobj and generate multiple anims
+            var jobj = GenerateJoint(ws);
+            var anim = GenerateAnimJoint(ws);
 
             // generate mat anim joint
             List<HSD_TOBJ> icon_images = new();
@@ -98,30 +161,76 @@ namespace mexLib.Generators
             icon_images.Add(nullIcon.ToTObj());
             icon_images.Add(lockedIcon.ToTObj());
 
-            for (int i = 0; i < ws.Project.StageSelects[0].StageIcons.Count; i++)
+            var keysBanner = new List<FOBJKey>();
+            var keysIcon = new List<FOBJKey>();
+            int index = 0;
+            keysIcon.Add(new FOBJKey()
             {
-                var external_id = ws.Project.StageSelects[0].StageIcons[i].StageID;
-
-                // check for random
-                if (external_id == 0)
+                Frame = 0,
+                Value = 0,
+                InterpolationType = GXInterpolationType.HSD_A_OP_CON,
+            });
+            keysIcon.Add(new FOBJKey()
+            {
+                Frame = 1,
+                Value = 1,
+                InterpolationType = GXInterpolationType.HSD_A_OP_CON,
+            });
+            foreach (var ss in ws.Project.StageSelects)
+            {
+                for (int i = 0; i < ss.StageIcons.Count; i++)
                 {
-                    var randomBanner = reserved.SSSRandomBannerAsset.GetTexFile(ws);
-                    randomBanner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
-                    names_images.Add(randomBanner.ToTObj());
-                }
-                else
-                {
-                    var internal_id = MexStageIDConverter.ToInternalID(external_id);
-                    var stage = ws.Project.Stages[internal_id];
+                    // check for random
+                    if (ss.StageIcons[i].Status == Types.MexStageSelectIcon.StageIconStatus.Random)
+                    {
+                        var randomBanner = reserved.SSSRandomBannerAsset.GetTexFile(ws);
+                        //randomBanner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
+                        if (randomBanner != null)
+                        {
+                            keysBanner.Add(new FOBJKey()
+                            {
+                                Frame = index,
+                                Value = names_images.Count,
+                                InterpolationType = GXInterpolationType.HSD_A_OP_CON,
+                            });
+                            names_images.Add(randomBanner.ToTObj());
+                        }
+                    }
+                    else
+                    {
+                        var external_id = ss.StageIcons[i].StageID;
+                        var internal_id = MexStageIDConverter.ToInternalID(external_id);
 
-                    var icon = stage.Assets.IconAsset.GetTexFile(ws);
-                    icon ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
+                        var stage = ws.Project.Stages[internal_id];
 
-                    var banner = stage.Assets.BannerAsset.GetTexFile(ws);
-                    banner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
+                        var icon = stage.Assets.IconAsset.GetTexFile(ws);
+                        //icon ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
 
-                    icon_images.Add(icon.ToTObj());
-                    names_images.Add(banner.ToTObj());
+                        var banner = stage.Assets.BannerAsset.GetTexFile(ws);
+                        //banner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
+
+                        if (icon != null)
+                        {
+                            keysIcon.Add(new FOBJKey()
+                            {
+                                Frame = index + 2,
+                                Value = icon_images.Count,
+                                InterpolationType = GXInterpolationType.HSD_A_OP_CON,
+                            });
+                            icon_images.Add(icon.ToTObj());
+                        }
+                        if (banner != null)
+                        {
+                            keysBanner.Add(new FOBJKey()
+                            {
+                                Frame = index,
+                                Value = names_images.Count,
+                                InterpolationType = GXInterpolationType.HSD_A_OP_CON,
+                            });
+                            names_images.Add(banner.ToTObj());
+                        }
+                    }
+                    index++;
                 }
             }
 
@@ -141,7 +250,7 @@ namespace mexLib.Generators
             }
 
             // generate structure
-            return new MEX_mexMapData()
+            var mexMapData =  new MEX_mexMapData()
             {
                 IconModel = model,
                 IconAnimJoint = new HSD_AnimJoint()
@@ -156,13 +265,13 @@ namespace mexLib.Generators
                         {
                             Next = new HSD_MatAnim()
                             {
-                                TextureAnimation = new HSD_TexAnim().GenerateTextureAnimation(icon_images, null)
+                                TextureAnimation = new HSD_TexAnim().GenerateTextureAnimation(icon_images, keysIcon)
                             }
                         }
                     }
                 },
                 PositionModel = jobj,
-                PositionAnimJoint = anim,
+                PositionAnimJoint = anim[0],
                 StageNameMaterialAnimation = new HSD_MatAnimJoint()
                 {
                     Child = new HSD_MatAnimJoint()
@@ -171,12 +280,22 @@ namespace mexLib.Generators
                         {
                             MaterialAnimation = new HSD_MatAnim()
                             {
-                                TextureAnimation = new HSD_TexAnim().GenerateTextureAnimation(names_images, null)
+                                TextureAnimation = new HSD_TexAnim().GenerateTextureAnimation(names_images, keysBanner)
                             }
                         }
                     }
                 },
+                PageData = new HSDRaw.MEX.Menus.MEX_PageStruct()
+                {
+                    PageCount = project.StageSelects.Count,
+                    Anims = new HSDFixedLengthPointerArrayAccessor<HSD_AnimJoint>()
+                    {
+                        Array = anim.ToArray()
+                    }
+                }
             };
+
+            return mexMapData;
         }
     }
 }

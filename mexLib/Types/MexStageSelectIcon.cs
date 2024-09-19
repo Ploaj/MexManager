@@ -241,11 +241,11 @@ namespace mexLib.Types
         /// <returns></returns>
         public MEX_StageIconData ToIcon()
         {
-            if (StageID == 0)
+            if (Status == StageIconStatus.Random)
             {
                 return new MEX_StageIconData()
                 {
-                    ExternalID = StageID,
+                    ExternalID = 0,
                     PreviewModelID = 255,
                     RandomEnabled = false,
                     RandomStageSelectID = 0,

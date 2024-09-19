@@ -39,7 +39,7 @@ namespace MexManager.Controls
         public override void Render(DrawingContext dc)
         {
             base.Render(dc);
-            Raster.RenderEmblem(dc, Bounds.Width, Math.Min(Bounds.Height, Height) - 60, 1);
+            Raster.RenderEmblem(dc, Bounds.Width, Math.Min(Bounds.Height, Height), 1);
         }
         /// <summary>
         /// 

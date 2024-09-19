@@ -20,6 +20,11 @@ public partial class SSSEditorView : UserControl
 
         SelectScreenProperties.DataContext = SelectScreen.Properties;
 
+        PageList.SelectionChanged += (s, e) => 
+        {
+            SelectScreen.InvalidateVisual();
+        };
+
         SelectScreen.OnSwap += (i, j) =>
         {
             if (Global.Workspace != null &&

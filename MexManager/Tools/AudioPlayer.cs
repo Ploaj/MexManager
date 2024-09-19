@@ -190,7 +190,7 @@ namespace MexManager.Tools
             // trim end loop point
             if (Percentage >= EndPercentage)
             {
-                var isPlaying = State == ALSourceState.Playing;
+                //var isPlaying = State == ALSourceState.Playing;
                 Stop();
                 AL.Source(_source, ALSourcei.SampleOffset, _loopPoint);
                 AL.SourcePlay(_source);

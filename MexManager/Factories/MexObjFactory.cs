@@ -45,8 +45,9 @@ namespace MexManager.Factories
 
             var objControl = new ObjControl(asset)
             {
-                HorizontalAlignment=HorizontalAlignment.Left,
-                Height = 320,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Width = 300,
+                Height = 300,
             };
 
             // Create the Image control

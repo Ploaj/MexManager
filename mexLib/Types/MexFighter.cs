@@ -360,7 +360,7 @@ namespace mexLib.Types
             public bool ExportMedia { get; set; } = true;
 
             [Category("Options")]
-            [DisplayName("Include Media")]
+            [DisplayName("Include Costumes")]
             public bool ExportCostumes { get; set; } = true;
 
             // TODO: convert sound ids to mex

@@ -218,7 +218,7 @@ namespace mexLib.Generators
                 }
             };
 
-            // TODO: pobj only has pos
+            // pobj only has pos
             POBJ_Generator gen = new ();
 
             var verts = obj.Faces.SelectMany(e =>
