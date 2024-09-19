@@ -9,6 +9,7 @@ using MeleeMedia.Audio;
 using mexLib;
 using MexManager.Tools;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Timers;
 
@@ -34,9 +35,7 @@ public partial class AudioLoopEditor : Window
 
     public DSP? DSP { get; internal set; }
 
-    private double totalDuration;
-
-    private double currentPosition;
+    private double currentPercentage;
 
     private double _endPercentage;
     private double EndPercentage
@@ -44,8 +43,8 @@ public partial class AudioLoopEditor : Window
         get => _endPercentage;
         set
         {
-            if (value < LoopPoint)
-                value = LoopPoint;
+            if (value < LoopPercentage)
+                value = LoopPercentage;
 
             _endPercentage = value;
             player.EndPercentage = value;
@@ -60,9 +59,7 @@ public partial class AudioLoopEditor : Window
         }
     }
 
-    private Timer? positionUpdateTimer; // Timer for updating playback position
-
-    private double LoopPoint
+    private double LoopPercentage
     {
         get => DSP == null ? 0 : DSP.LoopPointMilliseconds / DSP.TotalMilliseconds;
         set
@@ -70,18 +67,26 @@ public partial class AudioLoopEditor : Window
             if (value > EndPercentage)
                 value = EndPercentage;
 
-            if (DSP != null && loopLine != null && LoopTimeSpanPicker != null)
+            if (DSP != null && 
+                loopLine != null && 
+                LoopTimeSpanPicker != null)
             {
+                // set dsp loop point
                 DSP.LoopPointMilliseconds = value * DSP.TotalMilliseconds;
-                player.LoopPointPercentage = value;
+                player.LoopPointPercent = value;
+
+                // update line
                 var pos = value * WaveformCanvas.Bounds.Width;
                 loopLine.StartPoint = new Point(pos, 0);
                 loopLine.EndPoint = new Point(pos, WaveformCanvas.Bounds.Height);
 
+                // update picker
                 LoopTimeSpanPicker.SetWithNoUpdate(TimeSpan.FromMilliseconds(DSP.LoopPointMilliseconds));
             }
         }
     }
+
+    private Timer? positionUpdateTimer; // Timer for updating playback position
 
     public AudioLoopEditor()
     {
@@ -92,7 +97,7 @@ public partial class AudioLoopEditor : Window
         LoopTimeSpanPicker.OnTimeSpanChange += () =>
         {
             if (DSP != null)
-                LoopPoint = LoopTimeSpanPicker.TimeSpan.TotalMilliseconds / DSP.TotalMilliseconds;
+                LoopPercentage = LoopTimeSpanPicker.TimeSpan.TotalMilliseconds / DSP.TotalMilliseconds;
         };
 
         EndTimeSpanPicker.OnTimeSpanChange += () =>
@@ -142,11 +147,11 @@ public partial class AudioLoopEditor : Window
         if (positionUpdateTimer != null)
             return;
 
-        positionUpdateTimer = new Timer(30); // Update every second
+        positionUpdateTimer = new Timer(30);
         positionUpdateTimer.Elapsed += async (sender, e) =>
         {
             // Update the current position based on the sound player's playback position
-            currentPosition = player.Percentage * totalDuration; // Replace with actual method to get position
+            currentPercentage = player.Percentage; 
 
             // Update the UI on the main thread
             if (Dispatcher.UIThread != null)
@@ -183,10 +188,9 @@ public partial class AudioLoopEditor : Window
     {
         DSP = dsp;
         player.LoadDSP(dsp);
-        totalDuration = dsp.TotalMilliseconds;
 
-        if (dsp.Channels.Count > 0)
-            EnableLoopCheckBox.IsChecked = dsp.Channels[0].LoopFlag != 0;
+        //
+        EnableLoopCheckBox.IsChecked = dsp.LoopSound;
 
         // Subscribe to the LayoutUpdated event
         WaveformCanvas.LayoutUpdated += OnCanvasLayoutUpdated;
@@ -221,10 +225,13 @@ public partial class AudioLoopEditor : Window
             InitializeTimer();
 
             EndPercentage = 1;
-            LoopPoint = (DSP.LoopPointMilliseconds / DSP.TotalMilliseconds);
+            LoopPercentage = (DSP.LoopPointMilliseconds / DSP.TotalMilliseconds);
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="canvas"></param>
     private void InitializeScrubberLine(Canvas canvas)
     {
         playbackOverlay = new Rectangle()
@@ -276,7 +283,7 @@ public partial class AudioLoopEditor : Window
         double canvasWidth = WaveformCanvas.Bounds.Width;
 
         // Calculate the width of the overlay based on the current position and total duration
-        double positionPercentage = currentPosition / totalDuration;
+        double positionPercentage = currentPercentage;
         double overlayWidth = canvasWidth * positionPercentage;
 
         playbackOverlay.Width = overlayWidth;
@@ -416,7 +423,7 @@ public partial class AudioLoopEditor : Window
         if (xPosition > WaveformCanvas.Bounds.Width) xPosition = WaveformCanvas.Bounds.Width;
 
         if (isDragging == loopLine)
-            LoopPoint = xPosition / WaveformCanvas.Bounds.Width;
+            LoopPercentage = xPosition / WaveformCanvas.Bounds.Width;
 
         if (isDragging == endLine)
             EndPercentage = xPosition / WaveformCanvas.Bounds.Width;

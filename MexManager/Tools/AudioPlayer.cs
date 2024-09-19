@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Channels;
 
 namespace MexManager.Tools
 {
@@ -30,19 +31,16 @@ namespace MexManager.Tools
             }
         }
 
-        public TimeSpan LoopPoint { get; internal set; }
+        public double EndPercentage { get; set; } = 1.0;
 
-        public double LoopPointPercentage
+        public bool EnableLoop { get; set; } = true;
+        public double LoopPointPercent 
         {
             set
             {
                 _loopPoint = (int)(_totalSize * value);
             }
         }
-
-        public double EndPercentage { get; set; } = 1.0;
-
-        public bool EnableLoop { get; set; } = true;
 
         private int _totalSize;
         private int _loopPoint;
@@ -137,8 +135,8 @@ namespace MexManager.Tools
             var raw = wave.RawData.ToArray();
 
             _totalSize = raw.Length / dsp.Channels.Count;
-            _loopPoint = (int)Math.Ceiling((double)dsp.Channels[0].LoopStart / dsp.Channels.Count * 1.75f);
-            LoopPoint = TimeSpan.FromMilliseconds(dsp.LoopPointMilliseconds);
+            var loop = dsp.LoopPointMilliseconds / dsp.TotalMilliseconds;
+            _loopPoint = (int)(loop * _totalSize); // (int)Math.Ceiling((double)dsp.Channels[0].LoopStart / dsp.Channels.Count * 1.75f);
 
             // Pin the managed array so that the GC doesn't move it
             GCHandle handle = GCHandle.Alloc(raw, GCHandleType.Pinned);
