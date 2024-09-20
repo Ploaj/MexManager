@@ -11,6 +11,8 @@ namespace MexManager
 {
     public static class Global
     {
+        public static string[] LaunchArgs { get; set; }
+
         public static MexWorkspace? Workspace { get; internal set; }
 
         public static FileManager Files
@@ -128,6 +130,9 @@ namespace MexManager
 
             if (MexWorkspace.TryOpenWorkspace(filepath, out MexWorkspace? workspace))
             {
+                var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
+                if (workspace != null && mainCode != null)
+                    workspace.Project.MainCode = mainCode;
                 Workspace = workspace;
                 return true;
             }

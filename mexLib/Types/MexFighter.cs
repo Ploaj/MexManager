@@ -12,6 +12,7 @@ using System.Drawing;
 using mexLib.Utilties;
 using System.IO.Compression;
 using System;
+using System.Reflection;
 
 namespace mexLib.Types
 {
@@ -238,7 +239,7 @@ namespace mexLib.Types
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="mxdt"></param>
-        internal void FromMxDt(MexWorkspace workspace, MEX_Data mxdt, int internalId)
+        internal void FromMxDt(MexWorkspace workspace, MEX_Data mxdt, MexDOL dol, int internalId)
         {
             var externalId = MexFighterIDConverter.ToExternalID(internalId, mxdt.MetaData.NumOfInternalIDs);
             var kb = mxdt.KirbyData;
@@ -354,6 +355,18 @@ namespace mexLib.Types
 
             // Functions
             Functions.FromMxDt(workspace, mxdt, internalId);
+
+            // extract logic pointers from dol since old mex stored the actual data
+            if (!MexFighterIDConverter.IsMexFighter(internalId, workspace.Project.Fighters.Count))
+            {
+                var oldInternal = (uint)MexFighterIDConverter.ToInternalID(
+                    MexFighterIDConverter.ToExternalID(internalId, workspace.Project.Fighters.Count),
+                    0x21);
+
+                // get original internal id
+                Functions.MoveLogicPointer = dol.GetStruct<uint>(0x803C12E0, oldInternal);
+                Functions.DemoMoveLogicPointer = dol.GetStruct<uint>(0x803C1364, oldInternal);
+            }
 
             // import items
             Items.Clear();

@@ -139,7 +139,7 @@ namespace mexLib.Types
         public string? SSSRandomBanner { get => SSSRandomBannerAsset.AssetFileName; internal set => SSSRandomBannerAsset.AssetFileName = value; }
         public MexTextureAsset SSSRandomBannerAsset = new()
         {
-            AssetPath = "sss/null",
+            AssetPath = "sss/random",
             Width = 224,
             Height = 56,
             Format = HSDRaw.GX.GXTexFmt.I4,

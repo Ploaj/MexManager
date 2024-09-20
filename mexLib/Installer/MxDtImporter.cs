@@ -14,6 +14,7 @@ using System.Reflection;
 using HSDRaw.Common.Animation;
 using HSDRaw.MEX.Menus;
 using MeleeMedia.IO;
+using HSDRaw.Tools;
 
 namespace mexLib.Installer
 {
@@ -83,7 +84,7 @@ namespace mexLib.Installer
             for (int i = 0; i < mxdt.MetaData.NumOfInternalIDs; i++)
             {
                 var fighter = new MexFighter();
-                fighter.FromMxDt(workspace, mxdt, i);
+                fighter.FromMxDt(workspace, mxdt, dol, i);
                 if (i < plco.BoneTables.Length)
                     fighter.BoneTable = plco.BoneTables[i];
                 project.Fighters.Add(fighter);
@@ -234,9 +235,31 @@ namespace mexLib.Installer
             var bannertobjs = banneranim.ToTOBJs();
             var bannerkeys = banneranim.AnimationObject.FObjDesc.GetDecodedKeys();
 
+            // null icon
+            if (iconkeys.Find(e => e.Frame == 0) is FOBJKey keynull)
+                project.ReservedAssets.SSSNullAsset.SetFromMexImage(
+                    workspace,
+                    new MexImage(icontobjs[(int)keynull.Value]));
+
+            // locked icon
+            if (iconkeys.Find(e => e.Frame == 1) is FOBJKey keylocked)
+                project.ReservedAssets.SSSLockedNullAsset.SetFromMexImage(
+                    workspace,
+                    new MexImage(icontobjs[(int)keylocked.Value]));
+
+            // 
             for (int i = 0; i < icons.Length; i++)
             {
                 var icon = icons[i];
+
+                // extract random banner
+                if (icon.IconState == 3)
+                {
+                    if (iconkeys.Find(e => e.Frame == 1) is FOBJKey keyrandom)
+                        project.ReservedAssets.SSSRandomBannerAsset.SetFromMexImage(
+                            workspace,
+                            new MexImage(bannertobjs[(int)keyrandom.Value]));
+                }
 
                 // convert icon external id to internal id
                 var internalId = MexStageIDConverter.ToInternalID(icon.ExternalID);
@@ -257,6 +280,15 @@ namespace mexLib.Installer
                 key = bannerkeys.Find(e => e.Frame == i);
                 if (key != null)
                     stage.Assets.BannerAsset.SetFromMexImage(workspace, new MexImage(bannertobjs[(int)key.Value]));
+            }
+
+            // if no random was found, just choose last image, as that's what old mex would do
+            if (string.IsNullOrEmpty(project.ReservedAssets.SSSRandomBanner) &&
+                bannertobjs.Length > 0)
+            {
+                project.ReservedAssets.SSSRandomBannerAsset.SetFromMexImage(
+                    workspace,
+                    new MexImage(bannertobjs[^1]));
             }
 
             return null;
@@ -286,6 +318,14 @@ namespace mexLib.Installer
             var icons = mexSelectChr.IconModel.Children;
             var keys = mexSelectChr.CSPMatAnim.TextureAnimation.AnimationObject.FObjDesc.GetDecodedKeys();
             var tobjs = mexSelectChr.CSPMatAnim.TextureAnimation.ToTOBJs();
+
+            // get back
+            if (string.IsNullOrEmpty(project.ReservedAssets.CSSBack) &&
+                icons.Length > 0)
+                project.ReservedAssets.CSSBackAsset.SetFromMexImage(
+                    workspace,
+                    new MexImage(icons[0].Dobj.Mobj.Textures));
+
             for (int internalId = 0; internalId < mexSelectChr.CSPStride; internalId++)
             {
                 // extract fighter icon

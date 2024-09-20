@@ -65,6 +65,14 @@ public partial class MainView : UserControl
         DataContextChanged += (s, e) =>
         {
             SoundGroup.DataContext = Context?.SoundViewModel;
+
+            if (Global.LaunchArgs.Length > 0)
+            {
+                string filePath = Global.LaunchArgs[0];
+                if (Path.GetExtension(filePath) == ".mexproj")
+                    Context?.OpenWorkspace(filePath);
+                Global.LaunchArgs = Array.Empty<string>();
+            }
         };
     }
     /// <summary>

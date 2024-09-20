@@ -32,6 +32,19 @@ namespace mexLib.Types
 
         [Browsable(false)]
         [JsonInclude]
+        public string? StageSelectIcon { get => StageSelectIconAsset.AssetFileName; internal set => StageSelectIconAsset.AssetFileName = value; }
+
+        [JsonIgnore]
+        public MexTextureAsset StageSelectIconAsset { get; set; } = new MexTextureAsset()
+        {
+            AssetPath = "series/sss",
+            Width = 64,
+            Height = 64,
+            Format = HSDRaw.GX.GXTexFmt.I4,
+        };
+
+        [Browsable(false)]
+        [JsonInclude]
         public string? Model { get => ModelAsset.AssetFileName; internal set => ModelAsset.AssetFileName = value; }
 
         [JsonIgnore]
