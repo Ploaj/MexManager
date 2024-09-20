@@ -1,19 +1,12 @@
 ﻿using HSDRaw.Melee;
 using HSDRaw;
 using mexLib.MexScubber;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using mexLib.Types;
 using HSDRaw.MEX;
 using mexLib.Utilties;
 using HSDRaw.MEX.Stages;
-using System.Reflection;
 using HSDRaw.Common.Animation;
 using HSDRaw.MEX.Menus;
-using MeleeMedia.IO;
 using HSDRaw.Tools;
 
 namespace mexLib.Installer

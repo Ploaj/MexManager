@@ -280,9 +280,21 @@
 						<TabItem Header="Stage Select">
 							<views:SSSEditorView/>
 						</TabItem>
-						<TabItem Header="Menu Playlist">
+						<TabItem Header="Playlist">
 							<controls:PlaylistEditor
 								Playlist="{Binding MenuPlaylist}"></controls:PlaylistEditor>
+						</TabItem>
+						<TabItem Header="Assets">
+							<ScrollViewer>
+								<pgc:PropertyGrid
+								DockPanel.Dock="Top"
+								VerticalAlignment="Top"
+								AllowFilter="False"
+								AllowQuickFilter="False"
+								ShowStyle="Builtin"
+								Margin="4"
+								DataContext="{Binding ReservedAssets}"/>
+							</ScrollViewer>
 						</TabItem>
 					</TabControl>
 				</TabItem>

@@ -73,6 +73,13 @@ public partial class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedSeries, value);
     }
 
+    private object? _reservedAssets;
+    public object? ReservedAssets
+    {
+        get => _reservedAssets;
+        set => this.RaiseAndSetIfChanged(ref _reservedAssets, value);
+    }
+
     private ObservableCollection<MexSeries>? _series;
     public ObservableCollection<MexSeries>? Series
     {
@@ -213,6 +220,7 @@ public partial class MainViewModel : ViewModelBase
             StagePages = null;
             StageSelect = null;
             SoundViewModel.SoundGroups = null;
+            ReservedAssets = null;
         }
         else
         {
@@ -227,6 +235,7 @@ public partial class MainViewModel : ViewModelBase
             if (StagePages.Count > 0)
                 StageSelect = StagePages[0];
             SoundViewModel.SoundGroups = Global.Workspace.Project.SoundGroups;
+            ReservedAssets = Global.Workspace.Project.ReservedAssets;
         }
     }
     /// <summary>
