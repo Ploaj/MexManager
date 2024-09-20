@@ -95,6 +95,30 @@ namespace MexManager
         /// </summary>
         /// <param name="filepath"></param>
         /// <returns></returns>
+        public static MexWorkspace? CreateWorkspaceFromMex(string projectPath, string mexdolPath)
+        {
+            using (var s = new MemoryStream())
+            {
+                // load codes
+                var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
+                var path = Path.GetDirectoryName(Path.GetDirectoryName(mexdolPath));
+
+                if (path == null || mainCode == null)
+                    return null;
+
+                Workspace = MexWorkspace.CreateFromMexFileSystem(
+                    projectPath,
+                    path,
+                    mainCode);
+            }
+
+            return Workspace;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filepath"></param>
+        /// <returns></returns>
         public static bool LoadWorkspace(string filepath)
         {
             if (Workspace != null)

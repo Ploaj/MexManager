@@ -38,6 +38,11 @@
 				<MenuItem Header="_Export ISO"
 						Command="{Binding ExportISOCommand}"/>
 				<Separator/>
+				<MenuItem Header="_Create From">
+					<MenuItem Header="_m-ex File System"
+							  Click="CreateFromMexFileSystem_Click"/>
+				</MenuItem>
+				<Separator/>
 				<MenuItem Header="_Close Workspace"
 						  Command="{Binding CloseCommand}"/>
 				<Separator/>

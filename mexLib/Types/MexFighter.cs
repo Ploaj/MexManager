@@ -11,6 +11,7 @@ using HSDRaw.MEX.Misc;
 using System.Drawing;
 using mexLib.Utilties;
 using System.IO.Compression;
+using System;
 
 namespace mexLib.Types
 {
@@ -232,6 +233,138 @@ namespace mexLib.Types
             }
             mexData.FighterData.FighterItemLookup.Set(internalId, new MEX_ItemLookup() { Entries = itemEntries });
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="mxdt"></param>
+        internal void FromMxDt(MexWorkspace workspace, MEX_Data mxdt, int internalId)
+        {
+            var externalId = MexFighterIDConverter.ToExternalID(internalId, mxdt.MetaData.NumOfInternalIDs);
+            var kb = mxdt.KirbyData;
+            var fd = mxdt.FighterData;
+
+            // import general
+            Name = fd.NameText[externalId].Value;
+            SeriesID = fd.InsigniaIDs[externalId];
+            CanWallJump = fd.WallJump[internalId] != 0;
+            AnnouncerCall = fd.AnnouncerCalls[externalId];
+
+            // import files
+            Files.FighterDataPath = fd.CharFiles[internalId].FileName;
+            Files.FighterDataSymbol = fd.CharFiles[internalId].Symbol;
+
+            Files.AnimCount = (uint)fd.AnimCount[internalId].AnimCount;
+            Files.AnimFile = fd.AnimFiles[internalId].Value;
+            Files.RstAnimFile = fd.ResultAnimFiles[externalId].Value;
+            Files.RstAnimCount = (uint)fd.RstRuntime[internalId].AnimMax;
+
+            var effect_id = fd.EffectIDs[internalId];
+            if (effect_id != 255)
+            {
+                Files.EffectFile = mxdt.EffectTable.EffectFiles[effect_id].FileName;
+                Files.EffectSymbol = mxdt.EffectTable.EffectFiles[effect_id].Symbol;
+            }
+
+            // import costume strings
+            CostumesFromMxDt(fd.CostumeFileSymbols[internalId]);
+
+            // import gaw colors hack
+            if (internalId == 24)
+            {
+                GaWData = new FighterGaWExt();
+                foreach (var e in mxdt.MiscData.GawColors.Array)
+                {
+                    GaWData.Colors.Add(new GAWColor()
+                    {
+                        Fill = (uint)e.FillColor.ToArgb(),
+                        Outline = (uint)e.OutlineColor.ToArgb(),
+                    });
+                }
+            }
+
+            // import costume lookups
+            RedCostumeIndex = fd.CostumeIDs[externalId].RedCostumeIndex;
+            BlueCostumeIndex = fd.CostumeIDs[externalId].BlueCostumeIndex;
+            GreenCostumeIndex = fd.CostumeIDs[externalId].GreenCostumeIndex;
+
+            // import character ids
+            SubCharacter = fd.DefineIDs[externalId].SubCharacterInternalID;
+            SubCharacterBehavior = fd.DefineIDs[externalId].SubCharacterBehavior;
+
+            // import sound
+            SoundBank = fd.SSMFileIDs[externalId].SSMID;
+            SSMBitfield1 = (uint)fd.SSMFileIDs[externalId].BitField1;
+            SSMBitfield2 = (uint)fd.SSMFileIDs[externalId].BitField2;
+
+            // import music
+            VictoryTheme = fd.VictoryThemeIDs[externalId];
+            FighterMusic1 = fd.FighterSongIDs[externalId].SongID1;
+            FighterMusic2 = fd.FighterSongIDs[externalId].SongID2;
+
+            // import demo symbols
+            Files.DemoIntro = fd.FtDemo_SymbolNames[internalId].Intro;
+            Files.DemoEnding = fd.FtDemo_SymbolNames[internalId].Ending;
+            Files.DemoResult = fd.FtDemo_SymbolNames[internalId].Result;
+            Files.DemoWait = fd.FtDemo_SymbolNames[internalId].ViWait;
+            Files.DemoFile = fd.VIFiles[externalId].Value;
+
+            // import misc 2
+            ResultScreenScale = fd.ResultScale[externalId];
+            TargetTestStage = fd.TargetTestStageLookups[externalId];
+            RacetoTheFinishTime = (uint)fd.RaceToFinishTimeLimits[externalId];
+
+            // import media
+            Media.EndClassicFile = fd.EndClassicFiles[externalId].Value;
+            Media.EndAdventureFile = fd.EndAdventureFiles[externalId].Value;
+            Media.EndAllStarFile = fd.EndAllStarFiles[externalId].Value;
+            Media.EndMovieFile = fd.EndMovieFiles[externalId].Value;
+
+            // import trophy
+            ClassicTrophyId = fd.ClassicTrophyLookup[externalId];
+            AdventureTrophyId = fd.AdventureTrophyLookup[externalId];
+            AllStarTrophyId = fd.AllStarTrophyLookup[externalId];
+            EndingScreenScale = fd.EndingFallScale[externalId];
+
+            // Kirby
+            Files.KirbyCapFileName = kb.CapFiles[internalId].FileName;
+            Files.KirbyCapSymbol = kb.CapFiles[internalId].Symbol;
+
+            var kbeffect_id = kb.KirbyEffectIDs[internalId];
+            if (kbeffect_id != 255)
+            {
+                Files.KirbyEffectFile = mxdt.EffectTable.EffectFiles[kbeffect_id].FileName;
+                Files.KirbyEffectSymbol = mxdt.EffectTable.EffectFiles[kbeffect_id].Symbol;
+            }
+
+            // Kirby Costumes
+            MEX_KirbyCostume costumes = kb.KirbyCostumes[internalId];
+            if (costumes != null)
+            {
+                for (int i = 0; i < costumes.Length; i++)
+                {
+                    if (i < Costumes.Count)
+                    {
+                        Costumes[i].KirbyFile.FileName = costumes[i].FileName;
+                        Costumes[i].KirbyFile.JointSymbol = costumes[i].JointSymbol;
+                        Costumes[i].KirbyFile.MaterialSymbol = costumes[i].MatAnimSymbol;
+                    }
+                }
+            }
+
+            // Functions
+            Functions.FromMxDt(workspace, mxdt, internalId);
+
+            // import items
+            Items.Clear();
+            foreach (var i in fd.FighterItemLookup[internalId].Entries)
+            {
+                var item = new MexItem();
+                item.FromMexItem(mxdt.ItemTable.MEXItems[i - MexDefaultData.BaseItemCount]);
+                Items.Add(item);
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>

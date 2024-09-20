@@ -1,12 +1,16 @@
 ﻿using HSDRaw.Common;
+using HSDRaw.MEX;
 using MeleeMedia.Audio;
 using mexLib.Attributes;
 using mexLib.Installer;
 using mexLib.MexScubber;
 using mexLib.Utilties;
+using SixLabors.ImageSharp.Drawing.Processing;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO.Compression;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace mexLib.Types
@@ -143,6 +147,19 @@ namespace mexLib.Types
             {
                 EntireFlag = (int)GroupFlags,
             });
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mxdt"></param>
+        /// <param name="index"></param>
+        public void FromMxDt(MEX_Data mxdt, int index)
+        {
+            var st = mxdt.SSMTable;
+
+            FileName = st.SSM_SSMFiles[index].Value;
+            Flags = (uint)st.SSM_BufferSizes[index].Flag;
+            GroupFlags = (uint)st.SSM_LookupTable[index].EntireFlag;
         }
         /// <summary>
         /// 

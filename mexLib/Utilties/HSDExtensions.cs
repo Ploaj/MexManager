@@ -70,6 +70,9 @@ namespace mexLib
         /// <returns>self</returns>
         public static HSD_TexAnim GenerateTextureAnimation(this HSD_TexAnim anim, List<HSD_TOBJ> icons, List<FOBJKey>? keys)
         {
+            if (keys?.Count == 0)
+                return anim;
+
             keys ??= Enumerable.Range(0, icons.Count).Select(e => new FOBJKey()
             {
                 Frame = e,

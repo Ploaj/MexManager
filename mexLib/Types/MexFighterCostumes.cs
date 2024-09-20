@@ -52,6 +52,27 @@ namespace mexLib.Types
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="tbl"></param>
+        public void CostumesFromMxDt(MEX_CostumeFileSymbolTable tbl)
+        {
+            Costumes.Clear();
+            foreach (var c in tbl.CostumeSymbols.Array)
+            {
+                Costumes.Add(new MexCostume()
+                {
+                    File = new MexCostumeVisibilityFile()
+                    {
+                        FileName = c.FileName,
+                        JointSymbol = c.JointSymbol,
+                        MaterialSymbol = c.MatAnimSymbol,
+                        VisibilityIndex = c.VisibilityLookupIndex,
+                    }
+                });
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
         public static string ColorNameFromFileName(string fileName)

@@ -85,6 +85,52 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="projectFile"></param>
+        /// <param name="mexPath"></param>
+        /// <param name="mainCode"></param>
+        /// <returns></returns>
+        public static MexWorkspace CreateFromMexFileSystem(
+            string projectFile,
+            string mexPath,
+            MexCode mainCode)
+        {
+            // get project path
+            var projectPath = Path.GetDirectoryName(projectFile) + "\\";
+
+            // create workspace
+            var workspace = new MexWorkspace()
+            {
+                FilePath = projectPath,
+                ProjectFilePath = projectFile,
+            };
+
+            // TODO: copy files from source
+            File.Copy(Path.Combine(mexPath, "files/MxDt.dat"), workspace.GetFilePath("MxDt.dat"), overwrite: true);
+            File.Copy(Path.Combine(mexPath, "files/GmRst.usd"), workspace.GetFilePath("GmRst.usd"), overwrite:true);
+            File.Copy(Path.Combine(mexPath, "files/MnSlChr.usd"), workspace.GetFilePath("MnSlChr.usd"), overwrite: true);
+            File.Copy(Path.Combine(mexPath, "files/MnSlMap.usd"), workspace.GetFilePath("MnSlMap.usd"), overwrite: true);
+            File.Copy(Path.Combine(mexPath, "files/SmSt.dat"), workspace.GetFilePath("SmSt.dat"), overwrite: true);
+            File.Copy(Path.Combine(mexPath, "files/IfAll.usd"), workspace.GetFilePath("IfAll.usd"), overwrite: true);
+            File.Copy(Path.Combine(mexPath, "files/PlCo.dat"), workspace.GetFilePath("PlCo.dat"), overwrite: true);
+            File.Copy(Path.Combine(mexPath, "files/audio/us/smash2.sem"), workspace.GetFilePath("audio/us/smash2.sem"), overwrite: true);
+
+            // install mex system
+            var error = MxDtImporter.Install(workspace);
+            if (error != null)
+            {
+                throw new Exception(error.Message);
+            }
+
+            // save workspace
+            workspace.Project.MainCode = mainCode;
+            workspace.LoadSoundData();
+            workspace.Save();
+
+            return workspace;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="isoPath"></param>
         public static MexWorkspace NewWorkspace(
             string projectFile,
@@ -121,27 +167,27 @@ namespace mexLib
                 File.WriteAllBytes(Path.Combine(sys, "boot.bin"), iso.Boot);
                 File.WriteAllBytes(Path.Combine(sys, "bi2.bin"), iso.Boot2);
 
-                File.WriteAllBytes(workspace.GetFilePath("GmRst.usd"), iso.GetFileData("GmRst.usd"));
-                File.WriteAllBytes(workspace.GetFilePath("MnSlChr.usd"), iso.GetFileData("MnSlChr.usd"));
-                File.WriteAllBytes(workspace.GetFilePath("MnSlMap.usd"), iso.GetFileData("MnSlMap.usd"));
-                File.WriteAllBytes(workspace.GetFilePath("SmSt.dat"), iso.GetFileData("SmSt.dat"));
-                File.WriteAllBytes(workspace.GetFilePath("audio/us/smash2.sem"), iso.GetFileData("audio/us/smash2.sem"));
+                //File.WriteAllBytes(workspace.GetFilePath("GmRst.usd"), iso.GetFileData("GmRst.usd"));
+                //File.WriteAllBytes(workspace.GetFilePath("MnSlChr.usd"), iso.GetFileData("MnSlChr.usd"));
+                //File.WriteAllBytes(workspace.GetFilePath("MnSlMap.usd"), iso.GetFileData("MnSlMap.usd"));
+                //File.WriteAllBytes(workspace.GetFilePath("SmSt.dat"), iso.GetFileData("SmSt.dat"));
+                //File.WriteAllBytes(workspace.GetFilePath("audio/us/smash2.sem"), iso.GetFileData("audio/us/smash2.sem"));
 
-                // TODO: extract iso files
-                //int index = 0;
-                //foreach (var file in iso.GetAllFilePaths())
-                //{
-                //    var output = files + "/" + file;
-                //    var dir = Path.GetDirectoryName(output);
+                // extract iso files
+                int index = 0;
+                foreach (var file in iso.GetAllFilePaths())
+                {
+                    var output = files + "/" + file;
+                    var dir = Path.GetDirectoryName(output);
 
-                //    if (dir != null && !Directory.Exists(dir))
-                //        Directory.CreateDirectory(dir);
+                    if (dir != null && !Directory.Exists(dir))
+                        Directory.CreateDirectory(dir);
 
-                //    File.WriteAllBytes(output, iso.GetFileData(file));
+                    File.WriteAllBytes(output, iso.GetFileData(file));
 
-                //    index++;
-                //    //ReportProgress(null, new ProgressChangedEventArgs((int)((index / (float)files.Length) * 99), null));
-                //}
+                    index++;
+                    //ReportProgress(null, new ProgressChangedEventArgs((int)((index / (float)files.Length) * 99), null));
+                }
 
                 //ReportProgress(null, new ProgressChangedEventArgs(100, null));
             }

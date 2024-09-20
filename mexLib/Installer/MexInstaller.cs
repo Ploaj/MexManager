@@ -334,7 +334,7 @@ namespace mexLib.Installer
         /// </summary>
         /// <param name="workspace"></param>
         /// <returns></returns>
-        private static MexInstallerError? InstallResultScreen(MexWorkspace workspace)
+        public static MexInstallerError? InstallResultScreen(MexWorkspace workspace)
         {
             var rstFile = workspace.GetFilePath("GmRst.usd");
             if (!File.Exists(rstFile))
@@ -354,7 +354,7 @@ namespace mexLib.Installer
             var small_banners_keys = matanim_joints[33].MaterialAnimation.TextureAnimation.AnimationObject.FObjDesc.GetDecodedKeys();
 
             // fighter assets are external with sheik at end (>=19 0-=1) (=19->29)
-            for (int internalId = 0; internalId <= 26; internalId++)
+            for (int internalId = 0; internalId < workspace.Project.Fighters.Count; internalId++) // 26
             {
                 // get fighter  external id
                 int externalId = MexFighterIDConverter.ToExternalID(internalId, 0x21);

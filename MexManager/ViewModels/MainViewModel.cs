@@ -232,22 +232,6 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="path"></param>
-    /// <param name="meleePath"></param>
-    public void CreateNewWorkspace(string path)
-    {
-        var workspace = Global.CreateWorkspace(path);
-
-        if (workspace == null)
-        {
-            MessageBox.Show("Unable to create workspace", "Create Workspace", MessageBox.MessageBoxButtons.Ok);
-        }
-
-        UpdateWorkspace();
-    }
-    /// <summary>
-    /// 
-    /// </summary>
     public void OpenWorkspace(string path)
     {
         Global.LoadWorkspace(path);

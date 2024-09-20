@@ -8,6 +8,8 @@ using HSDRaw.Common;
 using mexLib.Installer;
 using mexLib.Utilties;
 using System.IO.Compression;
+using SixLabors.ImageSharp.Drawing.Processing;
+using System;
 
 namespace mexLib.Types
 {
@@ -156,6 +158,50 @@ namespace mexLib.Types
             };
             stage._s.SetInt32(44, (int)MovingCollisionPointer);
             gen.Data.StageFunctions.Set(index, stage);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mxdt"></param>
+        /// <param name="i"></param>
+        internal void FromMxDt(MEX_Data mxdt, int index)
+        {
+            var sd = mxdt.StageData;
+
+            // load stage structs
+            Name = sd.StageNames[index].Value;
+            CollisionMaterials = (uint)sd.CollisionTable[index].CollisionFunction;
+
+            // load sound bank indices
+            SoundBank = sd.ReverbTable[index].SSMID;
+            ReverbValue1 = sd.ReverbTable[index].Reverb;
+            ReverbValue2 = sd.ReverbTable[index].Unknown;
+
+            // load playlist 
+            Playlist.FromMexPlayList(sd.StagePlaylists[index]);
+
+            // load items
+            Items.Clear();
+            foreach (var i in sd.StageItemLookup[index].Entries)
+            {
+                var item = new MexItem();
+                item.FromMexItem(mxdt.ItemTable.MEXItems[i - MexDefaultData.BaseItemCount]);
+                Items.Add(item);
+            }
+
+            // load functions
+            var sf = mxdt.StageFunctions[index];
+            FileName = sf.StageFileName;
+            MapDescPointer = (uint)sf.GOBJFunctionsPointer;
+            MovingCollisionCount = sf.MovingCollisionPointCount;
+            MovingCollisionPointer = (uint)sf._s.GetInt32(44);
+            OnStageGo = sf.OnStageGo;
+            OnStageInit = sf.OnStageInit;
+            OnStageLoad = sf.OnStageLoad;
+            OnGo = sf.OnUnknown1;
+            OnUnknown2 = sf.OnUnknown2;
+            OnTouchLine = sf.OnUnknown3;
+            OnUnknown4 = sf.OnUnknown4;
         }
         /// <summary>
         /// 

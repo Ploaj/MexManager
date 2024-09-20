@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System;
 using System.IO;
+using Avalonia.Platform.Storage;
 
 namespace MexManager.Views;
 
@@ -40,8 +41,6 @@ public class MusicIndexConverter : IMultiValueConverter
 }
 public partial class MainView : UserControl
 {
-    // TODO: hide editor until workspace is loaded
-
     private MainViewModel? Context => this.DataContext as MainViewModel;
 
     public static AudioView? GlobalAudio { get; internal set; }
@@ -140,7 +139,68 @@ public partial class MainView : UserControl
             return;
 
         // create new workspace
-        Context.CreateNewWorkspace(file);
+        var workspace = Global.CreateWorkspace(file);
+
+        if (workspace == null)
+            await MessageBox.Show("Unable to create workspace", "Create Workspace", MessageBox.MessageBoxButtons.Ok);
+        
+        Context.UpdateWorkspace();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void CreateFromMexFileSystem_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Context == null)
+            return;
+
+        // check if workspace currently open
+        if (Global.Workspace != null)
+        {
+            var rst = await MessageBox.Show(
+                "Save changes to current workspace?",
+                "New Workspace",
+                MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (rst == MessageBox.MessageBoxResult.Yes)
+            {
+                Global.SaveWorkspace();
+            }
+            else if (rst == MessageBox.MessageBoxResult.Cancel)
+            {
+                return;
+            }
+        }
+
+        // get dol source
+        var mexdol = await FileIO.TryOpenFile("Create from m-ex File System", "main.dol",
+        [
+            new("m-ex Project")
+            {
+                Patterns = ["*.dol"],
+            },
+        ]);
+
+        // check if file was found
+        if (mexdol == null)
+            return;
+
+        // Start async operation to open the dialog.
+        var file = await FileIO.TrySaveFile("New Workspace", "project.mexproj", FileIO.FilterMexProject);
+
+        // check if file was found
+        if (file == null)
+            return;
+
+        // create new workspace
+        var workspace = Global.CreateWorkspaceFromMex(file, mexdol);
+
+        if (workspace == null)
+            await MessageBox.Show("Unable to create workspace", "Create Workspace", MessageBox.MessageBoxButtons.Ok);
+
+        Context.UpdateWorkspace();
     }
     /// <summary>
     /// 

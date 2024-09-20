@@ -373,6 +373,72 @@ namespace mexLib.Types
                     _ => 0x800cbbc0,    // Default
                 };
             }
+
+            internal void FromMxDt(MexWorkspace workspace, MEX_Data mxdt, int internalId)
+            {
+                var ff = mxdt.FighterFunctions;
+
+                MoveLogicPointer = ff.MoveLogicPointers[internalId];
+                OnLoad = ff.OnLoad[internalId];
+                OnRespawn = ff.OnDeath[internalId];
+                OnDestroy = ff.OnUnknown[internalId];
+                DemoMoveLogicPointer = ff.DemoMoveLogic[internalId];
+                SpecialN = ff.SpecialN[internalId];
+                SpecialNAir = ff.SpecialNAir[internalId];
+                SpecialHi = ff.SpecialHi[internalId];
+                SpecialHiAir = ff.SpecialHiAir[internalId];
+                SpecialS = ff.SpecialS[internalId];
+                SpecialSAir = ff.SpecialSAir[internalId];
+                SpecialLw = ff.SpecialLw[internalId];
+                SpecialLwAir = ff.SpecialLwAir[internalId];
+                OnAbsorb = ff.OnAbsorb[internalId];
+                OnItemPickup = ff.onItemCatch[internalId];
+                OnMakeItemInvisible = ff.onMakeItemInvisible[internalId];
+                OnMakeItemVisible = ff.onMakeItemVisible[internalId];
+                OnItemPickup = ff.onItemPickup[internalId];
+                OnItemDrop = ff.onItemDrop[internalId];
+                OnItemCatch = ff.onItemCatch[internalId];
+                OnUnknownItemRelated = ff.onUnknownItemRelated[internalId];
+                OnApplyHeadItem = ff.onApplyHeadItem[internalId];
+                OnRemoveHeadItem = ff.onRemoveHeadItem[internalId];
+                EyeTextureDamaged = ff.onHit[internalId];
+                EyeTextureNormal = ff.onUnknownEyeTextureRelated[internalId];
+                OnFrame = ff.onFrame[internalId];
+                OnActionStateChange = ff.onActionStateChange[internalId];
+                ResetAttribute = ff.onRespawn[internalId];
+                OnModelRender = ff.onModelRender[internalId];
+                OnShadowRender = ff.onShadowRender[internalId];
+                OnUnknownMultijump = ff.onUnknownMultijump[internalId];
+                OnActionStateChangeWhileEyeTextureIsChanged1 = ff.onActionStateChangeWhileEyeTextureIsChanged[internalId * 2];
+                OnActionStateChangeWhileEyeTextureIsChanged2 = ff.onActionStateChangeWhileEyeTextureIsChanged[internalId * 2 + 1];
+                OnTwoEntryTable1 = ff.onTwoEntryTable[internalId * 2];
+                OnTwoEntryTable2 = ff.onTwoEntryTable[internalId * 2 + 1];
+                OnLanding = ff.onLand[internalId];
+                OnExtRstAnim = ff.onExtRstAnim[internalId];
+                OnIndexExtRstAnim = ff.onIndexExtResultAnim[internalId];
+
+                OnSmashLw = ff.onSmashDown[internalId];
+                OnSmashHi = ff.onSmashUp[internalId];
+                OnSmashF = ff.onSmashForward[internalId];
+                EnterFloat = ff.enterFloat[internalId];
+                EnterDoubleJump = ff.enterSpecialDoubleJump[internalId];
+                EnterTether = ff.enterTether[internalId];
+                OnIntroL = ff.onIntroL[internalId];
+                OnIntroR = ff.onIntroR[internalId];
+                OnCatch = ff.onCatch[internalId];
+                OnAppeal = ff.onAppeal[internalId];
+                GetSwordTrail = ff.getTrailData[internalId];
+
+                var kff = mxdt.KirbyFunctions;
+                KirbyOnHit = kff.KirbyOnHit[internalId];
+                KirbyOnItemInit = kff.KirbyOnItemInit[internalId];
+                KirbyOnLoseAbility = kff.OnAbilityLose[internalId];
+                KirbyOnSwallow = kff.OnAbilityGain[internalId];
+                KirbySpecialN = kff.KirbySpecialN[internalId];
+                KirbySpecialNAir = kff.KirbySpecialNAir[internalId];
+                KirbyOnFrame = kff.KirbyOnFrame[internalId];
+                KirbyOnDeath = kff.KirbyOnDeath[internalId];
+            }
         }
     }
 }

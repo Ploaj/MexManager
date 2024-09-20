@@ -95,12 +95,13 @@ namespace mexLib.Types
         public void FromMexItem(MEX_Item item)
         {
             States.Clear();
-            foreach (var i in item.ItemStates)
-            {
-                var s = new MexItemState();
-                s.FromMexItemState(i);
-                States.Add(s);
-            }
+            if (item.ItemStates != null)
+                foreach (var i in item.ItemStates)
+                {
+                    var s = new MexItemState();
+                    s.FromMexItemState(i);
+                    States.Add(s);
+                }
             OnSpawn = (uint)item.OnSpawn;
             OnDestroy = (uint)item.OnDestroy;
             OnPickup = (uint)item.OnPickup;

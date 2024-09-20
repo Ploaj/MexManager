@@ -1,4 +1,5 @@
 ﻿using HSDRaw;
+using HSDRaw.MEX;
 using HSDRaw.MEX.Menus;
 using mexLib.MexScubber;
 using System.Collections.ObjectModel;
@@ -21,6 +22,28 @@ namespace mexLib.Types
         [DisplayName("CSP Compression Level")]
         public float CSPCompression { get; set; } = 1.0f;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mxdt"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        internal void FromMxDt(MEX_Data mxdt)
+        {
+            CharacterSelectHandScale = mxdt.MenuTable.Parameters.CSSHandScale;
+
+            foreach (var i in mxdt.MenuTable.CSSIconData.Icons)
+            {
+                var icon = new MexCharacterSelectIcon()
+                {
+                    Fighter = i.ExternalCharID,
+                    SFXID = i.SFXID,
+                };
+                
+                FighterIcons.Add(icon);
+            }
+
+            Template.Apply(FighterIcons);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -50,39 +73,43 @@ namespace mexLib.Types
             int csp_width = (int)(136 * CSPCompression);
             int csp_height = (int)(188 * CSPCompression);
 
-            // Create a list of tasks
-            ManualResetEvent doneEvent = new (false);
             int remainingImages = ws.Project.Fighters.Sum(e => e.Costumes.Count);
 
-            foreach (var fighter in ws.Project.Fighters)
+            if (remainingImages > 0)
             {
-                foreach (var c in fighter.Costumes)
+                // Create a list of tasks
+                ManualResetEvent doneEvent = new(false);
+
+                foreach (var fighter in ws.Project.Fighters)
                 {
-                    ThreadPool.QueueUserWorkItem(state =>
+                    foreach (var c in fighter.Costumes)
                     {
-                        // Process the image
-                        var textureAsset = c.CSPAsset.GetTexFile(ws);
-
-                        // check for compression
-                        if (textureAsset != null &&
-                            (textureAsset.Width != csp_width ||
-                            textureAsset.Height != csp_height))
+                        ThreadPool.QueueUserWorkItem(state =>
                         {
-                            c.CSPAsset.Resize(ws, csp_width, csp_height);
-                            textureAsset = c.CSPAsset.GetTexFile(ws);
-                        }
+                            // Process the image
+                            var textureAsset = c.CSPAsset.GetTexFile(ws);
 
-                        // Decrement the remaining counter
-                        if (Interlocked.Decrement(ref remainingImages) == 0)
-                        {
-                            doneEvent.Set(); // Signal when all images are processed
-                        }
-                    });
+                            // check for compression
+                            if (textureAsset != null &&
+                                (textureAsset.Width > csp_width ||
+                                textureAsset.Height > csp_height))
+                            {
+                                c.CSPAsset.Resize(ws, csp_width, csp_height);
+                                textureAsset = c.CSPAsset.GetTexFile(ws);
+                            }
+
+                            // Decrement the remaining counter
+                            if (Interlocked.Decrement(ref remainingImages) == 0)
+                            {
+                                doneEvent.Set(); // Signal when all images are processed
+                            }
+                        });
+                    }
                 }
-            }
 
-            // Wait until all images are processed
-            doneEvent.WaitOne();
+                // Wait until all images are processed
+                doneEvent.WaitOne();
+            }
         }
     }
 }

@@ -37,9 +37,6 @@ namespace mexLib.Generators
         private static void ClearOldMaterialAnimations(SBM_SelectChrDataTable? tb)
         {
             if (tb == null) return;
-
-            // TODO: remove old name tags
-            // TODO: remove old icons animation
         }
 
         /// <summary>
@@ -271,7 +268,7 @@ namespace mexLib.Generators
                     }
                 },
                 PositionModel = jobj,
-                PositionAnimJoint = anim[0],
+                PositionAnimJoint = anim.Count > 0 ? anim[0] : null,
                 StageNameMaterialAnimation = new HSD_MatAnimJoint()
                 {
                     Child = new HSD_MatAnimJoint()

@@ -77,7 +77,14 @@ namespace mexLib.Types
             /// <param name="workspace"></param>
             public void Delete(MexWorkspace workspace)
             {
-                // TODO: delete fighter files
+                // delete fighter files
+                workspace.FileManager.Remove(workspace.GetFilePath(FighterDataPath));
+                workspace.FileManager.Remove(workspace.GetFilePath(AnimFile));
+                workspace.FileManager.Remove(workspace.GetFilePath(DemoFile));
+                workspace.FileManager.Remove(workspace.GetFilePath(DemoWait));
+                workspace.FileManager.Remove(workspace.GetFilePath(RstAnimFile));
+                workspace.FileManager.Remove(workspace.GetFilePath(EffectFile));
+                workspace.FileManager.Remove(workspace.GetFilePath(KirbyEffectFile));
             }
             /// <summary>
             /// 
@@ -86,7 +93,14 @@ namespace mexLib.Types
             /// <param name="zip"></param>
             public MexInstallerError? ToPackage(MexWorkspace workspace, ZipWriter zip)
             {
-                // TODO: fighter files to package
+                // fighter files to package
+                zip.TryWriteFile(workspace, FighterDataPath, FighterDataPath);
+                zip.TryWriteFile(workspace, AnimFile, AnimFile);
+                zip.TryWriteFile(workspace, DemoFile, DemoFile);
+                zip.TryWriteFile(workspace, DemoWait, DemoWait);
+                zip.TryWriteFile(workspace, RstAnimFile, RstAnimFile);
+                zip.TryWriteFile(workspace, EffectFile, EffectFile);
+                zip.TryWriteFile(workspace, KirbyEffectFile, KirbyEffectFile);
                 return null;
             }
             /// <summary>
@@ -96,7 +110,14 @@ namespace mexLib.Types
             /// <param name="zip"></param>
             public MexInstallerError? FromPackage(MexWorkspace workspace, ZipArchive zip)
             {
-                // TODO: fighter files from package
+                // fighter files from package
+                FighterDataPath = zip.TryReadFile(workspace, FighterDataPath);
+                AnimFile = zip.TryReadFile(workspace, AnimFile);
+                DemoFile = zip.TryReadFile(workspace, DemoFile);
+                DemoWait = zip.TryReadFile(workspace, DemoWait);
+                RstAnimFile = zip.TryReadFile(workspace, RstAnimFile);
+                EffectFile = zip.TryReadFile(workspace, EffectFile);
+                KirbyEffectFile = zip.TryReadFile(workspace, KirbyEffectFile);
                 return null;
             }
         }

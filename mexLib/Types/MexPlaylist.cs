@@ -53,6 +53,26 @@ namespace mexLib.Types
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="mEX_Playlist"></param>
+        internal void FromMexPlayList(MEX_Playlist mEX_Playlist)
+        {
+            Entries.Clear();
+
+            if (mEX_Playlist.MenuPlaylist == null)
+                return;
+
+            foreach (var e in mEX_Playlist.MenuPlaylist.Array)
+            {
+                Entries.Add(new MexPlaylistEntry()
+                {
+                    MusicID = e.HPSID,
+                    ChanceToPlay = (byte)e.ChanceToPlay,
+                });
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         internal MEX_Playlist ToMexPlaylist()
         {
