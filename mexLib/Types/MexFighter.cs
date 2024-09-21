@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using HSDRaw.Common;
 using HSDRaw;
-using HSDRaw.Melee;
 using HSDRaw.MEX;
 using mexLib.Attributes;
 using mexLib.Installer;
@@ -11,15 +10,14 @@ using HSDRaw.MEX.Misc;
 using System.Drawing;
 using mexLib.Utilties;
 using System.IO.Compression;
-using System;
-using System.Reflection;
 
 namespace mexLib.Types
 {
-    public partial class MexFighter
+    public partial class MexFighter : MexReactiveObject
     {
         [Category("0 - General"), DisplayName("Name")]
-        public string Name { get; set; } = "New Fighter";
+        public string Name { get => _name; set { _name = value; OnPropertyChanged(); } } 
+        private string _name = "New Fighter";
 
         [Category("0 - General"), DisplayName("Series")]
         [MexLink(MexLinkType.Series)]
@@ -81,15 +79,11 @@ namespace mexLib.Types
         [Category("2 - Single Player"), DisplayName("Ending Screen Scale"), Description("Amount to scale model on trophy fall screen")]
         public float EndingScreenScale { get; set; }
 
-
         [Browsable(false)]
         public ObservableCollection<MexItem> Items { get; set; } = new ObservableCollection<MexItem>();
 
         [Browsable(false)]
-        public SBM_BoneLookupTable BoneTable { get; set; } = new SBM_BoneLookupTable();
-
-        [Browsable(false)]
-        public SBM_PlCoUnknownFighterTable? UnkTable { get; set; } = new SBM_PlCoUnknownFighterTable();
+        public MexFighterBoneDefinitions BoneDefinitions { get; set; } = new MexFighterBoneDefinitions();
 
         /// <summary>
         /// 
@@ -377,18 +371,13 @@ namespace mexLib.Types
                 Items.Add(item);
             }
         }
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="dol"></param>
         /// <param name="index"></param>
-        public void FromDOL(MexDOL dol, uint index, SBM_ftLoadCommonData plco)
+        public void FromDOL(MexDOL dol, uint index)
         {
-            // load data from plco
-            BoneTable = plco.BoneTables[(int)index];
-            UnkTable = plco.FighterTable[(int)index];
-
             // get external id
             var exid = (uint)MexFighterIDConverter.ToExternalID((int)index, 0x21);
 

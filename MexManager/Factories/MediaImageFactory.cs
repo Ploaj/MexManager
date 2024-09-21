@@ -36,87 +36,88 @@ namespace MexManager.Factories
             {
                 return null;
             }
+            return null;
 
-            if (propertyDescriptor.GetCustomAttribute<MexMediaAttribute>() == null)
-            {
-                return null;
-            }
+            //if (propertyDescriptor.GetCustomAttribute<MexMediaAttribute>() == null)
+            //{
+            //    return null;
+            //}
 
-            // Create a StackPanel or any other container to hold the text box and image
-            var control = new StackPanel 
-            { 
-                Orientation = Orientation.Vertical,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-            };
+            //// Create a StackPanel or any other container to hold the text box and image
+            //var control = new StackPanel 
+            //{ 
+            //    Orientation = Orientation.Vertical,
+            //    HorizontalAlignment = HorizontalAlignment.Stretch,
+            //};
 
-            // Create the Image control
-            var stringControl = new Avalonia.PropertyGrid.Controls.Factories.Builtins.StringCellEditFactory().HandleNewProperty(context);
-            stringControl.Name = "fileName";
-            stringControl.HorizontalAlignment = HorizontalAlignment.Stretch;
+            //// Create the Image control
+            //var stringControl = new Avalonia.PropertyGrid.Controls.Factories.Builtins.StringCellEditFactory().HandleNewProperty(context);
+            //stringControl.Name = "fileName";
+            //stringControl.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-            var imageControl = new Avalonia.Controls.Image
-            {
-                Source = BitmapManager.MexFighterImage,
-                Width = 320,
-                Height = 240,
-                Margin = new Thickness(5)
-            };
+            //var imageControl = new Image
+            //{
+            //    Source = BitmapManager.MexFighterImage,
+            //    Width = 320,
+            //    Height = 240,
+            //    Margin = new Thickness(5)
+            //};
 
-            var importButton = new Button()
-            {
-                Content = "Import Image",
-                HorizontalAlignment = HorizontalAlignment.Stretch
-            };
-            importButton.Click += async (s, e) =>
-            {
-                var file = await FileIO.TryOpenFile("Image", "", FileIO.FilterJpeg);
-                if (file != null &&
-                    propertyDescriptor.GetValue(context.Target) is string fileName)
-                {
-                    var thpPath = Global.Workspace?.GetFilePath(fileName);
-                    if (thpPath != null &&
-                        Path.GetExtension(thpPath) == ".thp")
-                    {
-                        imageControl.Source = new Bitmap(file);
-                        Global.Files.Set(thpPath, THP.FromJPEG(Global.Files.Get(file)).Data);
-                    }
-                }
-            };
-            var exportButton = new Button()
-            {
-                Content = "Export Image",
-                HorizontalAlignment = HorizontalAlignment.Stretch
-            };
-            exportButton.Click += async (s, e) =>
-            {
-                var fileName = propertyDescriptor.GetValue(context.Target) as string;
-                var file = await FileIO.TrySaveFile("Image", Path.GetFileNameWithoutExtension(fileName) + ".jpg", FileIO.FilterJpeg);
-                if (file != null &&
-                    fileName != null)
-                {
-                    var thpPath = Global.Workspace?.GetFilePath(fileName);
-                    if (thpPath != null &&
-                        Path.GetExtension(thpPath) == ".thp")
-                    {
-                        Global.Files.Set(file, new THP(Global.Files.Get(thpPath)).ToJPEG());
-                    }
-                }
-            };
+            //var importButton = new Button()
+            //{
+            //    Content = "Import Image",
+            //    HorizontalAlignment = HorizontalAlignment.Stretch
+            //};
+            //importButton.Click += async (s, e) =>
+            //{
+            //    var file = await FileIO.TryOpenFile("Image", "", FileIO.FilterJpeg);
+            //    if (file != null &&
+            //        propertyDescriptor.GetValue(context.Target) is string fileName)
+            //    {
+            //        var thpPath = Global.Workspace?.GetFilePath(fileName);
+            //        if (thpPath != null &&
+            //            Path.GetExtension(thpPath) == ".thp")
+            //        {
+            //            imageControl.Source = new Bitmap(file);
+            //            Global.Files.Set(thpPath, THP.FromJPEG(Global.Files.Get(file)).Data);
+            //        }
+            //    }
+            //};
+            //var exportButton = new Button()
+            //{
+            //    Content = "Export Image",
+            //    HorizontalAlignment = HorizontalAlignment.Stretch
+            //};
+            //exportButton.Click += async (s, e) =>
+            //{
+            //    var fileName = propertyDescriptor.GetValue(context.Target) as string;
+            //    var file = await FileIO.TrySaveFile("Image", Path.GetFileNameWithoutExtension(fileName) + ".jpg", FileIO.FilterJpeg);
+            //    if (file != null &&
+            //        fileName != null)
+            //    {
+            //        var thpPath = Global.Workspace?.GetFilePath(fileName);
+            //        if (thpPath != null &&
+            //            Path.GetExtension(thpPath) == ".thp")
+            //        {
+            //            Global.Files.Set(file, new THP(Global.Files.Get(thpPath)).ToJPEG());
+            //        }
+            //    }
+            //};
 
-            var optionStack = new StackPanel
-            {
-                Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Center,
-            };
-            optionStack.Children.Add(importButton);
-            optionStack.Children.Add(exportButton);
+            //var optionStack = new StackPanel
+            //{
+            //    Orientation = Orientation.Horizontal,
+            //    HorizontalAlignment = HorizontalAlignment.Center,
+            //};
+            //optionStack.Children.Add(importButton);
+            //optionStack.Children.Add(exportButton);
 
 
-            control.Children.Add(stringControl);
-            control.Children.Add(imageControl);
-            control.Children.Add(optionStack);
+            //control.Children.Add(stringControl);
+            //control.Children.Add(imageControl);
+            //control.Children.Add(optionStack);
 
-            return control;
+            //return control;
         }
         /// <summary>
         /// Handles the property changed.
@@ -125,53 +126,51 @@ namespace MexManager.Factories
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         public override bool HandlePropertyChanged(PropertyCellContext context)
         {
-            var propertyDescriptor = context.Property;
-            var target = context.Target;
-            var control = context.CellEdit;
+            //var propertyDescriptor = context.Property;
+            //var target = context.Target;
+            //var control = context.CellEdit;
 
-            if (propertyDescriptor.PropertyType != typeof(string))
-            {
-                return false;
-            }
+            //if (propertyDescriptor.PropertyType != typeof(string))
+            //{
+            //    return false;
+            //}
 
-            ValidateProperty(control, propertyDescriptor, target);
+            //ValidateProperty(control, propertyDescriptor, target);
 
-            if (control is StackPanel stack &&
-                stack.Children[0] is TextBox textBox &&
-                stack.Children[1] is Avalonia.Controls.Image image)
-            {
-                var value = propertyDescriptor.GetValue(target) as string;
+            //if (control is StackPanel stack &&
+            //    stack.Children[0] is TextBox textBox &&
+            //    stack.Children[1] is Avalonia.Controls.Image image)
+            //{
+            //    var value = propertyDescriptor.GetValue(target) as string;
 
-                textBox.Text = value;
+            //    textBox.Text = value;
 
-                if (value != null &&
-                    Global.Workspace != null)
-                {
-                    var thpPath = Global.Workspace.GetFilePath(value);
+            //    if (value != null &&
+            //        Global.Workspace != null)
+            //    {
+            //        var thpPath = Global.Workspace.GetFilePath(value);
 
-                    if (!Global.Files.Exists(thpPath) || 
-                        Path.GetExtension(thpPath) != ".thp")
-                    {
-                        image.Source = BitmapManager.MissingImage;
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine(thpPath);
+            //        if (!Global.Files.Exists(thpPath) || 
+            //            Path.GetExtension(thpPath) != ".thp")
+            //        {
+            //            image.Source = BitmapManager.MissingImage;
+            //        }
+            //        else
+            //        {
+            //            var thp = new THP(Global.Files.Get(thpPath));
+            //            var jpeg = thp.ToJPEG();
+            //            using var stream = new MemoryStream(jpeg);
+            //            image.Source = new Bitmap(stream);
+            //        }
 
-                        var thp = new THP(Global.Files.Get(thpPath));
-                        var jpeg = thp.ToJPEG();
-                        using var stream = new MemoryStream(jpeg);
-                        image.Source = new Bitmap(stream);
-                    }
+            //    }
+            //    else
+            //    {
+            //        image.Source = BitmapManager.MissingImage;
+            //    }
 
-                }
-                else
-                {
-                    image.Source = BitmapManager.MissingImage;
-                }
-
-                return true;
-            }
+            //    return true;
+            //}
 
             return false;
         }

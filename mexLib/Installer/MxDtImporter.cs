@@ -74,12 +74,11 @@ namespace mexLib.Installer
                 return new MexInstallerError("Error reading MxDt.dat");
 
             // load fighters
-            for (int i = 0; i < mxdt.MetaData.NumOfInternalIDs; i++)
+            for (uint i = 0; i < mxdt.MetaData.NumOfInternalIDs; i++)
             {
                 var fighter = new MexFighter();
-                fighter.FromMxDt(workspace, mxdt, dol, i);
-                if (i < plco.BoneTables.Length)
-                    fighter.BoneTable = plco.BoneTables[i];
+                fighter.FromMxDt(workspace, mxdt, dol, (int)i);
+                fighter.LoadFromPlCo(plco, i);
                 project.Fighters.Add(fighter);
             }
 

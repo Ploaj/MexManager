@@ -96,4 +96,8 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Controls\SemScriptEditor.axaml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\VideoPlayer.axaml" />
+  </ItemGroup>
 </Project>

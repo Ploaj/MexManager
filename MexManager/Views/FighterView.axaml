@@ -226,9 +226,34 @@
 					</views:PropertyGridExt>
 				</ScrollViewer>
 			</TabItem>
-			<!--<TabItem Header="Media">
-				<views:FighterMediaEditor DataContext="{Binding SelectedFighter.Media}" />
-			</TabItem>-->
+			<TabItem Header="Media">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*"/>
+						<RowDefinition Height="*"/>
+					</Grid.RowDefinitions>
+					<views:FighterMediaEditor
+						Grid.Column="0"
+						Grid.Row="0"
+						DataContext="{Binding SelectedFighter.Media.EndClassicFile}" />
+					<views:FighterMediaEditor
+						Grid.Column="1"
+						Grid.Row="0"
+						DataContext="{Binding SelectedFighter.Media.EndAdventureFile}" />
+					<views:FighterMediaEditor
+						Grid.Column="0"
+						Grid.Row="1"
+						DataContext="{Binding SelectedFighter.Media.EndAllStarFile}" />
+					<views:MTHEditor
+						Grid.Column="1"
+						Grid.Row="1"
+						DataContext="{Binding SelectedFighter.Media.EndMovieFile}" />
+				</Grid>
+			</TabItem>
 			<TabItem Header="Code">
 				<ScrollViewer>
 					<views:PropertyGridExt
@@ -239,13 +264,31 @@
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Bones">
-				<ScrollViewer>
-					<views:PropertyGridExt
-						Margin="4"
-						AllowQuickFilter="False"
-						DataContext="{Binding SelectedFighter.BoneTable}">
-					</views:PropertyGridExt>
-				</ScrollViewer>
+				<TabControl>
+					<TabItem Header="Common">
+						<ScrollViewer>
+							<views:PropertyGridExt
+								Margin="4"
+								AllowQuickFilter="False"
+								DataContext="{Binding SelectedFighter.BoneDefinitions.Lookup}">
+							</views:PropertyGridExt>
+						</ScrollViewer>
+					</TabItem>
+					<TabItem Header="Ext">
+						<ScrollViewer>
+							<views:PropertyGridExt
+								Margin="4"
+								AllowQuickFilter="False"
+								AllowToggleView="False"
+								AllowFilter="False"
+								NameWidth="0"
+								ShowTitle="False"
+								ShowStyle="Builtin"
+								DataContext="{Binding SelectedFighter.BoneDefinitions}">
+							</views:PropertyGridExt>
+						</ScrollViewer>
+					</TabItem>
+				</TabControl>
 			</TabItem>
 			<TabItem
 				Header="GaW Colors"

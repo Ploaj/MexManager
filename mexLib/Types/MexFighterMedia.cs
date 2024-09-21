@@ -32,7 +32,6 @@ namespace mexLib.Types
             private string _endMovieFile = "";
 
             [Category("Classic Mode"), DisplayName(" "), Description("")]
-            [MexMedia]
             [MexFilePathValidator(MexFilePathType.Files)]
             public string EndClassicFile
             {
@@ -48,7 +47,6 @@ namespace mexLib.Types
             }
 
             [Category("Adventure Mode"), DisplayName(" "), Description("")]
-            [MexMedia]
             [MexFilePathValidator(MexFilePathType.Files)]
             public string EndAdventureFile
             {
@@ -64,7 +62,6 @@ namespace mexLib.Types
             }
 
             [Category("All Star Mode"), DisplayName(" "), Description("")]
-            [MexMedia]
             [MexFilePathValidator(MexFilePathType.Files)]
             public string EndAllStarFile
             {

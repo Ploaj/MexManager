@@ -90,16 +90,6 @@ namespace MexManager.ViewModels
                 if (_soundPlayer?.State == OpenTK.Audio.OpenAL.ALSourceState.Playing)
                 {
                     float percent = _soundPlayer.Percentage;
-                    //var e = _soundPlayer?.TotalLength;
-                    //if (e != null)
-                    //{
-                    //    // Calculate the offset TimeSpan based on the ratio
-                    //    double offsetSeconds = e.Value.TotalSeconds * percent;
-
-                    //    var c = TimeSpan.FromSeconds(offsetSeconds);
-
-                    //    EndTime = $"{c.Minutes}:{c.Seconds} / {e.Value.Minutes}:{e.Value.Seconds}";
-                    //}
                     SkipUpdate = true;
                     ProgressWidth = percent * Width;
                 }

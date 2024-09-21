@@ -6,6 +6,7 @@ using HSDRaw.MEX.Scenes;
 using MeleeMedia.Audio;
 using mexLib.MexScubber;
 using mexLib.Types;
+using System;
 
 namespace mexLib.Installer
 {
@@ -61,7 +62,8 @@ namespace mexLib.Installer
             for (uint i = 0; i < 0x21; i++)
             {
                 var fighter = new MexFighter();
-                fighter.FromDOL(dol, i, plco);
+                fighter.FromDOL(dol, i);
+                fighter.LoadFromPlCo(plco, i);
                 project.Fighters.Add(fighter);
             }
 

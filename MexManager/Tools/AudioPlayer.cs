@@ -65,32 +65,47 @@ namespace MexManager.Tools
         {
             if (_device == null)
             {
+                Logger.WriteLine("Trying to open ALC device");
                 _device = ALC.OpenDevice(null);
                 if (_device == ALDevice.Null)
                 {
-                    Debug.WriteLine("Audio Device failed");
+                    Logger.WriteLine("Audio Device failed");
+                    return;
+                }
+                else
+                {
+                    Logger.WriteLine("Success");
                 }
             }
 
-            if (_context == null && _device is ALDevice dev)
+            if (_context == null && _device != null && _device != ALDevice.Null)
             {
-                _context = ALC.CreateContext(dev, new ALContextAttributes());
+                Logger.WriteLine("Trying to create ALC Context");
+                _context = ALC.CreateContext((ALDevice)_device, new ALContextAttributes());
                 if (_context == ALContext.Null)
                 {
-                    Debug.WriteLine("Audio Context failed");
+                    Logger.WriteLine("Audio Context failed");
+                    return;
+                }
+                else
+                {
+                    Logger.WriteLine("Success");
                 }
             }
 
             if (_context is ALContext con)
             {
-                ALC.MakeContextCurrent(con);
-
-                //_buffer = AL.GenBuffer();
-                //_source = AL.GenSource();
-                //Debug.WriteLine($"buffer {_buffer} source {_source}");
-                _loopTimer = new Timer(CheckPlayback, null, 0, 30); // Check every 100ms
-
-                Initialize = true;
+                Logger.WriteLine("Trying make ALC context current");
+                if (ALC.MakeContextCurrent(con))
+                {
+                    Logger.WriteLine("Success");
+                    _loopTimer = new Timer(CheckPlayback, null, 0, 30); // Check every 100ms
+                    Initialize = true;
+                }
+                else
+                {
+                    Logger.WriteLine("Failed");
+                }
             }
         }
         /// <summary>

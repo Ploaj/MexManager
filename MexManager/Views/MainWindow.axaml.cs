@@ -9,5 +9,7 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         this.WindowState = WindowState.Maximized;
+
+        Closed += (s, e) => Logger.Shutdown();
     }
 }

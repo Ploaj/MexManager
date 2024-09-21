@@ -14,7 +14,16 @@ class Program
     public static void Main(string[] args)
     {
         Global.LaunchArgs = args;
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+
+        try
+        {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception e)
+        {
+            File.WriteAllText("crash.log", e.ToString());
+        }
+
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

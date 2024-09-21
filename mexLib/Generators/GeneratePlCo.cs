@@ -23,8 +23,7 @@ namespace mexLib.Generators
             // dump fighter bone table data
             for (int internalId = 0; internalId < ws.Project.Fighters.Count; internalId++)
             {
-                plCo.BoneTables.Set(internalId, ws.Project.Fighters[internalId].BoneTable);
-                plCo.FighterTable.Set(internalId, ws.Project.Fighters[internalId].UnkTable);
+                ws.Project.Fighters[internalId].SetPlCo(plCo, internalId);
             }
 
             //save plyco
@@ -53,9 +52,9 @@ namespace mexLib.Generators
             commonBoneTable._s.SetReferenceStruct(0x00, new HSDStruct(tb1));
             commonBoneTable._s.SetReferenceStruct(0x04, new HSDStruct(tb2));
             plCo.BoneTables.Set(ws.Project.Fighters.Count, commonBoneTable);
-            plCo.FighterTable.Set(ws.Project.Fighters.Count, new SBM_PlCoUnknownFighterTable()
+            plCo.FighterTable.Set(ws.Project.Fighters.Count, new SBM_PlCoFighterBoneExt()
             {
-                Entries = new SBM_PlCoUnknownFighterTableEntry[] {
+                Entries = new SBM_PlCoFighterBoneExtEntry[] {
                     new ()
                     {
                         Value1 = 52,

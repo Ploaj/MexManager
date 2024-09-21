@@ -1,55 +1,65 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
     One for Windows with net8.0-windows TFM, one for MacOS with net8.0-macos and one with net8.0 TFM for Linux.-->
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-	<PublishTrimmed>true</PublishTrimmed>
-	<ApplicationIcon>icon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove="icon.ico" />
-  </ItemGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<PublishTrimmed>true</PublishTrimmed>
+		<ApplicationIcon>icon.ico</ApplicationIcon>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="icon.ico" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="11.1.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Avalonia.Desktop" Version="11.1.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MexManager\MexManager.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MexManager\MexManager.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="GCILib">
-      <HintPath>GCILib.dll</HintPath>
-    </Reference>
-    <Reference Include="HSDRaw">
-      <HintPath>HSDRaw.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="GCILib">
+			<HintPath>GCILib.dll</HintPath>
+		</Reference>
+		<Reference Include="HSDRaw">
+			<HintPath>HSDRaw.dll</HintPath>
+		</Reference>
+		<Reference Include="MeleeMedia">
+			<HintPath>MeleeMedia.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="codes.gct">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="codes.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="GCILib.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="HSDRaw.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="MeleeMedia.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<TrimmerRootAssembly Include="MeleeMedia" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <UpToDateCheckInput Remove="icon.ico" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="codes.gct">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="codes.ini">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="GCILib.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="HSDRaw.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="MeleeMedia.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="OpenAL32.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<UpToDateCheckInput Remove="icon.ico" />
+	</ItemGroup>
 </Project>

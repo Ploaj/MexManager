@@ -8,10 +8,10 @@ using System.Text.Json.Serialization;
 
 namespace mexLib.Types
 {
-    public class MexSeries
+    public class MexSeries : MexReactiveObject
     {
         [Category("General"), DisplayName("Name"), Description("Name of the series")]
-        public string Name { get => _name; set { _name = value; } }
+        public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
         private string _name = "";
 
         [Browsable(false)]

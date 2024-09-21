@@ -16,7 +16,8 @@ namespace mexLib.Types
     public partial class MexStage : MexReactiveObject
     {
         [Category("0 - General"), DisplayName("Name")]
-        public string Name { get; set; } = "";
+        public string Name { get => _name; set { _name = value; OnPropertyChanged(); } };
+        private string _name = "";
 
         [Category("0 - General"), DisplayName("Location")]
         public string Location { get; set; } = "";
