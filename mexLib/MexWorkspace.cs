@@ -249,7 +249,7 @@ namespace mexLib
             workspace.Project = MexProject.LoadFromFile(workspace);
 
             //var plco = new HSDRawFile(workspace.FileManager.Get(workspace.GetFilePath("PlCo.dat"))).Roots[0].Data as SBM_ftLoadCommonData;
-            //for(uint i = 0; i < workspace.Project.Fighters.Count; i++)
+            //for (uint i = 0; i < workspace.Project.Fighters.Count; i++)
             //{
             //    workspace.Project.Fighters[(int)i].LoadFromPlCo(plco, i);
             //}

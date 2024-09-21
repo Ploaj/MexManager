@@ -29,7 +29,7 @@
 						</MultiBinding>
 					</TextBlock.Text>
 				</TextBlock>
-				<TextBlock Text="{Binding}"/>
+				<TextBlock Text="{Binding Name}"/>
 			</StackPanel>
 		</DataTemplate>
 
