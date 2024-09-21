@@ -1,18 +1,17 @@
-﻿using mexLib.Types;
-using mexLib;
+﻿using mexLib;
 using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
 namespace MexManager.Converters
 {
-    public class SSSIconTypeConverter : IValueConverter
+    public class StageIdConverter : IValueConverter
     {
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (Global.Workspace != null && value is MexStageSelectIcon icon)
+            if (Global.Workspace != null && value is int stage_external_id)
             {
-                var internalId = MexStageIDConverter.ToInternalID(icon.StageID);
+                var internalId = MexStageIDConverter.ToInternalID(stage_external_id);
 
                 if (internalId >= 0)
                 {

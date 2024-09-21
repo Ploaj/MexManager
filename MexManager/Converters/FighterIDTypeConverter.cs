@@ -1,18 +1,17 @@
 ﻿using Avalonia.Data.Converters;
 using mexLib;
-using mexLib.Types;
 using System;
 using System.Globalization;
 
 namespace MexManager.Converters
 {
-    public class CSSIconTypeConverter : IValueConverter
+    public class FighterIDTypeConverter : IValueConverter
     {
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (Global.Workspace != null && value is MexCharacterSelectIcon icon)
+            if (Global.Workspace != null && value is int fighter_index)
             {
-                var internalId = MexFighterIDConverter.ToInternalID(icon.Fighter, Global.Workspace.Project.Fighters.Count);
+                var internalId = MexFighterIDConverter.ToInternalID(fighter_index, Global.Workspace.Project.Fighters.Count);
 
                 if (internalId < Global.Workspace.Project.Fighters.Count && internalId >= 0)
                 {

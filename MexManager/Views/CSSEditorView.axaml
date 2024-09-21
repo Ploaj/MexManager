@@ -9,7 +9,7 @@
              x:Class="MexManager.Views.CSSEditorView">
 
 	<UserControl.Resources>
-		<converters:CSSIconTypeConverter x:Key="CSSIconTypeConverter"/>
+		<converters:FighterIDTypeConverter x:Key="FighterIDTypeConverter"/>
 	</UserControl.Resources>
 
 	<DockPanel>
@@ -53,7 +53,7 @@
 									SelectionChanged="ListBox_SelectionChanged">
 									<ListBox.ItemTemplate>
 										<DataTemplate>
-											<TextBlock Text="{Binding Converter={StaticResource CSSIconTypeConverter}}"/>
+											<TextBlock Text="{Binding Fighter, Converter={StaticResource FighterIDTypeConverter}}"/>
 										</DataTemplate>
 									</ListBox.ItemTemplate>
 								</ListBox>

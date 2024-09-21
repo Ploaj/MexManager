@@ -157,9 +157,6 @@ public partial class SSSEditorView : UserControl
     private void IconPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
         ApplySelectTemplate();
-
-        if (args.PropertyName == nameof(MexStageSelectIcon.StageID))
-            IconList.RefreshList(IconList.SelectedIndex);
     }
     /// <summary>
     /// 

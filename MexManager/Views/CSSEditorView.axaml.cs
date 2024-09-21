@@ -205,9 +205,6 @@ public partial class CSSEditorView : UserControl
     private void IconPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
         ApplySelectTemplate();
-
-        if (args.PropertyName == nameof(MexCharacterSelectIcon.Fighter))
-            IconList.RefreshList(IconList.SelectedIndex);
     }
     /// <summary>
     /// 

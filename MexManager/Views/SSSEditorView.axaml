@@ -10,7 +10,7 @@
              x:Class="MexManager.Views.SSSEditorView">
 
 	<UserControl.Resources>
-		<converters:SSSIconTypeConverter x:Key="SSSIconTypeConverter"/>
+		<converters:StageIdConverter x:Key="StageIdConverter"/>
 	</UserControl.Resources>
 	
 	<DockPanel Background="{DynamicResource TabItemBackgroundBrush}">
@@ -140,7 +140,7 @@
 								SelectionChanged="ListBox_SelectionChanged">
 									<ListBox.ItemTemplate>
 										<DataTemplate>
-											<TextBlock Text="{Binding Converter={StaticResource SSSIconTypeConverter}}"/>
+											<TextBlock Text="{Binding StageID, Converter={StaticResource StageIdConverter}}"/>
 										</DataTemplate>
 									</ListBox.ItemTemplate>
 								</ListBox>

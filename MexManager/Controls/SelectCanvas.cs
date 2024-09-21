@@ -174,6 +174,11 @@ namespace MexManager.Controls
             TemplateImageWidth = 35.05;
             TemplateImageHeight = 28.8f;
 
+            Properties.PropertyChanged += (s, e) =>
+            {
+                InvalidateVisual();
+            };
+
             PointerWheelChanged += (sender, e) =>
             {
                 Properties.Zoom += (float)e.Delta.Y;
