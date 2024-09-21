@@ -270,6 +270,12 @@
 							<views:PropertyGridExt
 								Margin="4"
 								AllowQuickFilter="False"
+								AllowToggleView="False"
+								AllowFilter="False"
+								NameWidth="0"
+								ShowTitle="False"
+								ShowStyle="Builtin"
+								Padding="0"
 								DataContext="{Binding SelectedFighter.BoneDefinitions.Lookup}">
 							</views:PropertyGridExt>
 						</ScrollViewer>

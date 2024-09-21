@@ -103,7 +103,7 @@
 					</views:PropertyGridExt>
 				</DockPanel>
 			</TabItem>
-			<TabItem Header="Display">
+			<TabItem Header="Preview">
 				<views:PropertyGridExt
 					Name="SelectScreenProperties"
 					Margin="4"

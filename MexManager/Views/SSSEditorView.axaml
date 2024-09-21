@@ -228,13 +228,14 @@
 						</TabControl>
 						</DockPanel>
 					</TabItem>
-				<TabItem Header="Display">
+				<TabItem Header="Preview">
 					<views:PropertyGridExt
 						Name="SelectScreenProperties"
 						Margin="4"
 						AllowQuickFilter="False"
 						AllowFilter="False"
-						AllowToggleView="False">
+						AllowToggleView="False"
+						DataContext="{ Binding SelectScreen.Properties }">
 					</views:PropertyGridExt>
 				</TabItem>
 			</TabControl>

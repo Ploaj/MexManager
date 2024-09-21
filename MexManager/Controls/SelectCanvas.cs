@@ -196,9 +196,36 @@ namespace MexManager.Controls
                 {
                     Properties.XOffset += (float)delta.X;
                     Properties.YOffset += (float)delta.Y;
+                    ClampOffset();
                     InvalidateVisual();
                 }
             };
+
+            LayoutUpdated += (s, e) =>
+            {
+                if (s is ItemsControl itemsControl)
+                {
+                    ClampOffset();
+                }
+            };
+        }
+
+        public void ClampOffset()
+        {
+            var currentWidth = Bounds.Width / 2;
+            var currentHeight = Bounds.Height / 2;
+
+            if (Properties.XOffset < -currentWidth)
+                Properties.XOffset = -(float)currentWidth;
+
+            if (Properties.XOffset > currentWidth)
+                Properties.XOffset = (float)currentWidth;
+
+            if (Properties.YOffset < -currentHeight)
+                Properties.YOffset = -(float)currentHeight;
+
+            if (Properties.YOffset > currentHeight)
+                Properties.YOffset = (float)currentHeight;
         }
 
         public List<MexIconBase> Icons
