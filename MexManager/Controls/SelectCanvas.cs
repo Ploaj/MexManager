@@ -3,13 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using mexLib;
+using Avalonia.Media.Immutable;
 using mexLib.Types;
-using MexManager.Tools;
 using PropertyModels.ComponentModel;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace MexManager.Controls
@@ -296,7 +294,7 @@ namespace MexManager.Controls
 
             // highlight selected icon
             if (SelectedIcon != null)
-                DrawIconCollision(context, SelectedIcon as MexIconBase, Brushes.Yellow);
+                DrawIconSelected(context, SelectedIcon as MexIconBase);
 
             // draw hand
             //DrawCursorHand(context);
@@ -347,13 +345,14 @@ namespace MexManager.Controls
 
             return null;
         }
+        private readonly static ISolidColorBrush SelectedBrush = new ImmutableSolidColorBrush(Color.FromArgb(100, 255, 255, 0));
         /// <summary>
         /// 
         /// </summary>
         /// <param name="context"></param>
         /// <param name="icon"></param>
         /// <param name="color"></param>
-        private void DrawIconCollision(DrawingContext context, MexIconBase? icon, IBrush color)
+        private void DrawIconSelected(DrawingContext context, MexIconBase? icon)
         {
             if (icon == null)
                 return;
@@ -366,8 +365,29 @@ namespace MexManager.Controls
                 icon.Y + off.Item2,
                 size.Item1 * icon.ScaleX,
                 size.Item2 * icon.ScaleY);
-            var pen = new Pen(color, 2);
-            context.DrawRectangle(Brushes.Transparent, pen, rect);
+            context.FillRectangle(SelectedBrush, rect);
+        }
+        private readonly static Pen CollisionPen = new (Brushes.White, 2);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="icon"></param>
+        /// <param name="color"></param>
+        private void DrawIconCollision(DrawingContext context, MexIconBase? icon)
+        {
+            if (icon == null)
+                return;
+
+            var off = icon.CollisionOffset;
+            var size = icon.CollisionSize;
+
+            var rect = TransformRect(
+                icon.X + off.Item1,
+                icon.Y + off.Item2,
+                size.Item1 * icon.ScaleX,
+                size.Item2 * icon.ScaleY);
+            context.DrawRectangle(CollisionPen, rect);
         }
         /// <summary>
         /// 
@@ -392,7 +412,7 @@ namespace MexManager.Controls
             }
 
             if (Properties.ShowCollision)
-                DrawIconCollision(context, icon, Brushes.White);
+                DrawIconCollision(context, icon);
         }
         /// <summary>
         /// 

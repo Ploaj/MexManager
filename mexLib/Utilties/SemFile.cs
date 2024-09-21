@@ -62,7 +62,7 @@ namespace mexLib.Utilties
             SemCode.Unused3,
         };
 
-        public ObservableCollection<SemCode> Selectable => SelectableCodes;
+        public static ObservableCollection<SemCode> Selectable => SelectableCodes;
 
         /// <summary>
         /// 

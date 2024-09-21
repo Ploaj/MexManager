@@ -16,8 +16,7 @@
 		<Border
 			Background="#101010"
 			CornerRadius="10">
-			<TabControl DockPanel.Dock="Left"
-						Width="480">
+			<TabControl DockPanel.Dock="Left">
 				<TabItem Header="Icons">
 					<DockPanel>
 						<Menu DockPanel.Dock="Top"
@@ -43,8 +42,12 @@
 								IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
 								Click="MoveDownIcon_Click"/>
 						</Menu>
-						<DockPanel>
-							<ScrollViewer DockPanel.Dock="Left">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<ScrollViewer Grid.Column="0">
 								<ListBox
 									Name="IconList"
 									Width="200"
@@ -53,24 +56,37 @@
 									SelectionChanged="ListBox_SelectionChanged">
 									<ListBox.ItemTemplate>
 										<DataTemplate>
-											<TextBlock Text="{Binding Fighter, Converter={StaticResource FighterIDTypeConverter}}"/>
+											<StackPanel Orientation="Horizontal">
+												<TextBlock
+													VerticalAlignment="Center"
+													Margin="0,0,10,0">
+													<TextBlock.Text>
+														<MultiBinding Converter="{StaticResource ListBoxIndexConverter}">
+															<Binding Path="." />
+															<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
+														</MultiBinding>
+													</TextBlock.Text>
+												</TextBlock>
+												<TextBlock Text="{Binding Fighter, Converter={StaticResource FighterIDTypeConverter}}"/>
+											</StackPanel>
 										</DataTemplate>
 									</ListBox.ItemTemplate>
 								</ListBox>
 							</ScrollViewer>
-							<ScrollViewer DockPanel.Dock="Right">
+							<ScrollViewer Grid.Column="1">
 								<views:PropertyGridExt
 									Name="IconPropertyGrid"
 									Margin="4"
+									NameWidth="96"
+									Width="240"
 									AllowQuickFilter="False"
 									AllowFilter="False"
 									AllowToggleView="False"
-									NameWidth="96"
 									ShowStyle="Builtin"
 									DataContext="{Binding SelectedCSSIcon}">
 								</views:PropertyGridExt>
 							</ScrollViewer>
-						</DockPanel>
+						</Grid>
 					</DockPanel>
 			</TabItem>
 			<TabItem Header=" Layout Template">

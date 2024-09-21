@@ -101,7 +101,6 @@
 			Background="#101010"
 			CornerRadius="10">
 			<TabControl DockPanel.Dock="Left"
-						Width="480"
 						IsEnabled="{Binding StageSelect, Converter={StaticResource NullToBoolConverter}}">
 				<TabItem Header="Icons">
 					<DockPanel>
@@ -128,28 +127,43 @@
 								IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
 								Click="MoveDownIcon_Click"/>
 						</Menu>
-						<StackPanel
-							Orientation="Horizontal"
-							DockPanel.Dock="Top">
-							<ScrollViewer>
+						<Grid DockPanel.Dock="Top">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							<ScrollViewer Grid.Column="0">
 								<ListBox
-								Name="IconList"
-								Width="200"
-								ItemsSource="{Binding StageSelect.StageIcons}"
-								SelectedItem="{Binding SelectedSSSIcon, Mode=TwoWay}"
-								SelectionChanged="ListBox_SelectionChanged">
+									Name="IconList"
+									Width="200"
+									ItemsSource="{Binding StageSelect.StageIcons}"
+									SelectedItem="{Binding SelectedSSSIcon, Mode=TwoWay}"
+									SelectionChanged="ListBox_SelectionChanged">
 									<ListBox.ItemTemplate>
 										<DataTemplate>
-											<TextBlock Text="{Binding StageID, Converter={StaticResource StageIdConverter}}"/>
+											<StackPanel Orientation="Horizontal">
+												<TextBlock
+													VerticalAlignment="Center"
+													Margin="0,0,10,0">
+													<TextBlock.Text>
+														<MultiBinding Converter="{StaticResource ListBoxIndexConverter}">
+															<Binding Path="." />
+															<Binding RelativeSource="{RelativeSource AncestorType=ListBox}" />
+														</MultiBinding>
+													</TextBlock.Text>
+												</TextBlock>
+												<TextBlock Text="{Binding StageID, Converter={StaticResource StageIdConverter}}"/>
+											</StackPanel>
 										</DataTemplate>
 									</ListBox.ItemTemplate>
 								</ListBox>
 							</ScrollViewer>
-							<ScrollViewer>
+							<ScrollViewer Grid.Column="1">
 								<views:PropertyGridExt
 									Name="IconPropertyGrid"
 									Margin="4"
 									NameWidth="96"
+									Width="240"
 									AllowQuickFilter="False"
 									AllowFilter="False"
 									AllowToggleView="False"
@@ -157,7 +171,7 @@
 									DataContext="{Binding SelectedSSSIcon}">
 								</views:PropertyGridExt>
 							</ScrollViewer>
-						</StackPanel>
+						</Grid>
 					</DockPanel>
 				</TabItem>
 				<TabItem Header="Layout Template">

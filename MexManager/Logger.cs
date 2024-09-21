@@ -5,9 +5,9 @@ namespace MexManager
 {
     public static class Logger
     {
-        private static readonly FileStream _stream = new FileStream(@"log.txt", FileMode.Create);
-        private static readonly StreamWriter _writer = new StreamWriter(_stream) { AutoFlush = true };
-        private static readonly object _lock = new object();
+        private static readonly FileStream _stream = new (@"log.txt", FileMode.Create);
+        private static readonly StreamWriter _writer = new (_stream) { AutoFlush = true };
+        private static readonly object _lock = new ();
         private static bool _disposed = false;
 
         public static void WriteLine(string line)

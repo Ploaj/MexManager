@@ -14,7 +14,7 @@ public partial class VideoPlayer : Window
 {
     private MTHReader? _reader;
 
-    private List<Bitmap> frames = new List<Bitmap>();
+    private readonly List<Bitmap> frames = [];
 
     private readonly DispatcherTimer _timer;
 

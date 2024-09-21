@@ -71,7 +71,7 @@ public partial class MainView : UserControl
                 string filePath = Global.LaunchArgs[0];
                 if (Path.GetExtension(filePath) == ".mexproj")
                     Context?.OpenWorkspace(filePath);
-                Global.LaunchArgs = Array.Empty<string>();
+                Global.LaunchArgs = [];
             }
         };
     }

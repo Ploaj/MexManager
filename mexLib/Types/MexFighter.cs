@@ -348,7 +348,7 @@ namespace mexLib.Types
             }
 
             // Functions
-            Functions.FromMxDt(workspace, mxdt, internalId);
+            Functions.FromMxDt(mxdt, internalId);
 
             // extract logic pointers from dol since old mex stored the actual data
             if (!MexFighterIDConverter.IsMexFighter(internalId, workspace.Project.Fighters.Count))

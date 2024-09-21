@@ -374,7 +374,7 @@ namespace mexLib.Types
                 };
             }
 
-            internal void FromMxDt(MexWorkspace workspace, MEX_Data mxdt, int internalId)
+            internal void FromMxDt(MEX_Data mxdt, int internalId)
             {
                 var ff = mxdt.FighterFunctions;
 
