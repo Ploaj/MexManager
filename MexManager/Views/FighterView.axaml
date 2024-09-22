@@ -185,7 +185,7 @@
 							<Grid>
 
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="240"/>
 									<ColumnDefinition Width="*"/>
 								</Grid.ColumnDefinitions>
 
@@ -195,29 +195,27 @@
 								</Grid.RowDefinitions>
 
 								<StackPanel Orientation="Vertical"
-									Grid.Column="0"
-									Grid.Row="0">
+											Grid.Column="0"
+											Grid.Row="0"
+											Spacing="4"
+											Margin="4">
+									<TextBlock Text="Icon"/>
+									<controls:TextureAssetEditor
+										DataContext="{ Binding SelectedFighterCostume.IconAsset }"/>
 									<TextBlock Text="Portrait"/>
 									<controls:TextureAssetEditor
 										DataContext="{ Binding SelectedFighterCostume.CSPAsset }"/>
 								</StackPanel>
 								
-								<StackPanel Orientation="Vertical"
-									Grid.Column="1"
-									Grid.Row="0">
-									<TextBlock Text="Icon"/>
-									<controls:TextureAssetEditor
-										DataContext="{ Binding SelectedFighterCostume.IconAsset }"/>
-								</StackPanel>
-								
 								<pgc:PropertyGrid
-									Grid.Column="0"
-									Grid.ColumnSpan="2"
-									Grid.Row="1"
+									Grid.Column="1"
+									Grid.Row="0"
+									Grid.RowSpan="2"
 									DockPanel.Dock="Left"
 									AllowQuickFilter="False"
 									AllowFilter="False"
 									AllowToggleView="False"
+									ShowTitle="False"
 									ShowStyle="Builtin"
 									DataContext="{ Binding SelectedFighterCostume }"/>
 							</Grid>
