@@ -11,10 +11,16 @@
 
 		<Menu DockPanel.Dock="Top">
 			<MenuItem Header="_File">
-				<MenuItem Header="_Export to Folder (*.jpg)"/>
-				<MenuItem Header="_Import from Folder (*.jpg)"/>
+				<MenuItem Header="_Export to Folder (*.jpg)"
+						  Click="ExportFrames"
+						  IsEnabled="{Binding IsVideoLoaded}"/>
+				<MenuItem Header="_Import from Folder (*.jpg)"
+						  Click="ImportFrames"
+						  IsEnabled="False"/>
 				<Separator/>
-				<MenuItem Header="_Export Current Frame (*.jpg)"/>
+				<MenuItem Header="_Export Current Frame (*.jpg)"
+						  Click="ExportCurrentFrame"
+						  IsEnabled="{Binding IsVideoLoaded}"/>
 			</MenuItem>
 		</Menu>
 		
@@ -27,6 +33,7 @@
 			</Grid.ColumnDefinitions>
 
 			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
@@ -45,7 +52,8 @@
 				Height="32"
 				VerticalContentAlignment="Center"
 				HorizontalAlignment="Stretch"
-				HorizontalContentAlignment="Center">
+				HorizontalContentAlignment="Center"
+				Click="PreviousFrame">
 				<Button.Content>
 					<StackPanel
 						Orientation="Horizontal">

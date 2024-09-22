@@ -1,12 +1,11 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using MeleeMedia.Video;
 using mexLib;
-using ReactiveUI;
+using MexManager.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,6 +15,9 @@ namespace MexManager;
 
 public class VideoPlayerContext : MexReactiveObject
 {
+    public bool IsVideoLoaded { get => _isVideoLoaded; set { _isVideoLoaded = value; OnPropertyChanged(); } }
+    private bool _isVideoLoaded;
+
     public bool IsPlaying { get => _isPlaying; set { _isPlaying = value; OnPropertyChanged(); } }
     private bool _isPlaying;
 
@@ -37,6 +39,8 @@ public partial class VideoPlayer : Window
     private readonly int _preloadThreshold = 4;
 
     private readonly VideoPlayerContext Context;
+
+    private string? _filePath;
 
     /// <summary>
     /// 
@@ -128,6 +132,29 @@ public partial class VideoPlayer : Window
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="frame"></param>
+    private void Seek(int frame)
+    {
+        if (_reader == null)
+            return;
+
+        // clear current frame buffer
+        while (frameBuffer.Count > 0)
+            frameBuffer.Dequeue().Dispose();
+
+        // Load initial frames into the buffer
+        _reader.Seek(frame);
+        for (int i = 0; i < Math.Min(_bufferSize, _reader.FrameCount); i++)
+        {
+            using var ms = new MemoryStream(_reader.ReadFrame().ToJPEG());
+            frameBuffer.Enqueue(new Bitmap(ms));
+        }
+
+        NextFrame(null, new RoutedEventArgs());
+    }
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="filePath"></param>
     public void SetVideo(string filePath)
     {
@@ -146,5 +173,98 @@ public partial class VideoPlayer : Window
         NextFrame(null, new RoutedEventArgs());
 
         _timer.Interval = TimeSpan.FromSeconds(1.0 / 60); // mth has framerate, but game runs at 60
+
+        Context.IsVideoLoaded = true;
+        _filePath = filePath;
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    private void PreviousFrame(object? sender, RoutedEventArgs args)
+    {
+        if (_reader == null)
+            return;
+
+        if (_frameIndex == 0)
+            _frameIndex = _reader.FrameCount;
+
+        _frameIndex -= 2;
+
+        if (_frameIndex < 0)
+            _frameIndex = _reader.FrameCount - 1;
+
+        Seek(_frameIndex);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    private async void ExportFrames(object? sender, RoutedEventArgs args)
+    {
+        if (_reader == null)
+            return;
+
+        var file = await FileIO.TrySaveFile("", "", FileIO.FilterJpeg);
+
+        if (file != null)
+        {
+            var path = Path.GetDirectoryName(file);
+            var fileName = Path.GetFileName(file);
+
+            if (path != null && fileName != null)
+            {
+                _reader.Seek(0);
+                for (int i = 0; i < _reader.FrameCount; i++)
+                {
+                    var frame = _reader.ReadFrame();
+                    File.WriteAllBytes(Path.Combine(path, $"fileName_{i:D3}.jpg"), frame.ToJPEG());
+                }
+                Seek(0);
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    private void ImportFrames(object? sender, RoutedEventArgs args)
+    {
+        if (_reader == null)
+            return;
+        // TODO:
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    private async void ExportCurrentFrame(object? sender, RoutedEventArgs args)
+    {
+        if (_reader == null)
+            return;
+
+        var _currentFrame = _frameIndex;
+
+        if (_currentFrame == 0)
+            _currentFrame = _reader.FrameCount;
+
+        _currentFrame -= 1;
+
+        if (_currentFrame < 0)
+            _currentFrame = _reader.FrameCount - 1;
+
+        _reader.Seek(_currentFrame);
+
+        var file = await FileIO.TrySaveFile("", $"frame{_currentFrame:D3}.jpg", FileIO.FilterJpeg);
+
+        if (file != null)
+        {
+            var frame = _reader.ReadFrame();
+            File.WriteAllBytes(file, frame.ToJPEG());
+        }
     }
 }
