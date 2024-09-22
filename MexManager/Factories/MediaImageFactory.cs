@@ -29,13 +29,13 @@ namespace MexManager.Factories
         /// <returns>Control.</returns>
         public override Control? HandleNewProperty(PropertyCellContext context)
         {
-            var propertyDescriptor = context.Property;
-            var target = context.Target;
+            //var propertyDescriptor = context.Property;
+            //var target = context.Target;
 
-            if (propertyDescriptor.PropertyType != typeof(string))
-            {
-                return null;
-            }
+            //if (propertyDescriptor.PropertyType != typeof(string))
+            //{
+            //    return null;
+            //}
             return null;
 
             //if (propertyDescriptor.GetCustomAttribute<MexMediaAttribute>() == null)

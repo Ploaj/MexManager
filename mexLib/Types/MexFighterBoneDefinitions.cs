@@ -49,7 +49,9 @@ namespace mexLib.Types
         {
             plco.BoneTables.Set(index, BoneDefinitions.Lookup);
             if (BoneDefinitions.Ext.Count == 0)
+            {
                 plco.FighterTable.Set(index, null);
+            }
             else
             {
                 SBM_PlCoFighterBoneExt tbl = new()
@@ -61,7 +63,7 @@ namespace mexLib.Types
                         Value3 = e.X02,
                     }).ToArray()
                 };
-                plco.FighterTable.Set(index, null);
+                plco.FighterTable.Set(index, tbl);
             }
 
         }

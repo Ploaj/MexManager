@@ -6,8 +6,8 @@ using Avalonia.Media.Imaging;
 using Avalonia.Media.Immutable;
 using mexLib.Types;
 using PropertyModels.ComponentModel;
-using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace MexManager.Controls
@@ -15,6 +15,7 @@ namespace MexManager.Controls
     public class SelectCanvasDisplayProperties : ReactiveObject
     {
         private float _zoom = 8;
+        [Category("Preview Options")]
         public float Zoom
         {
             get => _zoom;
@@ -29,6 +30,8 @@ namespace MexManager.Controls
         }
 
         private float _offsetX = 0;
+        [Category("Preview Options")]
+        [DisplayName("X Offset")]
         public float XOffset
         {
             get => _offsetX;
@@ -39,6 +42,8 @@ namespace MexManager.Controls
         }
 
         private float _offsetY = 0;
+        [Category("Preview Options")]
+        [DisplayName("Y Offset")]
         public float YOffset
         {
             get => _offsetY;
@@ -49,11 +54,34 @@ namespace MexManager.Controls
         }
 
         private bool _showCollision = true;
+        [Category("Preview Options")]
+        [DisplayName("Show Icon Collisions")]
         public bool ShowCollision
         {
             get => _showCollision;
             set => this.RaiseAndSetIfChanged(ref _showCollision, value);
         }
+
+        private bool _showOverscanArea = false;
+        [Category("Preview Options")]
+        [DisplayName("Show Overscan Area")]
+        public bool ShowOverscanArea
+        {
+            get => _showOverscanArea;
+            set => this.RaiseAndSetIfChanged(ref _showOverscanArea, value);
+        }
+
+        [Category("Preview Options")]
+        [DisplayName("10% Overscan")]
+        public Color OverscanColor10 { get; set; } = Color.FromArgb(180, 0, 255, 0);
+
+        [Category("Preview Options")]
+        [DisplayName("5% Overscan")]
+        public Color OverscanColor05 { get; set; } = Color.FromArgb(180, 255, 255, 0);
+
+        [Category("Preview Options")]
+        [DisplayName("No Overscan/Emulator")]
+        public Color OverscanColorNone { get; set; } = Color.FromArgb(180, 255, 0, 0);
     }
 
     public class SelectCanvas : ItemsControl
@@ -236,36 +264,7 @@ namespace MexManager.Controls
             get => Items.OfType<MexIconBase>().ToList();
         }
 
-        //private void PushState(Stack<ObservableCollection<MexIconBase>> stack)
-        //{
-        //    var iconsCopy = new ObservableCollection<MexIconBase>(Icons);
-        //    stack.Push(iconsCopy);
-        //}
-
-        //public void Undo()
-        //{
-        //    //if (_undoStack.Count > 0)
-        //    //{
-        //    //    PushState(_redoStack); // Save current state to redo stack
-        //    //    Icons = _undoStack.Pop(); // Restore state from undo stack
-        //    //}
-        //}
-
-        //public void Redo()
-        //{
-        //    //if (_redoStack.Count > 0)
-        //    //{
-        //    //    PushState(_undoStack); // Save current state to undo stack
-        //    //    Icons = _redoStack.Pop(); // Restore state from redo stack
-        //    //}
-        //}
-
-        //public void BeginChange()
-        //{
-        //    //Debug.WriteLine("Begin");
-        //    //PushState(_undoStack); // Save current state to undo stack
-        //    //_redoStack.Clear(); // Clear redo stack
-        //}
+        private readonly static Pen CollisionPen = new(Brushes.White, 2);
 
         public override void Render(DrawingContext context)
         {
@@ -298,6 +297,22 @@ namespace MexManager.Controls
 
             // draw hand
             //DrawCursorHand(context);
+
+            // overscan area
+            if (Properties.ShowOverscanArea)
+            {
+                Pen OverscanPen = new(new SolidColorBrush(Properties.OverscanColorNone), 2);
+                Pen OverscanPen05 = new(new SolidColorBrush(Properties.OverscanColor05), 2);
+                Pen OverscanPen10 = new(new SolidColorBrush(Properties.OverscanColor10), 2);
+
+                context.DrawRectangle(OverscanPen, rect);
+
+                var overscan = TransformRect(0, 0, TemplateImageWidth * 0.95f, TemplateImageHeight * 0.95f);
+                context.DrawRectangle(OverscanPen05, overscan); 
+                
+                overscan = TransformRect(0, 0, TemplateImageWidth * 0.9f, TemplateImageHeight * 0.9f);
+                context.DrawRectangle(OverscanPen10, overscan);
+            }
         }
 
         private Rect TransformRect(double x, double y, double w, double h)
@@ -367,7 +382,6 @@ namespace MexManager.Controls
                 size.Item2 * icon.ScaleY);
             context.FillRectangle(SelectedBrush, rect);
         }
-        private readonly static Pen CollisionPen = new (Brushes.White, 2);
         /// <summary>
         /// 
         /// </summary>

@@ -1,16 +1,10 @@
 ﻿using Avalonia.Data.Converters;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using MeleeMedia.Video;
-using mexLib;
 using MexManager.Tools;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MexManager.Converters
 {

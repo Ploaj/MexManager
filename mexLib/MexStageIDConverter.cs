@@ -38,7 +38,6 @@
                 if (ExternalToInternal[i] == internalID)
                     return i;
             }
-            var stupid = ExternalToInternal.Length;
             return (internalID - StageCount) + ExternalToInternal.Length;
         }
     }
