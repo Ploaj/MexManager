@@ -36,7 +36,7 @@ public partial class VideoPlayer : Window
     private readonly int _bufferSize = 10;
     private readonly int _preloadThreshold = 4;
 
-    private VideoPlayerContext Context;
+    private readonly VideoPlayerContext Context;
 
     /// <summary>
     /// 

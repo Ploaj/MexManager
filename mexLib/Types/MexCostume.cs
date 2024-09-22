@@ -29,6 +29,7 @@ namespace mexLib
 
         [DisplayName("Stock Icon")]
         [JsonIgnore]
+        [Browsable(false)]
         public MexTextureAsset IconAsset { get; set; } = new MexTextureAsset()
         {
             AssetPath = "icons/ft",
@@ -44,6 +45,7 @@ namespace mexLib
 
         [DisplayName("Portrait")]
         [JsonIgnore]
+        [Browsable(false)]
         public MexTextureAsset CSPAsset { get; set; } = new MexTextureAsset()
         {
             AssetPath = "csp/csp",

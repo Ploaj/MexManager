@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="480"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="480"
              x:Class="MexManager.Views.FighterView"
 			 xmlns:vm="clr-namespace:MexManager.ViewModels"
 			 xmlns:views="clr-namespace:MexManager.Views"
@@ -182,13 +182,45 @@
 							ItemTemplate="{StaticResource IndexedItemTemplate}">
 						</ListBox>
 						<ScrollViewer>
-							<pgc:PropertyGrid
-								DockPanel.Dock="Left"
-								AllowQuickFilter="False"
-								AllowFilter="False"
-								AllowToggleView="False"
-								ShowStyle="Builtin"
-								DataContext="{ Binding SelectedFighterCostume }"/>
+							<Grid>
+
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+
+								<Grid.RowDefinitions>
+									<RowDefinition Height="280"/>
+									<RowDefinition Height="*"/>
+								</Grid.RowDefinitions>
+
+								<StackPanel Orientation="Vertical"
+									Grid.Column="0"
+									Grid.Row="0">
+									<TextBlock Text="Portrait"/>
+									<controls:TextureAssetEditor
+										DataContext="{ Binding SelectedFighterCostume.CSPAsset }"/>
+								</StackPanel>
+								
+								<StackPanel Orientation="Vertical"
+									Grid.Column="1"
+									Grid.Row="0">
+									<TextBlock Text="Icon"/>
+									<controls:TextureAssetEditor
+										DataContext="{ Binding SelectedFighterCostume.IconAsset }"/>
+								</StackPanel>
+								
+								<pgc:PropertyGrid
+									Grid.Column="0"
+									Grid.ColumnSpan="2"
+									Grid.Row="1"
+									DockPanel.Dock="Left"
+									AllowQuickFilter="False"
+									AllowFilter="False"
+									AllowToggleView="False"
+									ShowStyle="Builtin"
+									DataContext="{ Binding SelectedFighterCostume }"/>
+							</Grid>
 						</ScrollViewer>
 					</DockPanel>
 				</DockPanel>
