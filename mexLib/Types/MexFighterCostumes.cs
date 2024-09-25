@@ -21,13 +21,9 @@ namespace mexLib.Types
         public ObservableCollection<MexCostume> Costumes { get; set; } = new ObservableCollection<MexCostume>();
 
         [Browsable(false)]
-        public bool HasKirbyCostumes
-        {
-            get
-            {
-                return Costumes.Any(e => !string.IsNullOrEmpty(e.KirbyFile.FileName));
-            }
-        }
+        public ObservableCollection<MexCostumeFile> KirbyCostumes { get; set; } = new ObservableCollection<MexCostumeFile>();
+
+        public bool HasKirbyCostumes { get => KirbyCostumes.Count > 0; }
 
         /// <summary>
         /// 
@@ -117,7 +113,6 @@ namespace mexLib.Types
 
             // costumes
             var costumePointer = dol.GetStruct<uint>(0x803C2360, index);
-            var costumePointerKirby = dol.GetStruct<uint>(0x803CB3E8, index);
             for (uint i = 0; i < costumeCount; i++)
             {
                 var costume = new MexCostume()
@@ -133,17 +128,21 @@ namespace mexLib.Types
 
                 costume.Name = ColorNameFromFileName(costume.File.FileName);
 
-                if (costumePointerKirby != 0)
+                Costumes.Add(costume);
+            }
+
+            var costumePointerKirby = dol.GetStruct<uint>(0x803CB3E8, index);
+            if (costumePointerKirby != 0)
+            {
+                for (uint i = 0; i < 6; i++)
                 {
-                    costume.KirbyFile = new MexCostumeFile()
+                    KirbyCostumes.Add(new ()
                     {
                         FileName = dol.GetStruct<string>(costumePointerKirby + 0x00, i, 0x0C),
                         JointSymbol = dol.GetStruct<string>(costumePointerKirby + 0x04, i, 0x0C),
                         MaterialSymbol = dol.GetStruct<string>(costumePointerKirby + 0x08, i, 0x0C),
-                    };
+                    });
                 }
-
-                Costumes.Add(costume);
             }
         }
     }

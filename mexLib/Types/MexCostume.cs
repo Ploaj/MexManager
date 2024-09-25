@@ -1,6 +1,4 @@
 ﻿using mexLib.AssetTypes;
-using mexLib.Installer;
-using mexLib.Types;
 using mexLib.Utilties;
 using System.ComponentModel;
 using System.IO.Compression;
@@ -13,15 +11,12 @@ namespace mexLib
     {
 
         [DisplayName("Name")]
-        public string Name { get; set; } = "New Costume";
+        public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+        private string _name = "New Costume";
 
-        [DisplayName("Main File")]
+        [DisplayName("File")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public MexCostumeVisibilityFile File { get; set; } = new MexCostumeVisibilityFile();
-
-        [DisplayName("Kirby File")]
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public MexCostumeFile KirbyFile { get; set; } = new MexCostumeFile();
 
         [Browsable(false)]
         [JsonInclude]
@@ -68,7 +63,6 @@ namespace mexLib
         public void DeleteFiles(MexWorkspace workspace)
         {
             File.DeleteFiles(workspace);
-            KirbyFile.DeleteFiles(workspace);
         }
         /// <summary>
         /// 
@@ -110,7 +104,6 @@ namespace mexLib
                                 costumes.Add(costume_key, new MexCostume());
 
                             workspace.FileManager.Set(path, stream.ToArray());
-                            costumes[costume_key].KirbyFile.FileName = Path.GetFileName(path);
 
                             log.AppendLine($"Imported \"{entry.FullName}\" as kirby costume");
                         }
@@ -186,7 +179,6 @@ namespace mexLib
                 if (!string.IsNullOrEmpty(c.Value.File.FileName))
                 {
                     c.Value.File.GetSymbolFromFile(workspace);
-                    c.Value.KirbyFile.GetSymbolFromFile(workspace);
                     yield return c.Value;
                 }
             }
@@ -231,7 +223,6 @@ namespace mexLib
             // costume pack to zip
             using var zip = new ZipWriter(stream);
             zip.TryWriteFile(workspace, File.FileName, File.FileName);
-            zip.TryWriteFile(workspace, KirbyFile.FileName, KirbyFile.FileName);
             zip.TryWriteTextureAsset(workspace, IconAsset, "stc.png");
             zip.TryWriteTextureAsset(workspace, CSPAsset, "csp.png");
         }

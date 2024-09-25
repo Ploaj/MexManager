@@ -1,18 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using mexLib;
-using mexLib.Attributes;
 using mexLib.Types;
-using mexLib.Utilties;
 using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
-using PropertyModels.ComponentModel;
-using PropertyModels.ComponentModel.DataAnnotations;
-using System;
-using System.ComponentModel;
 using System.IO;
-using System.IO.Compression;
 using System.Text;
 
 namespace MexManager.Views;
@@ -187,13 +180,94 @@ public partial class FighterView : UserControl
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="costume"></param>
+    private void AddCostume(MexCostume costume)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter)
+        {
+            fighter.Costumes.Add(costume);
+
+            // kirby
+            if (Global.Workspace.Project.Fighters.IndexOf(fighter) == 4)
+            {
+                foreach (var f in Global.Workspace.Project.Fighters)
+                {
+                    if (f.HasKirbyCostumes)
+                    {
+                        f.KirbyCostumes.Add(new MexCostumeFile()
+                        {
+                            FileName = "PlKbNr.dat",
+                            JointSymbol = "PlyKirby5K_Share_joint",
+                            MaterialSymbol = "PlyKirby5K_Share_matanim_joint",
+                        });
+                    }
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="costume"></param>
+    private void RemoveCostume(MexCostume costume)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter)
+        {
+            int index = fighter.Costumes.IndexOf(costume);
+            fighter.Costumes.RemoveAt(index);
+
+            // kirby
+            if (Global.Workspace.Project.Fighters.IndexOf(fighter) == 4)
+            {
+                foreach (var f in Global.Workspace.Project.Fighters)
+                {
+                    if (f.HasKirbyCostumes)
+                    {
+                        f.KirbyCostumes.RemoveAt(index);
+                    }
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="index1"></param>
+    /// <param name="index2"></param>
+    private void MoveCostume(int index1, int index2)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter)
+        {
+            (fighter.Costumes[index1], fighter.Costumes[index2]) = (fighter.Costumes[index2], fighter.Costumes[index1]);
+
+            // kirby
+            if (Global.Workspace.Project.Fighters.IndexOf(fighter) == 4)
+            {
+                foreach (var f in Global.Workspace.Project.Fighters)
+                {
+                    if (f.HasKirbyCostumes)
+                    {
+                        (f.KirbyCostumes[index1], f.KirbyCostumes[index2]) = (f.KirbyCostumes[index2], f.KirbyCostumes[index1]);
+                    }
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private async void ImportCostumeMenuItem_Click(object? sender, RoutedEventArgs e)
     {
         if (Global.Workspace != null &&
-            DataContext is MainViewModel model &&
-            model.SelectedFighter is MexFighter fighter)
+            DataContext is MainViewModel model)
         {
             var zipPath = await FileIO.TryOpenFile("Import Costume", "",
             [
@@ -217,7 +291,7 @@ public partial class FighterView : UserControl
                             await MessageBox.Show(log.ToString(), "Import Log", MessageBox.MessageBoxButtons.Ok);
 
                         foreach (var c in costume)
-                            fighter.Costumes.Add(c);
+                            AddCostume(c);
                     }
                     break;
                 case ".dat":
@@ -228,11 +302,10 @@ public partial class FighterView : UserControl
                             await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
 
                         if (costume != null)
-                            fighter.Costumes.Add(costume);
+                            AddCostume(costume);
                     }
                     break;
             }
-
         }
     }
     /// <summary>
@@ -263,7 +336,6 @@ public partial class FighterView : UserControl
     {
         if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
-            model.SelectedFighter is MexFighter fighter &&
             model.SelectedFighterCostume is MexCostume costume)
         {
             // ask are you sure
@@ -282,7 +354,7 @@ public partial class FighterView : UserControl
             costume.DeleteAssets(Global.Workspace);
 
             // finally remove costume
-            fighter.Costumes.Remove(costume);
+            RemoveCostume(costume);
         }
     }
     /// <summary>
@@ -297,7 +369,7 @@ public partial class FighterView : UserControl
             model.SelectedFighter is MexFighter fighter &&
             model.SelectedFighterCostume is MexCostume costume)
         {
-            fighter.Costumes.Add(new MexCostume()
+            AddCostume(new MexCostume()
             {
                 File = new MexCostumeVisibilityFile()
                 {
@@ -305,12 +377,6 @@ public partial class FighterView : UserControl
                     JointSymbol = costume.File.JointSymbol,
                     MaterialSymbol = costume.File.MaterialSymbol,
                     VisibilityIndex = costume.File.VisibilityIndex,
-                },
-                KirbyFile = new MexCostumeFile()
-                {
-                    FileName = costume.KirbyFile.FileName,
-                    JointSymbol = costume.KirbyFile.JointSymbol,
-                    MaterialSymbol = costume.KirbyFile.MaterialSymbol,
                 },
             });
         }
@@ -333,8 +399,7 @@ public partial class FighterView : UserControl
             if (index > 0)
             {
                 // Swap the item with the one below it
-                (fighter.Costumes[index - 1], fighter.Costumes[index]) = (fighter.Costumes[index], fighter.Costumes[index - 1]);
-
+                MoveCostume(index - 1, index);
                 CostumeList.SelectedIndex = index - 1;
             }
         }
@@ -357,8 +422,7 @@ public partial class FighterView : UserControl
             if (index < fighter.Costumes.Count - 1)
             {
                 // Swap the item with the one below it
-                (fighter.Costumes[index + 1], fighter.Costumes[index]) = (fighter.Costumes[index], fighter.Costumes[index + 1]);
-
+                MoveCostume(index + 1, index);
                 CostumeList.SelectedIndex = index + 1;
             }
         }
@@ -372,5 +436,33 @@ public partial class FighterView : UserControl
     {
         CostumeList.SelectedIndex = 0;
         ItemList.SelectedIndex = 0;
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void CheckBox_Checked_1(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter)
+        {
+            if (KirbyCheckBox.IsChecked == true)
+            {
+                var kirby = Global.Workspace.Project.Fighters[4];
+                for (int i = 0; i < kirby.Costumes.Count; i++)
+                    fighter.KirbyCostumes.Add(new ()
+                        {
+                            FileName = kirby.Costumes[i].File.FileName,
+                            JointSymbol = kirby.Costumes[i].File.JointSymbol,
+                            MaterialSymbol = kirby.Costumes[i].File.MaterialSymbol,
+                        });
+            }
+            else
+            {
+                fighter.KirbyCostumes.Clear();
+            }
+        }
     }
 }

@@ -45,6 +45,14 @@ public partial class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedFighterCostume, value);
     }
 
+    private object? _selectedKirbyCostume;
+
+    public object? SelectedKirbyCostume
+    {
+        get => _selectedKirbyCostume;
+        set => this.RaiseAndSetIfChanged(ref _selectedKirbyCostume, value);
+    }
+
     private object? _selectedMusic;
     public object? SelectedMusic
     {

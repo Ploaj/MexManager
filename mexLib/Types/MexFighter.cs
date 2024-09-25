@@ -197,16 +197,16 @@ namespace mexLib.Types
                 Symbol = string.IsNullOrEmpty(Files.KirbyCapSymbol) ? null : Files.KirbyCapSymbol,
             });
             kb.KirbyEffectIDs[internalId] = (byte)mex.GetEffectID(Files.KirbyEffectFile, Files.KirbyEffectSymbol);
-            if (HasKirbyCostumes)
+            if (KirbyCostumes.Count > 0)
             {
                 kb.KirbyCostumes.Set(internalId, new MEX_KirbyCostume() 
                 { 
-                    Array = Costumes.Select(e => new MEX_CostumeFileSymbol()
+                    Array = KirbyCostumes.Select(e => new MEX_CostumeFileSymbol()
                     {
-                        FileName = e.KirbyFile.FileName,
-                        JointSymbol = e.KirbyFile.JointSymbol,
-                        MatAnimSymbol = e.KirbyFile.MaterialSymbol,
-                    }).ToArray() 
+                        FileName = e.FileName,
+                        JointSymbol = e.JointSymbol,
+                        MatAnimSymbol = e.MaterialSymbol,
+                    }).ToArray()
                 });
                 kb.CostumeRuntime._s.SetReference(internalId * 4, new HSDAccessor() { _s = new HSDStruct(Costumes.Count * 8) });
             }
@@ -338,12 +338,12 @@ namespace mexLib.Types
             {
                 for (int i = 0; i < costumes.Length; i++)
                 {
-                    if (i < Costumes.Count)
+                    KirbyCostumes.Add(new ()
                     {
-                        Costumes[i].KirbyFile.FileName = costumes[i].FileName;
-                        Costumes[i].KirbyFile.JointSymbol = costumes[i].JointSymbol;
-                        Costumes[i].KirbyFile.MaterialSymbol = costumes[i].MatAnimSymbol;
-                    }
+                        FileName = costumes[i].FileName,
+                        JointSymbol = costumes[i].JointSymbol,
+                        MaterialSymbol = costumes[i].MatAnimSymbol,
+                    });
                 }
             }
 
