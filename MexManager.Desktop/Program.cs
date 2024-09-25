@@ -13,10 +13,16 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        Global.LaunchArgs = args;
-
         try
         {
+            // Set the working directory to the directory of the executable
+            string appDirectory = AppContext.BaseDirectory;
+            Environment.CurrentDirectory = appDirectory;
+
+            // set launch args
+            Global.LaunchArgs = args;
+
+            // build app
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception e)

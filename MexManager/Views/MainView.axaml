@@ -266,6 +266,14 @@
 					</TabItem.Header>
 					<views:SoundGroupView Name="SoundGroup"/>
 				</TabItem>
+				<TabItem ToolTip.Tip="Trophies">
+					<TabItem.Header>
+						<Image Source="avares://MexManager/Assets/Menu/category_trophy.png"
+								Width="32"
+								Height="32"/>
+					</TabItem.Header>
+					<views:TrophyView />
+				</TabItem>
 				<TabItem ToolTip.Tip="Menus">
 					<TabItem.Header>
 						<Image Source="avares://MexManager/Assets/Menu/category_menu.png"

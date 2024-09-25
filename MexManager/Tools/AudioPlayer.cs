@@ -3,10 +3,8 @@ using OpenTK.Audio.OpenAL;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Channels;
 
 namespace MexManager.Tools
 {
@@ -69,7 +67,13 @@ namespace MexManager.Tools
                 _device = ALC.OpenDevice(null);
                 if (_device == ALDevice.Null)
                 {
-                    Logger.WriteLine("Audio Device failed");
+                    var error = ALC.GetError((ALDevice)_device);
+                    Logger.WriteLine($"Audio Device failed: {error}");
+
+                    Logger.WriteLine("List of devices:");
+                    var devices = ALC.GetStringList(GetEnumerationStringList.DeviceSpecifier);
+                    foreach (var device in devices)
+                        Logger.WriteLine(device);
                     return;
                 }
                 else

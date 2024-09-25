@@ -123,7 +123,7 @@ namespace mexLib
 
             // save workspace
             workspace.Project.MainCode = mainCode;
-            workspace.LoadSoundData();
+            workspace.LoadMiscData();
             workspace.Save();
 
             return workspace;
@@ -212,7 +212,7 @@ namespace mexLib
             foreach (var c in defaultCodes)
                 workspace.Project.Codes.Add(c);
 
-            workspace.LoadSoundData();
+            workspace.LoadMiscData();
 
             workspace.Save();
 
@@ -254,7 +254,7 @@ namespace mexLib
             //    workspace.Project.Fighters[(int)i].LoadFromPlCo(plco, i);
             //}
 
-            workspace.LoadSoundData();
+            workspace.LoadMiscData();
 
             return true;
         }
@@ -436,7 +436,26 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
-        public string? LoadSoundData()
+        private void LoadMiscData()
+        {
+            var sw = new Stopwatch();
+
+            sw.Start();
+            LoadSoundData();
+            sw.Stop();
+
+            Debug.WriteLine("Loaded sound data in " + sw.Elapsed.ToString());
+
+            sw.Start();
+            TrophyLoader.LoadFromFileSystem(this);
+            sw.Stop();
+
+            Debug.WriteLine("Loaded trophy data in " + sw.Elapsed.ToString());
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        private string? LoadSoundData()
         {
             var semPath = GetFilePath(@"audio//us//smash2.sem");
             if (!FileManager.Exists(semPath))

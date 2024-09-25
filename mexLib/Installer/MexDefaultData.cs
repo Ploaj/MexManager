@@ -314,5 +314,53 @@ namespace mexLib.Installer
                 };
             }
         }
+
+
+        public readonly static string[] TrophyIconsFiles =
+        {
+            "TyQuesD.dat",
+            "TyMycCmA.dat",
+            "TyMycCmB.dat",
+            "TyMycCmC.dat",
+            "TyMycCmD.dat",
+            "TyMycCmE.dat",
+            "TyMycR1A.dat",
+            "TyMycR1B.dat",
+            "TyMycR1C.dat",
+            "TyMycR1D.dat",
+            "TyMycR1E.dat",
+            "TyMycR2A.dat",
+            "TyMycR2B.dat",
+            "TyMycR2C.dat",
+            "TyMycR2D.dat",
+            "TyMycR2E.dat",
+            "TyMapA.dat",
+            "TyMapB.dat",
+            "TyMapC.dat",
+            "TyMapD.dat",
+            "TyMapE.dat",
+            "TySeriA.dat",
+            "TySeriB.dat",
+            "TySeriC.dat",
+            "TySeriD.dat",
+            "TySeriE.dat",
+            "TyEtcA.dat",
+            "TyEtcB.dat",
+            "TyEtcC.dat",
+            "TyEtcD.dat",
+            "TyEtcE.dat",
+            "TyPokeA.dat",
+            "TyPokeB.dat",
+            "TyPokeC.dat",
+            "TyPokeD.dat",
+            "TyPokeE.dat",
+            "TyItemA.dat",
+            "TyItemB.dat",
+            "TyItemC.dat",
+            "TyItemD.dat",
+            "TyItemE.dat",
+            "TyStandD.dat",
+            "TyQuesD.dat",
+        };
     }
 }

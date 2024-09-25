@@ -221,6 +221,7 @@ public partial class MainViewModel : ViewModelBase
             StageSelect = null;
             SoundViewModel.SoundGroups = null;
             ReservedAssets = null;
+            Trophies = null;
         }
         else
         {
@@ -236,6 +237,9 @@ public partial class MainViewModel : ViewModelBase
                 StageSelect = StagePages[0];
             SoundViewModel.SoundGroups = Global.Workspace.Project.SoundGroups;
             ReservedAssets = Global.Workspace.Project.ReservedAssets;
+            Trophies = Global.Workspace.Project.Trophies;
+            if (Trophies.Count > 0)
+                SelectedTrophy = Trophies[0];
         }
     }
     /// <summary>

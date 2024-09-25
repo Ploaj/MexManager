@@ -65,6 +65,9 @@ namespace mexLib
         public ObservableCollection<MexSeries> Series { get; set; } = new ObservableCollection<MexSeries>();
 
         [JsonIgnore]
+        public ObservableCollection<MexTrophy> Trophies { get; set; } = new ObservableCollection<MexTrophy>();
+
+        [JsonIgnore]
         public MEX_SceneData SceneData { get; set; } = new MEX_SceneData();
 
 

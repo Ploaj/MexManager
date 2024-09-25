@@ -6,6 +6,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Media.Immutable;
 using mexLib.Types;
 using PropertyModels.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -257,6 +258,12 @@ namespace MexManager.Controls
 
             if (Properties.YOffset > currentHeight)
                 Properties.YOffset = (float)currentHeight;
+
+            if (Math.Abs(Properties.XOffset) <= Single.Epsilon)
+                Properties.XOffset = 0;
+
+            if (Math.Abs(Properties.YOffset) <= Single.Epsilon)
+                Properties.YOffset = 0;
         }
 
         public List<MexIconBase> Icons

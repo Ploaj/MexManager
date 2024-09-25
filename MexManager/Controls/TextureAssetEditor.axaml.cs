@@ -115,8 +115,7 @@ public partial class TextureAssetEditor : UserControl
     /// <param name="args"></param>
     private async void ImportButton_Click(object? sender, RoutedEventArgs args)
     {
-        if (DataContext is MexTextureAsset asset &&
-            Global.Workspace != null)
+        if (Global.Workspace != null)
         {
             // get file to import
             var file = await FileIO.TryOpenFile("Texture File", "", FileIO.FilterPng);

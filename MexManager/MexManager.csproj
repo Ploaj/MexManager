@@ -100,4 +100,8 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\VideoPlayer.axaml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\TrophyView.axaml" />
+  </ItemGroup>
 </Project>
