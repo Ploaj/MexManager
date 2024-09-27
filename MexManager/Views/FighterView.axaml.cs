@@ -434,6 +434,9 @@ public partial class FighterView : UserControl
     {
         CostumeList.SelectedIndex = 0;
         ItemList.SelectedIndex = 0;
+        if (DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter)
+            KirbyCheckBox.IsChecked = fighter.HasKirbyCostumes;
     }
     /// <summary>
     /// 
@@ -448,14 +451,17 @@ public partial class FighterView : UserControl
         {
             if (KirbyCheckBox.IsChecked == true)
             {
-                var kirby = Global.Workspace.Project.Fighters[4];
-                for (int i = 0; i < kirby.Costumes.Count; i++)
-                    fighter.KirbyCostumes.Add(new ()
+                if (!fighter.HasKirbyCostumes)
+                {
+                    var kirby = Global.Workspace.Project.Fighters[4];
+                    for (int i = 0; i < kirby.Costumes.Count; i++)
+                        fighter.KirbyCostumes.Add(new()
                         {
                             FileName = kirby.Costumes[i].File.FileName,
                             JointSymbol = kirby.Costumes[i].File.JointSymbol,
                             MaterialSymbol = kirby.Costumes[i].File.MaterialSymbol,
                         });
+                }
             }
             else
             {
