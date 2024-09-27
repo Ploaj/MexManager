@@ -16,7 +16,7 @@ namespace mexLib
         public string GetUniqueFilePath(string filePath)
         {
             // sanitize
-            filePath = new Uri(filePath).AbsolutePath;
+            filePath = Path.GetFullPath(filePath);
 
             // Get the directory, filename without extension, and extension
             string? directory = Path.GetDirectoryName(filePath);
@@ -46,7 +46,7 @@ namespace mexLib
             if (string.IsNullOrEmpty(path))
                 return false;
 
-            path = new Uri(path).AbsolutePath;
+            path = Path.GetFullPath(path);
 
             if (ToRemove.Contains(path))
                 return false;
@@ -63,7 +63,7 @@ namespace mexLib
         /// <returns></returns>
         public Stream? GetStream(string path)
         {
-            path = new Uri(path).AbsolutePath;
+            path = Path.GetFullPath(path);
 
             if (ToAdd.ContainsKey(path))
                 return new MemoryStream(ToAdd[path]);
@@ -80,7 +80,7 @@ namespace mexLib
         /// <returns></returns>
         public byte[] Get(string path)
         {
-            path = new Uri(path).AbsolutePath;
+            path = Path.GetFullPath(path);
 
             if (ToAdd.ContainsKey(path))
                 return ToAdd[path];
@@ -97,7 +97,7 @@ namespace mexLib
         /// <param name="data"></param>
         public void Set(string path, byte[] data)
         {
-            path = new Uri(path).AbsolutePath;
+            path = Path.GetFullPath(path);
 
             if (ToAdd.ContainsKey(path))
             {
@@ -115,7 +115,7 @@ namespace mexLib
         /// <param name="path"></param>
         public void Remove(string path)
         {
-            path = new Uri(path).AbsolutePath;
+            path = Path.GetFullPath(path);
 
             ToRemove.Add(path);
             ToAdd.Remove(path);

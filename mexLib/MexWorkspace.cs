@@ -454,7 +454,7 @@ namespace mexLib
             Debug.WriteLine("Loaded sound data in " + sw.Elapsed.ToString());
 
             sw.Start();
-            TrophyLoader.LoadFromFileSystem(this);
+            //TrophyLoader.LoadFromFileSystem(this);
             sw.Stop();
 
             Debug.WriteLine("Loaded trophy data in " + sw.Elapsed.ToString());
