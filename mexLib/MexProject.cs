@@ -15,10 +15,6 @@ namespace mexLib
 
         public int LastMinorSceneID { get; set; } = 45;
 
-        public int TrophyCount { get; set; } = 0x125;
-
-        public int TrophySDOffset { get; set; } = 302;
-
         public MexPlaylist MenuPlaylist { get; set; } = new MexPlaylist();
 
         public MexReservedAssets ReservedAssets { get; set; } = new MexReservedAssets();

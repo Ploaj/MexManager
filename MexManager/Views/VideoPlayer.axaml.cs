@@ -235,7 +235,7 @@ public partial class VideoPlayer : Window
     {
         if (_reader == null)
             return;
-        // TODO:
+        // TODO: import video frames
     }
     /// <summary>
     /// 

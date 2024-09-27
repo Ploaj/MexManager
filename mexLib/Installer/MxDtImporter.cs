@@ -73,10 +73,6 @@ namespace mexLib.Installer
             if (mxdt == null)
                 return new MexInstallerError("Error reading MxDt.dat");
 
-            // load misc
-            project.TrophySDOffset = mxdt.MetaData.TrophySDOffset;
-            project.TrophyCount = mxdt.MetaData.TrophyCount;
-
             // load fighters
             for (uint i = 0; i < mxdt.MetaData.NumOfInternalIDs; i++)
             {

@@ -266,8 +266,7 @@ public partial class FighterView : UserControl
     /// <param name="e"></param>
     private async void ImportCostumeMenuItem_Click(object? sender, RoutedEventArgs e)
     {
-        if (Global.Workspace != null &&
-            DataContext is MainViewModel model)
+        if (Global.Workspace != null)
         {
             var zipPath = await FileIO.TryOpenFile("Import Costume", "",
             [
@@ -366,7 +365,6 @@ public partial class FighterView : UserControl
     {
         if (Global.Workspace != null && 
             DataContext is MainViewModel model &&
-            model.SelectedFighter is MexFighter fighter &&
             model.SelectedFighterCostume is MexCostume costume)
         {
             AddCostume(new MexCostume()

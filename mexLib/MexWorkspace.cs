@@ -311,6 +311,13 @@ namespace mexLib
 
             Debug.WriteLine($"Generate GmRst {sw.Elapsed}");
 
+            sw.Start();
+            GenerateTrophy.Compile(this);
+            sw.Stop();
+            total += sw.Elapsed;
+
+            Debug.WriteLine($"Compiled Trophies {sw.Elapsed}");
+
             // generate sem/smst/ssm
             sw.Restart();
             SaveSoundData();

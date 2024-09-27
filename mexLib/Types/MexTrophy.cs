@@ -1,11 +1,12 @@
 ﻿using mexLib.Attributes;
 using mexLib.HsdObjects;
 using mexLib.Installer;
+using mexLib.Utilties;
 using PropertyModels.ComponentModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Numerics;
+using System.IO.Compression;
 using System.Text.Json.Serialization;
 
 namespace mexLib.Types
@@ -42,21 +43,55 @@ namespace mexLib.Types
         public short SortSeries { get => _sortSeries; set { _sortSeries = value; OnPropertyChanged(); } }
         private short _sortSeries = 0;
 
-        [JsonIgnore]
-        [Browsable(false)]
-        public short SortAlphabeticalJ { get; set; } = 0;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="zip"></param>
+        public MexInstallerError? ToPackage(MexWorkspace workspace, Stream stream)
+        {
+            // create zip
+            using var zip = new ZipWriter(stream);
 
-        [JsonIgnore]
-        [Browsable(false)]
-        public short SortAlphabetical { get; set; } = 0;
+            // fighter to package
+            zip.WriteAsJson("trophy.json", this);
 
-        [JsonIgnore]
-        [Browsable(false)]
-        public short SortAlphabeticalJUS { get; set; } = 0;
+            // write files
+            zip.TryWriteFile(workspace, Data.File.File, Data.File.File);
+            if (HasUSData)
+                zip.TryWriteFile(workspace, USData.File.File, USData.File.File);
 
-        [JsonIgnore]
-        [Browsable(false)]
-        public short SortAlphabeticalUS { get; set; } = 0;
+            return null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workspace"></param>
+        /// <param name="zip"></param>
+        public static MexInstallerError? FromPackage(MexWorkspace workspace, Stream stream, out MexTrophy? trophy)
+        {
+            trophy = null;
+
+            // load zip
+            using var zip = new ZipArchive(stream);
+
+            // import trophy from package
+            var entry = zip.GetEntry("trophy.json");
+            if (entry == null)
+                return new MexInstallerError("\"trophy.json\" was not found in zip");
+
+            // parse group entry
+            trophy = MexJsonSerializer.Deserialize<MexTrophy>(entry.Extract());
+            if (trophy == null)
+                return new MexInstallerError("Error parsing \"trophy.json\"");
+
+            // add files
+            trophy.Data.File.File = zip.TryReadFile(workspace, trophy.Data.File.File);
+            if (trophy.HasUSData)
+                trophy.USData.File.File = zip.TryReadFile(workspace, trophy.USData.File.File);
+
+            return null;
+        }
 
         public class TrophyFileEntry : MexReactiveObject
         {
@@ -80,43 +115,49 @@ namespace mexLib.Types
 
             [Category("Text")]
             [DisplayName("Description Color")]
+            [JsonIgnore]
             public Color DescriptionColor
             {
                 get => Color.FromArgb(_descriptionColor);
                 set => _descriptionColor = value.ToArgb();
             }
+            [JsonInclude]
+            public int _descriptionColor = unchecked((int)0xFFFFFFFF);
 
             [Category("Text")]
             [DisplayName("Description Text")]
             [MultilineText()]
             public string Description { get; set; } = "";
-            private int _descriptionColor = unchecked((int)0xFFFFFFFF);
 
             [Category("Text")]
             [DisplayName("Misc Top Color")]
+            [JsonIgnore]
             public Color Source1Color
             {
                 get => Color.FromArgb(_source1Color);
                 set => _source1Color = value.ToArgb();
             }
+            [JsonInclude]
+            public int _source1Color = unchecked((int)0xFFFFFFFF);
 
             [Category("Text")]
             [DisplayName("Misc Top Text")]
             public string Source1 { get; set; } = "";
-            private int _source1Color = unchecked((int)0xFFFFFFFF);
 
             [Category("Text")]
             [DisplayName("Misc Bottom Color")]
+            [JsonIgnore]
             public Color Source2Color
             {
                 get => Color.FromArgb(_source2Color);
                 set => _source2Color = value.ToArgb();
             }
+            [JsonInclude]
+            public int _source2Color = unchecked((int)0xFFFFFFFF);
 
             [Category("Text")]
             [DisplayName("Misc Bottom Text")]
             public string Source2 { get; set; } = "";
-            private int _source2Color = unchecked((int)0xFFFFFFFF);
 
             /// <summary>
             /// 
@@ -125,7 +166,7 @@ namespace mexLib.Types
             /// <param name="reset"></param>
             /// <param name="color"></param>
             /// <returns></returns>
-            private string DecodeString(string str, bool reset, out int color)
+            private static string DecodeString(string str, bool reset, out int color)
             {
                 var decode = SdSanitizer.Decode(str, out color);
                 var encode = SdSanitizer.Encode(decode, color, reset);
@@ -144,7 +185,7 @@ namespace mexLib.Types
             /// </summary>
             public void DecodeAllStrings()
             {
-                Name = DecodeString(Name, false, out int color);
+                Name = DecodeString(Name, false, out int _);
                 Description = DecodeString(Description, true, out _descriptionColor);
                 Source1 = DecodeString(Source1, true, out _source1Color);
                 Source2 = DecodeString(Source2, true, out _source2Color);
@@ -200,7 +241,7 @@ namespace mexLib.Types
 
             public float OffsetX { get; set; } = 0;
 
-            public float OffsetY { get; set; } = 0;
+            public float OffsetY { get; set; } = 1.0f;
 
             [JsonIgnore]
             public string FileName

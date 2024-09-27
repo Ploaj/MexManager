@@ -19,19 +19,6 @@ namespace mexLib.Installer
             var project = workspace.Project;
             project.Trophies.Clear();
 
-            // extract and update with data from mxdt
-            var mxdtPath = workspace.GetFilePath("MxDt.dat");
-            if (File.Exists(mxdtPath))
-            {
-                HSDRawFile mxdtFile = new(mxdtPath);
-                var mxdt = mxdtFile["mexData"].Data as MEX_Data;
-                if (mxdt != null)
-                {
-                    project.TrophyCount = mxdt.MetaData.TrophyCount;
-                    project.TrophySDOffset = mxdt.MetaData.TrophySDOffset;
-                }
-            }
-
             // load files
             var tyDataFile = new HSDRawFile(workspace.FileManager.Get(workspace.GetFilePath("TyDataf.dat")));
             var tyDataInfoFile = new HSDRawFile(workspace.FileManager.Get(workspace.GetFilePath("TyDatai.usd")));
@@ -68,10 +55,23 @@ namespace mexLib.Installer
                 return;
 
             // init data
-            int trophyCount = project.TrophyCount;
+            int trophyCount = 0;
 
             int nameOff = 0x002;
-            int nameOffAlt = project.TrophySDOffset;
+            int nameOffAlt = 0;
+
+            // extract and update with data from mxdt
+            var mxdtPath = workspace.GetFilePath("MxDt.dat");
+            if (File.Exists(mxdtPath))
+            {
+                HSDRawFile mxdtFile = new(mxdtPath);
+                var mxdt = mxdtFile["mexData"].Data as MEX_Data;
+                if (mxdt != null)
+                {
+                    trophyCount = mxdt.MetaData.TrophyCount;
+                    nameOffAlt = mxdt.MetaData.TrophySDOffset;
+                }
+            }
 
             int descOff = 0x002;
             int descOffAlt = 0x374;
@@ -160,10 +160,6 @@ namespace mexLib.Installer
                     break;
 
                 project.Trophies[i.x02].SortSeries = i.TrophyID;
-                //project.Trophies[i.x04].SortAlphabeticalJ = i.TrophyID;
-                //project.Trophies[i.x06].SortAlphabetical = i.TrophyID;
-                //project.Trophies[i.x08].SortAlphabeticalJUS = i.TrophyID;
-                //project.Trophies[i.x0A].SortAlphabeticalUS = i.TrophyID;
             }
 
             // load no get info

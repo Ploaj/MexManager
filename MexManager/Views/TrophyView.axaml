@@ -39,8 +39,12 @@
 						Text="File"
 						ToolTip.Tip="File"
 						IconSource="avares://MexManager/Assets/Common/icon_file.png">
-						<MenuItem Header="_Import (*.zip)"/>
-						<MenuItem Header="_Export (*.zip)"/>
+						<MenuItem 
+							Header="_Import (*.zip)"
+							Click="ImportTrophy_Click"/>
+						<MenuItem 
+							Header="_Export (*.zip)"
+							Click="ExportTrophy_Click"/>
 					</controls:IconMenuItem>
 					<controls:IconMenuItem
 						Text="Add"
@@ -66,12 +70,14 @@
 						Text="Move"
 						ToolTip.Tip="Move Selected Trophy Up"
 						IsEnabled="{Binding SelectedTrophy, Converter={StaticResource TrophyIsMexConverter}}"
-						IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"/>
+						IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
+						Click="MoveUpTrophy_Click"/>
 					<controls:IconMenuItem
 						Text="Move"
 						ToolTip.Tip="Move Selected Trophy Down"
 						IsEnabled="{Binding SelectedTrophy, Converter={StaticResource TrophyIsMexConverter}}"
-						IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"/>
+						IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
+						Click="MoveDownTrophy_Click"/>
 				</Menu>
 				<TextBlock
 					DockPanel.Dock="Top"
@@ -83,6 +89,7 @@
 				<ScrollViewer
 					DockPanel.Dock="Top">
 					<ListBox
+						Name="FilteredTrophyList"
 						ItemsSource="{Binding FilteredTrophies}"
 						SelectedItem="{Binding SelectedTrophy, Mode=TwoWay}">
 						<ListBox.ItemTemplate>
@@ -161,18 +168,6 @@
 			Margin="8"
 			FontSize="20"
 			DockPanel.Dock="Top"/>
-		<StackPanel 
-			DockPanel.Dock="Top"
-			Orientation="Horizontal"
-			Margin="24 8"
-			Spacing="20">
-			<CheckBox
-				Content="Is Japan Only"
-				IsChecked="{Binding SelectedTrophy.JapanOnly}"/>
-			<CheckBox
-				Content="Has Unique US Data"
-				IsChecked="{Binding SelectedTrophy.HasUSData, Mode=TwoWay}"/>
-		</StackPanel>
 		<DockPanel
 		   DockPanel.Dock="Top"
 		   HorizontalAlignment="Stretch"
@@ -190,6 +185,20 @@
 				Minimum="0"
 				Increment="1"/>
 		</DockPanel>
+		<StackPanel
+			DockPanel.Dock="Top"
+			Orientation="Horizontal"
+			Margin="4"
+			Spacing="20">
+			<!--
+			<CheckBox
+				Content="Is Japan Only"
+				IsChecked="{Binding SelectedTrophy.JapanOnly}"/>
+			-->
+			<CheckBox
+				Content="Has Unique US Data"
+				IsChecked="{Binding SelectedTrophy.HasUSData, Mode=TwoWay}"/>
+		</StackPanel>
 		<TabControl DockPanel.Dock="Left">
 			<TabItem Header="Data">
 				<ScrollViewer>
