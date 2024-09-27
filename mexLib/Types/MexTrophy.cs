@@ -98,12 +98,36 @@ namespace mexLib.Types
             [Category("File")]
             [DisplayName("File")]
             [MexFilePathValidator(MexFilePathType.Files)]
+            [MexFilePathValidatorCallback("ExtractSymbol")]
             public string File { get => _file; set { _file = value; OnPropertyChanged(); } }
             private string _file = "";
 
             [Category("File")]
             [DisplayName("Symbol")]
-            public string Symbol { get; set; } = "";
+            public string Symbol { get => _symbol; set { _symbol = value; OnPropertyChanged(); } }
+            private string _symbol = "";
+
+            public MexFilePathError? ExtractSymbol(MexWorkspace workspace, string fullPath)
+            {
+                using Stream? stream = workspace.FileManager.GetStream(fullPath);
+
+                if (stream == null)
+                    return new MexFilePathError("Unable to read file");
+
+                if (!ArchiveTools.IsValidHSDFile(stream))
+                    return new MexFilePathError("Not a valid HSD file");
+
+                foreach (var s in ArchiveTools.GetSymbols(stream))
+                {
+                    if (s.EndsWith("_joint"))
+                    {
+                        Symbol = s;
+                        return null;
+                    }
+                }
+
+                return new MexFilePathError("joint symbol not found in dat");
+            }
         }
 
         public class TrophyTextEntry : MexReactiveObject
