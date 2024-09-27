@@ -118,11 +118,11 @@ namespace mexLib.Types
             [JsonIgnore]
             public Color DescriptionColor
             {
-                get => Color.FromArgb(_descriptionColor);
-                set => _descriptionColor = value.ToArgb();
+                get => Color.FromArgb((int)_descriptionColor);
+                set => _descriptionColor = (uint)value.ToArgb() | 0xFF000000;
             }
             [JsonInclude]
-            public int _descriptionColor = unchecked((int)0xFFFFFFFF);
+            public uint _descriptionColor = 0xFFFFFFFF;
 
             [Category("Text")]
             [DisplayName("Description Text")]
@@ -134,11 +134,11 @@ namespace mexLib.Types
             [JsonIgnore]
             public Color Source1Color
             {
-                get => Color.FromArgb(_source1Color);
-                set => _source1Color = value.ToArgb();
+                get => Color.FromArgb((int)_source1Color);
+                set => _source1Color = (uint)value.ToArgb() | 0xFF000000;
             }
             [JsonInclude]
-            public int _source1Color = unchecked((int)0xFFFFFFFF);
+            public uint _source1Color = 0xFFFFFFFF;
 
             [Category("Text")]
             [DisplayName("Misc Top Text")]
@@ -149,11 +149,11 @@ namespace mexLib.Types
             [JsonIgnore]
             public Color Source2Color
             {
-                get => Color.FromArgb(_source2Color);
-                set => _source2Color = value.ToArgb();
+                get => Color.FromArgb((int)_source2Color);
+                set => _source2Color = (uint)value.ToArgb() | 0xFF000000;
             }
             [JsonInclude]
-            public int _source2Color = unchecked((int)0xFFFFFFFF);
+            public uint _source2Color = 0xFFFFFFFF;
 
             [Category("Text")]
             [DisplayName("Misc Bottom Text")]
@@ -166,7 +166,7 @@ namespace mexLib.Types
             /// <param name="reset"></param>
             /// <param name="color"></param>
             /// <returns></returns>
-            private static string DecodeString(string str, bool reset, out int color)
+            private static string DecodeString(string str, bool reset, out uint color)
             {
                 var decode = SdSanitizer.Decode(str, out color);
                 var encode = SdSanitizer.Encode(decode, color, reset);
@@ -185,7 +185,7 @@ namespace mexLib.Types
             /// </summary>
             public void DecodeAllStrings()
             {
-                Name = DecodeString(Name, false, out int _);
+                Name = DecodeString(Name, false, out uint _);
                 Description = DecodeString(Description, true, out _descriptionColor);
                 Source1 = DecodeString(Source1, true, out _source1Color);
                 Source2 = DecodeString(Source2, true, out _source2Color);

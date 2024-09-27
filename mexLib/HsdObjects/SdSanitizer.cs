@@ -14,7 +14,7 @@ namespace mexLib.HsdObjects
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static string Decode(string input, out int color)
+        public static string Decode(string input, out uint color)
         {
             input = input.Replace('　', ' ');
             input = input.Replace("<BR>", "\n");
@@ -38,7 +38,7 @@ namespace mexLib.HsdObjects
                     int red = int.Parse(match.Groups[1].Value);
                     int green = int.Parse(match.Groups[2].Value);
                     int blue = int.Parse(match.Groups[3].Value);
-                    color = (255 << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF));
+                    color = (uint)((255 << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF)));
 
                     // Remove the matched color pattern from the input string
                     input = Regex.Replace(input, pattern, "");
@@ -52,7 +52,7 @@ namespace mexLib.HsdObjects
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static string Encode(string input, int color, bool reset)
+        public static string Encode(string input, uint color, bool reset)
         {
             input = input.Replace(' ', '　');
             input = input.Replace("\n", "<BR>");

@@ -183,9 +183,9 @@ namespace mexLib.Generators
                 {
                     var data = v.Data.Text;
                     names.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Name, 0, false) });
-                    desc.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Description, data.DescriptionColor.ToArgb(), true) });
-                    src1.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Source1, data.Source1Color.ToArgb(), true) });
-                    src2.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Source2, data.Source2Color.ToArgb(), true) });
+                    desc.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Description, data._descriptionColor, true) });
+                    src1.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Source1, data._source1Color, true) });
+                    src2.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Source2, data._source2Color, true) });
                 }
 
                 // us only data
@@ -193,9 +193,9 @@ namespace mexLib.Generators
                 {
                     var data = v.USData.Text;
                     namesUS.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Name, 0, false) });
-                    descUS.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Description, data.DescriptionColor.ToArgb(), true) });
-                    src1US.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Source1, data.Source1Color.ToArgb(), true) });
-                    src2US.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Source2, data.Source2Color.ToArgb(), true) });
+                    descUS.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Description, data._descriptionColor, true) });
+                    src1US.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Source1, data._source1Color, true) });
+                    src2US.Add(new SIS_Data() { TextCode = SdSanitizer.Encode(data.Source2, data._source2Color, true) });
                 }
                 index++;
             }
