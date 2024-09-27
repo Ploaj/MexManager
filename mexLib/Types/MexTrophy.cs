@@ -39,7 +39,8 @@ namespace mexLib.Types
         public bool JapanOnly { get; set; } = false;
 
         [JsonIgnore]
-        public short SortSeries { get; set; } = 0;
+        public short SortSeries { get => _sortSeries; set { _sortSeries = value; OnPropertyChanged(); } }
+        private short _sortSeries = 0;
 
         [JsonIgnore]
         [Browsable(false)]
@@ -57,23 +58,25 @@ namespace mexLib.Types
         [Browsable(false)]
         public short SortAlphabeticalUS { get; set; } = 0;
 
-        public class TrophyFileEntry
+        public class TrophyFileEntry : MexReactiveObject
         {
             [Category("File")]
             [DisplayName("File")]
             [MexFilePathValidator(MexFilePathType.Files)]
-            public string File { get; set; } = "";
+            public string File { get => _file; set { _file = value; OnPropertyChanged(); } }
+            private string _file = "";
 
             [Category("File")]
             [DisplayName("Symbol")]
             public string Symbol { get; set; } = "";
         }
 
-        public class TrophyTextEntry
+        public class TrophyTextEntry : MexReactiveObject
         {
             [Category("Text")]
             [DisplayName("Name")]
-            public string Name { get; set; } = "";
+            public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+            private string _name = "New Trophy";
 
             [Category("Text")]
             [DisplayName("Description Color")]
@@ -84,13 +87,13 @@ namespace mexLib.Types
             }
 
             [Category("Text")]
-            [DisplayName("Description")]
+            [DisplayName("Description Text")]
             [MultilineText()]
             public string Description { get; set; } = "";
-            private int _descriptionColor;
+            private int _descriptionColor = unchecked((int)0xFFFFFFFF);
 
             [Category("Text")]
-            [DisplayName("Source 1 Color")]
+            [DisplayName("Misc Top Color")]
             public Color Source1Color
             {
                 get => Color.FromArgb(_source1Color);
@@ -98,12 +101,12 @@ namespace mexLib.Types
             }
 
             [Category("Text")]
-            [DisplayName("Source 1")]
+            [DisplayName("Misc Top Text")]
             public string Source1 { get; set; } = "";
-            private int _source1Color;
+            private int _source1Color = unchecked((int)0xFFFFFFFF);
 
             [Category("Text")]
-            [DisplayName("Source 2 Color")]
+            [DisplayName("Misc Bottom Color")]
             public Color Source2Color
             {
                 get => Color.FromArgb(_source2Color);
@@ -111,9 +114,9 @@ namespace mexLib.Types
             }
 
             [Category("Text")]
-            [DisplayName("Source 2")]
+            [DisplayName("Misc Bottom Text")]
             public string Source2 { get; set; } = "";
-            private int _source2Color;
+            private int _source2Color = unchecked((int)0xFFFFFFFF);
 
             /// <summary>
             /// 

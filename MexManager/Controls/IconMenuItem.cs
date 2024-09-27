@@ -53,7 +53,9 @@ namespace MexManager.Controls
 
         public IconMenuItem()
         {
-            var stackPanel = new StackPanel { Orientation = Orientation.Vertical };
+            var stackPanel = new StackPanel { 
+                Orientation = Orientation.Vertical,
+            };
 
             image = new Image()
             {
@@ -61,7 +63,10 @@ namespace MexManager.Controls
                 Height = 24,
             };
 
-            textBlock = new TextBlock();
+            textBlock = new TextBlock()
+            {
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
             textBlock[!TextBlock.TextProperty] = this[!TextProperty];
 
             stackPanel.Children.Add(image);

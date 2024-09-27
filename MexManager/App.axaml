@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
              xmlns:converters="clr-namespace:MexManager.Converters"
+			 xmlns:controls="clr-namespace:MexManager.Controls"
 			 x:Class="MexManager.App"
 			 xmlns:views="clr-namespace:MexManager.Views"
              RequestedThemeVariant="Dark">
@@ -44,5 +45,6 @@
 		</Style>
 
 		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+
     </Application.Styles>
 </Application>

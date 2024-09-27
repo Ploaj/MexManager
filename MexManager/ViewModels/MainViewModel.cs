@@ -7,6 +7,7 @@ using MexManager.Views;
 using GCILib;
 using MexManager.Tools;
 using System.ComponentModel;
+using DynamicData;
 
 namespace MexManager.ViewModels;
 
@@ -19,7 +20,17 @@ public partial class MainViewModel : ViewModelBase
     public ICommand EditBannerCommand { get; }
     public ICommand ExportISOCommand { get; }
 
+
+    private ObservableCollection<string> _testData = [ "Hello", "World" ];
+    public ObservableCollection<string> TestData
+    {
+        get => _testData;
+        set => this.RaiseAndSetIfChanged(ref _testData, value);
+    }
+
     public SoundGroupModel SoundViewModel { get; } = new SoundGroupModel();
+
+    public TrophyViewModel TrophyViewModel { get; } = new TrophyViewModel();
 
     private object? _selectedFighter;
 
@@ -229,7 +240,7 @@ public partial class MainViewModel : ViewModelBase
             StageSelect = null;
             SoundViewModel.SoundGroups = null;
             ReservedAssets = null;
-            Trophies = null;
+            TrophyViewModel.Trophies = null;
         }
         else
         {
@@ -245,9 +256,9 @@ public partial class MainViewModel : ViewModelBase
                 StageSelect = StagePages[0];
             SoundViewModel.SoundGroups = Global.Workspace.Project.SoundGroups;
             ReservedAssets = Global.Workspace.Project.ReservedAssets;
-            Trophies = Global.Workspace.Project.Trophies;
-            if (Trophies.Count > 0)
-                SelectedTrophy = Trophies[0];
+            TrophyViewModel.Trophies = Global.Workspace.Project.Trophies;
+            if (TrophyViewModel.Trophies.Count > 0)
+                TrophyViewModel.SelectedTrophy = TrophyViewModel.Trophies[0];
         }
     }
     /// <summary>

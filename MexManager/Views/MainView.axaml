@@ -272,7 +272,8 @@
 								Width="32"
 								Height="32"/>
 					</TabItem.Header>
-					<views:TrophyView />
+					<views:TrophyView 
+						DataContext="{ Binding TrophyViewModel }"/>
 				</TabItem>
 				<TabItem ToolTip.Tip="Menus">
 					<TabItem.Header>
