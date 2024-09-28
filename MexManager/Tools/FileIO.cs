@@ -154,6 +154,37 @@ namespace MexManager.Tools
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public async static Task<string?> TryOpenFolder(string title)
+        {
+            // Get the top-level window
+            var topLevel = App.TopLevel;
+
+            // Check if top-level window is available
+            if (topLevel == null)
+                return null;
+
+            // Open the file picker dialog
+            var files = await topLevel.StorageProvider.OpenFolderPickerAsync(
+                new FolderPickerOpenOptions
+                {
+                    Title = title,
+                });
+
+            // Check if any files were selected
+            if (files == null || files.Count == 0)
+                return null;
+
+            // Get the absolute path and decode URI-encoded characters (like %20 for spaces)
+            var filePath = files[0]?.Path?.AbsolutePath;
+
+            // Decode the path
+            return filePath != null ? Uri.UnescapeDataString(filePath) : null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
         public static string SanitizeFilename(string filename)

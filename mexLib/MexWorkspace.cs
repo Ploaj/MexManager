@@ -183,6 +183,7 @@ namespace mexLib
                     if (dir != null && !Directory.Exists(dir))
                         Directory.CreateDirectory(dir);
 
+                    // TODO: stream write instead of full copy
                     File.WriteAllBytes(output, iso.GetFileData(file));
 
                     index++;

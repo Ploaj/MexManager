@@ -16,7 +16,7 @@
 						  IsEnabled="{Binding IsVideoLoaded}"/>
 				<MenuItem Header="_Import from Folder (*.jpg)"
 						  Click="ImportFrames"
-						  IsEnabled="False"/>
+						  IsEnabled="{Binding IsVideoLoaded}"/>
 				<Separator/>
 				<MenuItem Header="_Export Current Frame (*.jpg)"
 						  Click="ExportCurrentFrame"

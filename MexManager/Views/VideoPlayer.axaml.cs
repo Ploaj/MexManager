@@ -8,6 +8,7 @@ using mexLib;
 using MexManager.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -158,9 +159,12 @@ public partial class VideoPlayer : Window
     /// <param name="filePath"></param>
     public void SetVideo(string filePath)
     {
+        if (Global.Workspace == null)
+            return;
+
         _timer.Stop();
 
-        var stream = new FileStream(filePath, FileMode.Open);
+        var stream = Global.Workspace.FileManager.GetStream(filePath);
         _reader = new MTHReader(stream);
 
         // Load initial frames into the buffer
@@ -170,6 +174,7 @@ public partial class VideoPlayer : Window
             frameBuffer.Enqueue(new Bitmap(ms));
         }
 
+        _frameIndex = 0;
         NextFrame(null, new RoutedEventArgs());
 
         _timer.Interval = TimeSpan.FromSeconds(1.0 / 60); // mth has framerate, but game runs at 60
@@ -231,11 +236,52 @@ public partial class VideoPlayer : Window
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    private void ImportFrames(object? sender, RoutedEventArgs args)
+    private async void ImportFrames(object? sender, RoutedEventArgs args)
     {
-        if (_reader == null)
+        if (_reader == null || 
+            _filePath == null || 
+            Global.Workspace == null)
             return;
-        // TODO: import video frames
+
+        var folder = await FileIO.TryOpenFolder("Import Frames From Folder");
+
+        if (folder == null)
+            return;
+
+        List<string> toImport = new ();
+        foreach (var f in Directory.GetFiles(folder))
+        {
+            var ext = Path.GetExtension(f);
+
+            if (ext.Equals(".jpg", StringComparison.InvariantCultureIgnoreCase) ||
+                ext.Equals(".jpeg", StringComparison.InvariantCultureIgnoreCase))
+            {
+                toImport.Add(f);
+            }
+        }
+
+        if (toImport.Count == 0)
+        {
+            await MessageBox.Show("No frames found to import", "Import Video Frames", MessageBox.MessageBoxButtons.Ok);
+            return;
+        }
+
+        var fstream = new MemoryStream();
+        var mth = new MTHWriter(fstream, _reader.Width, _reader.Height, _reader.FrameRate);
+
+        _timer.Stop();
+        _reader?.Dispose();
+        _reader = null;
+
+        foreach (var f in toImport)
+            mth.WriteFrame(THP.FromJPEG(File.ReadAllBytes(f)));
+        mth.Dispose();
+
+        var file = fstream.ToArray();
+
+        frameBuffer.Clear(); // clear old frames
+        Global.Workspace.FileManager.Set(_filePath, file); // set new file
+        SetVideo(_filePath); // load new video
     }
     /// <summary>
     /// 

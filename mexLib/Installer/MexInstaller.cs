@@ -328,6 +328,8 @@ namespace mexLib.Installer
                 // set banner
                 stage.Assets.BannerAsset.SetFromMexImage(workspace, new MexImage(nameTOBJs[icon.PreviewID]));
             }
+            
+            // TODO: extract 2d series assets
 
             return null;
         }
@@ -416,7 +418,6 @@ namespace mexLib.Installer
                     workspace.Project.Series[i].ModelAsset.SetFromDObj(workspace, emblem_joints[i].Dobj);
                 }
             }
-
 
             return null;
         }
