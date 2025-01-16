@@ -92,27 +92,37 @@
 							Text="Add"
 							ToolTip.Tip="Add"
 							IconSource="avares://MexManager/Assets/Common/icon_plus.png"
-							Click="AddScript_Click"/>
+							Click="AddScript_Click"
+							IsEnabled="{Binding SelectedSoundGroup, Converter={StaticResource NullToBoolConverter}}"
+							/>
 						<controls:IconMenuItem
 							Text="Remove"
 							ToolTip.Tip="Remove"
 							IconSource="avares://MexManager/Assets/Common/icon_delete.png"
-							Click="RemoveScript_Click"/>
+							Click="RemoveScript_Click"
+							IsEnabled="{Binding SelectedScript, Converter={StaticResource NullToBoolConverter}}"
+							/>
 						<controls:IconMenuItem
 							Text="Duplicate"
 							ToolTip.Tip="Duplicate"
 							IconSource="avares://MexManager/Assets/Common/icon_copy.png"
-							Click="DuplicateScript_Click"/>
+							Click="DuplicateScript_Click"
+							IsEnabled="{Binding SelectedScript, Converter={StaticResource NullToBoolConverter}}"
+							/>
 						<controls:IconMenuItem
 							Text="Move Up"
 							ToolTip.Tip="Move Up"
 							IconSource="avares://MexManager/Assets/Common/icon_dir_up.png"
-							Click="MoveUpScript_Click"/>
+							Click="MoveUpScript_Click"
+							IsEnabled="{Binding SelectedScript, Converter={StaticResource NullToBoolConverter}}"
+							/>
 						<controls:IconMenuItem
 							Text="Move Down"
 							ToolTip.Tip="Move Down"
 							IconSource="avares://MexManager/Assets/Common/icon_dir_down.png"
-							Click="MoveDownScript_Click"/>
+							Click="MoveDownScript_Click"
+							IsEnabled="{Binding SelectedScript, Converter={StaticResource NullToBoolConverter}}"
+							/>
 					</Menu>
 					<DockPanel>
 						<ScrollViewer DockPanel.Dock="Left">

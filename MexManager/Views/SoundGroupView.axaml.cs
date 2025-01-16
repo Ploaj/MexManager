@@ -288,8 +288,8 @@ public partial class SoundGroupView : UserControl
             {
                 group.Scripts.Move(index, index - 1);
                 ScriptList.SelectedIndex = index - 1;
+                ScriptList.RefreshList(index - 1);
             }
-            ScriptList.RefreshList(index - 1);
         }
     }
     /// <summary>
@@ -308,8 +308,8 @@ public partial class SoundGroupView : UserControl
             {
                 group.Scripts.Move(index, index + 1);
                 ScriptList.SelectedIndex = index + 1;
+                ScriptList.RefreshList(index + 1);
             }
-            ScriptList.RefreshList(index + 1);
         }
     }
     /// <summary>
