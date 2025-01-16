@@ -261,7 +261,7 @@ namespace mexLib.Generators
             {
                 var param = is_us ? trophies[i].USData.Param2D : trophies[i].Data.Param2D;
 
-                if (param != null)
+                if (is_us && trophies[i].HasUSData || !is_us)
                     tbl.Add(new SBM_tyDisplayModelEntry()
                     {
                         TrophyID = i,
@@ -294,7 +294,7 @@ namespace mexLib.Generators
             {
                 var param = is_us ? trophies[i].USData.Param3D : trophies[i].Data.Param3D;
 
-                if (param != null)
+                if (is_us && trophies[i].HasUSData || !is_us)
                     tbl.Add(new SBM_tyInitModelEntry()
                     {
                         TrophyID = i,
