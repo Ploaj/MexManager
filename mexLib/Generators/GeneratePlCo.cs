@@ -11,6 +11,10 @@ namespace mexLib.Generators
 {
     public static class GeneratePlCo
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ws"></param>
         public static void Compile(MexWorkspace ws)
         {
             //get plco data
@@ -30,7 +34,6 @@ namespace mexLib.Generators
             GeneratePlCoDummy(ws, plCo);
             plcoFile.Save(ws.GetFilePath("PlCo.dat"));
         }
-
         /// <summary>
         /// 
         /// </summary>

@@ -159,7 +159,7 @@ namespace mexLib
                 if (fighter.SubCharacter == externalId)
                     fighter.SubCharacter = -1;
                 else
-                if (fighter.SubCharacter > externalId)
+                if (fighter.SubCharacter > externalId && fighter.SubCharacter < 255)
                     fighter.SubCharacter -= 1;
             }
 
@@ -170,7 +170,7 @@ namespace mexLib
                 {
                     icon.Fighter = 0;
                 }
-                else if (icon.Fighter > externalId)
+                else if (icon.Fighter > externalId && icon.Fighter < 255)
                 {
                     icon.Fighter -= 1;
                 }
