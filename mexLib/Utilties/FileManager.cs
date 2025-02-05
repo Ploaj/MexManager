@@ -61,6 +61,26 @@ namespace mexLib
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
+        public long GetFileSize(string? path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return 0;
+
+            path = Path.GetFullPath(path);
+
+            if (ToRemove.Contains(path))
+                return 0;
+
+            if (ToAdd.ContainsKey(path))
+                return ToAdd[path].Length;
+
+            return new FileInfo(path).Length;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public Stream? GetStream(string path)
         {
             path = Path.GetFullPath(path);

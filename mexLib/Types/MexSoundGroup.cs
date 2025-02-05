@@ -138,12 +138,12 @@ namespace mexLib.Types
                 bufferSize += 0x20 - (bufferSize % 0x20);
 
             st.SSM_SSMFiles.Set(index, new HSD_String(FileName));
-            st.SSM_BufferSizes.Set(index, new HSDRaw.MEX.MEX_SSMSizeAndFlags()
+            st.SSM_BufferSizes.Set(index, new MEX_SSMSizeAndFlags()
             {
                 Flag = (int)Flags,
                 SSMFileSize = bufferSize,
             });
-            st.SSM_LookupTable.Set(index, new HSDRaw.MEX.MEX_SSMLookup()
+            st.SSM_LookupTable.Set(index, new MEX_SSMLookup()
             {
                 EntireFlag = (int)GroupFlags,
             });

@@ -70,7 +70,9 @@ namespace mexLib
         {
             var path = GetFilePath(fileName);
             if (FileManager.Exists(path))
-                return new FileInfo(path).Length;
+            {
+                return FileManager.GetFileSize(path);
+            }
             return 0;
         }
         /// <summary>
@@ -267,6 +269,14 @@ namespace mexLib
             var sw = new Stopwatch();
             var total = new TimeSpan();
 
+            // generate sem/smst/ssm
+            sw.Restart();
+            SaveSoundData();
+            sw.Stop();
+            total += sw.Elapsed;
+
+            Debug.WriteLine($"Compiled sounds {sw.Elapsed}");
+
             sw.Start();
             MxDtCompiler.Compile(this);
             sw.Stop();
@@ -318,14 +328,6 @@ namespace mexLib
             total += sw.Elapsed;
 
             Debug.WriteLine($"Compiled Trophies {sw.Elapsed}");
-
-            // generate sem/smst/ssm
-            sw.Restart();
-            SaveSoundData();
-            sw.Stop();
-            total += sw.Elapsed;
-
-            Debug.WriteLine($"Compiled sounds {sw.Elapsed}");
 
             // compile codes
             sw.Restart();
