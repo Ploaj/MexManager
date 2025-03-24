@@ -104,7 +104,7 @@ public partial class CSSEditorView : UserControl
             DataContext is MainViewModel model &&
             model.CharacterSelect != null)
         {
-            model.CharacterSelect.ApplyCompression(Global.Workspace);
+            model.CharacterSelect.ApplyCompression(Global.Workspace, true);
         }
     }
     /// <summary>

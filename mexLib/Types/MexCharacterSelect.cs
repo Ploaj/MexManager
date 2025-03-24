@@ -68,7 +68,7 @@ namespace mexLib.Types
         /// 
         /// </summary>
         /// <param name="ws"></param>
-        public void ApplyCompression(MexWorkspace ws)
+        public void ApplyCompression(MexWorkspace ws, bool force)
         {
             int csp_width = (int)(136 * CSPCompression);
             int csp_height = (int)(188 * CSPCompression);
@@ -91,8 +91,9 @@ namespace mexLib.Types
 
                             // check for compression
                             if (textureAsset != null &&
-                                (textureAsset.Width > csp_width ||
-                                textureAsset.Height > csp_height))
+                                (textureAsset.Width != csp_width ||
+                                textureAsset.Height != csp_height ||
+                                force))
                             {
                                 c.CSPAsset.Resize(ws, csp_width, csp_height);
                                 textureAsset = c.CSPAsset.GetTexFile(ws);

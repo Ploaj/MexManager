@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
 namespace mexLib.HsdObjects
 {
@@ -55,7 +50,7 @@ namespace mexLib.HsdObjects
         public static string Encode(string input, uint color, bool reset)
         {
             input = input.Replace(' ', '　');
-            input = input.Replace("\n", "<BR>");
+            input = Regex.Replace(input, @"\r\n|\r|\n", "<BR>");
             {
                 // Regex pattern to find "{X}" where X is a number
                 string pattern = @"\{(\d+)\}";

@@ -67,7 +67,7 @@ namespace mexLib.Generators
             List<HSD_TOBJ> icons = new();
 
             // compression info
-            ws.Project.CharacterSelect.ApplyCompression(ws);
+            ws.Project.CharacterSelect.ApplyCompression(ws, false);
 
             // gather reserved icons
             for (int internalId = 0; internalId < stride; internalId++)

@@ -3,13 +3,14 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Png;
-using System.Runtime.Intrinsics.X86;
-using HSDRaw.Tools;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 namespace mexLib.Utilties
 {
     public class ImageConverter
     {
+        private static IResampler Resampler = KnownResamplers.Bicubic;
+
         /// <summary>
         /// 
         /// </summary>
@@ -18,65 +19,12 @@ namespace mexLib.Utilties
         /// <param name="height"></param>
         public static MexImage Resize(MexImage tex, int width, int height)
         {
-            var new_tex = ResizeBGRA(tex.GetBGRA(), tex.Width, tex.Height, width, height);
-            return new MexImage(new_tex, width, height, tex.Format, tex.TlutFormat);
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="originalImage"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="newWidth"></param>
-        /// <param name="newHeight"></param>
-        /// <returns></returns>
-        public static byte[] ResizeBGRA(byte[] originalImage, int width, int height, int newWidth, int newHeight)
-        {
-            // Create a new byte array to hold the resized image
-            byte[] resizedImage = new byte[newWidth * newHeight * 4]; // BGRA format, so 4 bytes per pixel
-
-            // Calculate the horizontal and vertical scale factors
-            float xRatio = (float)(width - 1) / newWidth;
-            float yRatio = (float)(height - 1) / newHeight;
-
-            for (int newY = 0; newY < newHeight; newY++)
-            {
-                for (int newX = 0; newX < newWidth; newX++)
-                {
-                    // Get the source coordinates in the original image
-                    float srcX = newX * xRatio;
-                    float srcY = newY * yRatio;
-
-                    // Get the integer part and the fractional part
-                    int xL = (int)Math.Floor(srcX);
-                    int yL = (int)Math.Floor(srcY);
-                    float xFrac = srcX - xL;
-                    float yFrac = srcY - yL;
-
-                    // Get the positions of the 4 surrounding pixels
-                    int xR = Math.Min(xL + 1, width - 1);
-                    int yR = Math.Min(yL + 1, height - 1);
-
-                    // Get the indices for the four surrounding pixels in the original image
-                    int indexTL = (yL * width + xL) * 4; // Top-left
-                    int indexTR = (yL * width + xR) * 4; // Top-right
-                    int indexBL = (yR * width + xL) * 4; // Bottom-left
-                    int indexBR = (yR * width + xR) * 4; // Bottom-right
-
-                    // Perform bilinear interpolation for each color channel (B, G, R, A)
-                    for (int channel = 0; channel < 4; channel++)
-                    {
-                        float top = originalImage[indexTL + channel] * (1 - xFrac) + originalImage[indexTR + channel] * xFrac;
-                        float bottom = originalImage[indexBL + channel] * (1 - xFrac) + originalImage[indexBR + channel] * xFrac;
-                        float color = top * (1 - yFrac) + bottom * yFrac;
-
-                        // Assign the interpolated color to the resized image
-                        resizedImage[(newY * newWidth + newX) * 4 + channel] = (byte)color;
-                    }
-                }
-            }
-
-            return resizedImage;
+            using var img = Image.Load(tex.ToPNG());
+            using var stream = new MemoryStream();
+            img.Mutate(x => x.Resize(width, height, Resampler));
+            img.SaveAsPng(stream);
+            stream.Position = 0;
+            return FromPNG(stream, tex.Format, tex.TlutFormat);
         }
         /// <summary>
         /// 
@@ -258,7 +206,7 @@ namespace mexLib.Utilties
             }
 
             // Resize the image
-            image.Mutate(x => x.Resize(newWidth, newHeight));
+            image.Mutate(x => x.Resize(newWidth, newHeight, Resampler));
         }
     }
 }
