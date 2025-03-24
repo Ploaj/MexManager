@@ -2,16 +2,9 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using HSDRaw;
-using HSDRaw.Common;
-using HSDRaw.Tools.TriangleConverter;
-using mexLib.Utilties;
 using MexManager.ViewModels;
 using MexManager.Views;
-using SixLabors.ImageSharp;
 using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace MexManager;
 
