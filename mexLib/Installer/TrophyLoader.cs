@@ -4,7 +4,6 @@ using HSDRaw;
 using static mexLib.Types.MexTrophy;
 using mexLib.HsdObjects;
 using HSDRaw.MEX;
-using System.Diagnostics;
 
 namespace mexLib.Installer
 {
@@ -55,10 +54,10 @@ namespace mexLib.Installer
                 return;
 
             // init data
-            int trophyCount = 0;
+            int trophyCount = 293;
 
             int nameOff = 0x002;
-            int nameOffAlt = 0;
+            int nameOffAlt = 297;
 
             // extract and update with data from mxdt
             var mxdtPath = workspace.GetFilePath("MxDt.dat");
