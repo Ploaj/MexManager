@@ -3,6 +3,8 @@ using System.IO;
 using System;
 using System.ComponentModel;
 using PropertyModels.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using mexLib.Attributes;
 
 namespace MexManager
 {
@@ -12,9 +14,10 @@ namespace MexManager
 
         private static string FilePath { get { return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FileName); } }
 
-        [DisplayName("Melee ISO Path")]
-        [Description("Path to Melee ISO")]
+        [DisplayName("Melee (v1.02) ISO Path")]
+        [Description("Path to Melee ISO Note: only vanilla (USA) (v1.02) is supported")]
         [PathBrowsable(InitialFileName = "", Filters = "Gamecube ISO (*.iso)|*.iso")]
+        [MeleeISOValidator()]
         public string MeleePath { get; set; } = "";
 
         [DisplayName("Dolphin Path")]
