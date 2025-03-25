@@ -194,15 +194,15 @@ public partial class MainView : UserControl
         if (mexdol == null)
             return;
 
-        // Start async operation to open the dialog.
-        var file = await FileIO.TrySaveFile("New Workspace", "project.mexproj", FileIO.FilterMexProject);
+        //// Start async operation to open the dialog.
+        //var file = await FileIO.TrySaveFile("New Workspace", "project.mexproj", FileIO.FilterMexProject);
 
-        // check if file was found
-        if (file == null)
-            return;
+        //// check if file was found
+        //if (file == null)
+        //    return;
 
         // create new workspace
-        var workspace = Global.CreateWorkspaceFromMex(file, mexdol);
+        var workspace = Global.CreateWorkspaceFromMex(mexdol);
 
         if (workspace == null)
             await MessageBox.Show("Unable to create workspace", "Create Workspace", MessageBox.MessageBoxButtons.Ok);

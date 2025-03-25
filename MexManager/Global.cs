@@ -77,18 +77,18 @@ namespace MexManager
         /// <returns></returns>
         public static MexWorkspace? CreateWorkspace(string filepath)
         {
-            using (var s = new MemoryStream())
-            {
-                // load codes
-                var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
-                var defaultCodes = CodeLoader.FromINI(File.ReadAllBytes(MexAddCodePath));
+            // load codes
+            var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
+            var defaultCodes = CodeLoader.FromINI(File.ReadAllBytes(MexAddCodePath));
 
-                Workspace = MexWorkspace.NewWorkspace(
-                    filepath,
-                    App.Settings.MeleePath,
-                    mainCode,
-                    defaultCodes);
-            }
+            if (mainCode == null)
+                return null;
+
+            Workspace = MexWorkspace.NewWorkspace(
+                filepath,
+                App.Settings.MeleePath,
+                mainCode,
+                defaultCodes);
 
             return Workspace;
         }
@@ -97,22 +97,21 @@ namespace MexManager
         /// </summary>
         /// <param name="filepath"></param>
         /// <returns></returns>
-        public static MexWorkspace? CreateWorkspaceFromMex(string projectPath, string mexdolPath)
+        public static MexWorkspace? CreateWorkspaceFromMex(string mexdolPath)
         {
-            using (var s = new MemoryStream())
-            {
-                // load codes
-                var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
-                var path = Path.GetDirectoryName(Path.GetDirectoryName(mexdolPath));
+            // load codes
+            var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
+            var path = Path.GetDirectoryName(Path.GetDirectoryName(mexdolPath));
 
-                if (path == null || mainCode == null)
-                    return null;
+            if (path == null || mainCode == null)
+                return null;
 
-                Workspace = MexWorkspace.CreateFromMexFileSystem(
-                    projectPath,
-                    path,
-                    mainCode);
-            }
+            string projectPath = Path.Combine(path, "project.mexproj");
+
+            Workspace = MexWorkspace.CreateFromMexFileSystem(
+                projectPath,
+                path,
+                mainCode);
 
             return Workspace;
         }
