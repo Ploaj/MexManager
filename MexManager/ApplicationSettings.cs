@@ -3,7 +3,6 @@ using System.IO;
 using System;
 using System.ComponentModel;
 using PropertyModels.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations;
 using mexLib.Attributes;
 
 namespace MexManager
