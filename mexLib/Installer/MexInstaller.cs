@@ -415,7 +415,8 @@ namespace mexLib.Installer
             {
                 if (i < workspace.Project.Series.Count)
                 {
-                    workspace.Project.Series[i].ModelAsset.SetFromDObj(workspace, emblem_joints[i].Dobj);
+                    if (emblem_joints[i].Dobj != null)
+                        workspace.Project.Series[i].ModelAsset.SetFromDObj(workspace, emblem_joints[i].Dobj);
                 }
             }
 

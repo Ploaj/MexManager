@@ -16,6 +16,7 @@ namespace mexLib
     public class MexWorkspace
     {
         public byte VersionMajor { get; } = 1;
+
         public byte VersionMinor { get; } = 1;
 
         private string FilePath { get; set; } = "";

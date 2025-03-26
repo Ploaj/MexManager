@@ -116,7 +116,7 @@ namespace mexLib.Types
         {
             // SSMFiles
             FileName = dol.GetStruct<string>(0x803bbcfc, index);
-            Name = Path.GetFileNameWithoutExtension(FileName);
+            Name = Path.GetFileNameWithoutExtension(FileName).FirstCharToUpper();
 
             // SSM_BufferSizes
             Flags = dol.GetStruct<uint>(0x803BC4E4 + 0x04, index, 8);
@@ -160,6 +160,7 @@ namespace mexLib.Types
             FileName = st.SSM_SSMFiles[index].Value;
             Flags = (uint)st.SSM_BufferSizes[index].Flag;
             GroupFlags = (uint)st.SSM_LookupTable[index].EntireFlag;
+            Name = Path.GetFileName(FileName).FirstCharToUpper();
         }
         /// <summary>
         /// 

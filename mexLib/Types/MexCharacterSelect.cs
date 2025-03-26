@@ -61,6 +61,7 @@ namespace mexLib.Types
                 FighterIcons.Add(new MexCharacterSelectIcon()
                 {
                     Fighter = i.ExternalCharID,
+                    SFXID = i.SFXID,
                 });
             }
         }
