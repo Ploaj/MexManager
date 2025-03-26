@@ -92,8 +92,8 @@ namespace mexLib.Types
 
                             // check for compression
                             if (textureAsset != null &&
-                                (textureAsset.Width != csp_width ||
-                                textureAsset.Height != csp_height ||
+                                (textureAsset.Width > csp_width ||
+                                textureAsset.Height > csp_height ||
                                 force))
                             {
                                 c.CSPAsset.Resize(ws, csp_width, csp_height);

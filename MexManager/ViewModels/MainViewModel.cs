@@ -184,7 +184,7 @@ public partial class MainViewModel : ViewModelBase
         CloseCommand = new RelayCommand(CloseMenuItem_Click, IsWorkSpaceLoaded);
         WorkspaceLoadedCommand = new RelayCommand((e) => { }, IsWorkSpaceLoaded);
         LaunchCommand = new RelayCommand(LaunchMenuItem_Click, IsDolphinPathSet);
-        ExportISOCommand = new RelayCommand(ExportISO_Click, IsDolphinPathSet);
+        ExportISOCommand = new RelayCommand(ExportISO_Click, IsWorkSpaceLoaded);
 
         AddStagePageCommand = new RelayCommand(AddStagePage, null);
         DeleteStagePageCommand = new RelayCommand(DeleteStagePage, IsWorkSpaceLoaded);
