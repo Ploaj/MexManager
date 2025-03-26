@@ -101,6 +101,7 @@ namespace MexManager
         {
             // load codes
             var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
+            var defaultCodes = CodeLoader.FromINI(File.ReadAllBytes(MexAddCodePath));
             var path = Path.GetDirectoryName(Path.GetDirectoryName(mexdolPath));
 
             if (path == null || mainCode == null)
@@ -111,7 +112,8 @@ namespace MexManager
             Workspace = MexWorkspace.CreateFromMexFileSystem(
                 projectPath,
                 path,
-                mainCode);
+                mainCode,
+                defaultCodes);
 
             return Workspace;
         }

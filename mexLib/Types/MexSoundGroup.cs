@@ -160,7 +160,7 @@ namespace mexLib.Types
             FileName = st.SSM_SSMFiles[index].Value;
             Flags = (uint)st.SSM_BufferSizes[index].Flag;
             GroupFlags = (uint)st.SSM_LookupTable[index].EntireFlag;
-            Name = Path.GetFileName(FileName).FirstCharToUpper();
+            Name = Path.GetFileNameWithoutExtension(FileName).FirstCharToUpper();
         }
         /// <summary>
         /// 

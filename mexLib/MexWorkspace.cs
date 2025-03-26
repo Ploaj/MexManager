@@ -95,7 +95,8 @@ namespace mexLib
         public static MexWorkspace CreateFromMexFileSystem(
             string projectFile,
             string mexPath,
-            MexCode mainCode)
+            MexCode mainCode,
+            IEnumerable<MexCode> defaultCodes)
         {
             // get project path
             var projectPath = Path.GetDirectoryName(projectFile) + "\\";
@@ -126,6 +127,15 @@ namespace mexLib
 
             // save workspace
             workspace.Project.MainCode = mainCode;
+            HashSet<byte[]?> codes = workspace.Project.Codes.Select(e => e.GetCompiled()).ToHashSet();
+            foreach (var c in defaultCodes)
+            {
+                var compiled = c.GetCompiled();
+                if (!codes.Contains(compiled))
+                {
+                    workspace.Project.Codes.Add(c);
+                }
+            }
             workspace.LoadMiscData();
             workspace.Save();
 
