@@ -52,7 +52,6 @@ namespace MexManager
             Marshal.Copy(swappedPixels, 0, dataPointer, swappedPixels.Length);
                 
             return bmp;
-            
         }
         /// <summary>
         /// 

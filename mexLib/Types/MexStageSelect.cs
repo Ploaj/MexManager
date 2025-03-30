@@ -1,7 +1,4 @@
 ﻿using HSDRaw;
-using HSDRaw.Common;
-using HSDRaw.Common.Animation;
-using HSDRaw.MEX;
 using HSDRaw.MEX.Menus;
 using mexLib.MexScubber;
 using System.Collections.ObjectModel;
@@ -14,6 +11,7 @@ namespace mexLib.Types
         [DisplayName("Name")]
         public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
         private string _name = "New Page";
+
 
         private MexStageSelectTemplate _template = new ();
         [Browsable(false)]

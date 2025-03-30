@@ -269,7 +269,7 @@ namespace mexLib
             mexData.MetaData._s.SetByte(1, workspace.VersionMinor);
 
             // get stage selects icons
-            var icons = proj.StageSelects.SelectMany(e => e.StageIcons.Select(e => e.ToIcon())).ToList();
+            var icons = proj.StageSelects.SelectMany(e => e.StageIcons.Select(e => e.ToIcon())).Where(e => e != null).ToList();
 
             // generate random bitfield
             var bitfield = new byte[icons.Count / 8 + 1];

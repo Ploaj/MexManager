@@ -98,7 +98,11 @@ namespace mexLib.AssetTypes
 
             // compile and set tex
             imageStream.Position = 0;
-            MexImage tex = ImageConverter.FromPNG(imageStream, Width, Height, Format, TlutFormat);
+            MexImage tex = ImageConverter.FromPNG(imageStream, 
+                Width == -1 ? source_png.Width : Width, 
+                Height == -1 ? source_png.Height : Height, 
+                Format, 
+                TlutFormat);
             workspace.FileManager.Set(path + ".tex", tex.ToByteArray());
         }
         /// <summary>

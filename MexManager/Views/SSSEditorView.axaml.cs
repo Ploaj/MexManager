@@ -157,6 +157,16 @@ public partial class SSSEditorView : UserControl
     private void IconPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
         ApplySelectTemplate();
+        if (args.PropertyName != null &&
+            args.PropertyName.Equals("Status") &&
+            Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedSSSIcon != null)
+        {
+            var temp = model.SelectedSSSIcon;
+            model.SelectedSSSIcon = null;
+            model.SelectedSSSIcon = temp;
+        }
     }
     /// <summary>
     /// 

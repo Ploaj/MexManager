@@ -3,6 +3,9 @@ using HSDRaw.Common;
 using HSDRaw.MEX.Menus;
 using mexLib.Attributes;
 using System.ComponentModel;
+using mexLib.AssetTypes;
+using System.Text.Json.Serialization;
+using PropertyModels.ComponentModel.DataAnnotations;
 
 namespace mexLib.Types
 {
@@ -12,10 +15,33 @@ namespace mexLib.Types
 
         public override float BaseHeight => 2.603993f;
 
+        public enum StageIconStatus
+        {
+            Hidden,
+            Locked,
+            Unlocked,
+            Random,
+            Decoration,
+        }
+
+        private StageIconStatus _status = StageIconStatus.Unlocked;
+        [Category("0 - Stage")]
+        [DisplayName("Icon Type")]
+        public StageIconStatus Status
+        {
+            get => _status;
+            set
+            {
+                _status = value;
+                OnPropertyChanged();
+            }
+        }
+
         private int _stageID;
         [Category("0 - Stage")]
         [DisplayName("Stage")]
         [MexLink(MexLinkType.Stage)]
+        [VisibilityPropertyCondition(nameof(Status), StageIconStatus.Unlocked)]
         public int StageID
         {
             get => _stageID;
@@ -29,30 +55,27 @@ namespace mexLib.Types
             }
         }
 
-        public enum StageIconStatus
-        {
-            Hidden,
-            Locked,
-            Unlocked,
-            Random,
-        }
 
-        private StageIconStatus _status = StageIconStatus.Unlocked;
-        [Category("0 - Stage")]
-        [DisplayName("Status")]
-        public StageIconStatus Status
+        [Browsable(false)]
+        [JsonInclude]
+        public string? Icon { get => IconAsset.AssetFileName; internal set => IconAsset.AssetFileName = value; }
+
+        [DisplayName("Icon")]
+        [JsonIgnore]
+        [VisibilityPropertyCondition(nameof(Status), StageIconStatus.Decoration)]
+        public MexTextureAsset IconAsset { get; set; } = new MexTextureAsset()
         {
-            get => _status;
-            set
-            {
-                _status = value;
-                OnPropertyChanged();
-            }
-        }
+            AssetPath = "sss/page",
+            Width = -1,
+            Height = -1,
+            Format = HSDRaw.GX.GXTexFmt.CI8,
+            TlutFormat = HSDRaw.GX.GXTlutFmt.RGB5A3,
+        };
 
         private int _group;
         [Category("0 - Stage")]
         [DisplayName("Group")]
+        [VisibilityPropertyCondition(nameof(Status), StageIconStatus.Decoration, LogicType = ConditionLogicType.Not)]
         public int Group
         {
             get => _group;
@@ -66,6 +89,7 @@ namespace mexLib.Types
         private float _width = 3.1f;
         [Category("1 - Collision")]
         [DisplayName("Width")]
+        [VisibilityPropertyCondition(nameof(Status), StageIconStatus.Decoration, LogicType = ConditionLogicType.Not)]
         public float Width
         {
             get => _width;
@@ -82,6 +106,7 @@ namespace mexLib.Types
         private float _height = 2.70f;
         [Category("1 - Collision")]
         [DisplayName("Height")]
+        [VisibilityPropertyCondition(nameof(Status), StageIconStatus.Decoration, LogicType = ConditionLogicType.Not)]
         public float Height
         {
             get => _height;
@@ -98,6 +123,7 @@ namespace mexLib.Types
         private byte _previewID;
         [Category("0 - Stage")]
         [DisplayName("Preview ID")]
+        [VisibilityPropertyCondition(nameof(Status), StageIconStatus.Unlocked)]
         public byte PreviewID
         {
             get => _previewID;
@@ -114,6 +140,7 @@ namespace mexLib.Types
         private byte _randomSelectID;
         [Category("0 - Stage")]
         [DisplayName("Random ID")]
+        [VisibilityPropertyCondition(nameof(Status), StageIconStatus.Unlocked)]
         public byte RandomSelectID
         {
             get => _randomSelectID;
@@ -156,6 +183,8 @@ namespace mexLib.Types
                     var internalId = MexStageIDConverter.ToInternalID(StageID);
                     var stage = ws.Project.Stages[internalId];
                     return stage.Assets.IconAsset.GetTexFile(ws);
+                case StageIconStatus.Decoration:
+                    return IconAsset.GetTexFile(ws);
                 case StageIconStatus.Hidden:
                 default:
                     return null;
@@ -239,8 +268,13 @@ namespace mexLib.Types
         /// 
         /// </summary>
         /// <returns></returns>
-        public MEX_StageIconData ToIcon()
+        public MEX_StageIconData? ToIcon()
         {
+            if (Status == StageIconStatus.Decoration)
+            {
+                return null;
+            }
+            else
             if (Status == StageIconStatus.Random)
             {
                 return new MEX_StageIconData()

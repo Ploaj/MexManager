@@ -10,7 +10,7 @@
              x:Class="MexManager.Views.SSSEditorView">
 
 	<UserControl.Resources>
-		<converters:StageIdConverter x:Key="StageIdConverter"/>
+		<converters:StageIconNameConverter x:Key="StageIdConverter"/>
 	</UserControl.Resources>
 	
 	<DockPanel Background="{DynamicResource TabItemBackgroundBrush}">
@@ -87,21 +87,21 @@
 				</Button.Content>
 			</Button>
 		</StackPanel>
-		<views:PropertyGridExt
-			DockPanel.Dock="Top"
-			DataContext="{ Binding StageSelect }"
-			Margin="4"
-			ShowStyle="Builtin"
-			ShowTitle="False"
-			AllowQuickFilter="False"
-			AllowFilter="False"
-			AllowToggleView="False">
-		</views:PropertyGridExt>
 		<Border
 			Background="#101010"
 			CornerRadius="10">
 			<TabControl DockPanel.Dock="Left"
 						IsEnabled="{Binding StageSelect, Converter={StaticResource NullToBoolConverter}}">
+				<TabItem Header="Page">
+					<views:PropertyGridExt
+						Name="StageSelectProperties"
+						Margin="4"
+						AllowQuickFilter="False"
+						AllowFilter="False"
+						AllowToggleView="False"
+						DataContext="{ Binding StageSelect }">
+					</views:PropertyGridExt>
+				</TabItem>
 				<TabItem Header="Icons">
 					<DockPanel>
 						<Menu DockPanel.Dock="Top"
@@ -152,7 +152,7 @@
 														</MultiBinding>
 													</TextBlock.Text>
 												</TextBlock>
-												<TextBlock Text="{Binding StageID, Converter={StaticResource StageIdConverter}}"/>
+												<TextBlock Text="{Binding, Converter={StaticResource StageIdConverter}}"/>
 											</StackPanel>
 										</DataTemplate>
 									</ListBox.ItemTemplate>

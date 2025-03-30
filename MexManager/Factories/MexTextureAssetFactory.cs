@@ -55,7 +55,7 @@ namespace MexManager.Factories
             panel.Children.Add(imageBorder);
 
             // optional size attribute view
-            if (asset != null)
+            if (asset != null && asset.Width != -1 && asset.Height != -1)
             {
                 imageBorder.Width = asset.Width;
                 imageBorder.Height = asset.Height;
