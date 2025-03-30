@@ -325,10 +325,8 @@ public partial class MainViewModel : ViewModelBase
         if (file == null)
             return;
 
-        if (res == MessageBox.MessageBoxResult.Yes)
-            Global.SaveWorkspace();
+        ProgressWindow progressWindow = new();
 
-        ProgressWindow progressWindow = new ();
         BackgroundWorker backgroundWorker = new ()
         {
             WorkerReportsProgress = true,
@@ -336,10 +334,19 @@ public partial class MainViewModel : ViewModelBase
 
         backgroundWorker.DoWork += (s, e) =>
         {
-            Global.Workspace.ExportISO(file, (r, t)=>
+            if (res == MessageBox.MessageBoxResult.Yes)
             {
-                Debug.WriteLine(t.ProgressPercentage);
-                backgroundWorker.ReportProgress(t.ProgressPercentage);
+                progressWindow.UpdateProgress(null, new ProgressChangedEventArgs(0, "Saving workspace..."));
+                Global.SaveWorkspace();
+            }
+            else
+            {
+                progressWindow.UpdateProgress(null, new ProgressChangedEventArgs(0, "Begin building..."));
+            }
+
+            Global.Workspace.ExportISO(file, (r, t) =>
+            {
+                backgroundWorker.ReportProgress(t.ProgressPercentage, t.UserState);
             });
         };
         backgroundWorker.ProgressChanged += (s, e) =>

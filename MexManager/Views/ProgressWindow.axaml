@@ -4,9 +4,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="MexManager.ProgressWindow"
-        Title="Progress">
-	<StackPanel>
-		<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Progress:" Margin="0,10,0,10"/>
-		<ProgressBar x:Name="ProgressBar" Minimum="0" Maximum="100" Height="30" Width="200" IsIndeterminate="False"/>
+        Title="Progress"
+        WindowStartupLocation="CenterScreen">
+	<StackPanel
+		Spacing="10"
+		Margin="20,10,20,10">
+		<TextBlock	HorizontalAlignment="Center" 
+					VerticalAlignment="Center" 
+					Text="{Binding ProgressText}"/>
+		<ProgressBar x:Name="ProgressBar" 
+					 Minimum="0" 
+					 Maximum="100" 
+					 Height="30"
+					 IsIndeterminate="False"
+					 Value="{Binding ProgressValue, Mode=TwoWay}"/>
+		<TextBox Name="LogBox"
+			 IsReadOnly="True"
+			 AcceptsReturn="True"
+			 TextWrapping="Wrap"
+			 Height="320"/>
+		<Button
+			HorizontalAlignment="Center"
+			IsEnabled="{Binding Completed}"
+			Click="Button_Click">Okay</Button>
 	</StackPanel>
 </Window>
