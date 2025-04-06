@@ -1,129 +1,367 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using MeleeMedia.Video;
 using MexManager.Tools;
+using System.Collections.Generic;
+using System;
 using System.IO;
+using System.Threading.Tasks;
+using mexLib;
+using Avalonia;
 
 namespace MexManager.Views;
+public class VideoPlayerContext : MexReactiveObject
+{
+    public bool IsVideoLoaded { get => _isVideoLoaded; set { _isVideoLoaded = value; OnPropertyChanged(); } }
+    private bool _isVideoLoaded;
+
+    public bool IsPlaying { get => _isPlaying; set { _isPlaying = value; OnPropertyChanged(); } }
+    private bool _isPlaying;
+
+    public int Progress { get => _progress; set { _progress = value; OnPropertyChanged(); } }
+    private int _progress;
+}
 
 public partial class MTHEditor : UserControl
 {
+    private MTHReader? _reader;
+
+    private readonly Queue<Bitmap> frameBuffer = new();
+
+    private readonly DispatcherTimer _timer;
+
+    private int _frameIndex = 0;
+
+    private readonly int _bufferSize = 10;
+    private readonly int _preloadThreshold = 4;
+
+    private readonly VideoPlayerContext Context;
+
+    private string? _filePath;
+
     private Bitmap? _previewBitmap;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public MTHEditor()
     {
         InitializeComponent();
+
+        Context = new VideoPlayerContext();
+        DataContext = Context;
+
+        _timer = new DispatcherTimer();
+        _timer.Tick += Timer_Tick;
+
+        DataContextChanged += (s, a) =>
+        {
+            Update();
+        };
     }
     /// <summary>
     /// 
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void TextBox_TextChanged(object? sender, TextChangedEventArgs e)
+    private void Timer_Tick(object? sender, EventArgs e)
+    {
+        NextFrame(null, new RoutedEventArgs());
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="e"></param>
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        if (_reader is not null)
+        {
+            _reader?.Dispose();
+            _reader = null;
+        }
+
+        // Clean up the timer
+        if (_timer is not null)
+        {
+            _timer.Stop();
+            _timer.Tick -= Timer_Tick;
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void Update()
     {
         if (Global.Workspace == null)
             return;
 
-        if (FileTextBox.Text == null)
+        if (DataContext is not string text)
             return;
 
-        var path = Global.Workspace.GetFilePath(FileTextBox.Text);
+        var path = Global.Workspace.GetFilePath(text);
 
         if (!Global.Workspace.FileManager.Exists(path))
         {
-            PreviewImage.Source = BitmapManager.MissingImage;
+            VideoPanel.Source = BitmapManager.MissingImage;
             return;
         }
 
-        using var stream = new FileStream(path, FileMode.Open);
-        using var mthStream = new MTHReader(stream);
-        UpdatePreview(mthStream.ReadFrame());
+        SetVideo(path);
     }
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="thp"></param>
-    private void UpdatePreview(THP thp)
+    private void NextFrame(object? sender, RoutedEventArgs args)
     {
-        using var jpg = new MemoryStream(thp.ToJPEG());
-        _previewBitmap?.Dispose();
-        _previewBitmap = new Bitmap(jpg);
-        PreviewImage.Source = _previewBitmap;
+        if (_reader == null)
+            return;
+
+        // Display the next frame
+        if (frameBuffer.Count > 0)
+        {
+            // Dispose of the previous frame if necessary
+            var oldFrame = VideoPanel.Source as Bitmap;
+            oldFrame?.Dispose();
+
+            VideoPanel.Source = frameBuffer.Dequeue();
+        }
+
+        // Preload more frames if needed
+        if (frameBuffer.Count < _preloadThreshold)
+        {
+            Task.Run(() => PreloadFrames());
+        }
+
+        _frameIndex = (_frameIndex + 1) % _reader.FrameCount;
+        Context.Progress = (int)((_frameIndex / (double)_reader.FrameCount) * 100);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    private void PreloadFrames()
+    {
+        if (_reader == null)
+            return;
+
+        for (int i = 0; i < _bufferSize - frameBuffer.Count; i++)
+        {
+            // Calculate the next frame to load
+            using var ms = new MemoryStream(_reader.ReadFrame().ToJPEG());
+            var bitmap = new Bitmap(ms);
+
+            // Lock to prevent issues when updating the buffer
+            lock (frameBuffer)
+            {
+                frameBuffer.Enqueue(bitmap);
+            }
+        }
     }
     /// <summary>
     /// 
     /// </summary>
     /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private async void ImportButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    /// <param name="args"></param>
+    private void PlayPause(object? sender, RoutedEventArgs args)
     {
-        //if (Global.Workspace == null)
-        //    return;
+        Context.IsPlaying = !Context.IsPlaying;
 
-        //if (FileTextBox.Text == null)
-        //    return;
-
-        //if (string.IsNullOrEmpty(FileTextBox.Text))
-        //{
-        //    await MessageBox.Show("Please input a file path", "Import Media Error", MessageBox.MessageBoxButtons.Ok);
-        //    return;
-        //}
-
-        //var path = Global.Workspace.GetFilePath(FileTextBox.Text);
-
-        //var file = await FileIO.TryOpenFile("Import JPEG", Path.GetFileNameWithoutExtension(FileTextBox.Text) + ".jpg", FileIO.FilterJpeg);
-
-        //if (file == null) return;
-
-        //var thp = THP.FromJPEG(File.ReadAllBytes(file));
-        //Global.Workspace.FileManager.Set(path, thp.Data);
-        //UpdatePreview(thp);
-
-
-
-        if (App.MainWindow == null)
+        if (Context.IsPlaying)
+        {
+            _timer.Start();
+        }
+        else
+        {
+            _timer.Stop();
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="frame"></param>
+    private void Seek(int frame)
+    {
+        if (_reader == null)
             return;
 
+        // clear current frame buffer
+        while (frameBuffer.Count > 0)
+            frameBuffer.Dequeue().Dispose();
+
+        // Load initial frames into the buffer
+        _reader.Seek(frame);
+        for (int i = 0; i < Math.Min(_bufferSize, _reader.FrameCount); i++)
+        {
+            using var ms = new MemoryStream(_reader.ReadFrame().ToJPEG());
+            frameBuffer.Enqueue(new Bitmap(ms));
+        }
+
+        NextFrame(null, new RoutedEventArgs());
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="filePath"></param>
+    public void SetVideo(string filePath)
+    {
         if (Global.Workspace == null)
             return;
 
-        if (FileTextBox.Text == null)
-            return;
+        _timer.Stop();
 
-        var path = Global.Workspace.GetFilePath(FileTextBox.Text);
+        if (_reader != null)
+            _reader.Dispose();
 
-        if (!Global.Workspace.FileManager.Exists(path))
-            return;
+        var stream = Global.Workspace.FileManager.GetStream(filePath);
+        _reader = new MTHReader(stream);
 
-        var player = new VideoPlayer();
-        player.SetVideo(path);
-        await player.ShowDialog(App.MainWindow);
+        // Load initial frames into the buffer
+        for (int i = 0; i < Math.Min(_bufferSize, _reader.FrameCount); i++)
+        {
+            using var ms = new MemoryStream(_reader.ReadFrame().ToJPEG());
+            frameBuffer.Enqueue(new Bitmap(ms));
+        }
+
+        _frameIndex = 0;
+        NextFrame(null, new RoutedEventArgs());
+
+        _timer.Interval = TimeSpan.FromSeconds(1.0 / 60); // mth has framerate, but game runs at 60
+
+        Context.IsVideoLoaded = true;
+        _filePath = filePath;
     }
     /// <summary>
     /// 
     /// </summary>
     /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void ExportButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    /// <param name="args"></param>
+    private void PreviousFrame(object? sender, RoutedEventArgs args)
     {
-        //if (Global.Workspace == null)
-        //    return;
+        if (_reader == null)
+            return;
 
-        //if (FileTextBox.Text == null)
-        //    return;
+        if (_frameIndex == 0)
+            _frameIndex = _reader.FrameCount;
 
-        //var path = Global.Workspace.GetFilePath(FileTextBox.Text);
+        _frameIndex -= 2;
 
-        //if (!Global.Workspace.FileManager.Exists(path))
-        //    return;
+        if (_frameIndex < 0)
+            _frameIndex = _reader.FrameCount - 1;
 
-        //var file = await FileIO.TrySaveFile("Export JPEG", Path.GetFileNameWithoutExtension(FileTextBox.Text) + ".jpg", FileIO.FilterJpeg);
+        Seek(_frameIndex);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    private async void ExportFrames(object? sender, RoutedEventArgs args)
+    {
+        if (_reader == null)
+            return;
 
-        //if (file == null) return;
+        var file = await FileIO.TrySaveFile("", "", FileIO.FilterJpeg);
 
-        //var thp = new THP(Global.Workspace.FileManager.Get(path));
-        //File.WriteAllBytes(file, thp.ToJPEG());
+        if (file != null)
+        {
+            var path = Path.GetDirectoryName(file);
+            var fileName = Path.GetFileName(file);
+
+            if (path != null && fileName != null)
+            {
+                _reader.Seek(0);
+                for (int i = 0; i < _reader.FrameCount; i++)
+                {
+                    var frame = _reader.ReadFrame();
+                    File.WriteAllBytes(Path.Combine(path, $"fileName_{i:D3}.jpg"), frame.ToJPEG());
+                }
+                Seek(0);
+            }
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    private async void ImportFrames(object? sender, RoutedEventArgs args)
+    {
+        if (_reader == null ||
+            _filePath == null ||
+            Global.Workspace == null)
+            return;
+
+        var folder = await FileIO.TryOpenFolder("Import Frames From Folder");
+
+        if (folder == null)
+            return;
+
+        List<string> toImport = new();
+        foreach (var f in Directory.GetFiles(folder))
+        {
+            var ext = Path.GetExtension(f);
+
+            if (ext.Equals(".jpg", StringComparison.InvariantCultureIgnoreCase) ||
+                ext.Equals(".jpeg", StringComparison.InvariantCultureIgnoreCase))
+            {
+                toImport.Add(f);
+            }
+        }
+
+        if (toImport.Count == 0)
+        {
+            await MessageBox.Show("No frames found to import", "Import Video Frames", MessageBox.MessageBoxButtons.Ok);
+            return;
+        }
+
+        var fstream = new MemoryStream();
+        var mth = new MTHWriter(fstream, _reader.Width, _reader.Height, _reader.FrameRate);
+
+        _timer.Stop();
+        _reader?.Dispose();
+        _reader = null;
+
+        foreach (var f in toImport)
+            mth.WriteFrame(THP.FromJPEG(File.ReadAllBytes(f)));
+        mth.Dispose();
+
+        var file = fstream.ToArray();
+
+        frameBuffer.Clear(); // clear old frames
+        Global.Workspace.FileManager.Set(_filePath, file); // set new file
+        SetVideo(_filePath); // load new video
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    private async void ExportCurrentFrame(object? sender, RoutedEventArgs args)
+    {
+        if (_reader == null)
+            return;
+
+        var _currentFrame = _frameIndex;
+
+        if (_currentFrame == 0)
+            _currentFrame = _reader.FrameCount;
+
+        _currentFrame -= 1;
+
+        if (_currentFrame < 0)
+            _currentFrame = _reader.FrameCount - 1;
+
+        _reader.Seek(_currentFrame);
+
+        var file = await FileIO.TrySaveFile("", $"frame{_currentFrame:D3}.jpg", FileIO.FilterJpeg);
+
+        if (file != null)
+        {
+            var frame = _reader.ReadFrame();
+            File.WriteAllBytes(file, frame.ToJPEG());
+        }
     }
 }

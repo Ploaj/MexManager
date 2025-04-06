@@ -4,46 +4,98 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="MexManager.Views.MTHEditor">
-	
-	<Grid>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="*"/>
-		</Grid.ColumnDefinitions>
 
-		<Grid.RowDefinitions>
-			<RowDefinition Height="32"/>
-			<RowDefinition Height="*"/>
-			<RowDefinition Height="32"/>
-		</Grid.RowDefinitions>
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="_Export Frames"
+						Click="ExportFrames"
+						IsEnabled="{Binding IsVideoLoaded}"/>
+			<MenuItem Header="_Import Frames"
+						Click="ImportFrames"
+						IsEnabled="{Binding IsVideoLoaded}"/>
+			<MenuItem Header="_Export Current Frame"
+						Click="ExportCurrentFrame"
+						IsEnabled="{Binding IsVideoLoaded}"/>
+		</Menu>
 
-		<TextBox
-			Grid.Row="0"
-			Grid.Column="0"
-			Grid.ColumnSpan="2"
-			Height="24"
-			Name="FileTextBox"
-			Text="{Binding}"
-			TextChanged="TextBox_TextChanged"/>
+		<Grid DockPanel.Dock="Bottom">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<ProgressBar
+				Grid.Column="0"
+				Grid.Row="0"
+				Grid.ColumnSpan="3"
+				Height="32"
+				Value="{Binding Progress}"/>
+
+			<Button
+				Grid.Column="0"
+				Grid.ColumnSpan="1"
+				Grid.Row="1"
+				Height="32"
+				VerticalContentAlignment="Center"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Center"
+				Click="PreviousFrame">
+				<Button.Content>
+					<StackPanel
+						Orientation="Horizontal">
+						<Image Source="/Assets/Common/icon_dir_left.png"/>
+						<TextBlock Text="Previous Frame"/>
+					</StackPanel>
+				</Button.Content>
+			</Button>
+			<Button
+				Grid.Column="1"
+				Grid.ColumnSpan="1"
+				Grid.Row="1"
+				Height="32"
+				VerticalContentAlignment="Center"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Center"
+				Click="PlayPause">
+				<Button.Content>
+					<StackPanel
+						Orientation="Horizontal">
+						<Image Source="/Assets/Common/audio_play.png"/>
+						<TextBlock Text="Play/Pause"/>
+					</StackPanel>
+				</Button.Content>
+			</Button>
+			<Button
+				Grid.Column="2"
+				Grid.ColumnSpan="1"
+				Grid.Row="1"
+				Height="32"
+				VerticalContentAlignment="Center"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Center"
+				Click="NextFrame">
+				<Button.Content>
+					<StackPanel
+						Orientation="Horizontal">
+						<TextBlock Text="Next Frame"/>
+						<Image Source="/Assets/Common/icon_dir_right.png"/>
+					</StackPanel>
+				</Button.Content>
+			</Button>
+		</Grid>
+
 		<Image
-			Grid.Row="1"
-			Grid.Column="0"
-			Grid.ColumnSpan="2"
-			Name="PreviewImage"
+			DockPanel.Dock="Left"
+			x:Name="VideoPanel"
 			Source="/Assets/Common/audio_pause.png"/>
-		<Button
-			Grid.Row="2"
-			Grid.Column="0"
-			HorizontalAlignment="Stretch"
-			HorizontalContentAlignment="Center"
-			Content="Import from .jpg"
-			Click="ImportButton_Click"/>
-		<Button
-			Grid.Row="2"
-			Grid.Column="1"
-			HorizontalAlignment="Stretch"
-			HorizontalContentAlignment="Center"
-			Content="Export as .jpg"
-			Click="ExportButton_Click"/>
-	</Grid>
+	</DockPanel>
+
 </UserControl>

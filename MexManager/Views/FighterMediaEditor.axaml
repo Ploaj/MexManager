@@ -12,21 +12,11 @@
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
-
 		<Grid.RowDefinitions>
 			<RowDefinition Height="32"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="32"/>
 		</Grid.RowDefinitions>
-
-		<TextBox
-			Grid.Row="0"
-			Grid.Column="0"
-			Grid.ColumnSpan="2"
-			Height="24"
-			Name="FileTextBox"
-			Text="{Binding}"
-			TextChanged="TextBox_TextChanged"/>
 		<Image
 			Grid.Row="1"
 			Grid.Column="0"

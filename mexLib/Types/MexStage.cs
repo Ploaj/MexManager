@@ -68,19 +68,19 @@ namespace mexLib.Types
         [DisplayHex]
         public uint OnStageGo { get; set; }
 
-        [Category("2 - Code"), DisplayName("OnUnknown1")]
+        [Category("2 - Code"), DisplayName("OnDemoInit")]
         [DisplayHex]
         public uint OnGo { get; set; }
 
-        [Category("2 - Code"), DisplayName("OnUnknown2")]
+        [Category("2 - Code"), DisplayName("OnUnused")]
         [DisplayHex]
         public uint OnUnknown2 { get; set; }
 
-        [Category("2 - Code"), DisplayName("OnUnknown3")]
+        [Category("2 - Code"), DisplayName("OnTouchLine")]
         [DisplayHex]
         public uint OnTouchLine { get; set; }
 
-        [Category("2 - Code"), DisplayName("OnUnknown4")]
+        [Category("2 - Code"), DisplayName("OnCheckShadowRender")]
         [DisplayHex]
         public uint OnUnknown4 { get; set; }
 

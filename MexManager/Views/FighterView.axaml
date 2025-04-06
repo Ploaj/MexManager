@@ -318,32 +318,64 @@
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Media">
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*"/>
-						<ColumnDefinition Width="*"/>
-					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="*"/>
-						<RowDefinition Height="*"/>
-					</Grid.RowDefinitions>
-					<views:FighterMediaEditor
-						Grid.Column="0"
-						Grid.Row="0"
-						DataContext="{Binding SelectedFighter.Media.EndClassicFile}" />
-					<views:FighterMediaEditor
-						Grid.Column="1"
-						Grid.Row="0"
-						DataContext="{Binding SelectedFighter.Media.EndAdventureFile}" />
-					<views:FighterMediaEditor
-						Grid.Column="0"
-						Grid.Row="1"
-						DataContext="{Binding SelectedFighter.Media.EndAllStarFile}" />
-					<views:MTHEditor
-						Grid.Column="1"
-						Grid.Row="1"
-						DataContext="{Binding SelectedFighter.Media.EndMovieFile}" />
-				</Grid>
+				<TabControl>
+					<TabItem Header="Classic">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="32"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<TextBox
+								Grid.Row="0"
+								Text="{Binding SelectedFighter.Media.EndClassicFile, Mode=TwoWay}"/>
+							<views:FighterMediaEditor
+								Grid.Row="1"
+								DataContext="{Binding SelectedFighter.Media.EndClassicFile}" />
+						</Grid>
+					</TabItem>
+					<TabItem Header="Adventure">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="32"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<TextBox
+								Grid.Row="0"
+								Text="{Binding SelectedFighter.Media.EndAdventureFile, Mode=TwoWay}"/>
+							<views:FighterMediaEditor
+								Grid.Row="1"
+								DataContext="{Binding SelectedFighter.Media.EndAdventureFile}" />
+						</Grid>
+					</TabItem>
+					<TabItem Header="All Star">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="32"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<TextBox
+								Grid.Row="0"
+								Text="{Binding SelectedFighter.Media.EndAllStarFile, Mode=TwoWay}"/>
+							<views:FighterMediaEditor
+								Grid.Row="1"
+								DataContext="{Binding SelectedFighter.Media.EndAllStarFile}" />
+						</Grid>
+					</TabItem>
+					<TabItem Header="Ending Movie">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="32"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<TextBox
+								Grid.Row="0"
+								Text="{Binding SelectedFighter.Media.EndMovieFile, Mode=TwoWay}"/>
+							<views:MTHEditor
+								Grid.Row="1"
+								DataContext="{Binding SelectedFighter.Media.EndMovieFile}" />
+						</Grid>
+					</TabItem>
+				</TabControl>
 			</TabItem>
 			<TabItem Header="Code">
 				<ScrollViewer>

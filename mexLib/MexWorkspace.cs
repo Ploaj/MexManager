@@ -472,7 +472,29 @@ namespace mexLib
             sw.Stop();
 
             Debug.WriteLine("Loaded trophy data in " + sw.Elapsed.ToString());
+
+            //sw.Start();
+            //LoadResultData();
+            //sw.Stop();
+
+            //Debug.WriteLine("Loaded trophy data in " + sw.Elapsed.ToString());
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        //private string? LoadResultData()
+        //{
+        //    var rstPath = GetFilePath(@"GmRst.usd");
+        //    if (!FileManager.Exists(rstPath))
+        //        return "GmRst.usd not found";
+
+        //    HSDRawFile rstFile = new(rstPath);
+
+        //    var view = rstFile["view_table"];
+        //    var place = rstFile["placement_table"];
+
+        //    return null;
+        //}
         /// <summary>
         /// 
         /// </summary>
