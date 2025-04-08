@@ -214,7 +214,7 @@ namespace mexLib
         /// <exception cref="NotImplementedException"></exception>
         internal HSD_TOBJ ToTObj()
         {
-            return new HSD_TOBJ()
+            var tobj = new HSD_TOBJ()
             {
                 MagFilter = GXTexFilter.GX_LINEAR,
                 GXTexGenSrc = GXTexGenSrc.GX_TG_TEX0,
@@ -245,6 +245,8 @@ namespace mexLib
                     TlutData = PaletteData,
                 } : null
             };
+            tobj.Optimize();
+            return tobj;
         }
     }
 }

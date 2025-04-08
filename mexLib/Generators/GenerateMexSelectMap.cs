@@ -196,10 +196,10 @@ namespace mexLib.Generators
             List<HSD_TOBJ> names_images = new();
 
             var nullIcon = reserved.SSSNullAsset.GetTexFile(ws);
-            nullIcon ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
+            nullIcon ??= new MexImage(8, 8, GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
 
             var lockedIcon = reserved.SSSLockedNullAsset.GetTexFile(ws);
-            lockedIcon ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
+            lockedIcon ??= new MexImage(8, 8, GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
 
             icon_images.Add(nullIcon.ToTObj());
             icon_images.Add(lockedIcon.ToTObj());
@@ -281,6 +281,7 @@ namespace mexLib.Generators
                 model = HSDAccessor.DeepClone<HSD_JOBJ>(dataTable.IconDoubleModel);
                 var icon_joint = model.Child.Next;
                 model.Child = icon_joint;
+                model.Optimize();
             }
             else
             {
