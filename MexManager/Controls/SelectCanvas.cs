@@ -348,7 +348,11 @@ namespace MexManager.Controls
         {
             IconBitmapCache.Clear();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="icon"></param>
+        /// <returns></returns>
         private Bitmap? GetIconBitmap(MexIconBase icon)
         {
             if (Global.Workspace != null)

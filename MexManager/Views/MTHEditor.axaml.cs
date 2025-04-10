@@ -218,6 +218,11 @@ public partial class MTHEditor : UserControl
         var stream = Global.Workspace.FileManager.GetStream(filePath);
         _reader = new MTHReader(stream);
 
+        // clear frame buffers
+        foreach (var v in frameBuffer)
+            v.Dispose();
+        frameBuffer.Clear();
+
         // Load initial frames into the buffer
         for (int i = 0; i < Math.Min(_bufferSize, _reader.FrameCount); i++)
         {

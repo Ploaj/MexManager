@@ -98,8 +98,36 @@ namespace mexLib.Generators
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="type"></param>
+        /// <param name="framecount"></param>
+        /// <param name="startValue"></param>
+        /// <param name="endValue"></param>
         /// <returns></returns>
-        private static HSD_AnimJoint GenerateVisibilityAnimJoint(bool visible)
+        private static HSD_FOBJDesc CreateTrack(JointTrackType type, float framecount, float startValue, float endValue)
+        {
+            var track = new HSD_FOBJDesc();
+            track.SetKeys(new()
+            {
+                new ()
+                {
+                    Frame = 0,
+                    Value = startValue,
+                    InterpolationType = GXInterpolationType.HSD_A_OP_LIN
+                },
+                new ()
+                {
+                    Frame = framecount,
+                    Value = endValue,
+                    InterpolationType = GXInterpolationType.HSD_A_OP_LIN
+                }
+            }, (byte)type);
+            return track;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private static HSD_AnimJoint GenerateDecorativeAnimJoint(bool visible, MexStageSelectIcon.IconAnimationKind kind)
         {
             var visTrack = new HSD_FOBJDesc();
             visTrack.SetKeys(new()
@@ -112,23 +140,12 @@ namespace mexLib.Generators
                 }
             }, (int)JointTrackType.HSD_A_J_BRANCH);
 
-            var scaleTrack = new HSD_FOBJDesc();
-            scaleTrack.SetKeys(new()
+            switch (kind)
             {
-                new ()
-                {
-                    Frame = 0,
-                    Value = 0,
-                    InterpolationType = GXInterpolationType.HSD_A_OP_LIN
-                },
-                new ()
-                {
-                    Frame = 10,
-                    Value = 1,
-                    InterpolationType = GXInterpolationType.HSD_A_OP_LIN
-                }
-            }, (int)JointTrackType.HSD_A_J_SCAX);
-            visTrack.Add(scaleTrack);
+                case MexStageSelectIcon.IconAnimationKind.ScaleX:
+                        visTrack.Add(CreateTrack(JointTrackType.HSD_A_J_SCAX, 10, 0, 1));
+                    break;
+            }
 
             return new HSD_AnimJoint()
             {
@@ -370,7 +387,7 @@ namespace mexLib.Generators
                     int anim_index = 0;
                     foreach (var a in anim)
                     {
-                        a.AddChild(GenerateVisibilityAnimJoint(page_index == anim_index));
+                        a.AddChild(GenerateDecorativeAnimJoint(page_index == anim_index, icon.IconAnimation));
                         anim_index++;
                     }
                 }

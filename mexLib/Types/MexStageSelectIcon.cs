@@ -72,6 +72,25 @@ namespace mexLib.Types
             TlutFormat = HSDRaw.GX.GXTlutFmt.RGB5A3,
         };
 
+        public enum IconAnimationKind
+        {
+            None,
+            ScaleX,
+        }
+
+        private IconAnimationKind _iconAnimation;
+        [DisplayName("Animation")]
+        [VisibilityPropertyCondition(nameof(Status), StageIconStatus.Decoration)]
+        public IconAnimationKind IconAnimation
+        {
+            get => _iconAnimation;
+            set
+            {
+                _iconAnimation = value;
+                OnPropertyChanged();
+            }
+        }
+
         private int _group;
         [Category("0 - Stage")]
         [DisplayName("Group")]
@@ -160,6 +179,7 @@ namespace mexLib.Types
             StageIconStatus.Locked => -1,
             StageIconStatus.Unlocked => StageID,
             StageIconStatus.Hidden => -3,
+            StageIconStatus.Decoration => IconAsset.GetHashCode(),
             _ => -3
         };
 
