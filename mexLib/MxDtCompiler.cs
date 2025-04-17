@@ -232,10 +232,27 @@ namespace mexLib
             mexData.SSMTable.SSM_BufferSizes.Set(proj.SoundGroups.Count, new MEX_SSMSizeAndFlags());// blank entry at end
             mexData.SSMTable.SSM_LookupTable.Set(proj.SoundGroups.Count, new MEX_SSMLookup());// blank entry at beginning
 
+            //Dictionary<MexSoundGroupGroup, List<int>> groupSizes = new Dictionary<MexSoundGroupGroup, List<int>>();
             for (int i = 0; i < proj.SoundGroups.Count; i++)
             {
-                proj.SoundGroups[i].ToMxDt(gen, i);
+                var group = proj.SoundGroups[i].Group;
+                var size = proj.SoundGroups[i].ToMxDt(gen, i);
+
+                //if (!groupSizes.ContainsKey(group))
+                //    groupSizes.Add(group, new List<int>());
+
+                //groupSizes[group].Add(size);
             }
+
+            //int bank2Size = 
+            //    groupSizes[MexSoundGroupGroup.Menu].Max() +
+            //    groupSizes[MexSoundGroupGroup.Stage].Max() +
+            //    groupSizes[MexSoundGroupGroup.Fighter]
+            //        .OrderByDescending(x => x)
+            //        .Take(4)
+            //        .Sum();
+
+            //System.Diagnostics.Debug.WriteLine($"Bank2: {bank2Size:X8}");
 
             var ssm_runtime_length = proj.SoundGroups.Count * 4;
             HSDStruct rtTable = new (6 * 4);

@@ -129,11 +129,16 @@ namespace mexLib.Types
         /// </summary>
         /// <param name="gen"></param>
         /// <param name="index"></param>
-        public void ToMxDt(MexGenerator gen, int index)
+        public int ToMxDt(MexGenerator gen, int index)
         {
             var st = gen.Data.SSMTable;
 
-            var bufferSize = (int)gen.Workspace.GetFileSize("audio//us//" + FileName);
+            // getting the actual buffer size is "more correct"
+            using var stream = new FileStream(gen.Workspace.GetFilePath("audio//us//" + FileName), FileMode.Open);
+            stream.Seek(0x04, SeekOrigin.Begin);
+            var bufferSize = ((stream.ReadByte() & 0xFF) << 24) | ((stream.ReadByte() & 0xFF) << 16) | ((stream.ReadByte() & 0xFF) << 8) | (stream.ReadByte() & 0xFF);
+
+            //var bufferSize = (int)gen.Workspace.GetFileSize("audio//us//" + FileName);
             if (bufferSize % 0x20 != 0)
                 bufferSize += 0x20 - (bufferSize % 0x20);
 
@@ -147,6 +152,8 @@ namespace mexLib.Types
             {
                 EntireFlag = (int)GroupFlags,
             });
+
+            return bufferSize;
         }
         /// <summary>
         /// 

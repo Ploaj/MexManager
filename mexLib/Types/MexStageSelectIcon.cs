@@ -80,6 +80,7 @@ namespace mexLib.Types
 
         private IconAnimationKind _iconAnimation;
         [DisplayName("Animation")]
+        [JsonInclude]
         [VisibilityPropertyCondition(nameof(Status), StageIconStatus.Decoration)]
         public IconAnimationKind IconAnimation
         {
