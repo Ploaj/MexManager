@@ -174,6 +174,10 @@ namespace mexLib.Types
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonIgnore]
         public override int ImageKey => Status switch
         {
             StageIconStatus.Random => -2,
