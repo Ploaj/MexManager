@@ -440,40 +440,62 @@ namespace mexLib.Utilties
             using var stream = new MemoryStream();
 
             // make sure to manually set execute loops function
-            for (int i = 1; i < Script.Count; i++)
-            {
-                var scr = Script[i];
+            //for (int i = 1; i < Script.Count; i++)
+            //{
+            //    var scr = Script[i];
 
-                if (scr.SemCode == SemCode.EndLoop)
-                {
-                    // backwards search for start loop
-                    int loop_value = 0;
-                    for (int j = i - 1; j >= 0; j--)
-                    {
-                        if (Script[j].SemCode == SemCode.EndLoop)
-                        {
-                            loop_value++;
-                        }
-                        if (Script[j].SemCode == SemCode.SetLoop)
-                        {
-                            if (loop_value == 0)
-                            {
-                                scr.Value = i - j - 1;
-                                break;
-                            }
-                            else
-                            {
-                                loop_value--;
-                            }
-                        }
-                    }
-                }
-            }
+            //    if (scr.SemCode == SemCode.EndLoop)
+            //    {
+            //        // backwards search for start loop
+            //        int loop_value = 0;
+            //        for (int j = i - 1; j >= 0; j--)
+            //        {
+            //            if (Script[j].SemCode == SemCode.EndLoop)
+            //            {
+            //                loop_value++;
+            //            }
+            //            if (Script[j].SemCode == SemCode.SetLoop)
+            //            {
+            //                if (loop_value == 0)
+            //                {
+            //                    scr.Value = i - j - 1;
+            //                    break;
+            //                }
+            //                else
+            //                {
+            //                    loop_value--;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
             // write commands
             int pending_timer_value = 0;
+            int previous_loop = -1;
+            int written = 0;
             for (int i = 0; i < Script.Count; i++)
             {
+                if (Script[i].SemCode == SemCode.SetLoop)
+                {
+                    if (previous_loop != -1)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Warning: sem does not support nested loops");
+                        continue;
+                    }
+                    previous_loop = written;
+                }
+
+                if (Script[i].SemCode == SemCode.EndLoop)
+                {
+                    // no loop start found
+                    if (previous_loop == -1)
+                        continue;
+
+                    Script[i].Value = written - previous_loop;
+                    previous_loop = -1;
+                }
+
                 if (Script[i].SemCode == SemCode.Wait &&
                     i + 1 < Script.Count &&
                     Script[i + 1].CanHoldTime(Script[i].Value))
@@ -483,6 +505,7 @@ namespace mexLib.Utilties
                 else
                 {
                     pending_timer_value = Script[i].Pack(stream, pending_timer_value);
+                    written++;
                 }
             }
 
