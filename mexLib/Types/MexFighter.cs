@@ -208,7 +208,7 @@ namespace mexLib.Types
                         MatAnimSymbol = e.MaterialSymbol,
                     }).ToArray()
                 });
-                kb.CostumeRuntime._s.SetReference(internalId * 4, new HSDAccessor() { _s = new HSDStruct(Costumes.Count * 8) });
+                kb.CostumeRuntime._s.SetReference(internalId * 4, new HSDAccessor() { _s = new HSDStruct(KirbyCostumes.Count * 8) });
             }
             else
             {
