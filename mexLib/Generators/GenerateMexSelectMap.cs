@@ -25,6 +25,7 @@ namespace mexLib.Generators
             HSDRawFile file = new(path);
             ClearOldMaterialAnimations(file["MnSelectStageDataTable"].Data as SBM_SelectChrDataTable);
             file.CreateUpdateSymbol("mexMapData", GenerateMexSelect(ws, file));
+            file.TrimData(); // trim
             using MemoryStream stream = new ();
             file.Save(stream);
             ws.FileManager.Set(path, stream.ToArray());
