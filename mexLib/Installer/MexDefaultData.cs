@@ -2,7 +2,6 @@
 using HSDRaw.MEX.Stages;
 using mexLib.MexScubber;
 using mexLib.Types;
-using mexLib.Utilties;
 
 namespace mexLib.Installer
 {
@@ -17,7 +16,7 @@ namespace mexLib.Installer
             "C. Falcon",
             "DK",
             "Fox",
-            "Game and Watch",
+            "Mr. Game & Watch",
             "Kirby",
             "Bowser",
             "Link",
