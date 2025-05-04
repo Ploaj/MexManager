@@ -23,13 +23,27 @@ namespace mexLib.Generators
             if (data == Array.Empty<byte>())
                 return false;
 
-            HSDRawFile file = new(path);
-            ClearOldMaterialAnimations(file["MnSelectChrDataTable"].Data as SBM_SelectChrDataTable);
-            file.CreateUpdateSymbol("mexSelectChr", GenerateMexSelect(ws));
+            var mexSelectChr = GenerateMexSelect(ws);
 
-            using MemoryStream stream = new ();
-            file.Save(stream);
-            ws.FileManager.Set(path, stream.ToArray());
+            {
+                HSDRawFile file = new(path);
+                ClearOldMaterialAnimations(file["MnSelectChrDataTable"].Data as SBM_SelectChrDataTable);
+                file.CreateUpdateSymbol("mexSelectChr", mexSelectChr);
+
+                using MemoryStream stream = new();
+                file.Save(stream);
+                ws.FileManager.Set(path, stream.ToArray());
+            }
+
+            {
+                var path2 = ws.GetFilePath("mexSelectChr.dat");
+                HSDRawFile ex = new HSDRawFile();
+                ex.Roots.Add(new HSDRootNode() { Name = "mexSelectChr", Data = mexSelectChr });
+                using MemoryStream stream = new();
+                ex.Save(stream);
+                ws.FileManager.Set(path2, stream.ToArray());
+            }
+
             return true;
         }
         /// <summary>

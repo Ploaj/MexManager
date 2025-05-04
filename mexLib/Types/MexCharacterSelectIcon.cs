@@ -52,7 +52,7 @@ namespace mexLib.Types
             {
                 ExternalCharID = (byte)Fighter,
                 SFXID = (byte)SFXID,
-
+                StatusID = Status.UnlockedAndVisible,
                 JointID = (byte)(index + 1),
                 UnkID = (byte)(index + 1),
 
