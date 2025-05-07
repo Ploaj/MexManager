@@ -36,7 +36,16 @@ namespace mexLib.Types
         [Browsable(false)]
         public bool Enabled { get; set; } = true;
 
-        public string Name { get; set; } = "";
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                OnPropertyChanged();
+            }
+        }
+        private string _name = "";
 
         public string Creator { get; set; } = "";
 
@@ -182,6 +191,8 @@ namespace mexLib.Types
             {
                 switch (code[i])
                 {
+                    case 0x00:
+                    case 0x02:
                     case 0x04:
                         {
                             i += 8;
