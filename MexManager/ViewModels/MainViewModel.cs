@@ -19,14 +19,7 @@ public partial class MainViewModel : ViewModelBase
     public ICommand LaunchCommand { get; }
     public ICommand EditBannerCommand { get; }
     public ICommand ExportISOCommand { get; }
-
-
-    private ObservableCollection<string> _testData = [ "Hello", "World" ];
-    public ObservableCollection<string> TestData
-    {
-        get => _testData;
-        set => this.RaiseAndSetIfChanged(ref _testData, value);
-    }
+    
 
     public SoundGroupModel SoundViewModel { get; } = new SoundGroupModel();
 
@@ -313,7 +306,7 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// 
     /// </summary>
-    public static async void ExportISO_Click(object? parameter)
+    public async void ExportISO_Click(object? parameter)
     {
         if (Global.Workspace == null ||
             App.MainWindow == null)
@@ -321,9 +314,14 @@ public partial class MainViewModel : ViewModelBase
 
         var res = await MessageBox.Show("Save Changes before exporting?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
 
+        if (res == MessageBox.MessageBoxResult.Cancel)
+            return;
+
         var file = await FileIO.TrySaveFile("Export ISO", "game.iso", FileIO.FilterISO);
         if (file == null)
             return;
+
+        SelectedFighter = null;
 
         ProgressWindow progressWindow = new();
 
@@ -359,6 +357,5 @@ public partial class MainViewModel : ViewModelBase
 
         // Create and show the progress window
         await progressWindow.ShowDialog(App.MainWindow);
-
     }
 }

@@ -59,6 +59,11 @@ public partial class MTHEditor : UserControl
         DataContextChanged += (s, a) =>
         {
             Update();
+
+            if (DataContext == null)
+            {
+                SetVideo("");
+            }
         };
     }
     /// <summary>
@@ -214,6 +219,16 @@ public partial class MTHEditor : UserControl
 
         if (_reader != null)
             _reader.Dispose();
+
+        if (string.IsNullOrEmpty(filePath) ||
+            !File.Exists(filePath))
+        {
+            _reader = null;
+            frameBuffer.Clear();
+            Context.IsVideoLoaded = false;
+            _filePath = filePath;
+            return;
+        }
 
         var stream = Global.Workspace.FileManager.GetStream(filePath);
         _reader = new MTHReader(stream);

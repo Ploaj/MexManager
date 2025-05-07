@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
@@ -45,8 +44,7 @@ public partial class MessageBox : Window
         if (App.MainWindow != null)
             return Show(App.MainWindow, text, title, buttons);
 
-        var tcs = new TaskCompletionSource<MessageBoxResult>();
-        return tcs.Task;
+        return Task.FromResult(MessageBoxResult.Cancel);
     }
 
     public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons)
