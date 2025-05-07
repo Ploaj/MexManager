@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MexManager.ConfigWindow"
+             Title="Application Settings"
+             Width="500" Height="500"
+             WindowStartupLocation="CenterOwner">
+	<DockPanel>
+
+		<!-- Validate Button -->
+		<Button DockPanel.Dock="Top"
+				Content="Validate ISO"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Center"
+				Margin="10"
+				Click="ValidateISO_Click"/>
+
+		<!-- PropertyGrid -->
+		<pgc:PropertyGrid
+                          DockPanel.Dock="Top"
+						  Name="PropertyGrid"
+                          Margin="10"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+						  AllowFilter="False"
+						  AllowQuickFilter="False"
+						  />
+
+		<!-- Confirm Button -->
+		<Button DockPanel.Dock="Bottom"
+				Name="ConfirmButton"
+				Content="Save Changes"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Center"
+				Margin="10"
+				Click="ConfirmButton_Click"/>
+
+	</DockPanel>
+</UserControl>

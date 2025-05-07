@@ -79,19 +79,7 @@ public partial class MainView : UserControl
     /// </summary>
     private static async void OpenEditConfig()
     {
-        var popup = new PropertyGridPopup();
-
-        popup.SetObject("Application Settings", "Save Changes", App.Settings);
-
-        if (App.MainWindow != null)
-        {
-            await popup.ShowDialog(App.MainWindow);
-
-            if (popup.Confirmed)
-            {
-                App.Settings.Save();
-            }
-        }
+        await ConfigWindow.ShowDialog();
     }
     /// <summary>
     /// 
