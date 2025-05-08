@@ -236,7 +236,6 @@ namespace MexManager.Factories
                 return false;
 
             var control = context.CellEdit;
-            control.Tag = null;
             var propertyDescriptor = context.Property;
             var target = context.Target;
 
