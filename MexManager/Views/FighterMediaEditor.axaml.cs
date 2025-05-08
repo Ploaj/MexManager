@@ -19,10 +19,7 @@ public partial class FighterMediaEditor : UserControl
 
         DataContextChanged += (s, a) =>
         {
-            if (DataContext is string filename)
-            {
-                Update(filename);
-            }
+            Update();
         };
     }
     /// <summary>
@@ -30,22 +27,21 @@ public partial class FighterMediaEditor : UserControl
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void Update(string? filename)
+    private void Update()
     {
         if (Global.Workspace == null)
             return;
 
-        if (filename == null)
-            return;
-
-        var path = Global.Workspace.GetFilePath(filename);
-
-        if (!Global.Workspace.FileManager.Exists(path))
+        if (DataContext is not string filename ||
+            !Global.Workspace.FileManager.Exists(Global.Workspace.GetFilePath(filename)))
         {
-            PreviewImage.Source = BitmapManager.MissingImage;
+            _previewBitmap?.Dispose();
+            _previewBitmap = null;
+            PreviewImage.Source = null;
             return;
         }
 
+        var path = Global.Workspace.GetFilePath(filename);
         var thp = new THP(Global.Workspace.FileManager.Get(path));
         UpdatePreview(thp);
     }

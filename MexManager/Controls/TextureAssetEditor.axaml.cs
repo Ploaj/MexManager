@@ -50,6 +50,10 @@ public partial class TextureAssetEditor : UserControl
         {
             TexturePreview.Source = tex.ToBitmap();
         }
+        else
+        {
+            TexturePreview.Source = null;
+        }
     }
     /// <summary>
     /// 

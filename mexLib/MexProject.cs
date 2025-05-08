@@ -400,8 +400,13 @@ namespace mexLib
             // Load main code
             MexJsonSerializer.LoadData<MexCode>(ws.GetDataPath("mex.json"), data => proj.MainCode = data);
 
-            // Load codes
-            MexJsonSerializer.LoadData<ObservableCollection<MexCode>>(ws.GetDataPath("codes.json"), data => proj.Codes = data);
+            // load codes
+            if (ws.FileManager.Exists(ws.GetFilePath("codes.ini")))
+            {
+                var ini = CodeLoader.FromINI(ws.FileManager.Get(ws.GetFilePath("codes.ini")));
+                foreach (var code in ini)
+                    proj.Codes.Add(code);
+            }
 
             // Load character select
             MexJsonSerializer.LoadData<MexCharacterSelect>(ws.GetDataPath("css.json"), data => proj.CharacterSelect = data);
@@ -499,7 +504,7 @@ namespace mexLib
             File.WriteAllText(workspace.GetDataPath("mex.json"), MexJsonSerializer.Serialize(MainCode));
 
             // save codes
-            File.WriteAllText(workspace.GetDataPath("codes.json"), MexJsonSerializer.Serialize(Codes));
+            File.WriteAllBytes(workspace.GetFilePath("codes.ini"), CodeLoader.ToINI(Codes));
 
             // save character select
             File.WriteAllText(workspace.GetDataPath("css.json"), MexJsonSerializer.Serialize(CharacterSelect));

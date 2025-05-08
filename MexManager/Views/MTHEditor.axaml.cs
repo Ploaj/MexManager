@@ -111,7 +111,7 @@ public partial class MTHEditor : UserControl
 
         if (!Global.Workspace.FileManager.Exists(path))
         {
-            VideoPanel.Source = BitmapManager.MissingImage;
+            VideoPanel.Source = null;
             return;
         }
 
