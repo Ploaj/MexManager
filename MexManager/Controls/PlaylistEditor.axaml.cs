@@ -8,8 +8,8 @@ namespace MexManager.Controls;
 
 public partial class PlaylistEditor : UserControl
 {
-    public static readonly DirectProperty<PlaylistEditor, MexPlaylist> PlaylistProperty =
-        AvaloniaProperty.RegisterDirect<PlaylistEditor, MexPlaylist>(nameof(Playlist), o => o.Playlist, (o, v) => o.Playlist = v);
+    public static readonly DirectProperty<PlaylistEditor, MexPlaylist?> PlaylistProperty =
+        AvaloniaProperty.RegisterDirect<PlaylistEditor, MexPlaylist?>(nameof(Playlist), o => o.Playlist, (o, v) => o.Playlist = v);
 
     private MexPlaylist? _playlist;
     public MexPlaylist? Playlist

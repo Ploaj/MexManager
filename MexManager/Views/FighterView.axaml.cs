@@ -72,13 +72,16 @@ public partial class FighterView : UserControl
         {
             using var stream = new FileStream(file, FileMode.Open);
 
-            var res = MexFighter.FromPackage(Global.Workspace, stream, out MexFighter fighter);
+            var res = MexFighter.FromPackage(Global.Workspace, stream, out MexFighter? fighter);
 
             if (res == null)
             {
-                var addfighter = Global.Workspace?.Project.AddNewFighter(fighter);
-                FighterList.RefreshList();
-                FighterList.SelectedItem = fighter;
+                if (fighter != null)
+                {
+                    var addfighter = Global.Workspace?.Project.AddNewFighter(fighter);
+                    FighterList.RefreshList();
+                    FighterList.SelectedItem = fighter;
+                }
             }
             else
             {

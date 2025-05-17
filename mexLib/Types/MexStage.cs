@@ -8,8 +8,6 @@ using HSDRaw.Common;
 using mexLib.Installer;
 using mexLib.Utilties;
 using System.IO.Compression;
-using SixLabors.ImageSharp.Drawing.Processing;
-using System;
 
 namespace mexLib.Types
 {

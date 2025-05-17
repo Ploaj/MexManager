@@ -53,19 +53,25 @@ public partial class MessageBox : Window
         {
             Title = title
         };
-        msgbox.FindControl<TextBlock>("Text").Text = text;
+
+        var textblock = msgbox.FindControl<TextBlock>("Text");
+        if (textblock != null)
+            textblock.Text = text;
         var buttonPanel = msgbox.FindControl<StackPanel>("Buttons");
 
         void AddButton(string caption, MessageBoxResult r, bool def = false)
         {
-            var btn = new Button { Content = caption };
-            btn.Click += (_, __) => {
-                msgbox.res = r;
-                msgbox.Close();
-            };
-            buttonPanel.Children.Add(btn);
-            if (def)
-                msgbox.res = MessageBoxResult.Cancel;
+            if (buttonPanel != null)
+            {
+                var btn = new Button { Content = caption };
+                btn.Click += (_, __) => {
+                    msgbox.res = r;
+                    msgbox.Close();
+                };
+                buttonPanel.Children.Add(btn);
+                if (def)
+                    msgbox.res = MessageBoxResult.Cancel;
+            }
         }
 
         if (buttons == MessageBoxButtons.Ok || buttons == MessageBoxButtons.OkCancel)

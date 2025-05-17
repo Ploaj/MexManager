@@ -108,9 +108,9 @@ namespace mexLib
                 ProjectFilePath = projectFile,
             };
 
-            // TODO: copy files from source
+            // copy files from source
             //File.Copy(Path.Combine(mexPath, "files/MxDt.dat"), workspace.GetFilePath("MxDt.dat"), overwrite: true);
-            //File.Copy(Path.Combine(mexPath, "files/GmRst.usd"), workspace.GetFilePath("GmRst.usd"), overwrite:true);
+            //File.Copy(Path.Combine(mexPath, "files/GmRst.usd"), workspace.GetFilePath("GmRst.usd"), overwrite: true);
             //File.Copy(Path.Combine(mexPath, "files/MnSlChr.usd"), workspace.GetFilePath("MnSlChr.usd"), overwrite: true);
             //File.Copy(Path.Combine(mexPath, "files/MnSlMap.usd"), workspace.GetFilePath("MnSlMap.usd"), overwrite: true);
             //File.Copy(Path.Combine(mexPath, "files/SmSt.dat"), workspace.GetFilePath("SmSt.dat"), overwrite: true);

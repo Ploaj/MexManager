@@ -47,6 +47,7 @@ namespace MexManager
             settings.Save();
             return new ApplicationSettings();
         }
+
         /// <summary>
         /// 
         /// </summary>

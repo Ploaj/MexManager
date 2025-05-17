@@ -52,7 +52,7 @@ namespace mexLib.Utilties
         {
             using StreamReader reader = new (stream);
             
-            string line;
+            string? line;
             while ((line = reader.ReadLine()) != null)
             {
                 string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);

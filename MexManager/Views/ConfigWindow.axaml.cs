@@ -16,8 +16,6 @@ public partial class ConfigWindow : Window
     /// </summary>
     private PropertyGrid? PropertyGridItem => this.FindControl<PropertyGrid>("PropertyGrid");
 
-    private Button? FindConfirmButton => this.FindControl<Button>("ConfirmButton");
-
     /// <summary>
     /// 
     /// </summary>
@@ -42,8 +40,7 @@ public partial class ConfigWindow : Window
     /// <param name="e"></param>
     private void ValidateISO_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        MeleeISOValidator val = new ();
-        var res = val.IsValid(App.Settings.MeleePath);
+        var res = MeleeISOValidator.IsValid(App.Settings.MeleePath);
         if (res == null || res.IsSuccess())
         {
             MessageBox.Show("ISO is valid", "ISO Validation", MessageBox.MessageBoxButtons.Ok);

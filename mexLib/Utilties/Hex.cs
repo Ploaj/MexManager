@@ -51,7 +51,7 @@ namespace mexLib.Utilties
         /// <returns></returns>
         public static bool TrimHexLine(string line, out string hexline)
         {
-            hexline = null;
+            hexline = "";
 
             // check for empty line
             if (string.IsNullOrEmpty(line))

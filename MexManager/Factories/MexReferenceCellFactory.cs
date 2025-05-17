@@ -78,7 +78,8 @@ namespace MexManager.Factories
             {
                 if (link.Link == MexLinkType.Fighter)
                 {
-                    propertyDescriptor.SetValue(target, MexFighterIDConverter.ToExternalID(control.SelectedIndex, Global.Workspace.Project.Fighters.Count));
+                    if (Global.Workspace != null)
+                        propertyDescriptor.SetValue(target, MexFighterIDConverter.ToExternalID(control.SelectedIndex, Global.Workspace.Project.Fighters.Count));
                 }
                 else
                 if (link.Link == MexLinkType.Stage)

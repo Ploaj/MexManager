@@ -37,7 +37,7 @@ namespace mexLib.Generators
 
             {
                 var path2 = ws.GetFilePath("mexSelectChr.dat");
-                HSDRawFile ex = new HSDRawFile();
+                HSDRawFile ex = new();
                 ex.Roots.Add(new HSDRootNode() { Name = "mexSelectChr", Data = mexSelectChr });
                 using MemoryStream stream = new();
                 ex.Save(stream);

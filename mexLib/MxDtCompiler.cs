@@ -286,7 +286,18 @@ namespace mexLib
             mexData.MetaData._s.SetByte(1, workspace.VersionMinor);
 
             // get stage selects icons
-            var icons = proj.StageSelects.SelectMany(e => e.StageIcons.Select(e => e.ToIcon())).Where(e => e != null).ToList();
+            List<MEX_StageIconData> icons = new ();
+            foreach (var ss in proj.StageSelects)
+            {
+                foreach (var si in ss.StageIcons)
+                {
+                    var ico = si.ToIcon();
+                    if (ico != null)
+                    {
+                        icons.Add(ico);
+                    }
+                }
+            }
 
             // generate random bitfield
             var bitfield = new byte[icons.Count / 8 + 1];
@@ -309,7 +320,7 @@ namespace mexLib
                 },
                 SSSIconData = new HSDArrayAccessor<MEX_StageIconData>()
                 {
-                    Array = icons.ToArray(),
+                    Array = icons.ToArray()
                 },
                 SSSBitField = new SSSBitfield() { Array = bitfield }
             };

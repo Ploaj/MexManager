@@ -9,7 +9,7 @@ namespace mexLib.Utilties
 {
     public class ImageConverter
     {
-        private static IResampler Resampler = KnownResamplers.Bicubic;
+        private static readonly IResampler Resampler = KnownResamplers.Bicubic;
 
         /// <summary>
         /// 

@@ -11,7 +11,7 @@ namespace MexManager
 {
     public static class Global
     {
-        public static string[] LaunchArgs { get; set; }
+        public static string[] LaunchArgs { get; set; } = [];
 
         public static MexWorkspace? Workspace { get; internal set; }
 

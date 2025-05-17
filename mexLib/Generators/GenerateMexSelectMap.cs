@@ -46,7 +46,7 @@ namespace mexLib.Generators
         /// 
         /// </summary>
         /// <returns></returns>
-        private static HSD_JOBJ GenerateJoint(MexWorkspace workspace, IEnumerable<MexStageSelectIcon> icons)
+        private static HSD_JOBJ GenerateJoint(IEnumerable<MexStageSelectIcon> icons)
         {
             HSD_JOBJ jobj = new()
             {
@@ -206,7 +206,7 @@ namespace mexLib.Generators
             var icons = ws.Project.StageSelects.SelectMany(e => e.StageIcons).Where(e => e.Status != MexStageSelectIcon.StageIconStatus.Decoration);
 
             // merge jobj and generate multiple anims
-            var jobj = GenerateJoint(ws, icons);
+            var jobj = GenerateJoint(icons);
             var anim = GenerateAnimJoint(ws);
 
             // generate mat anim joint
@@ -321,39 +321,38 @@ namespace mexLib.Generators
                     var height = icon.BaseHeight * icon.ScaleY;
 
                     // create joint
-                    var joint = new HSD_JOBJ()
+                    HSD_JOBJ joint = new()
                     {
                         TX = icon.X,
                         TY = icon.Y,
                         SX = 1,
                         SY = 1,
                         SZ = 1,
-                    };
-
-                    // create dobj
-                    joint.Dobj = new HSD_DOBJ()
-                    {
-                        Mobj = new HSD_MOBJ()
+                        // create dobj
+                        Dobj = new HSD_DOBJ()
                         {
-                            RenderFlags = RENDER_MODE.CONSTANT | RENDER_MODE.XLU | RENDER_MODE.TEX0 | RENDER_MODE.NO_ZUPDATE,
-                            Material = new HSD_Material()
+                            Mobj = new HSD_MOBJ()
                             {
-                                DIF_A = 255,
-                                DIF_R = 255,
-                                DIF_G = 255,
-                                DIF_B = 255,
-                                SPC_A = 255,
-                                SPC_R = 255,
-                                SPC_G = 255,
-                                SPC_B = 255,
-                                AMB_A = 255,
-                                AMB_R = 128,
-                                AMB_G = 128,
-                                AMB_B = 128,
-                                Alpha = 1,
-                                Shininess = 50,
-                            },
-                            Textures = icon.IconAsset.GetTexFile(ws)?.ToTObj()
+                                RenderFlags = RENDER_MODE.CONSTANT | RENDER_MODE.XLU | RENDER_MODE.TEX0 | RENDER_MODE.NO_ZUPDATE,
+                                Material = new HSD_Material()
+                                {
+                                    DIF_A = 255,
+                                    DIF_R = 255,
+                                    DIF_G = 255,
+                                    DIF_B = 255,
+                                    SPC_A = 255,
+                                    SPC_R = 255,
+                                    SPC_G = 255,
+                                    SPC_B = 255,
+                                    AMB_A = 255,
+                                    AMB_R = 128,
+                                    AMB_G = 128,
+                                    AMB_B = 128,
+                                    Alpha = 1,
+                                    Shininess = 50,
+                                },
+                                Textures = icon.IconAsset.GetTexFile(ws)?.ToTObj()
+                            }
                         }
                     };
 

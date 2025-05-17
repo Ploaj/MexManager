@@ -20,40 +20,40 @@ namespace mexLib
 
         public MexCostumeVisibilityFile()
         {
-            PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(JointSymbol))
-                    SetCostumeVisibilityFromSymbols();
-            };
+            //PropertyChanged += (s, e) =>
+            //{
+            //    if (e.PropertyName == nameof(JointSymbol))
+            //        SetCostumeVisibilityFromSymbols();
+            //};
         }
 
         /// <summary>
         /// 
         /// </summary>
-        private void SetCostumeVisibilityFromSymbols()
-        {
-            //switch (JointSymbol)
-            //{
-            //    case "PlyPeach5KYe_Share_joint": VisibilityIndex = 1; return;
+        //private void SetCostumeVisibilityFromSymbols()
+        //{
+        //    //switch (JointSymbol)
+        //    //{
+        //    //    case "PlyPeach5KYe_Share_joint": VisibilityIndex = 1; return;
 
-            //    case "PlyPikachu5KNr_Share_joint": VisibilityIndex = 0; return;
-            //    case "PlyPikachu5KRd_Share_joint": VisibilityIndex = 1; return;
-            //    case "PlyPikachu5KBu_Share_joint": VisibilityIndex = 2; return;
-            //    case "PlyPikachu5KGr_Share_joint": VisibilityIndex = 3; return;
+        //    //    case "PlyPikachu5KNr_Share_joint": VisibilityIndex = 0; return;
+        //    //    case "PlyPikachu5KRd_Share_joint": VisibilityIndex = 1; return;
+        //    //    case "PlyPikachu5KBu_Share_joint": VisibilityIndex = 2; return;
+        //    //    case "PlyPikachu5KGr_Share_joint": VisibilityIndex = 3; return;
 
-            //    case "PlyPichu5KNr_Share_joint": VisibilityIndex = 0; return;
-            //    case "PlyPichu5KRd_Share_joint": VisibilityIndex = 1; return;
-            //    case "PlyPichu5KBu_Share_joint": VisibilityIndex = 2; return;
-            //    case "PlyPichu5KGr_Share_joint": VisibilityIndex = 3; return;
-            //}
+        //    //    case "PlyPichu5KNr_Share_joint": VisibilityIndex = 0; return;
+        //    //    case "PlyPichu5KRd_Share_joint": VisibilityIndex = 1; return;
+        //    //    case "PlyPichu5KBu_Share_joint": VisibilityIndex = 2; return;
+        //    //    case "PlyPichu5KGr_Share_joint": VisibilityIndex = 3; return;
+        //    //}
 
-            //if (JointSymbol.Contains("PlyPeach5K") ||
-            //    JointSymbol.Contains("PlyPikachu5K") ||
-            //    JointSymbol.Contains("PlyPichu5K"))
-            //{
-            //    VisibilityIndex = 0;
-            //}
-        }
+        //    //if (JointSymbol.Contains("PlyPeach5K") ||
+        //    //    JointSymbol.Contains("PlyPikachu5K") ||
+        //    //    JointSymbol.Contains("PlyPichu5K"))
+        //    //{
+        //    //    VisibilityIndex = 0;
+        //    //}
+        //}
     }
 
     public class MexCostumeFile : MexReactiveObject
