@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.ReactiveUI;
+using System;
+using System.IO;
 
 namespace MexManager.Desktop;
 

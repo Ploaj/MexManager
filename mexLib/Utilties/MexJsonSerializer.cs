@@ -49,7 +49,7 @@ namespace mexLib.Utilties
         /// <param name="assign"></param>
         public static void LoadData<T>(string filePath, Action<T> assign)
         {
-            var data = JsonSerializer.Deserialize<T>(File.ReadAllText(filePath), _serializeoptions);
+            T? data = JsonSerializer.Deserialize<T>(File.ReadAllText(filePath), _serializeoptions);
 
             if (data != null)
             {

@@ -1,9 +1,9 @@
-﻿using HSDRaw.Melee.Ty;
+﻿using HSDRaw;
 using HSDRaw.Melee;
-using HSDRaw;
-using static mexLib.Types.MexTrophy;
-using mexLib.HsdObjects;
+using HSDRaw.Melee.Ty;
 using HSDRaw.MEX;
+using mexLib.HsdObjects;
+using static mexLib.Types.MexTrophy;
 
 namespace mexLib.Installer
 {
@@ -15,33 +15,33 @@ namespace mexLib.Installer
         /// <param name="workspace"></param>
         public static void LoadFromFileSystem(MexWorkspace workspace)
         {
-            var project = workspace.Project;
+            MexProject project = workspace.Project;
             project.Trophies.Clear();
 
             // load files
-            var tyDataFile = new HSDRawFile(workspace.FileManager.Get(workspace.GetFilePath("TyDataf.dat")));
-            var tyDataInfoFile = new HSDRawFile(workspace.FileManager.Get(workspace.GetFilePath("TyDatai.usd")));
-            var sdToyFile = new HSDRawFile(workspace.FileManager.Get(workspace.GetFilePath("SdToy.usd")));
-            var sdToyExpFile = new HSDRawFile(workspace.FileManager.Get(workspace.GetFilePath("SdToyExp.usd")));
+            HSDRawFile tyDataFile = new(workspace.FileManager.Get(workspace.GetFilePath("TyDataf.dat")));
+            HSDRawFile tyDataInfoFile = new(workspace.FileManager.Get(workspace.GetFilePath("TyDatai.usd")));
+            HSDRawFile sdToyFile = new(workspace.FileManager.Get(workspace.GetFilePath("SdToy.usd")));
+            HSDRawFile sdToyExpFile = new(workspace.FileManager.Get(workspace.GetFilePath("SdToyExp.usd")));
 
             // load symbols
-            var sdToy = sdToyFile["SIS_ToyData_E"].Data as SBM_SISData;
-            var sdToyExp = sdToyExpFile["SIS_ToyDataExp_E"].Data as SBM_SISData;
-            var tyExpDifferentTbl = tyDataInfoFile["tyExpDifferentTbl"].Data as HSDShortArray;
-            var tyModelFileTbl = tyDataFile["tyModelFileTbl"].Data as HSDArrayAccessor<SBM_TyModelFileEntry>;
-            var tyModelFileUsTbl = tyDataFile["tyModelFileUsTbl"].Data as HSDArrayAccessor<SBM_TyModelFileEntry>;
+            SBM_SISData? sdToy = sdToyFile["SIS_ToyData_E"].Data as SBM_SISData;
+            SBM_SISData? sdToyExp = sdToyExpFile["SIS_ToyDataExp_E"].Data as SBM_SISData;
+            HSDShortArray? tyExpDifferentTbl = tyDataInfoFile["tyExpDifferentTbl"].Data as HSDShortArray;
+            HSDArrayAccessor<SBM_TyModelFileEntry>? tyModelFileTbl = tyDataFile["tyModelFileTbl"].Data as HSDArrayAccessor<SBM_TyModelFileEntry>;
+            HSDArrayAccessor<SBM_TyModelFileEntry>? tyModelFileUsTbl = tyDataFile["tyModelFileUsTbl"].Data as HSDArrayAccessor<SBM_TyModelFileEntry>;
 
-            var tyDisplayModelTbl = tyDataInfoFile["tyDisplayModelTbl"].Data as HSDArrayAccessor<SBM_tyDisplayModelEntry>;
-            var tyDisplayModelUsTbl = tyDataInfoFile["tyDisplayModelUsTbl"].Data as HSDArrayAccessor<SBM_tyDisplayModelEntry>;
-            var tyInitModelTbl = tyDataInfoFile["tyInitModelTbl"].Data as HSDArrayAccessor<SBM_tyInitModelEntry>;
-            var tyInitModelDTbl = tyDataInfoFile["tyInitModelDTbl"].Data as HSDArrayAccessor<SBM_tyInitModelEntry>;
+            HSDArrayAccessor<SBM_tyDisplayModelEntry>? tyDisplayModelTbl = tyDataInfoFile["tyDisplayModelTbl"].Data as HSDArrayAccessor<SBM_tyDisplayModelEntry>;
+            HSDArrayAccessor<SBM_tyDisplayModelEntry>? tyDisplayModelUsTbl = tyDataInfoFile["tyDisplayModelUsTbl"].Data as HSDArrayAccessor<SBM_tyDisplayModelEntry>;
+            HSDArrayAccessor<SBM_tyInitModelEntry>? tyInitModelTbl = tyDataInfoFile["tyInitModelTbl"].Data as HSDArrayAccessor<SBM_tyInitModelEntry>;
+            HSDArrayAccessor<SBM_tyInitModelEntry>? tyInitModelDTbl = tyDataInfoFile["tyInitModelDTbl"].Data as HSDArrayAccessor<SBM_tyInitModelEntry>;
 
-            var tyModelSortTbl = tyDataInfoFile["tyModelSortTbl"].Data as HSDArrayAccessor<SBM_tyModelSortEntry>;
-            var tyNoGetUsTbl = tyDataInfoFile["tyNoGetUsTbl"].Data as HSDShortArray;
+            HSDArrayAccessor<SBM_tyModelSortEntry>? tyModelSortTbl = tyDataInfoFile["tyModelSortTbl"].Data as HSDArrayAccessor<SBM_tyModelSortEntry>;
+            HSDShortArray? tyNoGetUsTbl = tyDataInfoFile["tyNoGetUsTbl"].Data as HSDShortArray;
 
             // check if symbols found
-            if (sdToy == null || 
-                sdToyExp == null || 
+            if (sdToy == null ||
+                sdToyExp == null ||
                 tyExpDifferentTbl == null ||
                 tyModelFileTbl == null ||
                 tyModelFileUsTbl == null ||
@@ -60,11 +60,11 @@ namespace mexLib.Installer
             int nameOffAlt = 297;
 
             // extract and update with data from mxdt
-            var mxdtPath = workspace.GetFilePath("MxDt.dat");
+            string mxdtPath = workspace.GetFilePath("MxDt.dat");
             if (File.Exists(mxdtPath))
             {
                 HSDRawFile mxdtFile = new(mxdtPath);
-                var mxdt = mxdtFile["mexData"].Data as MEX_Data;
+                MEX_Data? mxdt = mxdtFile["mexData"].Data as MEX_Data;
                 if (mxdt != null)
                 {
                     trophyCount = mxdt.MetaData.TrophyCount;
@@ -80,16 +80,16 @@ namespace mexLib.Installer
             int src2OffAlt = 0x380;
 
             // check for offset node
-            var offset = sdToyExpFile["offset"]?.Data;
+            HSDAccessor? offset = sdToyExpFile["offset"]?.Data;
             if (offset != null)
             {
-                SISOffset off = new () { _s = offset._s };
+                SISOffset off = new() { _s = offset._s };
                 descOff = off.Desciption;
                 descOffAlt = off.DesciptionAlt;
                 src1Off = off.Src1;
                 src1OffAlt = off.Src1Alt;
                 src2Off = off.Src2;
-                src2OffAlt= off.Src2Alt;
+                src2OffAlt = off.Src2Alt;
             }
 
             // 0x04E 0x174 - special
@@ -101,15 +101,15 @@ namespace mexLib.Installer
             // 0x24E 0x380 - source2
 
             // init trophy data
-            for (int i =0; i < trophyCount; i++)
+            for (int i = 0; i < trophyCount; i++)
             {
                 project.Trophies.Add(new Types.MexTrophy());
             }
 
             // grab data
-            var expDif = tyExpDifferentTbl.Array.ToList();
-            var fileNameArray = tyModelFileTbl.Array;
-            var fileNameArrayUS = tyModelFileUsTbl.Array;
+            List<short> expDif = tyExpDifferentTbl.Array.ToList();
+            SBM_TyModelFileEntry[] fileNameArray = tyModelFileTbl.Array;
+            SBM_TyModelFileEntry[] fileNameArrayUS = tyModelFileUsTbl.Array;
 
             // load file names
             LoadTrophyFileNames(project, fileNameArray, false);
@@ -128,7 +128,7 @@ namespace mexLib.Installer
                 };
                 project.Trophies[i].Data.Text.DecodeAllStrings();
 
-                var alti = expDif.IndexOf((short)i);
+                int alti = expDif.IndexOf((short)i);
                 if (alti != -1 && i != 0)
                 {
                     project.Trophies[i].HasUSData = true;
@@ -153,7 +153,7 @@ namespace mexLib.Installer
             LoadDisplayModelInfo(project, tyInitModelDTbl.Array, true);
 
             // load model sort params
-            foreach (var i in tyModelSortTbl.Array)
+            foreach (SBM_tyModelSortEntry i in tyModelSortTbl.Array)
             {
                 if (i.TrophyID == -1)
                     break;
@@ -162,7 +162,7 @@ namespace mexLib.Installer
             }
 
             // load no get info
-            foreach (var i in tyNoGetUsTbl.Array)
+            foreach (short i in tyNoGetUsTbl.Array)
                 if (i >= 0 && i < project.Trophies.Count)
                     project.Trophies[i].JapanOnly = true;
         }
@@ -175,14 +175,14 @@ namespace mexLib.Installer
         /// <param name="displayModel"></param>
         private static void LoadDisplayModelInfo(MexProject project, SBM_tyInitModelEntry[] displayModel, bool is_us)
         {
-            foreach (var i in displayModel)
+            foreach (SBM_tyInitModelEntry i in displayModel)
             {
                 if (i.TrophyID == -1)
                     break;
 
                 if (i.TrophyID >= 0 && i.TrophyID < project.Trophies.Count)
                 {
-                    var param = new TrophyParams()
+                    TrophyParams param = new()
                     {
                         TrophyType = (TrophyType)i.TrophyType,
                         OffsetX = i.OffsetX,
@@ -209,14 +209,14 @@ namespace mexLib.Installer
         /// <param name="displayModel"></param>
         private static void Load2DDisplayModelInfo(MexProject project, SBM_tyDisplayModelEntry[] displayModel, bool is_us)
         {
-            foreach (var m in displayModel)
+            foreach (SBM_tyDisplayModelEntry m in displayModel)
             {
                 if (m.TrophyID == -1)
                     break;
 
                 if (m.TrophyID >= 0 && m.TrophyID < project.Trophies.Count)
                 {
-                    var param2d = new Trophy2DParams()
+                    Trophy2DParams param2d = new()
                     {
                         FileIndex = m.Trophy2DFileIndex,
                         ImageIndex = m.Trophy2DImageIndex,
@@ -239,7 +239,7 @@ namespace mexLib.Installer
         /// <param name="files"></param>
         private static void LoadTrophyFileNames(MexProject project, SBM_TyModelFileEntry[] files, bool is_us)
         {
-            foreach (var v in files)
+            foreach (SBM_TyModelFileEntry v in files)
             {
                 if (v.TrophyIndex < 0)
                     continue;
@@ -247,7 +247,7 @@ namespace mexLib.Installer
                 if (v.TrophyIndex >= project.Trophies.Count)
                     continue;
 
-                var file = new TrophyFileEntry()
+                TrophyFileEntry file = new()
                 {
                     File = v.FileName.TrimEnd('\0'),
                     Symbol = v.SymbolName.TrimEnd('\0'),

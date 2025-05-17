@@ -1,11 +1,7 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using mexLib.Types;
-using System;
 using System.Linq;
-using System.Reactive.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MexManager.Controls;
 
@@ -59,12 +55,12 @@ public partial class CodeBox : UserControl
             }
             else if (Global.Workspace != null)
             {
-                foreach (var c in Global.Workspace.Project.GetAllCodes())
+                foreach (MexCode c in Global.Workspace.Project.GetAllCodes())
                 {
                     if (c == code)
                         continue;
 
-                    var res = code.TryCheckConflicts(c);
+                    MexCodeCompileError? res = code.TryCheckConflicts(c);
                     if (res != null)
                     {
                         SetError(res.ToString());
@@ -82,7 +78,7 @@ public partial class CodeBox : UserControl
         if (MainTextBox.Text == null)
             return;
 
-        var lines = MainTextBox.Text.Split('\n');
+        string[] lines = MainTextBox.Text.Split('\n');
         LineNumbers.Text = string.Join("\n", Enumerable.Range(0, lines.Length));
     }
 }

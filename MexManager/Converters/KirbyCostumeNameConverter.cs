@@ -23,8 +23,8 @@ namespace MexManager.Converters
             if (values[1] is not ListBox list)
                 return null;
 
-            var index = list.Items.IndexOf(values[0]);
-            var kirby = Global.Workspace.Project.Fighters[4].Costumes[index].Name;
+            int index = list.Items.IndexOf(values[0]);
+            string kirby = Global.Workspace.Project.Fighters[4].Costumes[index].Name;
 
             return $"{index:D3}. {kirby}";
         }

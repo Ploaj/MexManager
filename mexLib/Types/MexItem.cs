@@ -96,9 +96,9 @@ namespace mexLib.Types
         {
             States.Clear();
             if (item.ItemStates != null)
-                foreach (var i in item.ItemStates)
+                foreach (MEX_ItemStateInfo? i in item.ItemStates)
                 {
-                    var s = new MexItemState();
+                    MexItemState s = new();
                     s.FromMexItemState(i);
                     States.Add(s);
                 }

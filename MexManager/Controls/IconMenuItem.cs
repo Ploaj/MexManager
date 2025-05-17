@@ -1,18 +1,9 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Layout;
-using Avalonia;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Avalonia.Markup.Xaml.MarkupExtensions;
-using Avalonia.Markup.Xaml.MarkupExtensions.CompiledBindings;
-using Avalonia.Data;
-using Avalonia.Data.Converters;
-using Avalonia.Media;
-using Avalonia.Platform;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using System;
 
 namespace MexManager.Controls
 {
@@ -29,7 +20,7 @@ namespace MexManager.Controls
         public string IconSource
         {
             get => GetValue(IconSourceProperty);
-            set 
+            set
             {
                 SetValue(IconSourceProperty, value);
                 image.Source = new Bitmap(AssetLoader.Open(new Uri(value)));
@@ -53,7 +44,8 @@ namespace MexManager.Controls
 
         public IconMenuItem()
         {
-            var stackPanel = new StackPanel { 
+            StackPanel stackPanel = new()
+            {
                 Orientation = Orientation.Vertical,
             };
 

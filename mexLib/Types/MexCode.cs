@@ -101,7 +101,7 @@ namespace mexLib.Types
         /// <returns></returns>
         public IEnumerable<uint> UsedAddresses()
         {
-            var code = GetCompiled();
+            byte[]? code = GetCompiled();
 
             if (code == null)
                 yield break;
@@ -141,15 +141,15 @@ namespace mexLib.Types
             if (_source == null)
                 return new MexCodeCompileError(-1, "Error: No Source");
 
-            var lines = _source.Split(
+            string[] lines = _source.Split(
                 new string[] { "\r\n", "\r", "\n" },
                 StringSplitOptions.None
                 );
 
-            List<byte> data = new ();
+            List<byte> data = new();
 
             int line_index = 0;
-            foreach (var l in lines)
+            foreach (string l in lines)
             {
                 if (string.IsNullOrEmpty(l))
                 {
@@ -205,7 +205,7 @@ namespace mexLib.Types
                             if (count == 1)
                             {
                                 // compress this code
-                                var comp = new byte[]
+                                byte[] comp = new byte[]
                                     {
                                         0x04, code[i + 1], code[i + 2], code[i + 3],
                                         code[i + 8], code[i + 9], code[i + 10], code[i + 11]
@@ -235,10 +235,10 @@ namespace mexLib.Types
             if (CompileError != null)
                 return CompileError;
 
-            var add1 = UsedAddresses();
-            var add2 = code.UsedAddresses();
+            IEnumerable<uint> add1 = UsedAddresses();
+            IEnumerable<uint> add2 = code.UsedAddresses();
 
-            foreach (var i in add1.Intersect(add2))
+            foreach (uint i in add1.Intersect(add2))
             {
                 CompileError = new MexCodeCompileError(-1, $"Conflicting address {i:X8} with \"{code.Name}\"");
                 return CompileError;

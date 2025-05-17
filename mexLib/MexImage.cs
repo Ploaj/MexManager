@@ -3,7 +3,6 @@ using HSDRaw.Common;
 using HSDRaw.GX;
 using HSDRaw.Tools;
 using mexLib.Utilties;
-using System.Security.Cryptography;
 
 namespace mexLib
 {
@@ -36,7 +35,7 @@ namespace mexLib
             Format = fmt;
             TlutFormat = tlutFmt;
 
-            var image = GXImageConverter.EncodeImage(rgba, width, height, fmt, tlutFmt, out byte[] pal);
+            byte[] image = GXImageConverter.EncodeImage(rgba, width, height, fmt, tlutFmt, out byte[] pal);
 
             ImageData = image;
             if (GXImageConverter.IsPalettedFormat(fmt))
@@ -106,8 +105,8 @@ namespace mexLib
         /// <returns></returns>
         public static MexImage FromByteArray(byte[] data)
         {
-            var tex = new MexImage(8, 8, GXTexFmt.I8, GXTlutFmt.IA8);
-            using MemoryStream s = new (data);
+            MexImage tex = new(8, 8, GXTexFmt.I8, GXTlutFmt.IA8);
+            using MemoryStream s = new(data);
             tex.Open(s);
             return tex;
         }
@@ -140,9 +139,9 @@ namespace mexLib
             Height = BitConverter.ToInt32(stream.ReadBytes(4), 0);
 
             BitConverter.ToInt32(stream.ReadBytes(4), 0);
-            var img_length = BitConverter.ToUInt32(stream.ReadBytes(4), 0);
+            uint img_length = BitConverter.ToUInt32(stream.ReadBytes(4), 0);
             BitConverter.ToInt32(stream.ReadBytes(4), 0);
-            var pal_length = BitConverter.ToUInt32(stream.ReadBytes(4), 0);
+            uint pal_length = BitConverter.ToUInt32(stream.ReadBytes(4), 0);
 
             ImageData = stream.ReadBytes(img_length);
             PaletteData = stream.ReadBytes(pal_length);
@@ -155,7 +154,7 @@ namespace mexLib
         /// <param name="compress"></param>
         public void Save(string filePath, bool compress = false)
         {
-            using FileStream stream = new (filePath, FileMode.Create);
+            using FileStream stream = new(filePath, FileMode.Create);
             Write(stream, compress);
         }
         /// <summary>
@@ -203,8 +202,8 @@ namespace mexLib
         /// <returns></returns>
         internal byte[] ToPNG()
         {
-            return ImageConverter.ConvertBgraToPng(GXImageConverter.DecodeTPL(Format, Width, Height, ImageData, TlutFormat, PaletteData.Length / 2, PaletteData), 
-                Width, 
+            return ImageConverter.ConvertBgraToPng(GXImageConverter.DecodeTPL(Format, Width, Height, ImageData, TlutFormat, PaletteData.Length / 2, PaletteData),
+                Width,
                 Height);
         }
         /// <summary>
@@ -214,7 +213,7 @@ namespace mexLib
         /// <exception cref="NotImplementedException"></exception>
         internal HSD_TOBJ ToTObj()
         {
-            var tobj = new HSD_TOBJ()
+            HSD_TOBJ tobj = new()
             {
                 MagFilter = GXTexFilter.GX_LINEAR,
                 GXTexGenSrc = GXTexGenSrc.GX_TG_TEX0,

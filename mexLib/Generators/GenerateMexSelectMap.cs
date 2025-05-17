@@ -1,11 +1,11 @@
-﻿using HSDRaw.Common.Animation;
+﻿using HSDRaw;
 using HSDRaw.Common;
+using HSDRaw.Common.Animation;
+using HSDRaw.GX;
 using HSDRaw.Melee.Mn;
-using HSDRaw;
 using HSDRaw.MEX.Stages;
 using HSDRaw.Tools;
 using mexLib.Types;
-using HSDRaw.GX;
 
 namespace mexLib.Generators
 {
@@ -16,8 +16,8 @@ namespace mexLib.Generators
         /// </summary>
         public static bool Compile(MexWorkspace ws)
         {
-            var path = ws.GetFilePath("MnSlMap.usd");
-            var data = ws.FileManager.Get(path);
+            string path = ws.GetFilePath("MnSlMap.usd");
+            byte[] data = ws.FileManager.Get(path);
 
             if (data == Array.Empty<byte>())
                 return false;
@@ -26,7 +26,7 @@ namespace mexLib.Generators
             ClearOldMaterialAnimations(file["MnSelectStageDataTable"].Data as SBM_SelectChrDataTable);
             file.CreateUpdateSymbol("mexMapData", GenerateMexSelect(ws, file));
             file.TrimData(); // trim
-            using MemoryStream stream = new ();
+            using MemoryStream stream = new();
             file.Save(stream);
             ws.FileManager.Set(path, stream.ToArray());
 
@@ -56,9 +56,9 @@ namespace mexLib.Generators
                 SZ = 1,
             };
 
-            foreach (var icon in icons)
+            foreach (MexStageSelectIcon icon in icons)
             {
-                var j = icon.ToJoint();
+                HSD_JOBJ j = icon.ToJoint();
                 if (icon.StageID == 0 && icon.Status != Types.MexStageSelectIcon.StageIconStatus.Locked)
                 {
                     j.SX = 1;
@@ -76,9 +76,9 @@ namespace mexLib.Generators
         /// <returns></returns>
         private static HSD_AnimJoint GenerateDummyAnimJoint()
         {
-            var dummyKeys = new HSD_FOBJDesc();
+            HSD_FOBJDesc dummyKeys = new();
 
-            dummyKeys.SetKeys(new ()
+            dummyKeys.SetKeys(new()
             {
                 new ()
                 {
@@ -106,7 +106,7 @@ namespace mexLib.Generators
         /// <returns></returns>
         private static HSD_FOBJDesc CreateTrack(JointTrackType type, float framecount, float startValue, float endValue)
         {
-            var track = new HSD_FOBJDesc();
+            HSD_FOBJDesc track = new();
             track.SetKeys(new()
             {
                 new ()
@@ -130,7 +130,7 @@ namespace mexLib.Generators
         /// <returns></returns>
         private static HSD_AnimJoint GenerateDecorativeAnimJoint(bool visible, MexStageSelectIcon.IconAnimationKind kind)
         {
-            var visTrack = new HSD_FOBJDesc();
+            HSD_FOBJDesc visTrack = new();
             visTrack.SetKeys(new()
             {
                 new ()
@@ -144,7 +144,7 @@ namespace mexLib.Generators
             switch (kind)
             {
                 case MexStageSelectIcon.IconAnimationKind.ScaleX:
-                        visTrack.Add(CreateTrack(JointTrackType.HSD_A_J_SCAX, 10, 0, 1));
+                    visTrack.Add(CreateTrack(JointTrackType.HSD_A_J_SCAX, 10, 0, 1));
                     break;
             }
 
@@ -163,21 +163,21 @@ namespace mexLib.Generators
         /// <returns></returns>
         private static List<HSD_AnimJoint> GenerateAnimJoint(MexWorkspace workspace)
         {
-            var anims = new List<HSD_AnimJoint>();
+            List<HSD_AnimJoint> anims = new();
             int total_count = workspace.Project.StageSelects.Sum(e => e.StageIcons.Count(e => e.Status != MexStageSelectIcon.StageIconStatus.Decoration));
             int offset = 0;
 
             // process all stage pages
-            foreach (var ss in workspace.Project.StageSelects)
+            foreach (MexStageSelect ss in workspace.Project.StageSelects)
             {
-                HSD_AnimJoint root = new ();
+                HSD_AnimJoint root = new();
 
                 // add dummies before
                 for (int i = 0; i < offset; i++)
                     root.AddChild(GenerateDummyAnimJoint());
 
                 // add this page's icon animation
-                var icons = ss.StageIcons.Where(e => e.Status != MexStageSelectIcon.StageIconStatus.Decoration);
+                IEnumerable<MexStageSelectIcon> icons = ss.StageIcons.Where(e => e.Status != MexStageSelectIcon.StageIconStatus.Decoration);
                 HSD_AnimJoint anim = ss.Template.GenerateJointAnim(icons);
                 root.AddChild(anim.Child);
                 offset += icons.Count();
@@ -198,32 +198,32 @@ namespace mexLib.Generators
         /// <returns></returns>
         private static MEX_mexMapData GenerateMexSelect(MexWorkspace ws, HSDRawFile file)
         {
-            var dataTable = file["MnSelectStageDataTable"].Data as SBM_MnSelectStageDataTable;
+            SBM_MnSelectStageDataTable? dataTable = file["MnSelectStageDataTable"].Data as SBM_MnSelectStageDataTable;
 
-            var project = ws.Project;
-            var reserved = project.ReservedAssets;
+            MexProject project = ws.Project;
+            MexReservedAssets reserved = project.ReservedAssets;
 
-            var icons = ws.Project.StageSelects.SelectMany(e => e.StageIcons).Where(e => e.Status != MexStageSelectIcon.StageIconStatus.Decoration);
+            IEnumerable<MexStageSelectIcon> icons = ws.Project.StageSelects.SelectMany(e => e.StageIcons).Where(e => e.Status != MexStageSelectIcon.StageIconStatus.Decoration);
 
             // merge jobj and generate multiple anims
-            var jobj = GenerateJoint(icons);
-            var anim = GenerateAnimJoint(ws);
+            HSD_JOBJ jobj = GenerateJoint(icons);
+            List<HSD_AnimJoint> anim = GenerateAnimJoint(ws);
 
             // generate mat anim joint
             List<HSD_TOBJ> icon_images = new();
             List<HSD_TOBJ> names_images = new();
 
-            var nullIcon = reserved.SSSNullAsset.GetTexFile(ws);
+            MexImage? nullIcon = reserved.SSSNullAsset.GetTexFile(ws);
             nullIcon ??= new MexImage(8, 8, GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
 
-            var lockedIcon = reserved.SSSLockedNullAsset.GetTexFile(ws);
+            MexImage? lockedIcon = reserved.SSSLockedNullAsset.GetTexFile(ws);
             lockedIcon ??= new MexImage(8, 8, GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
 
             icon_images.Add(nullIcon.ToTObj());
             icon_images.Add(lockedIcon.ToTObj());
 
-            var keysBanner = new List<FOBJKey>();
-            var keysIcon = new List<FOBJKey>();
+            List<FOBJKey> keysBanner = new();
+            List<FOBJKey> keysIcon = new();
             int index = 0;
             keysIcon.Add(new FOBJKey()
             {
@@ -237,12 +237,12 @@ namespace mexLib.Generators
                 Value = 1,
                 InterpolationType = GXInterpolationType.HSD_A_OP_CON,
             });
-            foreach (var ss in icons)
+            foreach (MexStageSelectIcon? ss in icons)
             {
                 // check for random
                 if (ss.Status == MexStageSelectIcon.StageIconStatus.Random)
                 {
-                    var randomBanner = reserved.SSSRandomBannerAsset.GetTexFile(ws);
+                    MexImage? randomBanner = reserved.SSSRandomBannerAsset.GetTexFile(ws);
                     //randomBanner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
                     if (randomBanner != null)
                     {
@@ -257,15 +257,15 @@ namespace mexLib.Generators
                 }
                 else
                 {
-                    var external_id = ss.StageID;
-                    var internal_id = MexStageIDConverter.ToInternalID(external_id);
+                    int external_id = ss.StageID;
+                    int internal_id = MexStageIDConverter.ToInternalID(external_id);
 
-                    var stage = ws.Project.Stages[internal_id];
+                    MexStage stage = ws.Project.Stages[internal_id];
 
-                    var icon = stage.Assets.IconAsset.GetTexFile(ws);
+                    MexImage? icon = stage.Assets.IconAsset.GetTexFile(ws);
                     //icon ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.CI8, HSDRaw.GX.GXTlutFmt.RGB565);
 
-                    var banner = stage.Assets.BannerAsset.GetTexFile(ws);
+                    MexImage? banner = stage.Assets.BannerAsset.GetTexFile(ws);
                     //banner ??= new MexImage(8, 8, HSDRaw.GX.GXTexFmt.I4, HSDRaw.GX.GXTlutFmt.RGB565);
 
                     if (icon != null)
@@ -297,7 +297,7 @@ namespace mexLib.Generators
             if (dataTable != null)
             {
                 model = HSDAccessor.DeepClone<HSD_JOBJ>(dataTable.IconDoubleModel);
-                var icon_joint = model.Child.Next;
+                HSD_JOBJ icon_joint = model.Child.Next;
                 model.Child = icon_joint;
                 model.Optimize();
             }
@@ -310,15 +310,15 @@ namespace mexLib.Generators
 
             // generate decoration objects
             int page_index = 0;
-            foreach (var page in ws.Project.StageSelects)
+            foreach (MexStageSelect page in ws.Project.StageSelects)
             {
-                foreach (var icon in page.StageIcons)
+                foreach (MexStageSelectIcon icon in page.StageIcons)
                 {
                     if (icon.Status != MexStageSelectIcon.StageIconStatus.Decoration)
                         continue;
 
-                    var width = icon.BaseWidth * icon.ScaleX;
-                    var height = icon.BaseHeight * icon.ScaleY;
+                    float width = icon.BaseWidth * icon.ScaleX;
+                    float height = icon.BaseHeight * icon.ScaleY;
 
                     // create joint
                     HSD_JOBJ joint = new()
@@ -359,12 +359,12 @@ namespace mexLib.Generators
                     // pobj only has pos
                     POBJ_Generator gen = new();
 
-                    var v1 = new GX_Vertex() { POS = new GXVector3(-width, -height, 0), TEX0 = new GXVector2(0, 1) };
-                    var v2 = new GX_Vertex() { POS = new GXVector3(width, -height, 0), TEX0 = new GXVector2(1, 1) };
-                    var v3 = new GX_Vertex() { POS = new GXVector3(width, height, 0), TEX0 = new GXVector2(1, 0) };
-                    var v4 = new GX_Vertex() { POS = new GXVector3(-width, height, 0), TEX0 = new GXVector2(0, 0) };
+                    GX_Vertex v1 = new() { POS = new GXVector3(-width, -height, 0), TEX0 = new GXVector2(0, 1) };
+                    GX_Vertex v2 = new() { POS = new GXVector3(width, -height, 0), TEX0 = new GXVector2(1, 1) };
+                    GX_Vertex v3 = new() { POS = new GXVector3(width, height, 0), TEX0 = new GXVector2(1, 0) };
+                    GX_Vertex v4 = new() { POS = new GXVector3(-width, height, 0), TEX0 = new GXVector2(0, 0) };
 
-                    var verts = new List<GX_Vertex>()
+                    List<GX_Vertex> verts = new()
                     {
                         v3, v2, v1,
                         v1, v4, v3,
@@ -385,7 +385,7 @@ namespace mexLib.Generators
                     jobj.AddChild(joint);
 
                     int anim_index = 0;
-                    foreach (var a in anim)
+                    foreach (HSD_AnimJoint a in anim)
                     {
                         a.AddChild(GenerateDecorativeAnimJoint(page_index == anim_index, icon.IconAnimation));
                         anim_index++;
@@ -396,7 +396,7 @@ namespace mexLib.Generators
             jobj.UpdateFlags();
 
             // generate structure
-            var mexMapData =  new MEX_mexMapData()
+            MEX_mexMapData mexMapData = new()
             {
                 IconModel = model,
                 IconAnimJoint = new HSD_AnimJoint()

@@ -1,10 +1,9 @@
-﻿using mexLib;
-using System;
-using Avalonia.Data.Converters;
-using System.Globalization;
-using MexManager.Tools;
-using System.IO;
+﻿using Avalonia.Data.Converters;
+using mexLib;
 using mexLib.Types;
+using MexManager.Tools;
+using System;
+using System.Globalization;
 
 namespace MexManager.Converters
 {
@@ -15,7 +14,7 @@ namespace MexManager.Converters
             if (value is MexFighter item &&
                 Global.Workspace != null)
             {
-                var index = Global.Workspace.Project.Fighters.IndexOf(item);
+                int index = Global.Workspace.Project.Fighters.IndexOf(item);
                 if (index >= 0x21 - 6 && index < Global.Workspace.Project.Fighters.Count - 6)
                 {
                     return BitmapManager.MexFighterImage;
@@ -44,7 +43,7 @@ namespace MexManager.Converters
             {
                 if (item.Costumes.Count > 0)
                 {
-                    var icon = item.Costumes[0].IconAsset.GetSourceImage(Global.Workspace);
+                    MexImage? icon = item.Costumes[0].IconAsset.GetSourceImage(Global.Workspace);
                     if (icon != null)
                     {
                         return icon.ToBitmap();

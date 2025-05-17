@@ -12,7 +12,7 @@ namespace MexManager.Extensions
         public static void RefreshList(this ListBox list, int selected_index = -1)
         {
             // refresh items so that indices update
-            var items = list.ItemsSource;
+            System.Collections.IEnumerable? items = list.ItemsSource;
             list.ItemsSource = null;
             list.ItemsSource = items;
 

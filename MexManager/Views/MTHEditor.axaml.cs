@@ -1,15 +1,15 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using MeleeMedia.Video;
+using mexLib;
 using MexManager.Tools;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using mexLib;
-using Avalonia;
 
 namespace MexManager.Views;
 public class VideoPlayerContext : MexReactiveObject
@@ -41,7 +41,7 @@ public partial class MTHEditor : UserControl
 
     private string? _filePath;
 
-    private Bitmap? _previewBitmap;
+    private readonly Bitmap? _previewBitmap;
 
     /// <summary>
     /// 
@@ -107,7 +107,7 @@ public partial class MTHEditor : UserControl
         if (DataContext is not string text)
             return;
 
-        var path = Global.Workspace.GetFilePath(text);
+        string path = Global.Workspace.GetFilePath(text);
 
         if (!Global.Workspace.FileManager.Exists(path))
         {
@@ -129,7 +129,7 @@ public partial class MTHEditor : UserControl
         if (frameBuffer.Count > 0)
         {
             // Dispose of the previous frame if necessary
-            var oldFrame = VideoPanel.Source as Bitmap;
+            Bitmap? oldFrame = VideoPanel.Source as Bitmap;
             oldFrame?.Dispose();
 
             VideoPanel.Source = frameBuffer.Dequeue();
@@ -155,8 +155,8 @@ public partial class MTHEditor : UserControl
         for (int i = 0; i < _bufferSize - frameBuffer.Count; i++)
         {
             // Calculate the next frame to load
-            using var ms = new MemoryStream(_reader.ReadFrame().ToJPEG());
-            var bitmap = new Bitmap(ms);
+            using MemoryStream ms = new(_reader.ReadFrame().ToJPEG());
+            Bitmap bitmap = new(ms);
 
             // Lock to prevent issues when updating the buffer
             lock (frameBuffer)
@@ -200,7 +200,7 @@ public partial class MTHEditor : UserControl
         _reader.Seek(frame);
         for (int i = 0; i < Math.Min(_bufferSize, _reader.FrameCount); i++)
         {
-            using var ms = new MemoryStream(_reader.ReadFrame().ToJPEG());
+            using MemoryStream ms = new(_reader.ReadFrame().ToJPEG());
             frameBuffer.Enqueue(new Bitmap(ms));
         }
 
@@ -230,18 +230,18 @@ public partial class MTHEditor : UserControl
             return;
         }
 
-        var stream = Global.Workspace.FileManager.GetStream(filePath);
+        Stream? stream = Global.Workspace.FileManager.GetStream(filePath);
         _reader = new MTHReader(stream);
 
         // clear frame buffers
-        foreach (var v in frameBuffer)
+        foreach (Bitmap v in frameBuffer)
             v.Dispose();
         frameBuffer.Clear();
 
         // Load initial frames into the buffer
         for (int i = 0; i < Math.Min(_bufferSize, _reader.FrameCount); i++)
         {
-            using var ms = new MemoryStream(_reader.ReadFrame().ToJPEG());
+            using MemoryStream ms = new(_reader.ReadFrame().ToJPEG());
             frameBuffer.Enqueue(new Bitmap(ms));
         }
 
@@ -283,19 +283,19 @@ public partial class MTHEditor : UserControl
         if (_reader == null)
             return;
 
-        var file = await FileIO.TrySaveFile("", "", FileIO.FilterJpeg);
+        string? file = await FileIO.TrySaveFile("", "", FileIO.FilterJpeg);
 
         if (file != null)
         {
-            var path = Path.GetDirectoryName(file);
-            var fileName = Path.GetFileName(file);
+            string? path = Path.GetDirectoryName(file);
+            string fileName = Path.GetFileName(file);
 
             if (path != null && fileName != null)
             {
                 _reader.Seek(0);
                 for (int i = 0; i < _reader.FrameCount; i++)
                 {
-                    var frame = _reader.ReadFrame();
+                    THP frame = _reader.ReadFrame();
                     File.WriteAllBytes(Path.Combine(path, $"fileName_{i:D3}.jpg"), frame.ToJPEG());
                 }
                 Seek(0);
@@ -314,15 +314,15 @@ public partial class MTHEditor : UserControl
             Global.Workspace == null)
             return;
 
-        var folder = await FileIO.TryOpenFolder("Import Frames From Folder");
+        string? folder = await FileIO.TryOpenFolder("Import Frames From Folder");
 
         if (folder == null)
             return;
 
         List<string> toImport = new();
-        foreach (var f in Directory.GetFiles(folder))
+        foreach (string f in Directory.GetFiles(folder))
         {
-            var ext = Path.GetExtension(f);
+            string ext = Path.GetExtension(f);
 
             if (ext.Equals(".jpg", StringComparison.InvariantCultureIgnoreCase) ||
                 ext.Equals(".jpeg", StringComparison.InvariantCultureIgnoreCase))
@@ -337,18 +337,18 @@ public partial class MTHEditor : UserControl
             return;
         }
 
-        var fstream = new MemoryStream();
-        var mth = new MTHWriter(fstream, _reader.Width, _reader.Height, _reader.FrameRate);
+        MemoryStream fstream = new();
+        MTHWriter mth = new(fstream, _reader.Width, _reader.Height, _reader.FrameRate);
 
         _timer.Stop();
         _reader?.Dispose();
         _reader = null;
 
-        foreach (var f in toImport)
+        foreach (string f in toImport)
             mth.WriteFrame(THP.FromJPEG(File.ReadAllBytes(f)));
         mth.Dispose();
 
-        var file = fstream.ToArray();
+        byte[] file = fstream.ToArray();
 
         frameBuffer.Clear(); // clear old frames
         Global.Workspace.FileManager.Set(_filePath, file); // set new file
@@ -364,7 +364,7 @@ public partial class MTHEditor : UserControl
         if (_reader == null)
             return;
 
-        var _currentFrame = _frameIndex;
+        int _currentFrame = _frameIndex;
 
         if (_currentFrame == 0)
             _currentFrame = _reader.FrameCount;
@@ -376,11 +376,11 @@ public partial class MTHEditor : UserControl
 
         _reader.Seek(_currentFrame);
 
-        var file = await FileIO.TrySaveFile("", $"frame{_currentFrame:D3}.jpg", FileIO.FilterJpeg);
+        string? file = await FileIO.TrySaveFile("", $"frame{_currentFrame:D3}.jpg", FileIO.FilterJpeg);
 
         if (file != null)
         {
-            var frame = _reader.ReadFrame();
+            THP frame = _reader.ReadFrame();
             File.WriteAllBytes(file, frame.ToJPEG());
         }
     }

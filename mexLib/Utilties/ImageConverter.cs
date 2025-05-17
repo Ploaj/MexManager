@@ -1,8 +1,8 @@
 ﻿using HSDRaw.GX;
-using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 namespace mexLib.Utilties
@@ -19,8 +19,8 @@ namespace mexLib.Utilties
         /// <param name="height"></param>
         public static MexImage Resize(MexImage tex, int width, int height)
         {
-            using var img = Image.Load(tex.ToPNG());
-            using var stream = new MemoryStream();
+            using Image img = Image.Load(tex.ToPNG());
+            using MemoryStream stream = new();
             img.Mutate(x => x.Resize(width, height, Resampler));
             img.SaveAsPng(stream);
             stream.Position = 0;
@@ -93,7 +93,7 @@ namespace mexLib.Utilties
         public static MexImage FromPNG(Stream stream, GXTexFmt fmt, GXTlutFmt tlutFmt)
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(stream);
-            var bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
+            byte[] bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
             ProcessIA(ref bgra, fmt);
             return new MexImage(bgra, w, h, fmt, tlutFmt);
         }
@@ -109,7 +109,7 @@ namespace mexLib.Utilties
             using Image<Rgba32> image = Image.Load<Rgba32>(stream);
             if (image.Width > width || image.Height > height)
                 ResizeImage(image, width, height);
-            var bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
+            byte[] bgra = GetBgraByteArrayFromPng(image, out int w, out int h);
             ProcessIA(ref bgra, fmt);
             return new MexImage(bgra, w, h, fmt, tlutFmt);
         }
@@ -126,7 +126,7 @@ namespace mexLib.Utilties
             using Image<Bgra32> image = Image.LoadPixelData<Bgra32>(bgraPixels, width, height);
 
             // Save the image as a PNG into a MemoryStream
-            using MemoryStream ms = new ();
+            using MemoryStream ms = new();
             image.Save(ms, new PngEncoder());
 
             // Return the byte array of the PNG image

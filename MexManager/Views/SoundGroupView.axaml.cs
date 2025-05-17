@@ -1,17 +1,17 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using MeleeMedia.Audio;
+using mexLib;
 using mexLib.Types;
+using mexLib.Utilties;
+using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
-using System.IO;
-using MexManager.Extensions;
-using System.Linq;
-using Avalonia.Platform.Storage;
 using PropertyModels.ComponentModel;
 using System.ComponentModel;
-using mexLib;
-using mexLib.Utilties;
+using System.IO;
+using System.Linq;
 
 namespace MexManager.Views;
 
@@ -32,7 +32,7 @@ public partial class SoundGroupView : UserControl
     private void ListBox_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
     {
         if (DataContext is SoundGroupModel model &&
-            model.SelectedSound is MexSound sound && 
+            model.SelectedSound is MexSound sound &&
             sound.DSP != null)
         {
             Global.PlaySound(sound.DSP);
@@ -50,11 +50,11 @@ public partial class SoundGroupView : UserControl
             model.SelectedSoundGroup is MexSoundGroup group &&
             group.Sounds != null)
         {
-            var soundId = script.GetFirstSoundID();
-            if (soundId >= 0 && 
+            int soundId = script.GetFirstSoundID();
+            if (soundId >= 0 &&
                 soundId < group.Sounds.Count)
             {
-                var sound = group.Sounds[soundId];
+                MexSound sound = group.Sounds[soundId];
                 if (sound.DSP != null)
                     Global.PlaySound(sound.DSP);
             }
@@ -84,12 +84,12 @@ public partial class SoundGroupView : UserControl
         if (DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup != null)
         {
-            var file = await FileIO.TryOpenFile("Import Sound", "", FileIO.FilterMusic);
+            string? file = await FileIO.TryOpenFile("Import Sound", "", FileIO.FilterMusic);
 
             if (file == null)
                 return;
 
-            var dsp = new DSP();
+            DSP dsp = new();
             if (dsp.FromFile(file))
             {
                 model.SelectedSoundGroup.Sounds.Add(new MexSound()
@@ -115,7 +115,7 @@ public partial class SoundGroupView : UserControl
             model.SelectedSound is MexSound sound &&
             sound.DSP != null)
         {
-            var file = await FileIO.TrySaveFile("Export Sound", sound.Name + ".wav", FileIO.FilterWav);
+            string? file = await FileIO.TrySaveFile("Export Sound", sound.Name + ".wav", FileIO.FilterWav);
 
             if (file != null)
             {
@@ -137,7 +137,7 @@ public partial class SoundGroupView : UserControl
             Global.StopMusic();
 
             // create editor popup
-            var popup = new AudioLoopEditor();
+            AudioLoopEditor popup = new();
             popup.SetAudio(sound.DSP);
             if (App.MainWindow != null)
             {
@@ -145,7 +145,7 @@ public partial class SoundGroupView : UserControl
 
                 if (popup.Result == AudioLoopEditor.AudioEditorResult.SaveChanges)
                 {
-                    var newdsp = popup.ApplyChanges();
+                    DSP? newdsp = popup.ApplyChanges();
 
                     if (newdsp != null)
                     {
@@ -163,16 +163,16 @@ public partial class SoundGroupView : UserControl
     private async void RemoveSound_Click(object? sender, RoutedEventArgs e)
     {
         if (DataContext is SoundGroupModel model &&
-            model.SelectedSound is MexSound sound && 
+            model.SelectedSound is MexSound sound &&
             model.SelectedSoundGroup is MexSoundGroup group &&
             group.Scripts != null)
         {
-            var check = await MessageBox.Show($"Are you sure you want\nto remove \"{sound.Name}\"?", "Remove Sound", MessageBox.MessageBoxButtons.YesNoCancel);
+            MessageBox.MessageBoxResult check = await MessageBox.Show($"Are you sure you want\nto remove \"{sound.Name}\"?", "Remove Sound", MessageBox.MessageBoxButtons.YesNoCancel);
 
             if (check != MessageBox.MessageBoxResult.Yes)
                 return;
 
-            var index = group.Sounds.IndexOf(sound);
+            int index = group.Sounds.IndexOf(sound);
 
             if (index == -1)
                 return;
@@ -181,13 +181,13 @@ public partial class SoundGroupView : UserControl
             group.Sounds.RemoveAt(index);
 
             // adjust scripts
-            foreach (var script in group.Scripts)
+            foreach (SemScript script in group.Scripts)
             {
                 script.RemoveSoundID(index);
             }
 
             // re select index
-            var source = SoundList.ItemsSource;
+            System.Collections.IEnumerable source = SoundList.ItemsSource;
             SoundList.ItemsSource = null;
             SoundList.ItemsSource = source;
             if (index >= 0 && index < group.Sounds.Count)
@@ -208,7 +208,7 @@ public partial class SoundGroupView : UserControl
             model.SelectedSoundGroup is MexSoundGroup group &&
             group.Scripts != null)
         {
-            var newScript = new SemScript()
+            SemScript newScript = new()
             {
                 Name = "SFX_Untitled",
                 Script =
@@ -233,15 +233,15 @@ public partial class SoundGroupView : UserControl
     {
         if (DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup is MexSoundGroup group &&
-            group.Scripts != null && 
+            group.Scripts != null &&
             model.SelectedScript is SemScript script)
         {
-            var check = await MessageBox.Show($"Are you sure you want\nto remove \"{script.Name}\"?", "Remove Script", MessageBox.MessageBoxButtons.YesNoCancel);
+            MessageBox.MessageBoxResult check = await MessageBox.Show($"Are you sure you want\nto remove \"{script.Name}\"?", "Remove Script", MessageBox.MessageBoxButtons.YesNoCancel);
 
             if (check != MessageBox.MessageBoxResult.Yes)
                 return;
 
-            var index = group.Scripts.IndexOf(script);
+            int index = group.Scripts.IndexOf(script);
 
             if (index == -1)
                 return;
@@ -265,7 +265,7 @@ public partial class SoundGroupView : UserControl
             group.Scripts != null &&
             model.SelectedScript is SemScript script)
         {
-            var index = group.Scripts.IndexOf(script);
+            int index = group.Scripts.IndexOf(script);
 
             group.Scripts.Insert(index + 1, new SemScript(script));
 
@@ -322,7 +322,7 @@ public partial class SoundGroupView : UserControl
             DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup is MexSoundGroup group)
         {
-            var file = await FileIO.TryOpenFile("Import SSM", "",
+            string? file = await FileIO.TryOpenFile("Import SSM", "",
             [
                 new FilePickerFileType("SSM")
                 {
@@ -365,7 +365,7 @@ public partial class SoundGroupView : UserControl
             DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup is MexSoundGroup group)
         {
-            var file = await FileIO.TrySaveFile("Export SSM", group.FileName,
+            string? file = await FileIO.TrySaveFile("Export SSM", group.FileName,
             [
                 new FilePickerFileType("SSM")
                 {
@@ -376,7 +376,7 @@ public partial class SoundGroupView : UserControl
             if (file == null)
                 return;
 
-            var ssm = new SSM()
+            SSM ssm = new()
             {
                 Name = group.Name,
                 Sounds = group.Sounds.Select(e => e.DSP).ToArray(),
@@ -400,7 +400,7 @@ public partial class SoundGroupView : UserControl
         [Category("Options")]
         public string Name
         {
-            get => _name; 
+            get => _name;
             set
             {
                 _name = value;
@@ -425,10 +425,10 @@ public partial class SoundGroupView : UserControl
                 return null;
 
             // get unique path
-            var uniquePath = Global.Workspace.FileManager.GetUniqueFilePath(Global.Workspace.GetFilePath($"audio\\us\\{File}"));
+            string uniquePath = Global.Workspace.FileManager.GetUniqueFilePath(Global.Workspace.GetFilePath($"audio\\us\\{File}"));
 
             // generate group
-            var group = new MexSoundGroup()
+            MexSoundGroup group = new()
             {
                 Name = Name,
                 FileName = Path.GetFileName(uniquePath),
@@ -475,8 +475,8 @@ public partial class SoundGroupView : UserControl
     {
         if (Global.Workspace != null)
         {
-            var popup = new PropertyGridPopup();
-            var options = new AddGroupOptions();
+            PropertyGridPopup popup = new();
+            AddGroupOptions options = new();
 
             popup.SetObject("Create SoundBank", "Confirm", options);
 
@@ -486,7 +486,7 @@ public partial class SoundGroupView : UserControl
 
                 if (popup.Confirmed)
                 {
-                    var group = options.CreateSoundGroup();
+                    MexSoundGroup? group = options.CreateSoundGroup();
 
                     if (group != null)
                         Global.Workspace.Project.AddSoundGroup(group);
@@ -522,10 +522,10 @@ public partial class SoundGroupView : UserControl
                 return null;
 
             // get unique path
-            var uniquePath = Global.Workspace.FileManager.GetUniqueFilePath(Global.Workspace.GetFilePath($"audio\\us\\{File}"));
+            string uniquePath = Global.Workspace.FileManager.GetUniqueFilePath(Global.Workspace.GetFilePath($"audio\\us\\{File}"));
 
             // generate group
-            var group = new MexSoundGroup()
+            MexSoundGroup group = new()
             {
                 Name = Name,
                 FileName = Path.GetFileName(uniquePath),
@@ -551,8 +551,8 @@ public partial class SoundGroupView : UserControl
         if (Global.Workspace != null &&
             GroupList.SelectedItem is MexSoundGroup source)
         {
-            var popup = new PropertyGridPopup();
-            var options = new CopyGroupOptions()
+            PropertyGridPopup popup = new();
+            CopyGroupOptions options = new()
             {
                 Name = source.Name + "_copy",
             };
@@ -564,7 +564,7 @@ public partial class SoundGroupView : UserControl
 
                 if (popup.Confirmed)
                 {
-                    var group = options.CreateSoundGroup(source);
+                    MexSoundGroup? group = options.CreateSoundGroup(source);
 
                     if (group != null)
                         Global.Workspace.Project.AddSoundGroup(group);
@@ -594,7 +594,7 @@ public partial class SoundGroupView : UserControl
                 return;
             }
 
-            var res =
+            MessageBox.MessageBoxResult res =
                 await MessageBox.Show(
                     $"Are you sure you want to\nremove \"{group.Name}\"?",
                     "Remove Sound Group",
@@ -627,13 +627,13 @@ public partial class SoundGroupView : UserControl
     {
         if (Global.Workspace != null)
         {
-            var file = await FileIO.TryOpenFile("Import Sound Group", "", FileIO.FilterZip);
+            string? file = await FileIO.TryOpenFile("Import Sound Group", "", FileIO.FilterZip);
 
             if (file == null)
                 return;
 
-            using var fs = new FileStream(file, FileMode.Open);
-            var res = MexSoundGroup.FromPackage(Global.Workspace, fs, out MexSoundGroup? group);
+            using FileStream fs = new(file, FileMode.Open);
+            mexLib.Installer.MexInstallerError? res = MexSoundGroup.FromPackage(Global.Workspace, fs, out MexSoundGroup? group);
             if (res == null)
             {
                 if (group != null)
@@ -659,12 +659,12 @@ public partial class SoundGroupView : UserControl
             DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup is MexSoundGroup group)
         {
-            var file = await FileIO.TrySaveFile("Export Sound Group", group.Name, FileIO.FilterZip);
+            string? file = await FileIO.TrySaveFile("Export Sound Group", group.Name, FileIO.FilterZip);
 
             if (file == null)
                 return;
 
-            using var fs = new FileStream(file, FileMode.Create);
+            using FileStream fs = new(file, FileMode.Create);
             MexSoundGroup.ToPackage(group, fs);
         }
     }

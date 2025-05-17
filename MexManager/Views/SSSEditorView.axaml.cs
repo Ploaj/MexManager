@@ -1,11 +1,8 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using mexLib;
 using mexLib.Types;
 using mexLib.Utilties;
-using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
 using System.ComponentModel;
@@ -18,7 +15,7 @@ public partial class SSSEditorView : UserControl
     {
         InitializeComponent();
 
-        PageList.SelectionChanged += (s, e) => 
+        PageList.SelectionChanged += (s, e) =>
         {
             SelectScreen.InvalidateVisual();
         };
@@ -29,7 +26,7 @@ public partial class SSSEditorView : UserControl
                 DataContext is MainViewModel model &&
                 model.StageSelect != null)
             {
-                var Icons = model.StageSelect.StageIcons;
+                System.Collections.ObjectModel.ObservableCollection<MexStageSelectIcon> Icons = model.StageSelect.StageIcons;
                 (Icons[i], Icons[j]) = (Icons[j], Icons[i]);
             }
 
@@ -45,7 +42,7 @@ public partial class SSSEditorView : UserControl
             DataContext is MainViewModel model &&
             model.StageSelect != null)
         {
-            if (model.AutoApplySSSTemplate && 
+            if (model.AutoApplySSSTemplate &&
                 IconList.SelectedItems != null)
             {
                 foreach (MexReactiveObject i in IconList.SelectedItems)
@@ -93,7 +90,7 @@ public partial class SSSEditorView : UserControl
             model.StageSelect != null &&
             model.SelectedSSSIcon is MexStageSelectIcon icon)
         {
-            var res = await MessageBox.Show("Are you sure you want\nto remove this icon?", "Remove Icon", MessageBox.MessageBoxButtons.YesNoCancel);
+            MessageBox.MessageBoxResult res = await MessageBox.Show("Are you sure you want\nto remove this icon?", "Remove Icon", MessageBox.MessageBoxButtons.YesNoCancel);
 
             if (res != MessageBox.MessageBoxResult.Yes)
                 return;
@@ -163,7 +160,7 @@ public partial class SSSEditorView : UserControl
             DataContext is MainViewModel model &&
             model.SelectedSSSIcon != null)
         {
-            var temp = model.SelectedSSSIcon;
+            object temp = model.SelectedSSSIcon;
             model.SelectedSSSIcon = null;
             model.SelectedSSSIcon = temp;
         }
@@ -227,12 +224,12 @@ public partial class SSSEditorView : UserControl
             DataContext is MainViewModel model &&
             model.StageSelect != null)
         {
-            var template = await FileIO.TryOpenFile("Stage Select Template", "template.json", FileIO.FilterJson);
+            string? template = await FileIO.TryOpenFile("Stage Select Template", "template.json", FileIO.FilterJson);
 
             if (template == null)
                 return;
 
-            var tem = MexJsonSerializer.Deserialize<MexStageSelectTemplate>(template);
+            MexStageSelectTemplate? tem = MexJsonSerializer.Deserialize<MexStageSelectTemplate>(template);
 
             if (tem != null)
             {
@@ -255,7 +252,7 @@ public partial class SSSEditorView : UserControl
             DataContext is MainViewModel model &&
             model.StageSelect != null)
         {
-            var file = await FileIO.TrySaveFile("Stage Select Template", "template.json", FileIO.FilterJson);
+            string? file = await FileIO.TrySaveFile("Stage Select Template", "template.json", FileIO.FilterJson);
 
             if (file != null)
                 System.IO.File.WriteAllText(file, MexJsonSerializer.Serialize(model.StageSelect.Template));

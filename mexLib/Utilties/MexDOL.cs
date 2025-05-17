@@ -1,7 +1,5 @@
 ﻿using HSDRaw;
-using mexLib.Attributes;
 using mexLib.Utilties;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -25,7 +23,7 @@ namespace mexLib.MexScubber
         public MexDOL(byte[] dol)
         {
             _data = dol;
-            using var s = new MemoryStream(dol);
+            using MemoryStream s = new(dol);
             using BinaryReaderExt r = new(s);
             {
                 r.BigEndian = true;
@@ -107,7 +105,7 @@ namespace mexLib.MexScubber
             // special case for strings
             if (typeof(T) == typeof(string))
             {
-                var off = GetStruct<uint>(addr, index, stride);
+                uint off = GetStruct<uint>(addr, index, stride);
                 return (T)(object)GetString(off);
             }
 
@@ -117,7 +115,7 @@ namespace mexLib.MexScubber
             if (stride == -1)
                 stride = size;
 
-            var byteArray = GetData((uint)(addr + index * stride), size);
+            byte[] byteArray = GetData((uint)(addr + index * stride), size);
 
             // Allocate unmanaged memory equal to the size of the struct
             IntPtr ptr = Marshal.AllocHGlobal(size);
@@ -159,9 +157,9 @@ namespace mexLib.MexScubber
             if ((addr & 0x80000000) != 0)
                 addr = ToDol(addr);
 
-            StringBuilder b = new ();
+            StringBuilder b = new();
 
-            while (addr < _data.Length 
+            while (addr < _data.Length
                 && _data[addr] != 0x00)
             {
                 b.Append((char)_data[addr++]);

@@ -41,8 +41,8 @@ namespace mexLib
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public string GetFilePath(string fileName) 
-        { 
+        public string GetFilePath(string fileName)
+        {
             return $"{FilePath}files\\{fileName}";
         }
         /// <summary>
@@ -69,7 +69,7 @@ namespace mexLib
         /// <returns></returns>
         public long GetFileSize(string fileName)
         {
-            var path = GetFilePath(fileName);
+            string path = GetFilePath(fileName);
             if (FileManager.Exists(path))
             {
                 return FileManager.GetFileSize(path);
@@ -82,7 +82,7 @@ namespace mexLib
         /// <returns></returns>
         public byte[] GetBannerRGBA()
         {
-            GCBanner Banner = new (GetFilePath("opening.bnr"));
+            GCBanner Banner = new(GetFilePath("opening.bnr"));
             return Banner.GetBannerImageRGBA8();
         }
         /// <summary>
@@ -99,10 +99,10 @@ namespace mexLib
             IEnumerable<MexCode> defaultCodes)
         {
             // get project path
-            var projectPath = Path.GetDirectoryName(projectFile) + "\\";
+            string projectPath = Path.GetDirectoryName(projectFile) + "\\";
 
             // create workspace
-            var workspace = new MexWorkspace()
+            MexWorkspace workspace = new()
             {
                 FilePath = projectPath,
                 ProjectFilePath = projectFile,
@@ -119,7 +119,7 @@ namespace mexLib
             //File.Copy(Path.Combine(mexPath, "files/audio/us/smash2.sem"), workspace.GetFilePath("audio/us/smash2.sem"), overwrite: true);
 
             // install mex system
-            var error = MxDtImporter.Install(workspace);
+            MexInstallerError? error = MxDtImporter.Install(workspace);
             if (error != null)
             {
                 throw new Exception(error.Message);
@@ -128,9 +128,9 @@ namespace mexLib
             // save workspace
             workspace.Project.MainCode = mainCode;
             HashSet<byte[]?> codes = workspace.Project.Codes.Select(e => e.GetCompiled()).ToHashSet();
-            foreach (var c in defaultCodes)
+            foreach (MexCode c in defaultCodes)
             {
-                var compiled = c.GetCompiled();
+                byte[]? compiled = c.GetCompiled();
                 if (!codes.Contains(compiled))
                 {
                     workspace.Project.Codes.Add(c);
@@ -154,20 +154,20 @@ namespace mexLib
             if (!File.Exists(isoPath))
                 throw new FileNotFoundException("Melee ISO not found");
 
-            var projectPath = Path.GetDirectoryName(projectFile) + "\\";
+            string projectPath = Path.GetDirectoryName(projectFile) + "\\";
 
             //Directory.Delete(projectPath + "\\assets", recursive: true);
 
-            var sys = projectPath + "\\sys";
+            string sys = projectPath + "\\sys";
             if (!Directory.Exists(sys))
                 Directory.CreateDirectory(sys);
 
-            var files = projectPath + "\\files";
+            string files = projectPath + "\\files";
             if (!Directory.Exists(files))
                 Directory.CreateDirectory(files);
 
             // create workspace
-            var workspace = new MexWorkspace()
+            MexWorkspace workspace = new()
             {
                 FilePath = projectPath,
                 ProjectFilePath = projectFile,
@@ -188,10 +188,10 @@ namespace mexLib
 
                 // extract iso files
                 int index = 0;
-                foreach (var file in iso.GetAllFilePaths())
+                foreach (string? file in iso.GetAllFilePaths())
                 {
-                    var output = files + "/" + file;
-                    var dir = Path.GetDirectoryName(output);
+                    string output = files + "/" + file;
+                    string? dir = Path.GetDirectoryName(output);
 
                     if (dir != null && !Directory.Exists(dir))
                         Directory.CreateDirectory(dir);
@@ -211,8 +211,8 @@ namespace mexLib
             Directory.CreateDirectory(workspace.GetAssetPath(""));
 
             // install mex system
-            var dol = new MexDOL(workspace.GetDOL());
-            var error = MexInstaller.Install(workspace, dol);
+            MexDOL dol = new(workspace.GetDOL());
+            MexInstallerError? error = MexInstaller.Install(workspace, dol);
             if (error != null)
             {
                 throw new Exception(error.Message);
@@ -223,7 +223,7 @@ namespace mexLib
 
             // save workspace
             workspace.Project.MainCode = mainCode;
-            foreach (var c in defaultCodes)
+            foreach (MexCode c in defaultCodes)
                 workspace.Project.Codes.Add(c);
 
             workspace.LoadMiscData();
@@ -238,7 +238,7 @@ namespace mexLib
         /// <returns></returns>
         public byte[] GetDOL()
         {
-            var sys = FilePath + "\\sys";
+            string sys = FilePath + "\\sys";
             return File.ReadAllBytes($"{sys}\\main.dol");
         }
         /// <summary>
@@ -277,8 +277,8 @@ namespace mexLib
         /// </summary>
         public void Save()
         {
-            var sw = new Stopwatch();
-            var total = new TimeSpan();
+            Stopwatch sw = new();
+            TimeSpan total = new();
 
             // generate sem/smst/ssm
             sw.Restart();
@@ -376,14 +376,14 @@ namespace mexLib
                 return;
 
             // generate sem
-            var sem = new List<SemScript[]>();
+            List<SemScript[]> sem = new();
 
             // generate ssm
-            List<int> soundIds = new ();
-            List<string> soundNames = new ();
+            List<int> soundIds = new();
+            List<string> soundNames = new();
             int soundIndex = 0;
             int groupOffset = 0;
-            foreach (var group in Project.SoundGroups)
+            foreach (MexSoundGroup group in Project.SoundGroups)
             {
                 if (group.Sounds == null || group.Scripts == null)
                 {
@@ -392,7 +392,7 @@ namespace mexLib
                 }
 
                 // save ssm
-                var ssm = new SSM()
+                SSM ssm = new()
                 {
                     Name = group.Name,
                     StartIndex = soundIndex,
@@ -404,9 +404,9 @@ namespace mexLib
                 FileManager.Set(GetFilePath($"audio//us//{group.FileName}"), stream.ToArray());
 
                 // generate sem
-                var scripts = group.Scripts.Select((e, i) =>
+                SemScript[] scripts = group.Scripts.Select((e, i) =>
                 {
-                    var script = new SemScript(e);
+                    SemScript script = new(e);
                     script.AdjustSoundOffset(soundIndex);
                     soundNames.Add(e.Name);
                     soundIds.Add(i + groupOffset);
@@ -422,7 +422,7 @@ namespace mexLib
             // save smst
             {
                 // generate smst
-                var f = new HSDRawFile();
+                HSDRawFile f = new();
                 f.Roots.Add(new HSDRootNode()
                 {
                     Name = "smSoundTestLoadData",
@@ -444,7 +444,7 @@ namespace mexLib
                         MusicBanks = Project.Music.Select(e => e.FileName).ToArray(),
                     },
                 });
-                using MemoryStream stream = new ();
+                using MemoryStream stream = new();
                 f.Save(stream);
                 FileManager.Set(GetFilePath("SmSt.dat"), stream.ToArray());
             }
@@ -459,7 +459,7 @@ namespace mexLib
         /// </summary>
         private void LoadMiscData()
         {
-            var sw = new Stopwatch();
+            Stopwatch sw = new();
 
             sw.Start();
             LoadSoundData();
@@ -500,39 +500,39 @@ namespace mexLib
         /// </summary>
         private string? LoadSoundData()
         {
-            var semPath = GetFilePath(@"audio//us//smash2.sem");
+            string semPath = GetFilePath(@"audio//us//smash2.sem");
             if (!FileManager.Exists(semPath))
                 return "smash2.sem not found";
 
-            var smstPath = GetFilePath(@"SmSt.dat");
+            string smstPath = GetFilePath(@"SmSt.dat");
             if (!FileManager.Exists(smstPath))
                 return "SmSt.dat not found";
 
             HSDRawFile smstFile = new(smstPath);
-            var smst = smstFile["smSoundTestLoadData"].Data as smSoundTestLoadData;
+            smSoundTestLoadData? smst = smstFile["smSoundTestLoadData"].Data as smSoundTestLoadData;
             if (smst == null)
                 return "Error reading SmSt.dat";
 
-            using var semStream = FileManager.GetStream(semPath);
+            using Stream? semStream = FileManager.GetStream(semPath);
             if (semStream == null)
                 return "Error reading smash2.sem";
-            var sem = SemFile.Decompile(semStream).ToArray();
+            SemScript[][] sem = SemFile.Decompile(semStream).ToArray();
 
-            var soundNames = smst.SoundNames;
-            var soundids = smst.SoundIDs.ToList();
+            string[] soundNames = smst.SoundNames;
+            List<int> soundids = smst.SoundIDs.ToList();
 
             int index = 0;
-            foreach (var sound in Project.SoundGroups)
+            foreach (MexSoundGroup sound in Project.SoundGroups)
             {
                 // load ssm
-                var ssmPath = GetFilePath($"audio//us//{sound.FileName}");
+                string ssmPath = GetFilePath($"audio//us//{sound.FileName}");
                 int start_index = 0;
 
                 // extract ssm
                 if (FileManager.Exists(ssmPath))
                 {
                     // open ssm
-                    var ssm = new SSM();
+                    SSM ssm = new();
                     ssm.Open(sound.FileName, FileManager.GetStream(ssmPath));
 
                     start_index = ssm.StartIndex;
@@ -552,13 +552,13 @@ namespace mexLib
                 if (index < sem.Length)
                 {
                     // load script meta data
-                    var scripts = sem[index];
+                    SemScript[] scripts = sem[index];
 
                     // get name and adjust sfx id to be relative to bank
                     for (int j = 0; j < scripts.Length; j++)
                     {
                         // load script name
-                        var sindex = soundids.IndexOf(index * 10000 + j);
+                        int sindex = soundids.IndexOf(index * 10000 + j);
                         if (sindex != -1 && sindex < soundNames.Length)
                         {
                             scripts[j].Name = soundNames[sindex];
@@ -569,10 +569,10 @@ namespace mexLib
 
                         // give sound name if it's null
                         if (scripts[j].Script.FirstOrDefault(e => e.SemCode == SemCode.Sound)?.Value is int sfxid &&
-                            sfxid < sound.Sounds.Count && 
+                            sfxid < sound.Sounds.Count &&
                             string.IsNullOrEmpty(sound.Sounds[sfxid].Name))
                         {
-                            var sound_name = soundNames[sindex];
+                            string sound_name = soundNames[sindex];
                             sound_name = sound_name.Replace("SFX", "").Trim();
                             if (sound_name.StartsWith("_"))
                                 sound_name = sound_name[1..];
@@ -598,14 +598,14 @@ namespace mexLib
         /// <param name="file"></param>
         public void ExportISO(string file, ProgressChangedEventHandler args)
         {
-            using var iso = new GCISO(
+            using GCISO iso = new(
                 FileManager.Get(GetSystemPath("boot.bin")),
                 FileManager.Get(GetSystemPath("bi2.bin")),
                 FileManager.Get(GetSystemPath("apploader.img")),
                 FileManager.Get(GetSystemPath("main.dol")));
 
-            var root = GetFilePath("");
-            foreach (var f in Directory.GetFiles(root, "*", SearchOption.AllDirectories))
+            string root = GetFilePath("");
+            foreach (string f in Directory.GetFiles(root, "*", SearchOption.AllDirectories))
             {
                 iso.AddFile(f[root.Length..], f);
             }

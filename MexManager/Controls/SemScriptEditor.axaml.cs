@@ -1,16 +1,12 @@
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
-using mexLib.Types;
-using mexLib;
 using mexLib.Utilties;
+using MexManager.Extensions;
 using MexManager.Tools;
-using MexManager.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Security;
-using MexManager.Extensions;
 using System.Linq;
 
 namespace MexManager.Controls;
@@ -87,7 +83,7 @@ public partial class SemScriptEditor : UserControl
     {
         if (DataContext is SemScript script)
         {
-            var selected_index = ScriptCommandList.SelectedIndex;
+            int selected_index = ScriptCommandList.SelectedIndex;
             if (selected_index != -1)
             {
                 script.Script.Insert(selected_index + 1, new SemCommand(SemCode.Wait, 0));
@@ -108,7 +104,7 @@ public partial class SemScriptEditor : UserControl
     {
         if (DataContext is SemScript script)
         {
-            var selected_index = ScriptCommandList.SelectedIndex;
+            int selected_index = ScriptCommandList.SelectedIndex;
             if (selected_index != -1)
             {
                 script.Script.Insert(selected_index + 1, new SemCommand(SemCode.EndLoop, 0));
@@ -171,10 +167,10 @@ public partial class SemScriptEditor : UserControl
     {
         if (DataContext is SemScript script)
         {
-            var selected_index = ScriptCommandList.SelectedIndex;
+            int selected_index = ScriptCommandList.SelectedIndex;
             if (selected_index != -1)
             {
-                var target = script.Script[selected_index];
+                SemCommand target = script.Script[selected_index];
 
                 if (target.SemCode == SemCode.SetLoop || target.SemCode == SemCode.EndLoop)
                     return;

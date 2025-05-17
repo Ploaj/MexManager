@@ -1,6 +1,5 @@
 ﻿using mexLib.Types;
 using ReactiveUI;
-using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -58,10 +57,10 @@ namespace MexManager.ViewModels
         /// <returns></returns>
         private void AddStagePage(object? add)
         {
-            if (Global.Workspace != null && 
+            if (Global.Workspace != null &&
                 StagePages != null)
             {
-                var ss = new MexStageSelect();
+                MexStageSelect ss = new();
 
                 for (int i = 0; i < ss.Template.IconPlacements.Count; i++)
                 {
@@ -86,7 +85,7 @@ namespace MexManager.ViewModels
             {
                 if (StagePages.Count > 1)
                 {
-                    var res = await MessageBox.Show($"Are you sure you want\nto delete \"{ss.Name}\"?", "Delete Page", MessageBox.MessageBoxButtons.YesNoCancel);
+                    MessageBox.MessageBoxResult res = await MessageBox.Show($"Are you sure you want\nto delete \"{ss.Name}\"?", "Delete Page", MessageBox.MessageBoxButtons.YesNoCancel);
 
                     if (res != MessageBox.MessageBoxResult.Yes)
                         return;
@@ -104,7 +103,7 @@ namespace MexManager.ViewModels
             if (parameter is MexStageSelect ss &&
                 StagePages != null)
             {
-                var index = StagePages.IndexOf(ss);
+                int index = StagePages.IndexOf(ss);
                 if (index < StagePages.Count - 1)
                 {
                     StagePages.Move(index, index + 1);
@@ -121,7 +120,7 @@ namespace MexManager.ViewModels
             if (parameter is MexStageSelect ss &&
                 StagePages != null)
             {
-                var index = StagePages.IndexOf(ss);
+                int index = StagePages.IndexOf(ss);
                 if (index > 0)
                 {
                     StagePages.Move(index, index - 1);

@@ -1,12 +1,10 @@
-﻿using System.IO;
-
-namespace mexLib
+﻿namespace mexLib
 {
     public class FileManager
     {
-        private readonly Dictionary<string, byte[]> ToAdd = new ();
+        private readonly Dictionary<string, byte[]> ToAdd = new();
 
-        private readonly List<string> ToRemove = new ();
+        private readonly List<string> ToRemove = new();
 
         /// <summary>
         /// 
@@ -145,15 +143,15 @@ namespace mexLib
         /// </summary>
         public void Save()
         {
-            foreach (var v in ToAdd)
+            foreach (KeyValuePair<string, byte[]> v in ToAdd)
             {
-                var dir = Path.GetDirectoryName(v.Key);
+                string? dir = Path.GetDirectoryName(v.Key);
                 if (dir != null)
                     Directory.CreateDirectory(dir);
                 File.WriteAllBytes(v.Key, v.Value);
             }
 
-            foreach (var v in ToRemove)
+            foreach (string v in ToRemove)
             {
                 if (File.Exists(v))
                     File.Delete(v);

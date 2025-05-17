@@ -52,7 +52,7 @@ namespace mexLib.Types
         public void CostumesFromMxDt(MEX_CostumeFileSymbolTable tbl)
         {
             Costumes.Clear();
-            foreach (var c in tbl.CostumeSymbols.Array)
+            foreach (MEX_CostumeFileSymbol? c in tbl.CostumeSymbols.Array)
             {
                 Costumes.Add(new MexCostume()
                 {
@@ -73,7 +73,7 @@ namespace mexLib.Types
         /// <returns></returns>
         public static string ColorNameFromFileName(string fileName)
         {
-            var code = Path.GetFileNameWithoutExtension(fileName);
+            string code = Path.GetFileNameWithoutExtension(fileName);
 
             if (code.Length != 6)
                 return code;
@@ -103,7 +103,7 @@ namespace mexLib.Types
         public void CostumesFromDOL(MexDOL dol, uint index)
         {
             // get external id
-            var exid = (uint)MexFighterIDConverter.ToExternalID((int)index, 0x21);
+            uint exid = (uint)MexFighterIDConverter.ToExternalID((int)index, 0x21);
 
             // css
             int costumeCount = dol.GetStruct<byte>(0x803C0EC0 + 0x4, index, 8);
@@ -112,10 +112,10 @@ namespace mexLib.Types
             GreenCostumeIndex = dol.GetStruct<byte>(0x803d51a0 + 0x3, exid, 4);
 
             // costumes
-            var costumePointer = dol.GetStruct<uint>(0x803C2360, index);
+            uint costumePointer = dol.GetStruct<uint>(0x803C2360, index);
             for (uint i = 0; i < costumeCount; i++)
             {
-                var costume = new MexCostume()
+                MexCostume costume = new()
                 {
                     File = new MexCostumeVisibilityFile()
                     {
@@ -131,12 +131,12 @@ namespace mexLib.Types
                 Costumes.Add(costume);
             }
 
-            var costumePointerKirby = dol.GetStruct<uint>(0x803CB3E8, index);
+            uint costumePointerKirby = dol.GetStruct<uint>(0x803CB3E8, index);
             if (costumePointerKirby != 0)
             {
                 for (uint i = 0; i < 6; i++)
                 {
-                    KirbyCostumes.Add(new ()
+                    KirbyCostumes.Add(new()
                     {
                         FileName = dol.GetStruct<string>(costumePointerKirby + 0x00, i, 0x0C),
                         JointSymbol = dol.GetStruct<string>(costumePointerKirby + 0x04, i, 0x0C),

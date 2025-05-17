@@ -1,5 +1,4 @@
 ﻿using HSDRaw.MEX.Sounds;
-using mexLib.Attributes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -61,7 +60,7 @@ namespace mexLib.Types
             if (mEX_Playlist.MenuPlaylist == null)
                 return;
 
-            foreach (var e in mEX_Playlist.MenuPlaylist.Array)
+            foreach (MEX_PlaylistItem? e in mEX_Playlist.MenuPlaylist.Array)
             {
                 Entries.Add(new MexPlaylistEntry()
                 {

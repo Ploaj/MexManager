@@ -32,7 +32,7 @@ namespace MexManager.Tools
         public double EndPercentage { get; set; } = 1.0;
 
         public bool EnableLoop { get; set; } = true;
-        public double LoopPointPercent 
+        public double LoopPointPercent
         {
             set
             {
@@ -67,12 +67,12 @@ namespace MexManager.Tools
                 _device = ALC.OpenDevice(null);
                 if (_device == ALDevice.Null)
                 {
-                    var error = ALC.GetError((ALDevice)_device);
+                    AlcError error = ALC.GetError((ALDevice)_device);
                     Logger.WriteLine($"Audio Device failed: {error}");
 
                     Logger.WriteLine("List of devices:");
-                    var devices = ALC.GetStringList(GetEnumerationStringList.DeviceSpecifier);
-                    foreach (var device in devices)
+                    System.Collections.Generic.IEnumerable<string> devices = ALC.GetStringList(GetEnumerationStringList.DeviceSpecifier);
+                    foreach (string? device in devices)
                         Logger.WriteLine(device);
                     return;
                 }
@@ -120,7 +120,7 @@ namespace MexManager.Tools
             if (!Initialize)
                 return;
 
-            var d = new DSP();
+            DSP d = new();
             d.FromFormat(dsp, "dsp");
             LoadDSP(d);
         }
@@ -150,11 +150,11 @@ namespace MexManager.Tools
             // unknown
             // reverb
 
-            var wave = dsp.ToWAVE();
-            var raw = wave.RawData.ToArray();
+            WAVE wave = dsp.ToWAVE();
+            short[] raw = wave.RawData.ToArray();
 
             _totalSize = raw.Length / dsp.Channels.Count;
-            var loop = dsp.LoopPointMilliseconds / dsp.TotalMilliseconds;
+            double loop = dsp.LoopPointMilliseconds / dsp.TotalMilliseconds;
             _loopPoint = (int)(loop * _totalSize); // (int)Math.Ceiling((double)dsp.Channels[0].LoopStart / dsp.Channels.Count * 1.75f);
 
             // Pin the managed array so that the GC doesn't move it
@@ -166,7 +166,7 @@ namespace MexManager.Tools
                 IntPtr ptr = handle.AddrOfPinnedObject();
 
                 // Use the IntPtr to pass the data to OpenAL
-                var format = wave.Channels.Count == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
+                ALFormat format = wave.Channels.Count == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
                 AL.BufferData(_buffer, format, ptr, raw.Length * sizeof(short), wave.Frequency);
                 AL.Source(_source, ALSourcei.Buffer, _buffer);
             }

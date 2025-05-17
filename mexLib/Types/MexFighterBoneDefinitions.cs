@@ -32,7 +32,7 @@ namespace mexLib.Types
 
             BoneDefinitions.Ext.Clear();
             if (plco.FighterTable[(int)index] != null)
-                foreach (var e in plco.FighterTable[(int)index].Entries)
+                foreach (SBM_PlCoFighterBoneExtEntry? e in plco.FighterTable[(int)index].Entries)
                     BoneDefinitions.Ext.Add(new MexFighterBoneExt()
                     {
                         X00 = e.Value1,

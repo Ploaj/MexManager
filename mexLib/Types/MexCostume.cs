@@ -78,15 +78,15 @@ namespace mexLib
         /// <returns></returns>
         public static IEnumerable<MexCostume> FromZip(MexWorkspace workspace, Stream zipstream, StringBuilder log)
         {
-            Dictionary<string, MexCostume> costumes = new ();
+            Dictionary<string, MexCostume> costumes = new();
 
             // first scan file for dat files
-            using (ZipArchive zip = new (zipstream, ZipArchiveMode.Read, true))
+            using (ZipArchive zip = new(zipstream, ZipArchiveMode.Read, true))
             {
                 foreach (ZipArchiveEntry entry in zip.Entries)
                 {
-                    using var fstream = entry.Open();
-                    using var stream = new MemoryStream();
+                    using Stream fstream = entry.Open();
+                    using MemoryStream stream = new();
                     fstream.CopyTo(stream);
                     fstream.Close();
 
@@ -96,10 +96,10 @@ namespace mexLib
                         // file
                         if (entry.Name.StartsWith("PlKb"))
                         {
-                            var targetPath = workspace.GetFilePath(entry.Name.Replace(" ", "_"));
-                            var path = workspace.FileManager.GetUniqueFilePath(targetPath);
+                            string targetPath = workspace.GetFilePath(entry.Name.Replace(" ", "_"));
+                            string path = workspace.FileManager.GetUniqueFilePath(targetPath);
 
-                            var costume_key = Path.GetFileNameWithoutExtension(path)[4..];
+                            string costume_key = Path.GetFileNameWithoutExtension(path)[4..];
                             if (!costumes.ContainsKey(costume_key))
                                 costumes.Add(costume_key, new MexCostume());
 
@@ -109,10 +109,10 @@ namespace mexLib
                         }
                         else
                         {
-                            var targetPath = workspace.GetFilePath(entry.Name.Replace(" ", "_"));
-                            var path = workspace.FileManager.GetUniqueFilePath(targetPath);
+                            string targetPath = workspace.GetFilePath(entry.Name.Replace(" ", "_"));
+                            string path = workspace.FileManager.GetUniqueFilePath(targetPath);
 
-                            var costume_key = Path.GetFileNameWithoutExtension(path)[4..6];
+                            string costume_key = Path.GetFileNameWithoutExtension(path)[4..6];
                             if (!costumes.ContainsKey(costume_key))
                                 costumes.Add(costume_key, new MexCostume());
 
@@ -129,11 +129,11 @@ namespace mexLib
             zipstream.Position = 0;
 
             // search for assets
-            using (ZipArchive zip = new (zipstream))
+            using (ZipArchive zip = new(zipstream))
                 foreach (ZipArchiveEntry entry in zip.Entries)
                 {
-                    using var fstream = entry.Open();
-                    using var stream = new MemoryStream();
+                    using Stream fstream = entry.Open();
+                    using MemoryStream stream = new();
                     fstream.CopyTo(stream);
                     fstream.Close();
 
@@ -174,7 +174,7 @@ namespace mexLib
                 }
 
             // grab symbols and return 
-            foreach (var c in costumes)
+            foreach (KeyValuePair<string, MexCostume> c in costumes)
             {
                 if (!string.IsNullOrEmpty(c.Value.File.FileName))
                 {
@@ -190,15 +190,15 @@ namespace mexLib
         /// <returns></returns>
         public static MexCostume? FromDATFile(MexWorkspace workspace, string datpath, out string log)
         {
-            var name = Path.GetFileName(datpath);
+            string name = Path.GetFileName(datpath);
 
             // add file to filesystem
-            var targetPath = workspace.GetFilePath(name);
-            var path = workspace.FileManager.GetUniqueFilePath(targetPath);
+            string targetPath = workspace.GetFilePath(name);
+            string path = workspace.FileManager.GetUniqueFilePath(targetPath);
             workspace.FileManager.Set(path, workspace.FileManager.Get(datpath));
 
             // setup costume
-            var costume = new MexCostume()
+            MexCostume costume = new()
             {
                 Name = Path.GetFileNameWithoutExtension(datpath),
             };
@@ -221,7 +221,7 @@ namespace mexLib
         public void PackToZip(MexWorkspace workspace, Stream stream)
         {
             // costume pack to zip
-            using var zip = new ZipWriter(stream);
+            using ZipWriter zip = new(stream);
             zip.TryWriteFile(workspace, File.FileName, File.FileName);
             zip.TryWriteTextureAsset(workspace, IconAsset, "stc.png");
             zip.TryWriteTextureAsset(workspace, CSPAsset, "csp.png");

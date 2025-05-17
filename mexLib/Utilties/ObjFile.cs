@@ -23,7 +23,7 @@ namespace mexLib.Utilties
             public override string ToString()
             {
                 string result = "";
-                foreach (var vertex in Vertices)
+                foreach (FaceVertex vertex in Vertices)
                 {
                     result += $"{vertex.VertexIndex + 1}// ";///{(vertex.TextureIndex + 1).ToString()}/{(vertex.NormalIndex + 1).ToString()} ";
                 }
@@ -50,8 +50,8 @@ namespace mexLib.Utilties
         // Load an OBJ file
         public void Load(Stream stream)
         {
-            using StreamReader reader = new (stream);
-            
+            using StreamReader reader = new(stream);
+
             string? line;
             while ((line = reader.ReadLine()) != null)
             {
@@ -80,9 +80,9 @@ namespace mexLib.Utilties
         // Save to an OBJ file
         public void Write(Stream stream)
         {
-            using StreamWriter writer = new (stream);
-            
-            foreach (var vertex in Vertices)
+            using StreamWriter writer = new(stream);
+
+            foreach (Vector3 vertex in Vertices)
             {
                 writer.WriteLine($"v {vertex.X.ToString(CultureInfo.InvariantCulture)} " +
                                     $"{vertex.Y.ToString(CultureInfo.InvariantCulture)} " +
@@ -102,7 +102,7 @@ namespace mexLib.Utilties
             //                     $"{normal.Z.ToString(CultureInfo.InvariantCulture)}");
             //}
 
-            foreach (var face in Faces)
+            foreach (Face face in Faces)
             {
                 writer.WriteLine($"f {face}");
             }
@@ -119,10 +119,10 @@ namespace mexLib.Utilties
 
         private static Face ParseFace(string[] parts)
         {
-            var face = new Face();
+            Face face = new();
             for (int i = 1; i < parts.Length; i++)
             {
-                var indices = parts[i].Split('/');
+                string[] indices = parts[i].Split('/');
                 int vertexIndex = int.Parse(indices[0]) - 1;
                 //int textureIndex = indices.Length > 1 && indices[1] != "" ? int.Parse(indices[1]) - 1 : -1;
                 //int normalIndex = indices.Length > 2 ? int.Parse(indices[2]) - 1 : -1;
@@ -133,7 +133,7 @@ namespace mexLib.Utilties
 
         public void FlipFaces()
         {
-            foreach (var face in Faces)
+            foreach (Face face in Faces)
             {
                 face.Vertices.Reverse();
             }

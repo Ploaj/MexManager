@@ -1,12 +1,11 @@
-﻿using HSDRaw.Common.Animation;
+﻿using HSDRaw;
 using HSDRaw.Common;
-using HSDRaw.MEX.Menus;
-using HSDRaw.Tools;
-using HSDRaw;
+using HSDRaw.Common.Animation;
 using HSDRaw.GX;
 using HSDRaw.Melee.Mn;
+using HSDRaw.MEX.Menus;
+using HSDRaw.Tools;
 using mexLib.Types;
-using System.Diagnostics;
 
 namespace mexLib.Generators
 {
@@ -17,13 +16,13 @@ namespace mexLib.Generators
         /// </summary>
         public static bool Compile(MexWorkspace ws)
         {
-            var path = ws.GetFilePath("MnSlChr.usd");
-            var data = ws.FileManager.Get(path);
+            string path = ws.GetFilePath("MnSlChr.usd");
+            byte[] data = ws.FileManager.Get(path);
 
             if (data == Array.Empty<byte>())
                 return false;
 
-            var mexSelectChr = GenerateMexSelect(ws);
+            MEX_mexSelectChr mexSelectChr = GenerateMexSelect(ws);
 
             {
                 HSDRawFile file = new(path);
@@ -36,7 +35,7 @@ namespace mexLib.Generators
             }
 
             {
-                var path2 = ws.GetFilePath("mexSelectChr.dat");
+                string path2 = ws.GetFilePath("mexSelectChr.dat");
                 HSDRawFile ex = new();
                 ex.Roots.Add(new HSDRootNode() { Name = "mexSelectChr", Data = mexSelectChr });
                 using MemoryStream stream = new();
@@ -54,18 +53,18 @@ namespace mexLib.Generators
             if (tb == null) return;
 
             // menu joint 51 - 54
-            var menu = tb.MenuMaterialAnimation.TreeList;
+            List<HSD_MatAnimJoint> menu = tb.MenuMaterialAnimation.TreeList;
             menu[51].MaterialAnimation.TextureAnimation = null;
             menu[52].MaterialAnimation.TextureAnimation = null;
             menu[53].MaterialAnimation.TextureAnimation = null;
             menu[54].MaterialAnimation.TextureAnimation = null;
 
             // single 45
-            var single = tb.SingleMenuMaterialAnimation.TreeList;
+            List<HSD_MatAnimJoint> single = tb.SingleMenuMaterialAnimation.TreeList;
             single[45].MaterialAnimation.TextureAnimation = null;
 
             // portrait 6
-            var potrait = tb.PortraitMaterialAnimation.TreeList;
+            List<HSD_MatAnimJoint> potrait = tb.PortraitMaterialAnimation.TreeList;
             potrait[6].MaterialAnimation.TextureAnimation = null;
         }
         /// <summary>
@@ -87,11 +86,11 @@ namespace mexLib.Generators
             for (int internalId = 0; internalId < stride; internalId++)
             {
                 int externalId = MexFighterIDConverter.ToExternalID(internalId, stride);
-                var f = ws.Project.Fighters[internalId];
+                MexFighter f = ws.Project.Fighters[internalId];
                 int costume_index = 0;
-                foreach (var c in f.Costumes)
+                foreach (MexCostume c in f.Costumes)
                 {
-                    var textureAsset = c.CSPAsset.GetTexFile(ws);
+                    MexImage? textureAsset = c.CSPAsset.GetTexFile(ws);
 
                     if (textureAsset != null)
                     {
@@ -134,7 +133,7 @@ namespace mexLib.Generators
             };
 
             // generate model
-            foreach (var i in ws.Project.CharacterSelect.FighterIcons)
+            foreach (MexCharacterSelectIcon i in ws.Project.CharacterSelect.FighterIcons)
             {
                 root.AddChild(GenerateIconModel(i, ws));
                 root_anim.AddChild(new HSD_AnimJoint()
@@ -165,7 +164,7 @@ namespace mexLib.Generators
         /// <returns></returns>
         private static HSD_MatAnimJoint GenerateIconMatAnim()
         {
-            var r = new HSD_FOBJDesc();
+            HSD_FOBJDesc r = new();
             r.SetKeys(
                 new List<FOBJKey>()
                 {
@@ -178,7 +177,7 @@ namespace mexLib.Generators
                     new (){ Frame = 600, Value = 0, InterpolationType = GXInterpolationType.HSD_A_OP_CON},
                 },
                 (byte)TexTrackType.HSD_A_T_TEV0_R);
-            var g = new HSD_FOBJDesc();
+            HSD_FOBJDesc g = new();
             g.SetKeys(
                 new List<FOBJKey>()
                 {
@@ -191,7 +190,7 @@ namespace mexLib.Generators
                     new (){ Frame = 600, Value = 0.099975586f, InterpolationType = GXInterpolationType.HSD_A_OP_CON},
                 },
                 (byte)TexTrackType.HSD_A_T_TEV0_G);
-            var b = new HSD_FOBJDesc();
+            HSD_FOBJDesc b = new();
             b.SetKeys(
                 new List<FOBJKey>()
                 {
@@ -291,13 +290,13 @@ namespace mexLib.Generators
         /// <returns></returns>
         private static HSD_JOBJ GenerateIconModel(MexCharacterSelectIcon icon, MexWorkspace ws)
         {
-            var fighter = ws.Project.GetFighterByExternalID(icon.Fighter);
+            MexFighter? fighter = ws.Project.GetFighterByExternalID(icon.Fighter);
             MexImage? iconImage = fighter?.Assets.CSSIconAsset.GetTexFile(ws);
 
             iconImage ??= ws.Project.ReservedAssets.CSSNullAsset.GetTexFile(ws);
             MexImage? background = ws.Project.ReservedAssets.CSSBackAsset.GetTexFile(ws);
 
-            var source = new HSD_JOBJ()
+            HSD_JOBJ source = new()
             {
                 TX = icon.X,
                 TY = icon.Y,
@@ -315,7 +314,7 @@ namespace mexLib.Generators
                 float h = 3.361f;
                 float z = 0.2f;
 
-                var dobj = GenerateQuadDobj(gen, w, h, z);
+                HSD_DOBJ dobj = GenerateQuadDobj(gen, w, h, z);
                 if (background != null)
                 {
                     dobj.Mobj.Textures = background.ToTObj();
@@ -349,7 +348,7 @@ namespace mexLib.Generators
                         tev0 = System.Drawing.Color.FromArgb(0, 25, 51),
                     };
                 }
-                
+
                 source.Dobj = dobj;
             }
             // foreground
@@ -358,10 +357,10 @@ namespace mexLib.Generators
                 float h = 3.5f;
                 float z = 0.0f;
 
-                var dobj = GenerateQuadDobj(gen, w, h, z);
+                HSD_DOBJ dobj = GenerateQuadDobj(gen, w, h, z);
                 if (iconImage != null)
                 {
-                    var tobj = iconImage.ToTObj();
+                    HSD_TOBJ tobj = iconImage.ToTObj();
                     tobj.ColorOperation = COLORMAP.BLEND;
                     tobj.AlphaOperation = ALPHAMAP.BLEND;
                     dobj.Mobj.Textures = tobj;

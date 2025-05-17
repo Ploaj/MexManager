@@ -90,7 +90,7 @@ namespace mexLib
         /// <returns></returns>
         public MexFighter? GetFighterByExternalID(int id)
         {
-            var internalId = MexFighterIDConverter.ToInternalID(id, Fighters.Count);
+            int internalId = MexFighterIDConverter.ToInternalID(id, Fighters.Count);
             return GetFighterByInternalID(internalId);
         }
         /// <summary>
@@ -107,7 +107,7 @@ namespace mexLib
         {
             yield return MainCode;
 
-            foreach (var c in Codes)
+            foreach (MexCode c in Codes)
                 if (c.Enabled)
                     yield return c;
         }
@@ -118,19 +118,19 @@ namespace mexLib
         /// <returns></returns>
         public bool AddNewFighter(MexFighter fighter)
         {
-            var internalId = Fighters.Count - 6;
-            var externalId = MexFighterIDConverter.ToExternalID(internalId, Fighters.Count);
+            int internalId = Fighters.Count - 6;
+            int externalId = MexFighterIDConverter.ToExternalID(internalId, Fighters.Count);
             Fighters.Insert(Fighters.Count - 6, fighter);
 
             // fighter
-            foreach (var f in Fighters)
+            foreach (MexFighter f in Fighters)
             {
                 if (f.SubCharacter >= externalId)
                     f.SubCharacter += 1;
             }
 
             // css icons
-            foreach (var icon in CharacterSelect.FighterIcons)
+            foreach (MexCharacterSelectIcon icon in CharacterSelect.FighterIcons)
             {
                 if (icon.Fighter >= externalId)
                 {
@@ -148,13 +148,13 @@ namespace mexLib
             if (!MexFighterIDConverter.IsMexFighter(internalId, Fighters.Count))
                 return false;
 
-            var externalId = MexFighterIDConverter.ToExternalID(internalId, Fighters.Count);
+            int externalId = MexFighterIDConverter.ToExternalID(internalId, Fighters.Count);
 
             Fighters[internalId].Delete(workspace);
             Fighters.RemoveAt(internalId);
 
             // fighter
-            foreach (var fighter in Fighters)
+            foreach (MexFighter fighter in Fighters)
             {
                 if (fighter.SubCharacter == externalId)
                     fighter.SubCharacter = -1;
@@ -164,7 +164,7 @@ namespace mexLib
             }
 
             // css icons
-            foreach (var icon in CharacterSelect.FighterIcons)
+            foreach (MexCharacterSelectIcon icon in CharacterSelect.FighterIcons)
             {
                 if (icon.Fighter == externalId)
                 {
@@ -200,7 +200,7 @@ namespace mexLib
                 return false;
 
             // get stages external id
-            var externalId = MexStageIDConverter.ToExternalID(internalId);
+            int externalId = MexStageIDConverter.ToExternalID(internalId);
 
             //
             Stages[internalId].Delete(ws);
@@ -209,7 +209,7 @@ namespace mexLib
             Stages.RemoveAt(internalId);
 
             // fighter
-            foreach (var fighter in Fighters)
+            foreach (MexFighter fighter in Fighters)
             {
                 if (fighter.TargetTestStage == externalId)
                     fighter.TargetTestStage = 0;
@@ -219,9 +219,9 @@ namespace mexLib
             }
 
             // stage select icons
-            foreach (var sss in StageSelects)
+            foreach (MexStageSelect sss in StageSelects)
             {
-                foreach (var icon in sss.StageIcons)
+                foreach (MexStageSelectIcon icon in sss.StageIcons)
                 {
                     if (icon.StageID == externalId)
                     {
@@ -251,7 +251,7 @@ namespace mexLib
         /// <returns>false if failed to remove music and true otherwise</returns>
         public bool RemoveMusic(MexMusic music)
         {
-            var index = Music.IndexOf(music);
+            int index = Music.IndexOf(music);
 
             // check if music is in project
             if (index == -1)
@@ -263,7 +263,7 @@ namespace mexLib
 
             Music.RemoveAt(index);
 
-            foreach (var f in Fighters)
+            foreach (MexFighter f in Fighters)
             {
                 if (f.FighterMusic1 == index)
                     f.FighterMusic1 = 0;
@@ -277,14 +277,14 @@ namespace mexLib
             }
 
             // remove from stage playlists
-            foreach (var s in Stages)
+            foreach (MexStage s in Stages)
                 s.Playlist.RemoveTrack(index);
 
             // remove from menu playlists
             MenuPlaylist.RemoveTrack(index);
 
             // remove from series playlists
-            foreach (var s in Series)
+            foreach (MexSeries s in Series)
                 s.Playlist.RemoveTrack(index);
 
             return true;
@@ -296,7 +296,7 @@ namespace mexLib
         /// <exception cref="NotImplementedException"></exception>
         public bool RemoveSeries(MexWorkspace workspace, MexSeries series)
         {
-            var index = Series.IndexOf(series);
+            int index = Series.IndexOf(series);
 
             // check if series is in project
             if (index == -1)
@@ -307,7 +307,7 @@ namespace mexLib
 
             // remove assets
 
-            foreach (var f in Fighters)
+            foreach (MexFighter f in Fighters)
             {
                 if (f.SeriesID == index)
                     f.SeriesID = 0;
@@ -316,7 +316,7 @@ namespace mexLib
             }
 
             // remove from stage playlists
-            foreach (var s in Stages)
+            foreach (MexStage s in Stages)
             {
                 if (s.SeriesID == index)
                     s.SeriesID = 0;
@@ -343,16 +343,16 @@ namespace mexLib
         /// <returns></returns>
         public bool RemoveSoundGroup(MexSoundGroup group)
         {
-            var soundIndex = SoundGroups.IndexOf(group);
+            int soundIndex = SoundGroups.IndexOf(group);
 
-            if (soundIndex == -1 || 
+            if (soundIndex == -1 ||
                 !MexSoundGroupIDConverter.IsMexSoundGroup(soundIndex))
                 return false;
 
             SoundGroups.RemoveAt(soundIndex);
 
             // fighter
-            foreach (var fighter in Fighters)
+            foreach (MexFighter fighter in Fighters)
             {
                 if (fighter.SoundBank == soundIndex)
                     fighter.SoundBank = 55;
@@ -361,7 +361,7 @@ namespace mexLib
             }
 
             // stage
-            foreach (var stage in Stages)
+            foreach (MexStage stage in Stages)
             {
                 if (stage.SoundBank == soundIndex)
                     stage.SoundBank = 55;
@@ -380,21 +380,21 @@ namespace mexLib
         public static MexProject LoadFromFile(MexWorkspace ws)
         {
             // load project file
-            var proj = MexJsonSerializer.Deserialize<MexProject>(ws.ProjectFilePath);
+            MexProject? proj = MexJsonSerializer.Deserialize<MexProject>(ws.ProjectFilePath);
 
             if (proj == null)
                 return new MexProject();
 
             // load fighters
-            foreach (var f in proj.FighterSaveMap.Load<MexFighter>(ws.GetDataPath("fighters//")))
+            foreach (MexFighter f in proj.FighterSaveMap.Load<MexFighter>(ws.GetDataPath("fighters//")))
                 proj.Fighters.Add(f);
 
             // load stages
-            foreach (var f in proj.StageSaveMap.Load<MexStage>(ws.GetDataPath("stages//")))
+            foreach (MexStage f in proj.StageSaveMap.Load<MexStage>(ws.GetDataPath("stages//")))
                 proj.Stages.Add(f);
 
             // load sounds
-            foreach (var f in proj.SoundSaveMap.Load<MexSoundGroup>(ws.GetDataPath("sounds//")))
+            foreach (MexSoundGroup f in proj.SoundSaveMap.Load<MexSoundGroup>(ws.GetDataPath("sounds//")))
                 proj.SoundGroups.Add(f);
 
             // Load main code
@@ -403,8 +403,8 @@ namespace mexLib
             // load codes
             if (ws.FileManager.Exists(ws.GetFilePath("codes.ini")))
             {
-                var ini = CodeLoader.FromINI(ws.FileManager.Get(ws.GetFilePath("codes.ini")));
-                foreach (var code in ini)
+                IEnumerable<MexCode> ini = CodeLoader.FromINI(ws.FileManager.Get(ws.GetFilePath("codes.ini")));
+                foreach (MexCode code in ini)
                     proj.Codes.Add(code);
             }
 
@@ -431,9 +431,9 @@ namespace mexLib
 
             public IEnumerable<T> Load<T>(string dataPath)
             {
-                foreach (var f in FilePaths)
+                foreach (string f in FilePaths)
                 {
-                    var full = Path.Combine(dataPath, f);
+                    string full = Path.Combine(dataPath, f);
 
                     if (!File.Exists(full))
                     {
@@ -441,7 +441,7 @@ namespace mexLib
                     }
                     else
                     {
-                        var dat = MexJsonSerializer.Deserialize<T>(full);
+                        T? dat = MexJsonSerializer.Deserialize<T>(full);
 
                         if (dat != null)
                             yield return dat;
@@ -458,10 +458,10 @@ namespace mexLib
 
                 FilePaths.Clear();
                 int i = 0;
-                foreach (var f in data)
+                foreach (T? f in data)
                 {
-                    var fileName = i++.ToString("D3") + ".json";
-                    var fpath = Path.Combine(dataPath, fileName);
+                    string fileName = i++.ToString("D3") + ".json";
+                    string fpath = Path.Combine(dataPath, fileName);
                     FilePaths.Add(fileName);
                     File.WriteAllText(fpath, MexJsonSerializer.Serialize(f));
                 }

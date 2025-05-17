@@ -1,9 +1,8 @@
-﻿using HSDRaw.Common.Animation;
+﻿using HSDRaw;
 using HSDRaw.Common;
+using HSDRaw.Common.Animation;
 using HSDRaw.MEX;
 using HSDRaw.Tools;
-using HSDRaw;
-using System;
 
 namespace mexLib.Generators
 {
@@ -16,21 +15,21 @@ namespace mexLib.Generators
         /// <returns></returns>
         public static bool Compile(MexWorkspace ws)
         {
-            var path = ws.GetFilePath("IfAll.usd");
-            var data = ws.FileManager.Get(path);
+            string path = ws.GetFilePath("IfAll.usd");
+            byte[] data = ws.FileManager.Get(path);
 
             if (data == Array.Empty<byte>())
                 return false;
 
             HSDRawFile ifallFile = new(path);
 
-            var emblems = GenerateEmblems(ws);
-            var stock_icons = Generate_Stc_icns(ws);
+            HSD_MatAnimJoint emblems = GenerateEmblems(ws);
+            MEX_Stock stock_icons = Generate_Stc_icns(ws);
 
             ifallFile.CreateUpdateSymbol("Eblm_matanim_joint", emblems);
             ifallFile.CreateUpdateSymbol("Stc_icns", stock_icons);
 
-            using MemoryStream stream = new ();
+            using MemoryStream stream = new();
             ifallFile.Save(stream);
             ws.FileManager.Set(path, stream.ToArray());
             return true;
@@ -48,9 +47,9 @@ namespace mexLib.Generators
 
             // gather reserved icons
             int icon_index = 0;
-            foreach (var s in ws.Project.Series)
+            foreach (Types.MexSeries s in ws.Project.Series)
             {
-                var iconTex = s.IconAsset.GetTexFile(ws);
+                MexImage? iconTex = s.IconAsset.GetTexFile(ws);
 
                 if (iconTex != null)
                 {
@@ -104,11 +103,11 @@ namespace mexLib.Generators
             // gather costume stock icons
             for (int internalId = 0; internalId < ws.Project.Fighters.Count; internalId++)
             {
-                var f = ws.Project.Fighters[internalId];
+                Types.MexFighter f = ws.Project.Fighters[internalId];
                 int costume_index = 0;
-                foreach (var c in f.Costumes)
+                foreach (MexCostume c in f.Costumes)
                 {
-                    var textureAsset = c.IconAsset.GetTexFile(ws);
+                    MexImage? textureAsset = c.IconAsset.GetTexFile(ws);
                     if (textureAsset != null)
                     {
                         keys.Add(new FOBJKey()
@@ -132,7 +131,7 @@ namespace mexLib.Generators
                 }
             }
 
-            var stock = new MEX_Stock()
+            MEX_Stock stock = new()
             {
                 Reserved = (short)reservedCount,
                 Stride = (short)stride,

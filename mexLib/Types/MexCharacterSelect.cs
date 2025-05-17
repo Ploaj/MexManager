@@ -31,14 +31,14 @@ namespace mexLib.Types
         {
             CharacterSelectHandScale = mxdt.MenuTable.Parameters.CSSHandScale;
 
-            foreach (var i in mxdt.MenuTable.CSSIconData.Icons)
+            foreach (MEX_CSSIcon? i in mxdt.MenuTable.CSSIconData.Icons)
             {
-                var icon = new MexCharacterSelectIcon()
+                MexCharacterSelectIcon icon = new()
                 {
                     Fighter = i.ExternalCharID,
                     SFXID = i.SFXID,
                 };
-                
+
                 FighterIcons.Add(icon);
             }
 
@@ -56,7 +56,7 @@ namespace mexLib.Types
                 _s = new HSDStruct(dol.GetData(0x803F0A48, 0x398))
             };
             // extract icon data
-            foreach (var i in css.Icons)
+            foreach (MEX_CSSIcon? i in css.Icons)
             {
                 FighterIcons.Add(new MexCharacterSelectIcon()
                 {
@@ -81,14 +81,14 @@ namespace mexLib.Types
                 // Create a list of tasks
                 ManualResetEvent doneEvent = new(false);
 
-                foreach (var fighter in ws.Project.Fighters)
+                foreach (MexFighter fighter in ws.Project.Fighters)
                 {
-                    foreach (var c in fighter.Costumes)
+                    foreach (MexCostume c in fighter.Costumes)
                     {
                         ThreadPool.QueueUserWorkItem(state =>
                         {
                             // Process the image
-                            var textureAsset = c.CSPAsset.GetTexFile(ws);
+                            MexImage? textureAsset = c.CSPAsset.GetTexFile(ws);
 
                             // check for compression
                             if (textureAsset != null &&

@@ -51,7 +51,7 @@ namespace mexLib.Types
         public MexInstallerError? ToPackage(MexWorkspace workspace, Stream stream)
         {
             // create zip
-            using var zip = new ZipWriter(stream);
+            using ZipWriter zip = new(stream);
 
             // fighter to package
             zip.WriteAsJson("trophy.json", this);
@@ -73,10 +73,10 @@ namespace mexLib.Types
             trophy = null;
 
             // load zip
-            using var zip = new ZipArchive(stream);
+            using ZipArchive zip = new(stream);
 
             // import trophy from package
-            var entry = zip.GetEntry("trophy.json");
+            ZipArchiveEntry? entry = zip.GetEntry("trophy.json");
             if (entry == null)
                 return new MexInstallerError("\"trophy.json\" was not found in zip");
 
@@ -117,7 +117,7 @@ namespace mexLib.Types
                 if (!ArchiveTools.IsValidHSDFile(stream))
                     return new MexFilePathError("Not a valid HSD file");
 
-                foreach (var s in ArchiveTools.GetSymbols(stream))
+                foreach (string s in ArchiveTools.GetSymbols(stream))
                 {
                     if (s.EndsWith("_joint"))
                     {
@@ -192,8 +192,8 @@ namespace mexLib.Types
             /// <returns></returns>
             private static string DecodeString(string str, bool reset, out uint color)
             {
-                var decode = SdSanitizer.Decode(str, out color);
-                var encode = SdSanitizer.Encode(decode, color, reset);
+                string decode = SdSanitizer.Decode(str, out color);
+                string encode = SdSanitizer.Encode(decode, color, reset);
 
                 if (!str.Equals(encode))
                 {

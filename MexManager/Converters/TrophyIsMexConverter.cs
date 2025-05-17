@@ -12,7 +12,7 @@ namespace MexManager.Converters
             if (value is MexTrophy trophy &&
                 Global.Workspace != null)
             {
-                var index = Global.Workspace.Project.Trophies.IndexOf(trophy);
+                int index = Global.Workspace.Project.Trophies.IndexOf(trophy);
                 if (index > 292)
                 {
                     return true;

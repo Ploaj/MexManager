@@ -1,11 +1,7 @@
 ﻿using HSDRaw;
 using mexLib.Types;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace mexLib.Utilties
 {
@@ -26,7 +22,7 @@ namespace mexLib.Utilties
 
             while (!r.EndOfStream)
             {
-                var line = r.ReadLine();
+                string? line = r.ReadLine();
 
                 if (line == null)
                     break;
@@ -44,7 +40,7 @@ namespace mexLib.Utilties
                     c = new MexCode();
                     src = new StringBuilder();
 
-                    var l = line[1..];
+                    string l = line[1..];
 
                     if (l.StartsWith("!"))
                     {
@@ -56,7 +52,7 @@ namespace mexLib.Utilties
                         c.Enabled = false;
                     }
 
-                    var name = Regex.Match(l, @"(?<=\[).+?(?=\]\s*$)");
+                    Match name = Regex.Match(l, @"(?<=\[).+?(?=\]\s*$)");
 
                     if (name.Success)
                     {
@@ -102,16 +98,16 @@ namespace mexLib.Utilties
             using MemoryStream s = new();
             using StreamWriter w = new(s) { AutoFlush = true };
 
-            foreach (var c in codes)
+            foreach (MexCode c in codes)
             {
                 w.WriteLine($"${(c.Enabled ? "!" : "")}{c.Name}{(string.IsNullOrEmpty(c.Creator) ? "" : $" [{c.Creator}]")}");
 
-                var desc_lines = c.Description.Split(
+                string[] desc_lines = c.Description.Split(
                     new string[] { "\r\n", "\r", "\n" },
                     StringSplitOptions.None
                     );
 
-                foreach (var l in desc_lines)
+                foreach (string l in desc_lines)
                 {
                     if (string.IsNullOrEmpty(l))
                         continue;
@@ -174,9 +170,9 @@ namespace mexLib.Utilties
             r.Write(0x00D0C0DE);
             r.Write(0x00D0C0DE);
 
-            foreach (var c in codes)
+            foreach (MexCode c in codes)
             {
-                var comp = c.GetCompiled();
+                byte[]? comp = c.GetCompiled();
                 if (comp != null)
                     r.Write(comp);
             }

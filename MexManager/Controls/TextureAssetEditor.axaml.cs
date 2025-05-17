@@ -31,10 +31,10 @@ public partial class TextureAssetEditor : UserControl
     /// </summary>
     private void ImportImage(string filePath)
     {
-        if (Global.Workspace != null && 
+        if (Global.Workspace != null &&
             DataContext is MexTextureAsset asset)
         {
-            using var stream = new FileStream(filePath, FileMode.Open);
+            using FileStream stream = new(filePath, FileMode.Open);
             asset.SetFromImageFile(Global.Workspace, stream);
             UpdateImage();
         }
@@ -98,11 +98,11 @@ public partial class TextureAssetEditor : UserControl
         // Get the dropped file names
         if (e.Data.Contains(DataFormats.Files))
         {
-            var fileNames = e.Data.GetFiles();
+            System.Collections.Generic.IEnumerable<Avalonia.Platform.Storage.IStorageItem>? fileNames = e.Data.GetFiles();
             if (fileNames == null)
                 return;
 
-            foreach (var f in fileNames.Select(e => e.Path.AbsolutePath))
+            foreach (string? f in fileNames.Select(e => e.Path.AbsolutePath))
             {
                 if (f.EndsWith(".png"))
                 {
@@ -122,7 +122,7 @@ public partial class TextureAssetEditor : UserControl
         if (Global.Workspace != null)
         {
             // get file to import
-            var file = await FileIO.TryOpenFile("Texture File", "", FileIO.FilterPng);
+            string? file = await FileIO.TryOpenFile("Texture File", "", FileIO.FilterPng);
 
             // no file to import
             if (file == null)
@@ -142,7 +142,7 @@ public partial class TextureAssetEditor : UserControl
         if (DataContext is MexTextureAsset asset &&
             Global.Workspace != null)
         {
-            var file = await FileIO.TrySaveFile("Texture File", "", FileIO.FilterPng);
+            string? file = await FileIO.TrySaveFile("Texture File", "", FileIO.FilterPng);
             if (file != null)
             {
                 asset.GetSourceImage(Global.Workspace)?.ToBitmap().Save(file);

@@ -71,8 +71,8 @@ namespace mexLib.Types
         /// <returns></returns>
         public override MexImage? GetIconImage(MexWorkspace ws)
         {
-            var internalId = MexFighterIDConverter.ToInternalID(Fighter, ws.Project.Fighters.Count);
-            var fighter = ws.Project.Fighters[internalId];
+            int internalId = MexFighterIDConverter.ToInternalID(Fighter, ws.Project.Fighters.Count);
+            MexFighter fighter = ws.Project.Fighters[internalId];
             return fighter.Assets.CSSIconAsset.GetTexFile(ws);
         }
     }

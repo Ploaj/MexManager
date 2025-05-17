@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.PropertyGrid.Controls;
@@ -64,7 +63,7 @@ public partial class PropertyGridPopup : Window
     /// <returns></returns>
     public async static Task<bool> ShowDialog(string title, string confirm_text, object? o)
     {
-        var popup = new PropertyGridPopup();
+        PropertyGridPopup popup = new();
         popup.SetObject(title, confirm_text, o);
         if (App.MainWindow != null)
         {

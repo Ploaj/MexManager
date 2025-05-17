@@ -47,7 +47,7 @@ public partial class ProgressWindow : Window
         DataContext = new ProcessViewModel();
     }
 
-    private readonly StringBuilder _logBuilder = new ();
+    private readonly StringBuilder _logBuilder = new();
 
     public void AppendLog(string message)
     {

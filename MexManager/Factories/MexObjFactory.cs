@@ -1,13 +1,13 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Layout;
+using Avalonia.Platform.Storage;
 using Avalonia.PropertyGrid.Controls;
 using Avalonia.PropertyGrid.Controls.Factories;
+using mexLib.AssetTypes;
+using mexLib.Utilties;
+using MexManager.Controls;
 using MexManager.Tools;
 using System.IO;
-using mexLib.AssetTypes;
-using MexManager.Controls;
-using Avalonia.Platform.Storage;
-using mexLib.Utilties;
 
 namespace MexManager.Factories
 {
@@ -27,8 +27,8 @@ namespace MexManager.Factories
         /// <returns>Control.</returns>
         public override Control? HandleNewProperty(PropertyCellContext context)
         {
-            var propertyDescriptor = context.Property;
-            var target = context.Target;
+            System.ComponentModel.PropertyDescriptor propertyDescriptor = context.Property;
+            object target = context.Target;
 
             if (propertyDescriptor.PropertyType != typeof(MexOBJAsset))
                 return null;
@@ -37,13 +37,13 @@ namespace MexManager.Factories
                 return null;
 
             // Create a StackPanel or any other container to hold the text box and image
-            var control = new StackPanel
+            StackPanel control = new()
             {
                 Orientation = Orientation.Vertical,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
             };
 
-            var objControl = new ObjControl(asset)
+            ObjControl objControl = new(asset)
             {
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Width = 300,
@@ -52,7 +52,7 @@ namespace MexManager.Factories
 
             // Create the Image control
 
-            var importButton = new Button()
+            Button importButton = new()
             {
                 Content = "Import OBJ",
                 HorizontalAlignment = HorizontalAlignment.Center
@@ -62,7 +62,7 @@ namespace MexManager.Factories
                 if (Global.Workspace == null)
                     return;
 
-                var file = await FileIO.TryOpenFile("Export OBJ", "",
+                string? file = await FileIO.TryOpenFile("Export OBJ", "",
                     [
                         new FilePickerFileType("OBJ")
                             {
@@ -72,8 +72,8 @@ namespace MexManager.Factories
 
                 if (file != null)
                 {
-                    var obj = new ObjFile();
-                    using var fs = new FileStream(file, FileMode.Open);
+                    ObjFile obj = new();
+                    using FileStream fs = new(file, FileMode.Open);
                     obj.Load(fs);
                     obj.FlipFaces();
 
@@ -81,7 +81,7 @@ namespace MexManager.Factories
                     objControl.RefreshRender();
                 }
             };
-            var exportButton = new Button()
+            Button exportButton = new()
             {
                 Content = "Export OBJ",
                 HorizontalAlignment = HorizontalAlignment.Center
@@ -91,10 +91,10 @@ namespace MexManager.Factories
                 if (Global.Workspace == null)
                     return;
 
-                var obj = asset.GetOBJFile(Global.Workspace);
+                ObjFile? obj = asset.GetOBJFile(Global.Workspace);
                 if (obj != null)
                 {
-                    var file = await FileIO.TrySaveFile("Export OBJ", "emblem.obj", 
+                    string? file = await FileIO.TrySaveFile("Export OBJ", "emblem.obj",
                     [
                         new FilePickerFileType("OBJ")
                             {
@@ -103,12 +103,12 @@ namespace MexManager.Factories
                     ]);
                     if (file != null)
                     {
-                        using var stream = new FileStream(file, FileMode.Create);
+                        using FileStream stream = new(file, FileMode.Create);
                         obj.Write(stream);
                     }
                 }
             };
-            var optionStack = new StackPanel
+            StackPanel optionStack = new()
             {
                 Orientation = Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Center,

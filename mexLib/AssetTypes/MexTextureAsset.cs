@@ -32,8 +32,8 @@ namespace mexLib.AssetTypes
         /// <returns></returns>
         private static string GetRelativePath(string basePath, string subPath)
         {
-            Uri baseUri = new (basePath);
-            Uri subUri = new (subPath);
+            Uri baseUri = new(basePath);
+            Uri subUri = new(subPath);
             Uri relativeUri = baseUri.MakeRelativeUri(subUri);
 
             // Get the relative path string
@@ -52,8 +52,8 @@ namespace mexLib.AssetTypes
         /// <returns></returns>
         private string GetUniqueAssetPath(MexWorkspace workspace)
         {
-            var assetPath = workspace.GetAssetPath("");
-            var sourcePath = workspace.FileManager.GetUniqueFilePath(workspace.GetAssetPath(AssetPath) + ".png");
+            string assetPath = workspace.GetAssetPath("");
+            string sourcePath = workspace.FileManager.GetUniqueFilePath(workspace.GetAssetPath(AssetPath) + ".png");
             return GetRelativePath(assetPath, sourcePath);
         }
         /// <summary>
@@ -73,7 +73,7 @@ namespace mexLib.AssetTypes
         /// <param name="image"></param>
         public void SetFromMexImage(MexWorkspace workspace, MexImage image)
         {
-            var path = GetFullPath(workspace);
+            string path = GetFullPath(workspace);
 
             // set png
             workspace.FileManager.Set(path + ".tex", image.ToByteArray());
@@ -88,20 +88,20 @@ namespace mexLib.AssetTypes
         /// <param name="filePath"></param>
         public void SetFromImageFile(MexWorkspace workspace, Stream imageStream)
         {
-            var path = GetFullPath(workspace);
+            string path = GetFullPath(workspace);
 
             // set png
             // i perform an encoding before saving to apply limitations of the texture format for more accurate preview
             imageStream.Position = 0;
-            var source_png = ImageConverter.FromPNG(imageStream, Format, TlutFormat);
+            MexImage source_png = ImageConverter.FromPNG(imageStream, Format, TlutFormat);
             workspace.FileManager.Set(path + ".png", source_png.ToPNG());
 
             // compile and set tex
             imageStream.Position = 0;
-            MexImage tex = ImageConverter.FromPNG(imageStream, 
-                Width == -1 ? source_png.Width : Width, 
-                Height == -1 ? source_png.Height : Height, 
-                Format, 
+            MexImage tex = ImageConverter.FromPNG(imageStream,
+                Width == -1 ? source_png.Width : Width,
+                Height == -1 ? source_png.Height : Height,
+                Format,
                 TlutFormat);
             workspace.FileManager.Set(path + ".tex", tex.ToByteArray());
         }
@@ -115,7 +115,7 @@ namespace mexLib.AssetTypes
             if (AssetFileName == null)
                 return null;
 
-            var path = GetFullPath(workspace);
+            string path = GetFullPath(workspace);
 
             return workspace.FileManager.GetStream(path + ".png");
         }
@@ -126,12 +126,12 @@ namespace mexLib.AssetTypes
         /// <returns></returns>
         public MexImage? GetSourceImage(MexWorkspace workspace)
         {
-            using var stream = GetSourceImageStream(workspace);
+            using Stream? stream = GetSourceImageStream(workspace);
 
             if (stream == null)
                 return null;
 
-            var tex = ImageConverter.FromPNG(stream, Format, TlutFormat);
+            MexImage tex = ImageConverter.FromPNG(stream, Format, TlutFormat);
 
             return tex;
         }
@@ -145,12 +145,12 @@ namespace mexLib.AssetTypes
             if (AssetFileName == null)
                 return null;
 
-            var texPath = GetFullPath(workspace) + ".tex";
+            string texPath = GetFullPath(workspace) + ".tex";
 
             if (!workspace.FileManager.Exists(texPath))
                 return null;
 
-            var stream = workspace.FileManager.Get(texPath);
+            byte[] stream = workspace.FileManager.Get(texPath);
             return MexImage.FromByteArray(stream);
         }
         /// <summary>
@@ -162,7 +162,7 @@ namespace mexLib.AssetTypes
             if (AssetFileName == null)
                 return;
 
-            var path = GetFullPath(workspace);
+            string path = GetFullPath(workspace);
 
             workspace.FileManager.Remove(path + ".png");
             workspace.FileManager.Remove(path + ".tex");
@@ -175,13 +175,13 @@ namespace mexLib.AssetTypes
         /// <exception cref="NotImplementedException"></exception>
         internal MexImage? Resize(MexWorkspace workspace, int csp_width, int csp_height)
         {
-            var source = GetSourceImage(workspace);
+            MexImage? source = GetSourceImage(workspace);
 
             if (source != null)
             {
-                var resized = ImageConverter.Resize(source, csp_width, csp_height);
+                MexImage resized = ImageConverter.Resize(source, csp_width, csp_height);
 
-                var path = GetFullPath(workspace);
+                string path = GetFullPath(workspace);
                 workspace.FileManager.Set(path + ".tex", resized.ToByteArray());
 
                 return resized;
@@ -198,14 +198,14 @@ namespace mexLib.AssetTypes
         /// <returns></returns>
         public bool SetFromPackage(MexWorkspace workspace, ZipArchive zip, string filename)
         {
-            var entry = zip.GetEntry(filename);
+            ZipArchiveEntry? entry = zip.GetEntry(filename);
 
             if (entry == null)
                 return false;
 
             AssetFileName = null;
 
-            using var img = new MemoryStream(entry.Extract());
+            using MemoryStream img = new(entry.Extract());
             SetFromImageFile(workspace, img);
 
             return true;

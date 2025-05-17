@@ -5,12 +5,9 @@ using mexLib.Attributes;
 using mexLib.Installer;
 using mexLib.MexScubber;
 using mexLib.Utilties;
-using SixLabors.ImageSharp.Drawing.Processing;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO.Compression;
-using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace mexLib.Types
@@ -98,7 +95,7 @@ namespace mexLib.Types
         [Browsable(false)]
         public uint Flags { get; set; } = 0;
 
-        private ObservableCollection<MexSound> _sounds = new ();
+        private ObservableCollection<MexSound> _sounds = new();
         [Browsable(false)]
         public ObservableCollection<MexSound> Sounds { get => _sounds; set { _sounds = value; OnPropertyChanged(); } }
 
@@ -131,12 +128,12 @@ namespace mexLib.Types
         /// <param name="index"></param>
         public int ToMxDt(MexGenerator gen, int index)
         {
-            var st = gen.Data.SSMTable;
+            MEX_SSMTable st = gen.Data.SSMTable;
 
             // getting the actual buffer size is "more correct"
-            using var stream = new FileStream(gen.Workspace.GetFilePath("audio//us//" + FileName), FileMode.Open);
+            using FileStream stream = new(gen.Workspace.GetFilePath("audio//us//" + FileName), FileMode.Open);
             stream.Seek(0x04, SeekOrigin.Begin);
-            var bufferSize = ((stream.ReadByte() & 0xFF) << 24) | ((stream.ReadByte() & 0xFF) << 16) | ((stream.ReadByte() & 0xFF) << 8) | (stream.ReadByte() & 0xFF);
+            int bufferSize = ((stream.ReadByte() & 0xFF) << 24) | ((stream.ReadByte() & 0xFF) << 16) | ((stream.ReadByte() & 0xFF) << 8) | (stream.ReadByte() & 0xFF);
 
             //var bufferSize = (int)gen.Workspace.GetFileSize("audio//us//" + FileName);
             if (bufferSize % 0x20 != 0)
@@ -162,7 +159,7 @@ namespace mexLib.Types
         /// <param name="index"></param>
         public void FromMxDt(MEX_Data mxdt, int index)
         {
-            var st = mxdt.SSMTable;
+            MEX_SSMTable st = mxdt.SSMTable;
 
             FileName = st.SSM_SSMFiles[index].Value;
             Flags = (uint)st.SSM_BufferSizes[index].Flag;
@@ -183,13 +180,13 @@ namespace mexLib.Types
         /// <returns></returns>
         public byte[] PackSSM()
         {
-            var ssm = new SSM()
+            SSM ssm = new()
             {
                 Name = Name,
                 Sounds = Sounds.Select(e => e.DSP).ToArray(),
             };
 
-            using var stream = new MemoryStream();
+            using MemoryStream stream = new();
             ssm.WriteToStream(stream, out int bs);
             return stream.ToArray();
         }
@@ -200,13 +197,13 @@ namespace mexLib.Types
         /// <returns></returns>
         public void ImportSSM(MexWorkspace workspace, string fullPath, bool replace)
         {
-            var ssm = new SSM();
+            SSM ssm = new();
             ssm.Open(Path.GetFileName(fullPath), workspace.FileManager.GetStream(fullPath));
 
             if (replace)
                 Sounds.Clear();
             int index = 0;
-            foreach (var s in ssm.Sounds)
+            foreach (DSP? s in ssm.Sounds)
                 Sounds.Add(new MexSound() { Name = $"Sound_{index++:D3}", DSP = s });
 
             OnPropertyChanged(nameof(Sounds));
@@ -227,12 +224,12 @@ namespace mexLib.Types
                 group.Scripts != null)
             {
                 Scripts.Clear();
-                foreach (var s in group.Scripts)
+                foreach (SemScript s in group.Scripts)
                     Scripts.Add(new SemScript(s));
             }
 
             Sounds.Clear();
-            foreach (var s in group.Sounds)
+            foreach (MexSound s in group.Sounds)
             {
                 Sounds.Add(new MexSound()
                 {
@@ -278,12 +275,12 @@ namespace mexLib.Types
         /// </summary>
         public static void ToPackage(MexSoundGroup group, Stream stream)
         {
-            using var zip = new ZipWriter(stream);
+            using ZipWriter zip = new(stream);
             zip.WriteAsJson("group.json", group);
             if (group.Scripts != null)
             {
-                using var scriptStream = new MemoryStream();
-                SemFile.Compile(scriptStream, new List<SemScript[]>{ group.Scripts.ToArray() });
+                using MemoryStream scriptStream = new();
+                SemFile.Compile(scriptStream, new List<SemScript[]> { group.Scripts.ToArray() });
                 zip.Write("scripts.sem", scriptStream.ToArray());
 
                 zip.WriteAsJson("scripts.json", group.Scripts.Select(e => e.Name).ToArray());
@@ -297,10 +294,10 @@ namespace mexLib.Types
         {
             group = null;
 
-            using ZipArchive zip = new (packageStream);
+            using ZipArchive zip = new(packageStream);
 
             // load group entry
-            var entry = zip.GetEntry("group.json");
+            ZipArchiveEntry? entry = zip.GetEntry("group.json");
             if (entry == null)
                 return new MexInstallerError("\"group.json\" was not found in zip");
 
@@ -311,11 +308,11 @@ namespace mexLib.Types
 
             // load sounds
             {
-                var sound_entry = zip.GetEntry(group.FileName);
+                ZipArchiveEntry? sound_entry = zip.GetEntry(group.FileName);
                 if (sound_entry != null)
                 {
-                    var ssm = new SSM();
-                    using var ms = new MemoryStream(sound_entry.Extract());
+                    SSM ssm = new();
+                    using MemoryStream ms = new(sound_entry.Extract());
                     ssm.Open(group.Name, ms);
 
                     for (int i = 0; i < ssm.Sounds.Length; i++)
@@ -338,10 +335,10 @@ namespace mexLib.Types
 
             // load scripts
             {
-                var script_entry = zip.GetEntry("scripts.sem");
-                var script_names_entry = zip.GetEntry("scripts.json");
+                ZipArchiveEntry? script_entry = zip.GetEntry("scripts.sem");
+                ZipArchiveEntry? script_names_entry = zip.GetEntry("scripts.json");
                 string[]? script_names = null;
-                
+
                 if (script_names_entry != null)
                 {
                     script_names = MexJsonSerializer.Deserialize<string[]>(script_names_entry.Extract());
@@ -349,8 +346,8 @@ namespace mexLib.Types
 
                 if (script_entry != null)
                 {
-                    using var e = new MemoryStream(script_entry.Extract());
-                    var sem = SemFile.Decompile(e).ToArray()[0];
+                    using MemoryStream e = new(script_entry.Extract());
+                    SemScript[] sem = SemFile.Decompile(e).ToArray()[0];
                     group.Scripts = new ObservableCollection<SemScript>();
                     for (int i = 0; i < sem.Length; i++)
                     {
@@ -365,7 +362,7 @@ namespace mexLib.Types
             }
 
             // create ssm path
-            var ssmPath = workspace.FileManager.GetUniqueFilePath(workspace.GetFilePath($"audio\\us\\{group.FileName}"));
+            string ssmPath = workspace.FileManager.GetUniqueFilePath(workspace.GetFilePath($"audio\\us\\{group.FileName}"));
             group.FileName = Path.GetFileName(ssmPath);
 
             // save ssm file

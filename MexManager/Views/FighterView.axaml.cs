@@ -41,7 +41,7 @@ public partial class FighterView : UserControl
         if (Global.Workspace != null &&
             FighterList.SelectedItem is MexFighter fighter)
         {
-            var res =
+            MessageBox.MessageBoxResult res =
                 await MessageBox.Show(
                     $"Are you sure you want to\nremove \"{fighter.Name}\"?",
                     "Remove Fighter",
@@ -67,18 +67,18 @@ public partial class FighterView : UserControl
         if (Global.Workspace == null)
             return;
 
-        var file = await FileIO.TryOpenFile("Import Fighter", "", FileIO.FilterZip);
+        string? file = await FileIO.TryOpenFile("Import Fighter", "", FileIO.FilterZip);
         if (file != null)
         {
-            using var stream = new FileStream(file, FileMode.Open);
+            using FileStream stream = new(file, FileMode.Open);
 
-            var res = MexFighter.FromPackage(Global.Workspace, stream, out MexFighter? fighter);
+            mexLib.Installer.MexInstallerError? res = MexFighter.FromPackage(Global.Workspace, stream, out MexFighter? fighter);
 
             if (res == null)
             {
                 if (fighter != null)
                 {
-                    var addfighter = Global.Workspace?.Project.AddNewFighter(fighter);
+                    bool? addfighter = Global.Workspace?.Project.AddNewFighter(fighter);
                     FighterList.RefreshList();
                     FighterList.SelectedItem = fighter;
                 }
@@ -99,15 +99,15 @@ public partial class FighterView : UserControl
         if (Global.Workspace != null &&
             FighterList.SelectedItem is MexFighter fighter)
         {
-            var file = await FileIO.TrySaveFile("Export Fighter", fighter.Name + ".zip", FileIO.FilterZip);
+            string? file = await FileIO.TrySaveFile("Export Fighter", fighter.Name + ".zip", FileIO.FilterZip);
             if (file != null)
             {
-                var options = new MexFighter.FighterPackOptions();
+                MexFighter.FighterPackOptions options = new();
 
                 if (!await PropertyGridPopup.ShowDialog("Fighter Export Options", "Export Fighter", options))
                     return;
 
-                using var stream = new FileStream(file, FileMode.Create);
+                using FileStream stream = new(file, FileMode.Create);
                 fighter.ToPackage(Global.Workspace, stream, options);
             }
         }
@@ -122,7 +122,7 @@ public partial class FighterView : UserControl
         if (Global.Workspace != null &&
             FighterList.SelectedItem is MexFighter fighter)
         {
-            var options = new MexFighter.FighterPackOptions()
+            MexFighter.FighterPackOptions options = new()
             {
                 ExportFiles = false,
                 ExportCostumes = false,
@@ -133,7 +133,7 @@ public partial class FighterView : UserControl
             if (!await PropertyGridPopup.ShowDialog("Fighter Duplicate Options", "Duplicate Fighter", options))
                 return;
 
-            using var stream = new MemoryStream();
+            using MemoryStream stream = new();
             fighter.ToPackage(Global.Workspace, stream, options);
             stream.Position = 0;
             MexFighter.FromPackage(Global.Workspace, stream, out MexFighter? newfighgter);
@@ -167,14 +167,14 @@ public partial class FighterView : UserControl
             model.SelectedFighter is MexFighter fighter &&
             model.SelectedFighterItem is MexItem item)
         {
-            var res = await MessageBox.Show(
+            MessageBox.MessageBoxResult res = await MessageBox.Show(
                     $"Are you sure you want\nto remove\"{item.Name}\"?",
                     "Remove Item",
                     MessageBox.MessageBoxButtons.YesNoCancel);
 
             if (res == MessageBox.MessageBoxResult.Yes)
             {
-                var selected = ItemList.SelectedIndex;
+                int selected = ItemList.SelectedIndex;
                 fighter.Items.Remove(item);
                 ItemList.SelectedIndex = selected;
             }
@@ -195,7 +195,7 @@ public partial class FighterView : UserControl
             // kirby
             if (Global.Workspace.Project.Fighters.IndexOf(fighter) == 4)
             {
-                foreach (var f in Global.Workspace.Project.Fighters)
+                foreach (MexFighter f in Global.Workspace.Project.Fighters)
                 {
                     if (f.HasKirbyCostumes)
                     {
@@ -226,7 +226,7 @@ public partial class FighterView : UserControl
             // kirby
             if (Global.Workspace.Project.Fighters.IndexOf(fighter) == 4)
             {
-                foreach (var f in Global.Workspace.Project.Fighters)
+                foreach (MexFighter f in Global.Workspace.Project.Fighters)
                 {
                     if (f.HasKirbyCostumes)
                     {
@@ -252,7 +252,7 @@ public partial class FighterView : UserControl
             // kirby
             if (Global.Workspace.Project.Fighters.IndexOf(fighter) == 4)
             {
-                foreach (var f in Global.Workspace.Project.Fighters)
+                foreach (MexFighter f in Global.Workspace.Project.Fighters)
                 {
                     if (f.HasKirbyCostumes)
                     {
@@ -271,7 +271,7 @@ public partial class FighterView : UserControl
     {
         if (Global.Workspace != null)
         {
-            var zipPath = await FileIO.TryOpenFile("Import Costume", "",
+            string? zipPath = await FileIO.TryOpenFile("Import Costume", "",
             [
                 new ("Supported Formats")
                 {
@@ -285,20 +285,20 @@ public partial class FighterView : UserControl
             {
                 case ".zip":
                     {
-                        using var stream = new FileStream(zipPath, FileMode.Open);
-                        StringBuilder log = new ();
-                        var costume = MexCostume.FromZip(Global.Workspace, stream, log);
+                        using FileStream stream = new(zipPath, FileMode.Open);
+                        StringBuilder log = new();
+                        System.Collections.Generic.IEnumerable<MexCostume> costume = MexCostume.FromZip(Global.Workspace, stream, log);
 
                         if (log.Length != 0)
                             await MessageBox.Show(log.ToString(), "Import Log", MessageBox.MessageBoxButtons.Ok);
 
-                        foreach (var c in costume)
+                        foreach (MexCostume c in costume)
                             AddCostume(c);
                     }
                     break;
                 case ".dat":
                     {
-                        var costume = MexCostume.FromDATFile(Global.Workspace, zipPath, out string log);
+                        MexCostume? costume = MexCostume.FromDATFile(Global.Workspace, zipPath, out string log);
 
                         if (!string.IsNullOrEmpty(log))
                             await MessageBox.Show(log, "Import Log", MessageBox.MessageBoxButtons.Ok);
@@ -321,11 +321,11 @@ public partial class FighterView : UserControl
             DataContext is MainViewModel model &&
             model.SelectedFighterCostume is MexCostume costume)
         {
-            var zipPath = await FileIO.TrySaveFile("Export Costume", $"{costume.Name}.zip", FileIO.FilterZip);
+            string? zipPath = await FileIO.TrySaveFile("Export Costume", $"{costume.Name}.zip", FileIO.FilterZip);
 
             if (zipPath == null) return;
 
-            using var stream = new FileStream(zipPath, FileMode.Create);
+            using FileStream stream = new(zipPath, FileMode.Create);
             costume.PackToZip(Global.Workspace, stream);
         }
     }
@@ -341,7 +341,7 @@ public partial class FighterView : UserControl
             model.SelectedFighterCostume is MexCostume costume)
         {
             // ask are you sure
-            var res = await MessageBox.Show($"Are you sure you want\nto remove \"{costume.Name}\"?", "Remove Costume", MessageBox.MessageBoxButtons.YesNoCancel);
+            MessageBox.MessageBoxResult res = await MessageBox.Show($"Are you sure you want\nto remove \"{costume.Name}\"?", "Remove Costume", MessageBox.MessageBoxButtons.YesNoCancel);
             if (res != MessageBox.MessageBoxResult.Yes)
                 return;
 
@@ -366,7 +366,7 @@ public partial class FighterView : UserControl
     /// <param name="e"></param>
     private void DuplicateCostumeMenuItem_Click(object? sender, RoutedEventArgs e)
     {
-        if (Global.Workspace != null && 
+        if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
             model.SelectedFighterCostume is MexCostume costume)
         {
@@ -456,7 +456,7 @@ public partial class FighterView : UserControl
             {
                 if (!fighter.HasKirbyCostumes)
                 {
-                    var kirby = Global.Workspace.Project.Fighters[4];
+                    MexFighter kirby = Global.Workspace.Project.Fighters[4];
                     for (int i = 0; i < kirby.Costumes.Count; i++)
                         fighter.KirbyCostumes.Add(new()
                         {

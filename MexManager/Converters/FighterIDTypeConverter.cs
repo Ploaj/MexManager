@@ -11,7 +11,7 @@ namespace MexManager.Converters
         {
             if (Global.Workspace != null && value is int fighter_index)
             {
-                var internalId = MexFighterIDConverter.ToInternalID(fighter_index, Global.Workspace.Project.Fighters.Count);
+                int internalId = MexFighterIDConverter.ToInternalID(fighter_index, Global.Workspace.Project.Fighters.Count);
 
                 if (internalId < Global.Workspace.Project.Fighters.Count && internalId >= 0)
                 {

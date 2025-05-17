@@ -36,7 +36,7 @@ namespace mexLib
         public MexGenerator(MexWorkspace workspace)
         {
             Workspace = workspace;
-            var dol = new MexScubber.MexDOL(workspace.GetDOL());
+            MexScubber.MexDOL dol = new(workspace.GetDOL());
             EffectFiles.AddRange(MexDefaultData.GenerateDefaultMexEffectSlots(dol));
             StageIDs.AddRange(MexDefaultData.GenerateDefaultStageIDs(dol));
         }
@@ -47,7 +47,7 @@ namespace mexLib
         public void Save()
         {
             // save mxdtfile
-            var file = new HSDRawFile();
+            HSDRawFile file = new();
             file.Roots.Add(new HSDRootNode()
             {
                 Name = "mexData",
@@ -75,9 +75,9 @@ namespace mexLib
         {
             StageToID.Clear();
             int stageId = 0;
-            foreach (var v in stages)
+            foreach (MexStage v in stages)
             {
-                var stage_id_index = StageIDs.FindIndex(e => e.StageID == stageId);
+                int stage_id_index = StageIDs.FindIndex(e => e.StageID == stageId);
 
                 // check if this is a new stage
                 if (stage_id_index == -1)
@@ -106,7 +106,7 @@ namespace mexLib
                 return -1;
 
             // find existing effect slot and update the symbol if needed
-            var effect = EffectFiles.FindIndex(e => e.FileName == filename);
+            int effect = EffectFiles.FindIndex(e => e.FileName == filename);
 
             if (effect != -1)
             {
@@ -115,7 +115,7 @@ namespace mexLib
             }
 
             // find slot for new effect
-            var empty = EffectFiles.FindIndex(e =>
+            int empty = EffectFiles.FindIndex(e =>
                 e != EffectFiles[30] &&
                 string.IsNullOrEmpty(e.FileName));
 
@@ -142,13 +142,13 @@ namespace mexLib
     {
         public static void Compile(MexWorkspace workspace)
         {
-            var proj = workspace.Project;
-            var gen = new MexGenerator(workspace);
-            var mexData = gen.Data;
+            MexProject proj = workspace.Project;
+            MexGenerator gen = new(workspace);
+            MEX_Data mexData = gen.Data;
 
             // compile music table
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            var menu_playlist = proj.MenuPlaylist.ToMexPlaylist();
+            HSDRaw.MEX.Sounds.MEX_Playlist menu_playlist = proj.MenuPlaylist.ToMexPlaylist();
             mexData.MusicTable = new()
             {
                 BGMFileNames = new HSDFixedLengthPointerArrayAccessor<HSD_String>() { Array = proj.Music.Select(e => new HSD_String() { Value = e.FileName }).ToArray() },
@@ -187,11 +187,11 @@ namespace mexLib
 
             // write fighter data
             int internalId = 0;
-            foreach (var f in proj.Fighters)
+            foreach (MexFighter f in proj.Fighters)
                 f.ToMxDt(gen, internalId++);
 
             // save effects
-            var effectFileCount = gen.EffectFiles.Count;
+            int effectFileCount = gen.EffectFiles.Count;
             mexData.EffectTable = new()
             {
                 EffectFiles = new HSDArrayAccessor<MEX_EffectFiles>() { Array = gen.EffectFiles.ToArray() },
@@ -235,8 +235,8 @@ namespace mexLib
             //Dictionary<MexSoundGroupGroup, List<int>> groupSizes = new Dictionary<MexSoundGroupGroup, List<int>>();
             for (int i = 0; i < proj.SoundGroups.Count; i++)
             {
-                var group = proj.SoundGroups[i].Group;
-                var size = proj.SoundGroups[i].ToMxDt(gen, i);
+                MexSoundGroupGroup group = proj.SoundGroups[i].Group;
+                int size = proj.SoundGroups[i].ToMxDt(gen, i);
 
                 //if (!groupSizes.ContainsKey(group))
                 //    groupSizes.Add(group, new List<int>());
@@ -254,8 +254,8 @@ namespace mexLib
 
             //System.Diagnostics.Debug.WriteLine($"Bank2: {bank2Size:X8}");
 
-            var ssm_runtime_length = proj.SoundGroups.Count * 4;
-            HSDStruct rtTable = new (6 * 4);
+            int ssm_runtime_length = proj.SoundGroups.Count * 4;
+            HSDStruct rtTable = new(6 * 4);
             rtTable.SetReferenceStruct(0x00, new HSDStruct(Enumerable.Repeat((byte)0x01, 0x180).ToArray()));
             rtTable.SetReferenceStruct(0x04, new HSDStruct(Enumerable.Repeat((byte)0x02, ssm_runtime_length).ToArray()));
             rtTable.SetReferenceStruct(0x08, new HSDStruct(Enumerable.Repeat((byte)0x03, ssm_runtime_length).ToArray()));
@@ -268,7 +268,7 @@ namespace mexLib
             mexData.MetaData = new MEX_Meta()
             {
                 NumOfCSSIcons = proj.CharacterSelect.FighterIcons.Count,
-                NumOfSSSIcons = proj.StageSelects.Sum(e=>e.StageIcons.Count),
+                NumOfSSSIcons = proj.StageSelects.Sum(e => e.StageIcons.Count),
                 NumOfEffects = gen.EffectFiles.Count,
                 NumOfSSMs = proj.SoundGroups.Count,
                 NumOfMusic = proj.Music.Count,
@@ -286,12 +286,12 @@ namespace mexLib
             mexData.MetaData._s.SetByte(1, workspace.VersionMinor);
 
             // get stage selects icons
-            List<MEX_StageIconData> icons = new ();
-            foreach (var ss in proj.StageSelects)
+            List<MEX_StageIconData> icons = new();
+            foreach (MexStageSelect ss in proj.StageSelects)
             {
-                foreach (var si in ss.StageIcons)
+                foreach (MexStageSelectIcon si in ss.StageIcons)
                 {
-                    var ico = si.ToIcon();
+                    MEX_StageIconData? ico = si.ToIcon();
                     if (ico != null)
                     {
                         icons.Add(ico);
@@ -300,7 +300,7 @@ namespace mexLib
             }
 
             // generate random bitfield
-            var bitfield = new byte[icons.Count / 8 + 1];
+            byte[] bitfield = new byte[icons.Count / 8 + 1];
             for (int i = 0; i < bitfield.Length; i++)
                 bitfield[i] = 0xFF;
 

@@ -9,10 +9,10 @@ using mexLib.Types;
 using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System;
 using System.IO;
 
 namespace MexManager.Views;
@@ -94,7 +94,7 @@ public partial class MainView : UserControl
         // check if workspace currently open
         if (Global.Workspace != null)
         {
-            var rst = await MessageBox.Show(
+            MessageBox.MessageBoxResult rst = await MessageBox.Show(
                 "Save changes to current workspace?",
                 "New Workspace",
                 MessageBox.MessageBoxButtons.YesNoCancel);
@@ -108,14 +108,14 @@ public partial class MainView : UserControl
                 return;
             }
         }
-        
+
         // validate melee iso path
-        if (string.IsNullOrEmpty(App.Settings.MeleePath) || 
+        if (string.IsNullOrEmpty(App.Settings.MeleePath) ||
             !File.Exists(App.Settings.MeleePath))
         {
-            var rst = await MessageBox.Show( 
-                "Please set a \"Melee ISO Path\" in Config", 
-                "New Workspace Error", 
+            MessageBox.MessageBoxResult rst = await MessageBox.Show(
+                "Please set a \"Melee ISO Path\" in Config",
+                "New Workspace Error",
                 MessageBox.MessageBoxButtons.Ok);
 
             if (rst == MessageBox.MessageBoxResult.Ok)
@@ -127,18 +127,18 @@ public partial class MainView : UserControl
         }
 
         // Start async operation to open the dialog.
-        var file = await FileIO.TrySaveFile("Save Workspace", "project.mexproj", FileIO.FilterMexProject);
-            
+        string? file = await FileIO.TrySaveFile("Save Workspace", "project.mexproj", FileIO.FilterMexProject);
+
         // check if file was found
         if (file == null)
             return;
 
         // create new workspace
-        var workspace = Global.CreateWorkspace(file);
+        mexLib.MexWorkspace? workspace = Global.CreateWorkspace(file);
 
         if (workspace == null)
             await MessageBox.Show("Unable to create workspace", "Create Workspace", MessageBox.MessageBoxButtons.Ok);
-        
+
         Context.UpdateWorkspace();
     }
     /// <summary>
@@ -154,7 +154,7 @@ public partial class MainView : UserControl
         // check if workspace currently open
         if (Global.Workspace != null)
         {
-            var rst = await MessageBox.Show(
+            MessageBox.MessageBoxResult rst = await MessageBox.Show(
                 "Save changes to current workspace?",
                 "New Workspace",
                 MessageBox.MessageBoxButtons.YesNoCancel);
@@ -170,7 +170,7 @@ public partial class MainView : UserControl
         }
 
         // get dol source
-        var mexdol = await FileIO.TryOpenFile("Create from m-ex File System", "main.dol",
+        string? mexdol = await FileIO.TryOpenFile("Create from m-ex File System", "main.dol",
         [
             new("m-ex Project")
             {
@@ -190,7 +190,7 @@ public partial class MainView : UserControl
         //    return;
 
         // create new workspace
-        var workspace = Global.CreateWorkspaceFromMex(mexdol);
+        mexLib.MexWorkspace? workspace = Global.CreateWorkspaceFromMex(mexdol);
 
         if (workspace == null)
             await MessageBox.Show("Unable to create workspace", "Create Workspace", MessageBox.MessageBoxButtons.Ok);
@@ -207,7 +207,7 @@ public partial class MainView : UserControl
         if (Context == null)
             return;
 
-        var file = await FileIO.TryOpenFile("Open Workspace", "", FileIO.FilterMexProject);
+        string? file = await FileIO.TryOpenFile("Open Workspace", "", FileIO.FilterMexProject);
 
         if (file != null)
         {
@@ -231,7 +231,7 @@ public partial class MainView : UserControl
         if (Global.Workspace != null &&
             MusicList.SelectedItem is MexMusic music)
         {
-            var hps = Global.Workspace.GetFilePath($"audio\\{music.FileName}");
+            string hps = Global.Workspace.GetFilePath($"audio\\{music.FileName}");
 
             if (Global.Files.Exists(hps))
             {
@@ -263,19 +263,19 @@ public partial class MainView : UserControl
         if (Global.Workspace == null)
             return;
 
-        var file = await FileIO.TryOpenFile("Import Music", "", FileIO.FilterMusic);
+        string? file = await FileIO.TryOpenFile("Import Music", "", FileIO.FilterMusic);
 
         if (file != null)
         {
-            var hps = new DSP();
+            DSP hps = new();
             if (hps.FromFile(file))
             {
-                var fileName = Path.GetFileNameWithoutExtension(file) + ".hps";
-                var path = Global.Workspace?.GetFilePath("audio\\" + fileName);
+                string fileName = Path.GetFileNameWithoutExtension(file) + ".hps";
+                string? path = Global.Workspace?.GetFilePath("audio\\" + fileName);
 
                 if (Global.Files.Exists(path))
                 {
-                    var res = await MessageBox.Show($"\"{fileName}\" already exists\nWould you like to overwrite it?", "Import Music Error", MessageBox.MessageBoxButtons.YesNoCancel);
+                    MessageBox.MessageBoxResult res = await MessageBox.Show($"\"{fileName}\" already exists\nWould you like to overwrite it?", "Import Music Error", MessageBox.MessageBoxButtons.YesNoCancel);
 
                     if (res != MessageBox.MessageBoxResult.Yes)
                         return;
@@ -313,7 +313,7 @@ public partial class MainView : UserControl
 
         if (MusicList.SelectedItem is MexMusic music)
         {
-            var path = Global.Workspace?.GetFilePath("audio\\" + music.FileName);
+            string? path = Global.Workspace?.GetFilePath("audio\\" + music.FileName);
 
             if (!Global.Files.Exists(path))
             {
@@ -321,11 +321,11 @@ public partial class MainView : UserControl
                 return;
             }
 
-            var file = await FileIO.TrySaveFile("Export Music", "", FileIO.FilterWav);
+            string? file = await FileIO.TrySaveFile("Export Music", "", FileIO.FilterWav);
 
             if (path != null && file != null)
             {
-                var dsp = HPS.ToDSP(Global.Files.Get(path));
+                DSP dsp = HPS.ToDSP(Global.Files.Get(path));
                 System.IO.File.WriteAllBytes(file, dsp.ToWAVE().ToFile());
             }
         }
@@ -350,7 +350,7 @@ public partial class MainView : UserControl
             }
 
             // check if sure
-            var sure = await MessageBox.Show($"Are you sure you want to remove\n{music.Name}", "Remove Music", MessageBox.MessageBoxButtons.YesNoCancel);
+            MessageBox.MessageBoxResult sure = await MessageBox.Show($"Are you sure you want to remove\n{music.Name}", "Remove Music", MessageBox.MessageBoxButtons.YesNoCancel);
             if (sure != MessageBox.MessageBoxResult.Yes)
                 return;
 
@@ -362,13 +362,13 @@ public partial class MainView : UserControl
             else
             {
                 // check to delete music file
-                var res = await MessageBox.Show($"Would you like to delete\n{music.FileName} as well?", "Music Removal", MessageBox.MessageBoxButtons.YesNoCancel);
+                MessageBox.MessageBoxResult res = await MessageBox.Show($"Would you like to delete\n{music.FileName} as well?", "Music Removal", MessageBox.MessageBoxButtons.YesNoCancel);
                 if (res == MessageBox.MessageBoxResult.Yes)
                 {
                     Global.Files.Remove(Global.Workspace.GetFilePath($"audio\\{music.FileName}"));
                 }
 
-                var source = MusicList.ItemsSource;
+                System.Collections.IEnumerable source = MusicList.ItemsSource;
                 MusicList.ItemsSource = null;
                 MusicList.ItemsSource = source;
             }
@@ -386,7 +386,7 @@ public partial class MainView : UserControl
         {
             Global.StopMusic();
 
-            var path = Global.Workspace.GetFilePath($"audio\\{music.FileName}");
+            string path = Global.Workspace.GetFilePath($"audio\\{music.FileName}");
 
             if (!Global.Files.Exists(path))
             {
@@ -395,10 +395,10 @@ public partial class MainView : UserControl
             }
 
             // load dsp
-            var dsp = HPS.ToDSP(Global.Files.Get(path));
+            DSP dsp = HPS.ToDSP(Global.Files.Get(path));
 
             // create editor popup
-            var popup = new AudioLoopEditor();
+            AudioLoopEditor popup = new();
             popup.SetAudio(dsp);
             if (App.MainWindow != null)
             {
@@ -406,11 +406,11 @@ public partial class MainView : UserControl
 
                 if (popup.Result == AudioLoopEditor.AudioEditorResult.SaveChanges)
                 {
-                    var newdsp = popup.ApplyChanges();
+                    DSP? newdsp = popup.ApplyChanges();
 
                     if (newdsp != null)
                     {
-                        using var m = new MemoryStream();
+                        using MemoryStream m = new();
                         HPS.WriteDSPAsHPS(newdsp, m);
                         Global.Files.Set(path, m.ToArray());
                     }
@@ -449,7 +449,7 @@ public partial class MainView : UserControl
         if (Global.Workspace == null)
             return;
 
-        var series = new MexSeries()
+        MexSeries series = new()
         {
             Name = "New Series"
         };
@@ -468,7 +468,7 @@ public partial class MainView : UserControl
 
         if (SeriesList.SelectedItem is MexSeries series)
         {
-            var ask = await MessageBox.Show($"Are you sure you want\nto remove \"{series.Name}\"?", 
+            MessageBox.MessageBoxResult ask = await MessageBox.Show($"Are you sure you want\nto remove \"{series.Name}\"?",
                 "Remove Series",
                 MessageBox.MessageBoxButtons.YesNoCancel);
 
@@ -492,7 +492,7 @@ public partial class MainView : UserControl
         if (Global.Workspace == null)
             return;
 
-        var code = new MexCode();
+        MexCode code = new();
         Global.Workspace.Project.Codes.Add(code);
         CodesList.SelectedItem = code;
     }
@@ -508,7 +508,7 @@ public partial class MainView : UserControl
 
         if (CodesList.SelectedItem is MexCode code)
         {
-            var ask = await MessageBox.Show($"Are you sure you want\nto remove \"{code.Name}\"?",
+            MessageBox.MessageBoxResult ask = await MessageBox.Show($"Are you sure you want\nto remove \"{code.Name}\"?",
                 "Remove Code",
                 MessageBox.MessageBoxButtons.YesNoCancel);
 
@@ -531,15 +531,15 @@ public partial class MainView : UserControl
         if (Global.Workspace != null &&
             SeriesList.SelectedItem is MexSeries series)
         {
-            var obj = series.ModelAsset.GetOBJFile(Global.Workspace);
+            mexLib.Utilties.ObjFile? obj = series.ModelAsset.GetOBJFile(Global.Workspace);
 
             if (obj == null)
                 return;
 
-            var raster = new ObjRasterizer(series.ModelAsset);
-            var png = raster.SaveDrawingToPng(80, 64);
+            ObjRasterizer raster = new(series.ModelAsset);
+            byte[] png = raster.SaveDrawingToPng(80, 64);
 
-            using var stream = new MemoryStream(png);
+            using MemoryStream stream = new(png);
             series.IconAsset.SetFromImageFile(Global.Workspace, stream);
 
             SeriesList.SelectedItem = null;

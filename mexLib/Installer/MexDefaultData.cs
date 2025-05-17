@@ -295,7 +295,7 @@ namespace mexLib.Installer
         {
             for (uint i = 0; i < 0x33; i++)
             {
-                var eff = new MEX_EffectFiles()
+                MEX_EffectFiles eff = new()
                 {
                     FileName = dol.GetStruct<string>(0x803c025c + 0x00, i, 0x0C),
                     Symbol = dol.GetStruct<string>(0x803c025c + 0x04, i, 0x0C),

@@ -26,7 +26,7 @@ namespace mexLib.Types
 
         [Browsable(false)]
         [JsonIgnore]
-        public MexTextureAsset[] IconsAssets { get; set; } = 
+        public MexTextureAsset[] IconsAssets { get; set; } =
         {
             new MexTextureAsset()
             {
@@ -100,7 +100,7 @@ namespace mexLib.Types
         public string? CSSBack { get => CSSBackAsset.AssetFileName; internal set => CSSBackAsset.AssetFileName = value; }
         [DisplayName("Icon Background")]
         [JsonIgnore]
-        public MexTextureAsset CSSBackAsset { get; set; } = new ()
+        public MexTextureAsset CSSBackAsset { get; set; } = new()
         {
             AssetPath = "css/back",
             Width = 64,
@@ -113,7 +113,7 @@ namespace mexLib.Types
         public string? CSSNull { get => CSSNullAsset.AssetFileName; internal set => CSSNullAsset.AssetFileName = value; }
         [DisplayName("Blank Fighter")]
         [JsonIgnore]
-        public MexTextureAsset CSSNullAsset { get; set; } = new ()
+        public MexTextureAsset CSSNullAsset { get; set; } = new()
         {
             AssetPath = "css/null",
             Width = 64,

@@ -1,11 +1,5 @@
-﻿using HSDRaw.Melee;
-using HSDRaw;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HSDRaw.Melee.Pl;
+﻿using HSDRaw;
+using HSDRaw.Melee;
 
 namespace mexLib.Generators
 {
@@ -18,8 +12,8 @@ namespace mexLib.Generators
         public static void Compile(MexWorkspace ws)
         {
             //get plco data
-            var plcoFile = new HSDRawFile(ws.GetFilePath("PlCo.dat"));
-            var plCo = plcoFile["ftLoadCommonData"].Data as SBM_ftLoadCommonData;
+            HSDRawFile plcoFile = new(ws.GetFilePath("PlCo.dat"));
+            SBM_ftLoadCommonData? plCo = plcoFile["ftLoadCommonData"].Data as SBM_ftLoadCommonData;
 
             if (plCo == null)
                 return;
@@ -40,15 +34,15 @@ namespace mexLib.Generators
         private static void GeneratePlCoDummy(MexWorkspace ws, SBM_ftLoadCommonData plCo)
         {
             // 
-            var tb1 = new byte[54];
-            var tb2 = new byte[54];
+            byte[] tb1 = new byte[54];
+            byte[] tb2 = new byte[54];
             tb2[53] = 255;
             for (byte i = 0; i < 53; i++)
             {
                 tb1[i] = i;
                 tb2[i] = i;
             }
-            var commonBoneTable = new SBM_BoneLookupTable()
+            SBM_BoneLookupTable commonBoneTable = new()
             {
                 BoneCount = 53,
             };

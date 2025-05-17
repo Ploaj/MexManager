@@ -61,14 +61,14 @@ namespace mexLib.Types
         /// <param name="stage"></param>
         public static void ToPackage(Stream s, MexWorkspace workspace, MexSeries stage)
         {
-            using var zip = new ZipWriter(s);
+            using ZipWriter zip = new(s);
 
             zip.WriteAsJson("stage.json", stage);
             zip.TryWriteTextureAsset(workspace, stage.IconAsset, "icon.png");
-            var obj = stage.ModelAsset.GetOBJFile(workspace);
+            ObjFile? obj = stage.ModelAsset.GetOBJFile(workspace);
             if (obj != null)
             {
-                using var objStream = new MemoryStream();
+                using MemoryStream objStream = new();
                 obj.Write(objStream);
                 zip.Write("icon.obj", objStream.ToArray());
             }
@@ -85,7 +85,7 @@ namespace mexLib.Types
             using ZipArchive zip = new(s);
 
             {
-                var entry = zip.GetEntry("series.json");
+                ZipArchiveEntry? entry = zip.GetEntry("series.json");
                 if (entry == null)
                     return new MexInstallerError("\"series.json\" was not found in zip");
 

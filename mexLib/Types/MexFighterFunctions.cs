@@ -246,7 +246,7 @@ namespace mexLib.Types
             /// <param name="internalId"></param>
             public void ToMxDt(MEX_Data mexData, int internalId)
             {
-                var ff = mexData.FighterFunctions;
+                MEX_FighterFunctionTable ff = mexData.FighterFunctions;
 
                 ff.MoveLogicPointers[internalId] = MoveLogicPointer;
                 ff.OnLoad[internalId] = OnLoad;
@@ -299,7 +299,7 @@ namespace mexLib.Types
                 ff.onAppeal[internalId] = OnAppeal;
                 ff.getTrailData[internalId] = GetSwordTrail;
 
-                var kff = mexData.KirbyFunctions;
+                MEX_KirbyFunctionTable kff = mexData.KirbyFunctions;
                 kff.KirbyOnHit[internalId] = KirbyOnHit;
                 kff.KirbyOnItemInit[internalId] = KirbyOnItemInit;
                 kff.OnAbilityLose[internalId] = KirbyOnLoseAbility;
@@ -376,7 +376,7 @@ namespace mexLib.Types
 
             internal void FromMxDt(MEX_Data mxdt, int internalId)
             {
-                var ff = mxdt.FighterFunctions;
+                MEX_FighterFunctionTable ff = mxdt.FighterFunctions;
 
                 MoveLogicPointer = ff.MoveLogicPointers[internalId];
                 OnLoad = ff.OnLoad[internalId];
@@ -429,7 +429,7 @@ namespace mexLib.Types
                 OnAppeal = ff.onAppeal[internalId];
                 GetSwordTrail = ff.getTrailData[internalId];
 
-                var kff = mxdt.KirbyFunctions;
+                MEX_KirbyFunctionTable kff = mxdt.KirbyFunctions;
                 KirbyOnHit = kff.KirbyOnHit[internalId];
                 KirbyOnItemInit = kff.KirbyOnItemInit[internalId];
                 KirbyOnLoseAbility = kff.OnAbilityLose[internalId];

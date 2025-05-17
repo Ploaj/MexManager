@@ -14,14 +14,14 @@ namespace MexManager.Factories
 
         public override Control? HandleNewProperty(PropertyCellContext context)
         {
-            var prop = context.Property;
+            System.ComponentModel.PropertyDescriptor prop = context.Property;
 
             if (prop.GetCustomAttribute<DisplayHexAttribute>() == null)
                 return null;
 
             if (prop.PropertyType == typeof(uint))
             {
-                var control = new UIntHexEditor()
+                UIntHexEditor control = new()
                 {
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };

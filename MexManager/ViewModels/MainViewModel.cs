@@ -1,13 +1,11 @@
-﻿using ReactiveUI;
-using System.Windows.Input;
-using System.Collections.ObjectModel;
+﻿using GCILib;
 using mexLib.Types;
-using System.Diagnostics;
-using MexManager.Views;
-using GCILib;
 using MexManager.Tools;
+using MexManager.Views;
+using ReactiveUI;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using DynamicData;
+using System.Windows.Input;
 
 namespace MexManager.ViewModels;
 
@@ -19,7 +17,7 @@ public partial class MainViewModel : ViewModelBase
     public ICommand LaunchCommand { get; }
     public ICommand EditBannerCommand { get; }
     public ICommand ExportISOCommand { get; }
-    
+
 
     public SoundGroupModel SoundViewModel { get; } = new SoundGroupModel();
 
@@ -189,24 +187,24 @@ public partial class MainViewModel : ViewModelBase
             if (Global.Workspace == null)
                 return;
 
-            var bannerFilePath = Global.Workspace.GetFilePath("opening.bnr");
+            string bannerFilePath = Global.Workspace.GetFilePath("opening.bnr");
 
             if (!Global.Workspace.FileManager.Exists(bannerFilePath))
                 return;
 
-            var bannerFile = Global.Workspace.FileManager.Get(bannerFilePath);
+            byte[] bannerFile = Global.Workspace.FileManager.Get(bannerFilePath);
 
             if (bannerFile == null) return;
 
             GCBanner banner = new(bannerFile);
-            var popup = new BannerEditor();
+            BannerEditor popup = new();
             popup.SetBanner(banner);
 
             if (App.MainWindow != null)
             {
                 await popup.ShowDialog(App.MainWindow);
 
-                var newBanner = popup.GetBanner();
+                GCBanner? newBanner = popup.GetBanner();
 
                 if (popup.SaveChanges && newBanner != null)
                 {
@@ -312,12 +310,12 @@ public partial class MainViewModel : ViewModelBase
             App.MainWindow == null)
             return;
 
-        var res = await MessageBox.Show("Save Changes before exporting?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
+        MessageBox.MessageBoxResult res = await MessageBox.Show("Save Changes before exporting?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
 
         if (res == MessageBox.MessageBoxResult.Cancel)
             return;
 
-        var file = await FileIO.TrySaveFile("Export ISO", "game.iso", FileIO.FilterISO);
+        string? file = await FileIO.TrySaveFile("Export ISO", "game.iso", FileIO.FilterISO);
         if (file == null)
             return;
 
@@ -325,7 +323,7 @@ public partial class MainViewModel : ViewModelBase
 
         ProgressWindow progressWindow = new();
 
-        BackgroundWorker backgroundWorker = new ()
+        BackgroundWorker backgroundWorker = new()
         {
             WorkerReportsProgress = true,
         };

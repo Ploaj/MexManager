@@ -5,7 +5,7 @@ namespace mexLib.Utilties
 {
     public class Hex
     {
-        private readonly static Regex RegHEX = new (@"[0-9a-fA-F]+");
+        private readonly static Regex RegHEX = new(@"[0-9a-fA-F]+");
 
         /// <summary>
         /// For uppercase A-F letters:
@@ -58,7 +58,7 @@ namespace mexLib.Utilties
                 return false;
 
             // trim comments and spaces
-            var trimmed = Regex.Replace(Regex.Replace(line, "#.*", ""), @"\s+", "");
+            string trimmed = Regex.Replace(Regex.Replace(line, "#.*", ""), @"\s+", "");
 
             // check valid length
             if (trimmed.Length != 16)
@@ -82,7 +82,7 @@ namespace mexLib.Utilties
         {
             int bytesPerLine = 8;
 
-            StringBuilder result = new ();
+            StringBuilder result = new();
 
             for (int i = 0; i < byteArray.Length; i++)
             {

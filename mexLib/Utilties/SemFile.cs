@@ -36,7 +36,7 @@ namespace mexLib.Utilties
 
     public class SemCommand : MexReactiveObject
     {
-        public static ObservableCollection<SemCode> SelectableCodes => new ()
+        public static ObservableCollection<SemCode> SelectableCodes => new()
         {
             SemCode.Wait,
             SemCode.Sound,
@@ -77,7 +77,7 @@ namespace mexLib.Utilties
             SemCode.Wait or
             SemCode.ForcedTimer or
             SemCode.Sound or
-            SemCode.EndLoop or 
+            SemCode.EndLoop or
             SemCode.SetLoop => 0xFFFF,
 
             SemCode.SetPriority or SemCode.AddPriority => 28,
@@ -193,7 +193,7 @@ namespace mexLib.Utilties
         public int Pack(Stream s, int timer_value)
         {
             if (SemCode == SemCode.ForcedTimer)
-                s.WriteByte((byte)0);
+                s.WriteByte(0);
             else
                 s.WriteByte((byte)SemCode);
 
@@ -285,7 +285,7 @@ namespace mexLib.Utilties
         public SemScript(SemScript copyfrom)
         {
             _name = copyfrom._name;
-            foreach (var v in copyfrom.Script)
+            foreach (SemCommand v in copyfrom.Script)
             {
                 Script.Add(new SemCommand(v));
             }
@@ -296,7 +296,7 @@ namespace mexLib.Utilties
         /// <param name="data"></param>
         public SemScript(byte[] data)
         {
-            if (data[^4] != 14 && 
+            if (data[^4] != 14 &&
                 data[^4] != 15 &&
                 data[^4] != 253)
             {
@@ -306,7 +306,7 @@ namespace mexLib.Utilties
             // decompile commands
             for (int i = 0; i < data.Length; i += 4)
             {
-                var command = (SemCode)data[i];
+                SemCode command = (SemCode)data[i];
                 int timer;
                 int value;
 
@@ -375,7 +375,7 @@ namespace mexLib.Utilties
         /// <param name="soundid"></param>
         public void RemoveSoundID(int soundid)
         {
-            foreach (var v in Script)
+            foreach (SemCommand v in Script)
             {
                 if (v.SemCode == SemCode.Sound)
                 {
@@ -393,7 +393,7 @@ namespace mexLib.Utilties
         /// <returns></returns>
         public int GetFirstSoundID()
         {
-            foreach (var v in Script)
+            foreach (SemCommand v in Script)
             {
                 if (v.SemCode == SemCode.Sound)
                 {
@@ -407,7 +407,7 @@ namespace mexLib.Utilties
         /// </summary>
         public void AdjustSoundOffset(int amount)
         {
-            foreach (var v in Script)
+            foreach (SemCommand v in Script)
             {
                 if (v.SemCode == SemCode.Sound)
                 {
@@ -420,7 +420,7 @@ namespace mexLib.Utilties
         /// </summary>
         public void CleanScripts()
         {
-            foreach (var v in Script)
+            foreach (SemCommand v in Script)
             {
                 if (v.SemCode == SemCode.ForcedTimer)
                     v.SemCode = SemCode.Wait;
@@ -437,7 +437,7 @@ namespace mexLib.Utilties
         /// <returns></returns>
         public byte[] Compile()
         {
-            using var stream = new MemoryStream();
+            using MemoryStream stream = new();
 
             // make sure to manually set execute loops function
             //for (int i = 1; i < Script.Count; i++)
@@ -512,7 +512,7 @@ namespace mexLib.Utilties
             // make sure script ends
             if (Script.Count > 0)
             {
-                var endScriptCode = Script[^1].SemCode;
+                SemCode endScriptCode = Script[^1].SemCode;
 
                 if (endScriptCode != SemCode.End &&
                     endScriptCode != SemCode.Stop &&
@@ -535,9 +535,9 @@ namespace mexLib.Utilties
         /// <param name="groups"></param>
         public static void Compile(Stream stream, IEnumerable<SemScript[]> groups)
         {
-            var g = groups.ToList();
+            List<SemScript[]> g = groups.ToList();
 
-            using BinaryWriterExt w = new (stream);
+            using BinaryWriterExt w = new(stream);
             w.BigEndian = true;
 
             // write header
@@ -545,7 +545,7 @@ namespace mexLib.Utilties
             w.Write(0);
             w.Write(g.Count);
             int index = 0;
-            foreach (var e in g)
+            foreach (SemScript[]? e in g)
             {
                 w.Write(index);
                 index += e.Length;
@@ -554,13 +554,13 @@ namespace mexLib.Utilties
 
             // calculate and write offsets for script data
             long data_start = stream.Position + (4 * (index + 1));
-            foreach (var e in g)
+            foreach (SemScript[]? e in g)
             {
-                foreach (var s in e)
+                foreach (SemScript? s in e)
                 {
                     w.Write((uint)data_start);
 
-                    var temp = w.BaseStream.Position;
+                    long temp = w.BaseStream.Position;
                     w.Seek((uint)data_start);
                     w.Write(s.Compile());
                     data_start = w.BaseStream.Position;
@@ -576,31 +576,31 @@ namespace mexLib.Utilties
         /// <returns></returns>
         public static IEnumerable<SemScript[]> Decompile(Stream stream)
         {
-            using BinaryReaderExt r = new (stream);
+            using BinaryReaderExt r = new(stream);
             r.BigEndian = true;
 
             r.Seek(8); // skip header
             int count = r.ReadInt32();
-            var counts = new int[count + 1];
+            int[] counts = new int[count + 1];
             for (int i = 0; i < counts.Length; i++)
                 counts[i] = r.ReadInt32();
 
             for (int i = 0; i < count; i++)
             {
-                var start = counts[i];
-                var end = counts[i + 1];
+                int start = counts[i];
+                int end = counts[i + 1];
 
-                var group = new SemScript[end - start];
+                SemScript[] group = new SemScript[end - start];
                 for (int j = start; j < end; j++)
                 {
-                    var data_start = r.ReadInt32();
-                    var data_end = r.ReadInt32();
+                    int data_start = r.ReadInt32();
+                    int data_end = r.ReadInt32();
                     r.Position -= 4;
 
                     if (data_end == 0)
                         data_end = (int)stream.Length;
 
-                    var data = r.GetSection((uint)data_start, data_end - data_start);
+                    byte[] data = r.GetSection((uint)data_start, data_end - data_start);
 
                     group[j - start] = new SemScript(data);
                 }

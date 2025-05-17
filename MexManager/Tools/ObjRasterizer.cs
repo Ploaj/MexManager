@@ -35,7 +35,7 @@ namespace MexManager.Tools
 
             _render = new StreamGeometry();
 
-            var obj = _asset.GetOBJFile(Global.Workspace);
+            mexLib.Utilties.ObjFile? obj = _asset.GetOBJFile(Global.Workspace);
 
             if (obj == null)
                 return;
@@ -44,16 +44,16 @@ namespace MexManager.Tools
                 (obj.Vertices.Max(v => v.X) - obj.Vertices.Min(v => v.X)),
                 (obj.Vertices.Max(v => v.Y) - obj.Vertices.Min(v => v.Y)));
 
-            using var context = _render.Open();
-            foreach (var face in obj.Faces)
+            using StreamGeometryContext context = _render.Open();
+            foreach (mexLib.Utilties.ObjFile.Face face in obj.Faces)
             {
-                var v1 = obj.Vertices[face.Vertices[0].VertexIndex];
-                var v2 = obj.Vertices[face.Vertices[1].VertexIndex];
-                var v3 = obj.Vertices[face.Vertices[2].VertexIndex];
+                mexLib.Utilties.ObjFile.Vector3 v1 = obj.Vertices[face.Vertices[0].VertexIndex];
+                mexLib.Utilties.ObjFile.Vector3 v2 = obj.Vertices[face.Vertices[1].VertexIndex];
+                mexLib.Utilties.ObjFile.Vector3 v3 = obj.Vertices[face.Vertices[2].VertexIndex];
 
-                var p1 = new Point(v1.X, v1.Y);
-                var p2 = new Point(v2.X, v2.Y);
-                var p3 = new Point(v3.X, v3.Y);
+                Point p1 = new(v1.X, v1.Y);
+                Point p2 = new(v2.X, v2.Y);
+                Point p3 = new(v3.X, v3.Y);
 
                 context.BeginFigure(p1, true); // Start the figure at the first vertex
                 context.LineTo(p2); // Draw line to the second vertex
@@ -73,18 +73,18 @@ namespace MexManager.Tools
             if (_render != null)
             {
                 // Determine scale factors for x and y axes
-                var xScale = width / _renderSize.Width;
-                var yScale = height / _renderSize.Height;
+                double xScale = width / _renderSize.Width;
+                double yScale = height / _renderSize.Height;
 
                 double scale = Math.Min(xScale, yScale); // Scale to fit the smallest dimension
 
                 // Determine center of the control
-                var centerX = width / 2;
-                var centerY = height / 2;
+                double centerX = width / 2;
+                double centerY = height / 2;
 
-                using var tra = dc.PushTransform(Matrix.CreateTranslation(centerX, centerY));
-                using var sca2 = dc.PushTransform(Matrix.CreateScale(scale, -scale));
-                using var sca1 = dc.PushTransform(Matrix.CreateScale(icon_scale, icon_scale));
+                using DrawingContext.PushedState tra = dc.PushTransform(Matrix.CreateTranslation(centerX, centerY));
+                using DrawingContext.PushedState sca2 = dc.PushTransform(Matrix.CreateScale(scale, -scale));
+                using DrawingContext.PushedState sca1 = dc.PushTransform(Matrix.CreateScale(icon_scale, icon_scale));
 
                 // Define a brush to fill the triangles
                 IBrush brush = Brushes.White;  // You can use a different color or gradient
@@ -103,16 +103,16 @@ namespace MexManager.Tools
         public byte[] SaveDrawingToPng(int width, int height)
         {
             // Create a RenderTargetBitmap with the size of the control
-            var renderTargetBitmap = new RenderTargetBitmap(new PixelSize(width, height), new Vector(96, 96));
+            RenderTargetBitmap renderTargetBitmap = new(new PixelSize(width, height), new Vector(96, 96));
 
             // Render the control into the RenderTargetBitmap
-            using var context = renderTargetBitmap.CreateDrawingContext();
+            using DrawingContext context = renderTargetBitmap.CreateDrawingContext();
 
             // Draw your content here. For demonstration, let's draw the control itself
             RenderEmblem(context, width, height, 0.85);
 
             // Save the bitmap as PNG
-            using var stream = new MemoryStream();
+            using MemoryStream stream = new();
             renderTargetBitmap.Save(stream);
             return stream.ToArray();
         }

@@ -194,7 +194,7 @@ namespace MexManager.Controls
             }
         }
 
-        private Point _cursorPosition = new ();
+        private Point _cursorPosition = new();
 
         public SelectCanvas()
         {
@@ -220,8 +220,8 @@ namespace MexManager.Controls
 
             PointerMoved += (sender, e) =>
             {
-                var current = e.GetPosition(this);
-                var delta = current - _cursorPosition;
+                Point current = e.GetPosition(this);
+                Point delta = current - _cursorPosition;
                 _cursorPosition = current;
 
                 if (e.GetCurrentPoint(this).Properties.IsMiddleButtonPressed)
@@ -244,8 +244,8 @@ namespace MexManager.Controls
 
         public void ClampOffset()
         {
-            var currentWidth = Bounds.Width / 2;
-            var currentHeight = Bounds.Height / 2;
+            double currentWidth = Bounds.Width / 2;
+            double currentHeight = Bounds.Height / 2;
 
             if (Properties.XOffset < -currentWidth)
                 Properties.XOffset = -(float)currentWidth;
@@ -282,13 +282,13 @@ namespace MexManager.Controls
             //using var pop = context.PushTransform(translationMatrix);
 
             // draw background
-            var rect = TransformRect(0, 0, TemplateImageWidth, TemplateImageHeight);
+            Rect rect = TransformRect(0, 0, TemplateImageWidth, TemplateImageHeight);
             context.DrawImage(TemplateImage, rect);
 
             // draw icons
             if (Icons != null)
             {
-                foreach (var icon in Icons)
+                foreach (MexIconBase icon in Icons)
                 {
                     DrawIcon(context, icon);
                 }
@@ -314,9 +314,9 @@ namespace MexManager.Controls
 
                 context.DrawRectangle(OverscanPen, rect);
 
-                var overscan = TransformRect(0, 0, TemplateImageWidth * 0.95f, TemplateImageHeight * 0.95f);
-                context.DrawRectangle(OverscanPen05, overscan); 
-                
+                Rect overscan = TransformRect(0, 0, TemplateImageWidth * 0.95f, TemplateImageHeight * 0.95f);
+                context.DrawRectangle(OverscanPen05, overscan);
+
                 overscan = TransformRect(0, 0, TemplateImageWidth * 0.9f, TemplateImageHeight * 0.9f);
                 context.DrawRectangle(OverscanPen10, overscan);
             }
@@ -324,8 +324,8 @@ namespace MexManager.Controls
 
         private Rect TransformRect(double x, double y, double w, double h)
         {
-            var viewportWidth = Bounds.Width;
-            var viewportHeight = Bounds.Height;
+            double viewportWidth = Bounds.Width;
+            double viewportHeight = Bounds.Height;
 
             x *= Properties.Zoom;
             y *= Properties.Zoom;
@@ -336,9 +336,9 @@ namespace MexManager.Controls
             y -= Properties.YOffset;
 
             return new Rect(
-                viewportWidth / 2 + x - w, 
+                viewportWidth / 2 + x - w,
                 viewportHeight / 2 - y - h,
-                w * 2, 
+                w * 2,
                 h * 2);
         }
 
@@ -359,7 +359,7 @@ namespace MexManager.Controls
             {
                 if (!IconBitmapCache.ContainsKey(icon.ImageKey))
                 {
-                    var tex = icon.GetIconImage(Global.Workspace);
+                    mexLib.MexImage? tex = icon.GetIconImage(Global.Workspace);
 
                     if (tex != null)
                         IconBitmapCache.Add(icon.ImageKey, tex.ToBitmap());
@@ -383,10 +383,10 @@ namespace MexManager.Controls
             if (icon == null)
                 return;
 
-            var off = icon.CollisionOffset;
-            var size = icon.CollisionSize;
+            (float, float) off = icon.CollisionOffset;
+            (float, float) size = icon.CollisionSize;
 
-            var rect = TransformRect(
+            Rect rect = TransformRect(
                 icon.X + off.Item1,
                 icon.Y + off.Item2,
                 size.Item1 * icon.ScaleX,
@@ -404,10 +404,10 @@ namespace MexManager.Controls
             if (icon == null)
                 return;
 
-            var off = icon.CollisionOffset;
-            var size = icon.CollisionSize;
+            (float, float) off = icon.CollisionOffset;
+            (float, float) size = icon.CollisionSize;
 
-            var rect = TransformRect(
+            Rect rect = TransformRect(
                 icon.X + off.Item1,
                 icon.Y + off.Item2,
                 size.Item1 * icon.ScaleX,
@@ -421,12 +421,12 @@ namespace MexManager.Controls
         /// <param name="icon"></param>
         private void DrawIcon(DrawingContext context, MexIconBase icon)
         {
-            var width = icon.BaseWidth * icon.ScaleX;
-            var height = icon.BaseHeight * icon.ScaleY;
+            float width = icon.BaseWidth * icon.ScaleX;
+            float height = icon.BaseHeight * icon.ScaleY;
 
-            var rect = TransformRect(icon.X, icon.Y, width, height);
+            Rect rect = TransformRect(icon.X, icon.Y, width, height);
 
-            var bmp = GetIconBitmap(icon);
+            Bitmap? bmp = GetIconBitmap(icon);
             if (bmp == null)
             {
                 context.FillRectangle(Brushes.White, rect);
@@ -446,15 +446,15 @@ namespace MexManager.Controls
         /// <param name="icon"></param>
         private void DrawIconGhost(DrawingContext context, MexIconBase icon)
         {
-            var width = icon.BaseWidth * icon.ScaleX;
-            var height = icon.BaseHeight * icon.ScaleY;
+            float width = icon.BaseWidth * icon.ScaleX;
+            float height = icon.BaseHeight * icon.ScaleY;
 
-            var rect = TransformRect((float)_ghostPointX, (float)_ghostPointY, width, height);
+            Rect rect = TransformRect((float)_ghostPointX, (float)_ghostPointY, width, height);
 
-            var bmp = GetIconBitmap(icon);
+            Bitmap? bmp = GetIconBitmap(icon);
             if (bmp == null)
             {
-                var pen = new Pen(Brushes.Yellow, 1);
+                Pen pen = new(Brushes.Yellow, 1);
                 context.DrawRectangle(Brushes.Transparent, pen, rect);
             }
             else
@@ -466,7 +466,7 @@ namespace MexManager.Controls
                 //};
 
                 // Draw the image with transparency
-                using var op = context.PushOpacity(0.5);
+                using DrawingContext.PushedState op = context.PushOpacity(0.5);
                 context.DrawImage(bmp, rect);
             }
         }
@@ -488,13 +488,13 @@ namespace MexManager.Controls
         /// <returns></returns>
         private MexIconBase? GetIconAtPosition(Point position)
         {
-            var icons = Icons;
+            List<MexIconBase> icons = Icons;
             for (int i = icons.Count - 1; i >= 0; i--)
             {
-                var icon = icons[i];
-                var width = icon.BaseWidth * icon.ScaleX;
-                var height = icon.BaseHeight * icon.ScaleY;
-                var rect = TransformRect(icon.X, icon.Y, width, height);
+                MexIconBase icon = icons[i];
+                float width = icon.BaseWidth * icon.ScaleX;
+                float height = icon.BaseHeight * icon.ScaleY;
+                Rect rect = TransformRect(icon.X, icon.Y, width, height);
 
                 if (rect.Contains(position))
                 {
@@ -519,8 +519,8 @@ namespace MexManager.Controls
 
             if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             {
-                var position = e.GetPosition(this);
-                var icon = GetIconAtPosition(position);
+                Point position = e.GetPosition(this);
+                MexIconBase? icon = GetIconAtPosition(position);
                 if (icon != null)
                 {
                     _draggingIcon = icon;
@@ -542,8 +542,8 @@ namespace MexManager.Controls
 
             if (_draggingIcon != null)
             {
-                var position = e.GetPosition(this);
-                var delta = position - _dragStart;
+                Point position = e.GetPosition(this);
+                Point delta = position - _dragStart;
 
                 if (SwapMode)
                 {
@@ -571,8 +571,8 @@ namespace MexManager.Controls
 
             if (_draggingIcon != null)
             {
-                var position = e.GetPosition(this);
-                var icon = GetIconAtPosition(position);
+                Point position = e.GetPosition(this);
+                MexIconBase? icon = GetIconAtPosition(position);
 
                 if (icon != null)
                 {

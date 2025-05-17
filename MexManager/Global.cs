@@ -41,7 +41,7 @@ namespace MexManager
         {
             if (Workspace != null)
             {
-                var hps = Workspace.GetFilePath($"audio\\{music.FileName}");
+                string hps = Workspace.GetFilePath($"audio\\{music.FileName}");
 
                 if (Files.Exists(hps))
                 {
@@ -78,8 +78,8 @@ namespace MexManager
         public static MexWorkspace? CreateWorkspace(string filepath)
         {
             // load codes
-            var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
-            var defaultCodes = CodeLoader.FromINI(File.ReadAllBytes(MexAddCodePath));
+            MexCode? mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
+            System.Collections.Generic.IEnumerable<MexCode> defaultCodes = CodeLoader.FromINI(File.ReadAllBytes(MexAddCodePath));
 
             if (mainCode == null)
                 return null;
@@ -100,9 +100,9 @@ namespace MexManager
         public static MexWorkspace? CreateWorkspaceFromMex(string mexdolPath)
         {
             // load codes
-            var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
-            var defaultCodes = CodeLoader.FromINI(File.ReadAllBytes(MexAddCodePath));
-            var path = Path.GetDirectoryName(Path.GetDirectoryName(mexdolPath));
+            MexCode? mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
+            System.Collections.Generic.IEnumerable<MexCode> defaultCodes = CodeLoader.FromINI(File.ReadAllBytes(MexAddCodePath));
+            string? path = Path.GetDirectoryName(Path.GetDirectoryName(mexdolPath));
 
             if (path == null || mainCode == null)
                 return null;
@@ -131,7 +131,7 @@ namespace MexManager
 
             if (MexWorkspace.TryOpenWorkspace(filepath, out MexWorkspace? workspace))
             {
-                var mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
+                MexCode? mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
                 if (workspace != null && mainCode != null)
                     workspace.Project.MainCode = mainCode;
                 Workspace = workspace;
@@ -172,7 +172,7 @@ namespace MexManager
             string parameters = $"--exec=\"{Workspace.GetSystemPath("main.dol")}\"";
 
             // Start a new process
-            ProcessStartInfo processStartInfo = new ()
+            ProcessStartInfo processStartInfo = new()
             {
                 FileName = exePath,
                 Arguments = parameters,
@@ -182,7 +182,7 @@ namespace MexManager
                 CreateNoWindow = true          // Optional: hide the window
             };
 
-            using Process process = new ();
+            using Process process = new();
             {
                 process.StartInfo = processStartInfo;
                 process.Start();

@@ -45,8 +45,8 @@ namespace mexLib.AssetTypes
         /// <returns></returns>
         private string GetUniqueAssetPath(MexWorkspace workspace)
         {
-            var assetPath = workspace.GetAssetPath("");
-            var sourcePath = workspace.FileManager.GetUniqueFilePath(workspace.GetAssetPath(AssetPath) + ".obj");
+            string assetPath = workspace.GetAssetPath("");
+            string sourcePath = workspace.FileManager.GetUniqueFilePath(workspace.GetAssetPath(AssetPath) + ".obj");
             return GetRelativePath(assetPath, sourcePath);
         }
         /// <summary>
@@ -66,7 +66,7 @@ namespace mexLib.AssetTypes
         /// <param name="image"></param>
         public void SetFromData(MexWorkspace workspace, byte[] data)
         {
-            var path = GetFullPath(workspace);
+            string path = GetFullPath(workspace);
 
             // set data
             workspace.FileManager.Set(path + ".obj", data);
@@ -78,10 +78,10 @@ namespace mexLib.AssetTypes
         /// <param name="obj"></param>
         public void SetFromObjFile(MexWorkspace workspace, ObjFile obj)
         {
-            var path = GetFullPath(workspace);
+            string path = GetFullPath(workspace);
 
             // set data
-            using var stream = new MemoryStream();
+            using MemoryStream stream = new();
             obj.Write(stream);
             workspace.FileManager.Set(path + ".obj", stream.ToArray());
         }
@@ -91,16 +91,16 @@ namespace mexLib.AssetTypes
         /// <param name="dobj"></param>
         public void SetFromDObj(MexWorkspace workspace, HSD_DOBJ dobj)
         {
-            var path = GetFullPath(workspace);
+            string path = GetFullPath(workspace);
 
             // convert dobj data to position only obj file
-            var obj = new ObjFile();
-            var dl = dobj.Pobj.ToDisplayList();
+            ObjFile obj = new();
+            GX_DisplayList dl = dobj.Pobj.ToDisplayList();
 
             int offset = 0;
-            foreach (var prim in dl.Primitives)
+            foreach (GX_PrimitiveGroup? prim in dl.Primitives)
             {
-                var verts = dl.Vertices.GetRange(offset, prim.Count);
+                List<GX_Vertex> verts = dl.Vertices.GetRange(offset, prim.Count);
                 offset += prim.Count;
 
                 switch (prim.PrimitiveType)
@@ -145,7 +145,7 @@ namespace mexLib.AssetTypes
                     obj.Vertices.Add(new ObjFile.Vector3(verts[i + 2].POS.X, verts[i + 2].POS.Y, verts[i + 2].POS.Z));
                 }
             }
-            using var stream = new MemoryStream();
+            using MemoryStream stream = new();
             obj.Write(stream);
             workspace.FileManager.Set(path + ".obj", stream.ToArray());
 
@@ -160,13 +160,13 @@ namespace mexLib.AssetTypes
             if (AssetFileName == null)
                 return null;
 
-            var path = GetFullPath(workspace);
+            string path = GetFullPath(workspace);
 
-            using var stream = workspace.FileManager.GetStream(path + ".obj");
+            using Stream? stream = workspace.FileManager.GetStream(path + ".obj");
             if (stream == null)
                 return null;
 
-            var obj = new ObjFile();
+            ObjFile obj = new();
             obj.Load(stream);
             return obj;
         }
@@ -179,7 +179,7 @@ namespace mexLib.AssetTypes
             if (AssetFileName == null)
                 return;
 
-            var path = GetFullPath(workspace);
+            string path = GetFullPath(workspace);
 
             workspace.FileManager.Remove(path + ".obj");
         }
@@ -192,7 +192,7 @@ namespace mexLib.AssetTypes
         /// <returns></returns>
         public bool SetFromPackage(MexWorkspace workspace, ZipArchive zip, string filename)
         {
-            var entry = zip.GetEntry(filename);
+            ZipArchiveEntry? entry = zip.GetEntry(filename);
 
             if (entry == null)
                 return false;

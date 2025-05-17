@@ -1,25 +1,18 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
-using Avalonia.Media;
 using Avalonia.PropertyGrid.Controls;
 using Avalonia.PropertyGrid.Controls.Factories;
 using Avalonia.PropertyGrid.Services;
-using DynamicData.Kernel;
 using mexLib.Attributes;
 using MexManager.Extensions;
 using MexManager.Tools;
-using PropertyModels.ComponentModel.DataAnnotations;
 using PropertyModels.Extensions;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MexManager.Factories
@@ -35,8 +28,8 @@ namespace MexManager.Factories
 
         public static Control? GenerateControl(PropertyCellContext context)
         {
-            var prop = context.Property;
-            var attr = prop.GetCustomAttribute<MexFilePathValidatorAttribute>();
+            PropertyDescriptor prop = context.Property;
+            MexFilePathValidatorAttribute attr = prop.GetCustomAttribute<MexFilePathValidatorAttribute>();
 
             if (attr == null)
                 return null;
@@ -44,16 +37,16 @@ namespace MexManager.Factories
             if (context.Property.GetValue(context.Target) is not string path)
                 return null;
 
-            var cbAttr = context.Property.GetCustomAttribute<MexFilePathValidatorCallback>();
+            MexFilePathValidatorCallback cbAttr = context.Property.GetCustomAttribute<MexFilePathValidatorCallback>();
 
-            var control = new DockPanel();
+            DockPanel control = new();
 
             TextBox stringControl = (TextBox)new Avalonia.PropertyGrid.Controls.Factories.Builtins.StringCellEditFactory().HandleNewProperty(context);
             stringControl.HorizontalAlignment = HorizontalAlignment.Stretch;
             stringControl.Background = ThemeExtensions.SystemAccentColor;
             stringControl.TextChanged += (s, e) =>
             {
-                var res = attr.IsValid(Global.Workspace, stringControl.Text);
+                ValidationResult? res = attr.IsValid(Global.Workspace, stringControl.Text);
                 if (res == null)
                 {
 
@@ -64,7 +57,7 @@ namespace MexManager.Factories
                 }
                 else
                 {
-                    DataValidationErrors.SetErrors(stringControl, [ LocalizationService.Default[res.ErrorMessage] ]);
+                    DataValidationErrors.SetErrors(stringControl, [LocalizationService.Default[res.ErrorMessage]]);
                 }
             };
             DockPanel.SetDock(stringControl, Dock.Left);
@@ -98,31 +91,31 @@ namespace MexManager.Factories
                 // Get the dropped file names
                 if (e.Data.Contains(DataFormats.Files))
                 {
-                    var fileNames = e.Data.GetFiles();
+                    IEnumerable<Avalonia.Platform.Storage.IStorageItem>? fileNames = e.Data.GetFiles();
                     if (fileNames == null)
                         return;
 
-                    foreach (var f in fileNames.Select(e => e.Path.AbsolutePath))
+                    foreach (string? f in fileNames.Select(e => e.Path.AbsolutePath))
                     {
-                        var newPath = await GetAndValidatePath(f, context.Target, attr, cbAttr);
+                        string? newPath = await GetAndValidatePath(f, context.Target, attr, cbAttr);
                         if (newPath != null)
                             stringControl.Text = newPath;
                     }
                 }
             });
 
-            var button = new Button()
+            Button button = new()
             {
                 Content = "...",
             };
             button.Click += async (s, e) =>
             {
                 // get file
-                var res = await FileIO.TryOpenFile("Open File", path, FileIO.FilterAll);
+                string? res = await FileIO.TryOpenFile("Open File", path, FileIO.FilterAll);
                 if (res == null)
                     return;
 
-                var newPath = await GetAndValidatePath(res, context.Target, attr, cbAttr);
+                string? newPath = await GetAndValidatePath(res, context.Target, attr, cbAttr);
                 if (newPath != null)
                     stringControl.Text = newPath;
             };
@@ -142,9 +135,9 @@ namespace MexManager.Factories
         /// <param name="cbAttr"></param>
         /// <returns></returns>
         private static async Task<string?> GetAndValidatePath(
-            string newPath, 
-            object target, 
-            MexFilePathValidatorAttribute attr, 
+            string newPath,
+            object target,
+            MexFilePathValidatorAttribute attr,
             MexFilePathValidatorCallback? cbAttr)
         {
             if (Global.Workspace == null)
@@ -153,8 +146,8 @@ namespace MexManager.Factories
             // validation callback
             if (cbAttr != null)
             {
-                var callback = target.GetType().GetMethod(cbAttr.CallbackMethodName);
-                var ret = callback?.Invoke(target, [Global.Workspace, newPath]);
+                System.Reflection.MethodInfo? callback = target.GetType().GetMethod(cbAttr.CallbackMethodName);
+                object? ret = callback?.Invoke(target, [Global.Workspace, newPath]);
 
                 if (ret is MexFilePathError error)
                 {
@@ -164,13 +157,13 @@ namespace MexManager.Factories
             }
 
             // get new filename
-            var fileName = System.IO.Path.GetFileName(newPath);
-            var fullPath = attr.GetFullPath(Global.Workspace, fileName);
+            string fileName = System.IO.Path.GetFileName(newPath);
+            string fullPath = attr.GetFullPath(Global.Workspace, fileName);
 
             // check if file already exists
             if (Global.Files.Exists(fullPath))
             {
-                var overwrite = await MessageBox.Show($"File already exists!\nWould you like to overwrite \"{fileName}\"?", "Import File", MessageBox.MessageBoxButtons.YesNoCancel);
+                MessageBox.MessageBoxResult overwrite = await MessageBox.Show($"File already exists!\nWould you like to overwrite \"{fileName}\"?", "Import File", MessageBox.MessageBoxButtons.YesNoCancel);
 
                 if (overwrite != MessageBox.MessageBoxResult.Yes)
                     return null;

@@ -1,10 +1,10 @@
 ﻿using HSDRaw;
 using HSDRaw.Common;
-using mexLib.Types;
-using HSDRaw.Tools;
-using HSDRaw.GX;
 using HSDRaw.Common.Animation;
+using HSDRaw.GX;
+using HSDRaw.Tools;
 using mexLib.AssetTypes;
+using mexLib.Types;
 
 namespace mexLib.Generators
 {
@@ -17,8 +17,8 @@ namespace mexLib.Generators
         /// <returns></returns>
         public static bool Compile(MexWorkspace workspace)
         {
-            var path = workspace.GetFilePath("GmRst.usd");
-            var data = workspace.FileManager.Get(path);
+            string path = workspace.GetFilePath("GmRst.usd");
+            byte[] data = workspace.FileManager.Get(path);
 
             if (data == Array.Empty<byte>())
                 return false;
@@ -41,17 +41,17 @@ namespace mexLib.Generators
         private static void GenerateBanners(MexWorkspace workspace, HSDRawFile file)
         {
             // pnlsce SOBJ -> entry 0 -> material animation
-            var pnlsce = file["pnlsce"];
+            HSDRootNode pnlsce = file["pnlsce"];
             if (pnlsce.Data is not HSD_SOBJ sobj)
                 return;
 
             if (sobj.JOBJDescs.Length < 1)
                 return;
 
-            List<FOBJKey> largekeys = new ();
-            List<HSD_TOBJ> largetobjs = new ();
-            List<FOBJKey> smallkeys = new ();
-            List<HSD_TOBJ> smalltobjs = new ();
+            List<FOBJKey> largekeys = new();
+            List<HSD_TOBJ> largetobjs = new();
+            List<FOBJKey> smallkeys = new();
+            List<HSD_TOBJ> smalltobjs = new();
             // loop through fighters
             for (int internalId = 0; internalId < workspace.Project.Fighters.Count; internalId++)
             {
@@ -59,7 +59,7 @@ namespace mexLib.Generators
                 int externalId = MexFighterIDConverter.ToExternalID(internalId, workspace.Project.Fighters.Count);
 
                 // search and set asset for fighter
-                var fighter = workspace.Project.Fighters[internalId];
+                MexFighter fighter = workspace.Project.Fighters[internalId];
 
                 // sheik hack
                 if (externalId == 19)
@@ -93,7 +93,7 @@ namespace mexLib.Generators
             }
 
             // edit the material animations
-            var matanim = sobj.JOBJDescs[0].MaterialAnimations[0].TreeList;
+            List<HSD_MatAnimJoint> matanim = sobj.JOBJDescs[0].MaterialAnimations[0].TreeList;
 
             // large banner
             {
@@ -121,13 +121,13 @@ namespace mexLib.Generators
                 }
 
                 // joint 10 object 1
-                var joint = matanim[10].MaterialAnimation.Next;
+                HSD_MatAnim joint = matanim[10].MaterialAnimation.Next;
 
                 // set tobjs
                 joint.TextureAnimation.FromTOBJs(largetobjs, false);
 
                 // edit timg track
-                var timg = joint.TextureAnimation.AnimationObject.FObjDesc.List.Find(e => e.TexTrackType == TexTrackType.HSD_A_T_TIMG);
+                HSD_FOBJDesc? timg = joint.TextureAnimation.AnimationObject.FObjDesc.List.Find(e => e.TexTrackType == TexTrackType.HSD_A_T_TIMG);
                 timg?.SetKeys(largekeys.OrderBy(e => e.Frame).ToList(), timg.TrackType);
             }
 
@@ -153,16 +153,16 @@ namespace mexLib.Generators
                 // joint 49 object 0
                 // joint 57 object 0
                 int[] indices = { 33, 41, 49, 57 };
-                foreach(var i in indices)
+                foreach (int i in indices)
                 {
                     // get material anim
-                    var joint = matanim[i].MaterialAnimation;
+                    HSD_MatAnim joint = matanim[i].MaterialAnimation;
 
                     // set tobjs
                     joint.TextureAnimation.FromTOBJs(smalltobjs, false);
 
                     // edit timg track
-                    var timg = joint.TextureAnimation.AnimationObject.FObjDesc.List.Find(e => e.TexTrackType == TexTrackType.HSD_A_T_TIMG);
+                    HSD_FOBJDesc? timg = joint.TextureAnimation.AnimationObject.FObjDesc.List.Find(e => e.TexTrackType == TexTrackType.HSD_A_T_TIMG);
                     timg?.SetKeys(smallkeys.OrderBy(e => e.Frame).ToList(), timg.TrackType);
                 }
             }
@@ -175,13 +175,15 @@ namespace mexLib.Generators
         private static HSD_JOBJ GenericIconModel(MexWorkspace workspace, MexSeries series)
         {
             // create joint
-            var joint = new HSD_JOBJ()
+            HSD_JOBJ joint = new()
             {
-                SX = 3, SY = 3, SZ = 3,
+                SX = 3,
+                SY = 3,
+                SZ = 3,
                 TZ = 67.4f,
             };
 
-            var obj = series.ModelAsset.GetOBJFile(workspace);
+            Utilties.ObjFile? obj = series.ModelAsset.GetOBJFile(workspace);
             if (obj == null)
                 return joint;
 
@@ -219,9 +221,9 @@ namespace mexLib.Generators
             };
 
             // pobj only has pos
-            POBJ_Generator gen = new ();
+            POBJ_Generator gen = new();
 
-            var verts = obj.Faces.SelectMany(e =>
+            List<GX_Vertex> verts = obj.Faces.SelectMany(e =>
             {
                 return e.Vertices.Select(f => new GX_Vertex()
                 {
@@ -254,7 +256,7 @@ namespace mexLib.Generators
         {
             // generate 3d emblems + animation
             // flmsce SOBJ -> entry 0
-            var flmsce = file["flmsce"];
+            HSDRootNode flmsce = file["flmsce"];
             if (flmsce.Data is not HSD_SOBJ sobj)
                 return;
 
@@ -262,18 +264,18 @@ namespace mexLib.Generators
                 return;
 
             // icons joints are all children of 5
-            var group = sobj.JOBJDescs[0];
-            var jointBase = group.RootJoint.TreeList[5];
-            var animjointBase = group.JointAnimations[0].TreeList[5];
-            var matanim_jointBase = group.MaterialAnimations[0].TreeList[5];
+            HSD_JOBJDesc group = sobj.JOBJDescs[0];
+            HSD_JOBJ jointBase = group.RootJoint.TreeList[5];
+            HSD_AnimJoint animjointBase = group.JointAnimations[0].TreeList[5];
+            HSD_MatAnimJoint matanim_jointBase = group.MaterialAnimations[0].TreeList[5];
 
             // clear old children
             jointBase.Child = null;
 
             // generate icons models
-            foreach (var series in workspace.Project.Series)
+            foreach (MexSeries series in workspace.Project.Series)
             {
-                var joint = GenericIconModel(workspace, series);
+                HSD_JOBJ joint = GenericIconModel(workspace, series);
                 jointBase.AddChild(joint);
             }
             jointBase.UpdateFlags(); // recalulate flags just in case
@@ -281,7 +283,7 @@ namespace mexLib.Generators
             // Joint Animation
             if (animjointBase.Child != null)
             {
-                var source = animjointBase.Child;
+                HSD_AnimJoint source = animjointBase.Child;
                 source.Next = null;
                 animjointBase.Child = null;
                 for (int i = 0; i < workspace.Project.Series.Count; i++)
@@ -290,7 +292,7 @@ namespace mexLib.Generators
             // Material Animation
             if (matanim_jointBase.Child != null)
             {
-                var source = matanim_jointBase.Child;
+                HSD_MatAnimJoint source = matanim_jointBase.Child;
                 source.Next = null;
                 matanim_jointBase.Child = null;
                 for (int i = 0; i < workspace.Project.Series.Count; i++)

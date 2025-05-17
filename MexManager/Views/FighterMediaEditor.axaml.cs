@@ -41,8 +41,8 @@ public partial class FighterMediaEditor : UserControl
             return;
         }
 
-        var path = Global.Workspace.GetFilePath(filename);
-        var thp = new THP(Global.Workspace.FileManager.Get(path));
+        string path = Global.Workspace.GetFilePath(filename);
+        THP thp = new(Global.Workspace.FileManager.Get(path));
         UpdatePreview(thp);
     }
     /// <summary>
@@ -51,7 +51,7 @@ public partial class FighterMediaEditor : UserControl
     /// <param name="thp"></param>
     private void UpdatePreview(THP thp)
     {
-        using var jpg = new MemoryStream(thp.ToJPEG());
+        using MemoryStream jpg = new(thp.ToJPEG());
         _previewBitmap?.Dispose();
         _previewBitmap = new Bitmap(jpg);
         PreviewImage.Source = _previewBitmap;
@@ -75,13 +75,13 @@ public partial class FighterMediaEditor : UserControl
             return;
         }
 
-        var path = Global.Workspace.GetFilePath(text);
+        string path = Global.Workspace.GetFilePath(text);
 
-        var file = await FileIO.TryOpenFile("Import JPEG", Path.GetFileNameWithoutExtension(text) + ".jpg", FileIO.FilterJpeg);
+        string? file = await FileIO.TryOpenFile("Import JPEG", Path.GetFileNameWithoutExtension(text) + ".jpg", FileIO.FilterJpeg);
 
         if (file == null) return;
 
-        var thp = THP.FromJPEG(File.ReadAllBytes(file));
+        THP thp = THP.FromJPEG(File.ReadAllBytes(file));
         Global.Workspace.FileManager.Set(path, thp.Data);
         UpdatePreview(thp);
     }
@@ -98,16 +98,16 @@ public partial class FighterMediaEditor : UserControl
         if (DataContext is not string text)
             return;
 
-        var path = Global.Workspace.GetFilePath(text);
+        string path = Global.Workspace.GetFilePath(text);
 
         if (!Global.Workspace.FileManager.Exists(path))
             return;
 
-        var file = await FileIO.TrySaveFile("Export JPEG", Path.GetFileNameWithoutExtension(text) + ".jpg", FileIO.FilterJpeg);
+        string? file = await FileIO.TrySaveFile("Export JPEG", Path.GetFileNameWithoutExtension(text) + ".jpg", FileIO.FilterJpeg);
 
         if (file == null) return;
 
-        var thp = new THP(Global.Workspace.FileManager.Get(path));
+        THP thp = new(Global.Workspace.FileManager.Get(path));
         File.WriteAllBytes(file, thp.ToJPEG());
     }
 }

@@ -1,9 +1,4 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using System.Diagnostics;
 
 namespace MexManager.Controls;
 
@@ -29,7 +24,7 @@ public partial class ReorderListBox : UserControl
     //    // Get the item that was clicked
     //    var listItem = GetItemFromEvent(e);
     //    if (listItem == null) return;
-        
+
     //    //_draggedItem = listItem;
     //    //_originalIndex = this.Items?.Cast<object>().ToList().IndexOf(_draggedItem) ?? -1;
     //}

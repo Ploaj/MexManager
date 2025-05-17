@@ -1,6 +1,6 @@
 ﻿using HSDRaw;
-using HSDRaw.Common.Animation;
 using HSDRaw.Common;
+using HSDRaw.Common.Animation;
 using HSDRaw.Tools;
 using System.IO.Compression;
 
@@ -15,8 +15,8 @@ namespace mexLib
         /// <returns></returns>
         public static byte[] Extract(this ZipArchiveEntry entry)
         {
-            using var e = entry.Open();
-            using var ms = new MemoryStream();
+            using Stream e = entry.Open();
+            using MemoryStream ms = new();
             e.CopyTo(ms);
             return ms.ToArray();
         }
@@ -29,7 +29,7 @@ namespace mexLib
         /// <param name="data"></param>
         public static void ExportFile(string filepath, string symbol, HSDAccessor data)
         {
-            var file = new HSDRawFile();
+            HSDRawFile file = new();
             file.Roots.Add(new HSDRootNode()
             {
                 Data = data,
@@ -79,7 +79,7 @@ namespace mexLib
                 Value = e,
                 InterpolationType = GXInterpolationType.HSD_A_OP_CON
             }).ToList();
-            
+
             // generate texture animation
             anim.AnimationObject = new HSD_AOBJ()
             {
@@ -88,7 +88,7 @@ namespace mexLib
             };
 
             // add a track for palettes if applicable
-            if (icons.Any(e=>e.ImageData != null && GXImageConverter.IsPalettedFormat(e.ImageData.Format)))
+            if (icons.Any(e => e.ImageData != null && GXImageConverter.IsPalettedFormat(e.ImageData.Format)))
             {
                 anim.AnimationObject.FObjDesc.Next = new FOBJ_Player((int)TexTrackType.HSD_A_T_TCLT, keys.OrderBy(e => e.Frame)).ToFobjDesc();
             }

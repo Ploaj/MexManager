@@ -31,7 +31,7 @@ namespace mexLib.Utilties
         /// <param name="filePath"></param>
         public bool TryWriteFile(MexWorkspace workspace, string sourcePath, string targetPath)
         {
-            var path = workspace.GetFilePath(sourcePath);
+            string path = workspace.GetFilePath(sourcePath);
             if (workspace.FileManager.Exists(path))
             {
                 Write(targetPath, workspace.FileManager.Get(path));
@@ -49,7 +49,7 @@ namespace mexLib.Utilties
         /// <returns></returns>
         public bool TryWriteTextureAsset(MexWorkspace workspace, MexTextureAsset asset, string filePath)
         {
-            var csp = asset.GetSourceImage(workspace);
+            MexImage? csp = asset.GetSourceImage(workspace);
             if (csp != null)
             {
                 Write(filePath, csp.ToPNG());
@@ -64,8 +64,8 @@ namespace mexLib.Utilties
         /// <param name="data"></param>
         public void Write(string fileName, byte[] data)
         {
-            var zipArchiveEntry = _zipArchive.CreateEntry(fileName, CompressionLevel.Fastest);
-            using var zipStream = zipArchiveEntry.Open();
+            ZipArchiveEntry zipArchiveEntry = _zipArchive.CreateEntry(fileName, CompressionLevel.Fastest);
+            using Stream zipStream = zipArchiveEntry.Open();
             zipStream.Write(data, 0, data.Length);
         }
         /// <summary>

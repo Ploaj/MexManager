@@ -1,14 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data.Converters;
-using Avalonia.Input;
-using Avalonia.Markup.Xaml;
-using Avalonia.Media.Imaging;
-using Avalonia.Remote.Protocol.Input;
 using MeleeMedia.Audio;
 using MexManager.ViewModels;
-using System;
-using System.Globalization;
 
 namespace MexManager.Views;
 
@@ -39,7 +32,7 @@ public partial class AudioView : UserControl
     /// <param name="hps"></param>
     public void LoadHPS(byte[] hps)
     {
-        var dsp = HPS.ToDSP(hps);
+        DSP dsp = HPS.ToDSP(hps);
         dsp.LoopSound = true;
         LoadDSP(dsp);
     }

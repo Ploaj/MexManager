@@ -28,7 +28,7 @@ public partial class StageView : UserControl
             DataContext is MainViewModel model &&
             model.Stages != null)
         {
-            var stage = new MexStage()
+            MexStage stage = new()
             {
                 Playlist = new MexPlaylist()
                 {
@@ -72,7 +72,7 @@ public partial class StageView : UserControl
                 return;
             }
 
-            var res =
+            MessageBox.MessageBoxResult res =
                 await MessageBox.Show(
                     $"Are you sure you want to\nremove \"{stage.Name}\"?",
                     "Remove Stage",
@@ -81,7 +81,7 @@ public partial class StageView : UserControl
             if (res != MessageBox.MessageBoxResult.Yes)
                 return;
 
-            var sel = StagesList.SelectedIndex;
+            int sel = StagesList.SelectedIndex;
             if (Global.Workspace.Project.RemoveStage(Global.Workspace, StagesList.SelectedIndex))
             {
                 StagesList.RefreshList();
@@ -100,7 +100,7 @@ public partial class StageView : UserControl
             DataContext is MainViewModel model &&
             model.SelectedStage is MexStage stage)
         {
-            var tex = Tools.StageBannerGenerator.DrawTextToImageAsync(stage.Location, stage.Name);
+            mexLib.MexImage tex = Tools.StageBannerGenerator.DrawTextToImageAsync(stage.Location, stage.Name);
             stage.Assets.BannerAsset.SetFromMexImage(Global.Workspace, tex);
             StageAssetPropertyGrid.DataContext = null;
             StageAssetPropertyGrid.DataContext = stage.Assets;
@@ -115,13 +115,13 @@ public partial class StageView : UserControl
     {
         if (Global.Workspace != null)
         {
-            var file = await FileIO.TryOpenFile("Import Stage", "", FileIO.FilterZip);
+            string? file = await FileIO.TryOpenFile("Import Stage", "", FileIO.FilterZip);
 
             if (file == null)
                 return;
 
-            using var fs = new FileStream(file, FileMode.Open);
-            var res = MexStage.FromPackage(fs, Global.Workspace, out MexStage? stage);
+            using FileStream fs = new(file, FileMode.Open);
+            mexLib.Installer.MexInstallerError? res = MexStage.FromPackage(fs, Global.Workspace, out MexStage? stage);
             if (res == null)
             {
                 if (stage != null)
@@ -146,7 +146,7 @@ public partial class StageView : UserControl
             DataContext is MainViewModel model &&
             model.SelectedStage is MexStage stage)
         {
-            var options = new MexStage.StagePackOptions()
+            MexStage.StagePackOptions options = new()
             {
                 ExportFiles = true,
                 ExportSound = true,
@@ -155,11 +155,11 @@ public partial class StageView : UserControl
             if (!await PropertyGridPopup.ShowDialog("Stage Export Options", "Export Stage", options))
                 return;
 
-            var file = await FileIO.TrySaveFile("Export Stage File", stage.Name, FileIO.FilterZip);
+            string? file = await FileIO.TrySaveFile("Export Stage File", stage.Name, FileIO.FilterZip);
             if (file == null)
                 return;
 
-            using var fs = new FileStream(file, FileMode.Create);
+            using FileStream fs = new(file, FileMode.Create);
             MexStage.ToPackage(fs, Global.Workspace, stage, options);
         }
     }
@@ -174,15 +174,15 @@ public partial class StageView : UserControl
             DataContext is MainViewModel model &&
             model.SelectedStage is MexStage stage)
         {
-            var options = new MexStage.StagePackOptions();
+            MexStage.StagePackOptions options = new();
             if (!await PropertyGridPopup.ShowDialog("Stage Duplicate Options", "Duplicate Stage", options))
                 return;
 
-            using var fs = new MemoryStream();
+            using MemoryStream fs = new();
             MexStage.ToPackage(fs, Global.Workspace, stage, options);
             fs.Position = 0;
 
-            var res = MexStage.FromPackage(fs, Global.Workspace, out MexStage? duplicate);
+            mexLib.Installer.MexInstallerError? res = MexStage.FromPackage(fs, Global.Workspace, out MexStage? duplicate);
             if (duplicate != null)
             {
                 StagesList.SelectedIndex = Global.Workspace.Project.AddStage(duplicate);
@@ -213,14 +213,14 @@ public partial class StageView : UserControl
             model.SelectedStage is MexStage stage &&
             model.SelectedStageItem is MexItem item)
         {
-            var res = await MessageBox.Show(
+            MessageBox.MessageBoxResult res = await MessageBox.Show(
                 $"Are you sure you want\nto remove\"{item.Name}\"?",
                 "Remove Item",
                 MessageBox.MessageBoxButtons.YesNoCancel);
 
             if (res == MessageBox.MessageBoxResult.Yes)
             {
-                var selected = StageItemList.SelectedIndex;
+                int selected = StageItemList.SelectedIndex;
                 stage.Items.Remove(item);
                 StageItemList.SelectedIndex = selected;
             }

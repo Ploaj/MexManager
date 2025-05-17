@@ -14,12 +14,12 @@ namespace mexLib.Utilties
         /// <param name="patched"></param>
         public static void CreatePatch(byte[] source, byte[] patched, string filePath)
         {
-            using FileStream s = new (filePath, FileMode.Create);
+            using FileStream s = new(filePath, FileMode.Create);
             {
                 using SHA256 sha256 = SHA256.Create();
                 {
-                    var hash1 = sha256.ComputeHash(source);
-                    var hash2 = sha256.ComputeHash(patched);
+                    byte[] hash1 = sha256.ComputeHash(source);
+                    byte[] hash2 = sha256.ComputeHash(patched);
 
                     s.Write(BitConverter.GetBytes(source.Length), 0, 4);
                     s.Write(BitConverter.GetBytes(patched.Length), 0, 4);
@@ -27,7 +27,7 @@ namespace mexLib.Utilties
                     s.Write(hash2, 0, 0x20);
                 }
 
-                using DeflateStream w = new (s, CompressionLevel.Optimal);
+                using DeflateStream w = new(s, CompressionLevel.Optimal);
                 {
                     for (int i = 0; i < Math.Min(source.Length, patched.Length); i++)
                     {
@@ -82,18 +82,18 @@ namespace mexLib.Utilties
         /// </summary>
         public static bool TryApplyPatch(byte[] source, out byte[] patched)
         {
-            var patch = PatchFile;
+            byte[] patch = PatchFile;
             patched = source;
 
             using SHA256 sha256 = SHA256.Create();
-            using MemoryStream s = new (patch);
+            using MemoryStream s = new(patch);
             {
-                var size1 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
-                var size2 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
-                var hash1 = s.ReadBytes(0x20);
-                var hash2 = s.ReadBytes(0x20);
+                int size1 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
+                int size2 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
+                byte[] hash1 = s.ReadBytes(0x20);
+                byte[] hash2 = s.ReadBytes(0x20);
 
-                var sourceHash = sha256.ComputeHash(source);
+                byte[] sourceHash = sha256.ComputeHash(source);
 
                 if (source.Length != size1 ||
                     !hash1.SequenceEqual(sourceHash))
@@ -106,8 +106,8 @@ namespace mexLib.Utilties
                 {
                     while (true)
                     {
-                        var offset = (r.ReadByte() & 0xFF) | ((r.ReadByte() & 0xFF) << 8) | ((r.ReadByte() & 0xFF) << 16) | ((r.ReadByte() & 0xFF) << 24);
-                        var length = (r.ReadByte() & 0xFF) | ((r.ReadByte() & 0xFF) << 8) | ((r.ReadByte() & 0xFF) << 16) | ((r.ReadByte() & 0xFF) << 24);
+                        int offset = (r.ReadByte() & 0xFF) | ((r.ReadByte() & 0xFF) << 8) | ((r.ReadByte() & 0xFF) << 16) | ((r.ReadByte() & 0xFF) << 24);
+                        int length = (r.ReadByte() & 0xFF) | ((r.ReadByte() & 0xFF) << 8) | ((r.ReadByte() & 0xFF) << 16) | ((r.ReadByte() & 0xFF) << 24);
 
                         if (offset == -1 && length == -1)
                             break;
@@ -117,7 +117,7 @@ namespace mexLib.Utilties
                     }
                 }
 
-                var patchedHash = sha256.ComputeHash(patched);
+                byte[] patchedHash = sha256.ComputeHash(patched);
                 if (!hash2.SequenceEqual(patchedHash))
                 {
                     patched = source;
@@ -136,16 +136,16 @@ namespace mexLib.Utilties
         public static bool CheckPatchApplied(byte[] source)
         {
             using SHA256 sha256 = SHA256.Create();
-            using MemoryStream s = new (PatchFile);
+            using MemoryStream s = new(PatchFile);
             {
-                var size1 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
-                var size2 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
-                var hash1 = s.ReadBytes(0x20);
-                var hash2 = s.ReadBytes(0x20);
+                int size1 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
+                int size2 = (s.ReadByte() & 0xFF) | ((s.ReadByte() & 0xFF) << 8) | ((s.ReadByte() & 0xFF) << 16) | ((s.ReadByte() & 0xFF) << 24);
+                byte[] hash1 = s.ReadBytes(0x20);
+                byte[] hash2 = s.ReadBytes(0x20);
 
-                var sourceHash = sha256.ComputeHash(source);
+                byte[] sourceHash = sha256.ComputeHash(source);
 
-                if (source.Length == size2 && 
+                if (source.Length == size2 &&
                     hash2.SequenceEqual(sourceHash))
                     return true;
             }

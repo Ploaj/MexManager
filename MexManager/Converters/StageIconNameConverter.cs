@@ -10,14 +10,14 @@ namespace MexManager.Converters
     {
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (Global.Workspace != null && 
+            if (Global.Workspace != null &&
                 value is MexStageSelectIcon icon)
             {
                 switch (icon.Status)
                 {
                     case MexStageSelectIcon.StageIconStatus.Unlocked:
                         {
-                            var internalId = MexStageIDConverter.ToInternalID(icon.StageID);
+                            int internalId = MexStageIDConverter.ToInternalID(icon.StageID);
 
                             if (internalId >= 0)
                                 return Global.Workspace.Project.Stages[internalId].Name;

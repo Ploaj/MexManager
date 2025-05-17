@@ -15,16 +15,16 @@ namespace MexManager.Converters
             if (value is string path &&
                 Global.Workspace != null)
             {
-                var thpPath = Global.Workspace.GetFilePath(path);
+                string thpPath = Global.Workspace.GetFilePath(path);
 
                 if (!Global.Files.Exists(thpPath))
                     return BitmapManager.MexFighterImage;
 
-                var thp = new THP(Global.Files.Get(thpPath));
-                var jpeg = thp.ToJPEG();
-                using var stream = new MemoryStream(jpeg);
-                var bitmap = new Bitmap(stream);
-                return bitmap;            
+                THP thp = new(Global.Files.Get(thpPath));
+                byte[] jpeg = thp.ToJPEG();
+                using MemoryStream stream = new(jpeg);
+                Bitmap bitmap = new(stream);
+                return bitmap;
             }
 
             return BitmapManager.MexFighterImage;

@@ -1,16 +1,16 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.PropertyGrid.Controls;
 using Avalonia.PropertyGrid.Controls.Factories;
 using mexLib;
-using System.Linq;
-using PropertyModels.Extensions;
-using Avalonia;
-using MexManager.Tools;
-using System.IO;
-using Avalonia.Media;
-using Avalonia.Input;
 using mexLib.AssetTypes;
+using MexManager.Tools;
+using PropertyModels.Extensions;
+using System.IO;
+using System.Linq;
 
 namespace MexManager.Factories
 {
@@ -31,7 +31,7 @@ namespace MexManager.Factories
         private static StackPanel GenerateImagePanel(MexTextureAsset asset, out Image imageControl)
         {
             // create border
-            var imageBorder = new Border()
+            Border imageBorder = new()
             {
                 BorderBrush = Brushes.DarkGray,
                 BorderThickness = Thickness.Parse("1"),
@@ -90,7 +90,7 @@ namespace MexManager.Factories
                 return;
 
             // get absolute path
-            using var stream = new FileStream(file, FileMode.Open);
+            using FileStream stream = new(file, FileMode.Open);
             asset.SetFromImageFile(workspace, stream);
 
             // update image preview
@@ -109,8 +109,8 @@ namespace MexManager.Factories
             if (Global.Workspace == null)
                 return null;
 
-            var propertyDescriptor = context.Property;
-            var target = context.Target;
+            System.ComponentModel.PropertyDescriptor propertyDescriptor = context.Property;
+            object target = context.Target;
 
             // check type
             if (propertyDescriptor.PropertyType != typeof(MexTextureAsset))
@@ -121,9 +121,9 @@ namespace MexManager.Factories
                 return null;
 
             // create image panel and enable drag and drop
-            var imagePanel = GenerateImagePanel(textureAsset, out Image imageControl);
+            StackPanel imagePanel = GenerateImagePanel(textureAsset, out Image imageControl);
 
-            var importButton = new Button()
+            Button importButton = new()
             {
                 Content = "Import"
             };
@@ -135,7 +135,7 @@ namespace MexManager.Factories
                     textureAsset,
                     imageControl);
             };
-            var exportButton = new Button()
+            Button exportButton = new()
             {
                 Content = "Export"
             };
@@ -144,14 +144,14 @@ namespace MexManager.Factories
                 if (Global.Workspace == null)
                     return;
 
-                var file = await FileIO.TrySaveFile("Image", "", FileIO.FilterPng);
+                string? file = await FileIO.TrySaveFile("Image", "", FileIO.FilterPng);
                 if (file != null)
                 {
                     textureAsset.GetSourceImage(Global.Workspace)?.ToBitmap().Save(file);
                 }
             };
 
-            var buttonStack = new StackPanel()
+            StackPanel buttonStack = new()
             {
                 Orientation = Orientation.Horizontal,
                 Margin = Thickness.Parse("2"),
@@ -160,7 +160,7 @@ namespace MexManager.Factories
             buttonStack.Children.Add(exportButton);
 
             // Create a StackPanel or any other container to hold the text box and image
-            var control = new DockPanel()
+            DockPanel control = new()
             {
                 HorizontalAlignment = HorizontalAlignment.Left
             };
@@ -205,11 +205,11 @@ namespace MexManager.Factories
                 // Get the dropped file names
                 if (e.Data.Contains(DataFormats.Files))
                 {
-                    var fileNames = e.Data.GetFiles();
+                    System.Collections.Generic.IEnumerable<Avalonia.Platform.Storage.IStorageItem>? fileNames = e.Data.GetFiles();
                     if (fileNames == null)
                         return;
 
-                    foreach (var f in fileNames.Select(e => e.Path.AbsolutePath))
+                    foreach (string? f in fileNames.Select(e => e.Path.AbsolutePath))
                     {
                         if (f.EndsWith(".png"))
                         {
@@ -235,9 +235,9 @@ namespace MexManager.Factories
             if (Global.Workspace == null)
                 return false;
 
-            var control = context.CellEdit;
-            var propertyDescriptor = context.Property;
-            var target = context.Target;
+            Control control = context.CellEdit;
+            System.ComponentModel.PropertyDescriptor propertyDescriptor = context.Property;
+            object target = context.Target;
 
             // check type
             if (propertyDescriptor.PropertyType != typeof(MexTextureAsset))
@@ -253,7 +253,7 @@ namespace MexManager.Factories
             {
                 if (data.Image != null)
                 {
-                    var image = textureAsset.GetSourceImage(Global.Workspace);
+                    MexImage? image = textureAsset.GetSourceImage(Global.Workspace);
                     if (image != null)
                     {
                         data.Image.Source = image.ToBitmap();

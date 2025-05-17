@@ -93,14 +93,14 @@ namespace MexManager.Tools
         public async static Task<string?> TrySaveFile(string title, string fileName, IReadOnlyList<FilePickerFileType> types)
         {
             // Get top level
-            var topLevel = App.TopLevel;
+            Avalonia.Controls.TopLevel? topLevel = App.TopLevel;
 
             // Check for null top level
             if (topLevel == null)
                 return null;
 
             // Start async operation to open the dialog.
-            var file = await topLevel.StorageProvider.SaveFilePickerAsync(
+            IStorageFile? file = await topLevel.StorageProvider.SaveFilePickerAsync(
                 new FilePickerSaveOptions
                 {
                     Title = title,
@@ -113,7 +113,7 @@ namespace MexManager.Tools
                 return null;
 
             // Get the absolute path and decode URI-encoded characters (like %20 for spaces)
-            var filePath = file.Path?.AbsolutePath;
+            string? filePath = file.Path?.AbsolutePath;
 
             // Decode the path
             return filePath != null ? Uri.UnescapeDataString(filePath) : null;
@@ -126,14 +126,14 @@ namespace MexManager.Tools
         public async static Task<string?> TryOpenFile(string title, string fileName, IReadOnlyList<FilePickerFileType> types)
         {
             // Get the top-level window
-            var topLevel = App.TopLevel;
+            Avalonia.Controls.TopLevel? topLevel = App.TopLevel;
 
             // Check if top-level window is available
             if (topLevel == null)
                 return null;
 
             // Open the file picker dialog
-            var files = await topLevel.StorageProvider.OpenFilePickerAsync(
+            IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(
                 new FilePickerOpenOptions
                 {
                     Title = title,
@@ -146,7 +146,7 @@ namespace MexManager.Tools
                 return null;
 
             // Get the absolute path and decode URI-encoded characters (like %20 for spaces)
-            var filePath = files[0]?.Path?.AbsolutePath;
+            string? filePath = files[0]?.Path?.AbsolutePath;
 
             // Decode the path
             return filePath != null ? Uri.UnescapeDataString(filePath) : null;
@@ -159,14 +159,14 @@ namespace MexManager.Tools
         public async static Task<string?> TryOpenFolder(string title)
         {
             // Get the top-level window
-            var topLevel = App.TopLevel;
+            Avalonia.Controls.TopLevel? topLevel = App.TopLevel;
 
             // Check if top-level window is available
             if (topLevel == null)
                 return null;
 
             // Open the file picker dialog
-            var files = await topLevel.StorageProvider.OpenFolderPickerAsync(
+            IReadOnlyList<IStorageFolder> files = await topLevel.StorageProvider.OpenFolderPickerAsync(
                 new FolderPickerOpenOptions
                 {
                     Title = title,
@@ -177,7 +177,7 @@ namespace MexManager.Tools
                 return null;
 
             // Get the absolute path and decode URI-encoded characters (like %20 for spaces)
-            var filePath = files[0]?.Path?.AbsolutePath;
+            string? filePath = files[0]?.Path?.AbsolutePath;
 
             // Decode the path
             return filePath != null ? Uri.UnescapeDataString(filePath) : null;

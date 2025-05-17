@@ -1,13 +1,6 @@
 ﻿using MexManager.Tools;
-using Octokit;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MexManager
 {
@@ -50,9 +43,9 @@ namespace MexManager
             //    hash = HashGen.ComputeSHA256Hash(File.ReadAllBytes(filePath));
             //}
 
-            using var client = new HttpClient();
+            using HttpClient client = new();
             {
-                var uri = new Uri(url);
+                Uri uri = new(url);
                 await client.DownloadFileTaskAsync(uri, filePath);
             }
 

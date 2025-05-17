@@ -40,7 +40,7 @@ public partial class ConfigWindow : Window
     /// <param name="e"></param>
     private void ValidateISO_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        var res = MeleeISOValidator.IsValid(App.Settings.MeleePath);
+        System.ComponentModel.DataAnnotations.ValidationResult? res = MeleeISOValidator.IsValid(App.Settings.MeleePath);
         if (res == null || res.IsSuccess())
         {
             MessageBox.Show("ISO is valid", "ISO Validation", MessageBox.MessageBoxButtons.Ok);
@@ -71,7 +71,7 @@ public partial class ConfigWindow : Window
     /// <returns></returns>
     public async static Task<bool> ShowDialog()
     {
-        var popup = new ConfigWindow();
+        ConfigWindow popup = new();
         if (App.MainWindow != null)
         {
             await popup.ShowDialog(App.MainWindow);

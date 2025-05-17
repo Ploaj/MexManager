@@ -55,8 +55,8 @@ namespace MexManager.ViewModels
             set => this.RaiseAndSetIfChanged(ref _offsetX, value);
         }
 
-        public Avalonia.Point StartPoint => new (OffsetX, 0);
-        public Avalonia.Point EndPoint => new (OffsetX, 20);
+        public Avalonia.Point StartPoint => new(OffsetX, 0);
+        public Avalonia.Point EndPoint => new(OffsetX, 20);
 
         private readonly float Width = 100;
 
@@ -146,7 +146,7 @@ namespace MexManager.ViewModels
             }
             else
             {
-                var playing = _soundPlayer?.State == OpenTK.Audio.OpenAL.ALSourceState.Playing;
+                bool playing = _soundPlayer?.State == OpenTK.Audio.OpenAL.ALSourceState.Playing;
                 _soundPlayer?.SeekPercentage(percentage);
 
                 if (playing)

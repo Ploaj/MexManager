@@ -49,22 +49,23 @@ public partial class MessageBox : Window
 
     public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons)
     {
-        var msgbox = new MessageBox()
+        MessageBox msgbox = new()
         {
             Title = title
         };
 
-        var textblock = msgbox.FindControl<TextBlock>("Text");
+        TextBlock? textblock = msgbox.FindControl<TextBlock>("Text");
         if (textblock != null)
             textblock.Text = text;
-        var buttonPanel = msgbox.FindControl<StackPanel>("Buttons");
+        StackPanel? buttonPanel = msgbox.FindControl<StackPanel>("Buttons");
 
         void AddButton(string caption, MessageBoxResult r, bool def = false)
         {
             if (buttonPanel != null)
             {
-                var btn = new Button { Content = caption };
-                btn.Click += (_, __) => {
+                Button btn = new() { Content = caption };
+                btn.Click += (_, __) =>
+                {
                     msgbox.res = r;
                     msgbox.Close();
                 };
@@ -87,7 +88,7 @@ public partial class MessageBox : Window
             AddButton("Cancel", MessageBoxResult.Cancel, true);
 
 
-        var tcs = new TaskCompletionSource<MessageBoxResult>();
+        TaskCompletionSource<MessageBoxResult> tcs = new();
         msgbox.Closed += delegate { tcs.TrySetResult(msgbox.res); };
         if (parent != null)
             msgbox.ShowDialog(parent);

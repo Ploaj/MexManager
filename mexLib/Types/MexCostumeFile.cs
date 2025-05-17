@@ -61,12 +61,12 @@ namespace mexLib
         [DisplayName("File")]
         [MexFilePathValidator(MexFilePathType.Files)]
         [MexFilePathValidatorCallback("CheckFileName")]
-        public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } } 
+        public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
 
         private string _fileName = "";
 
         [DisplayName("Joint Symbol")]
-        public string JointSymbol { get => _jointSymbol; set { _jointSymbol = value; OnPropertyChanged(); } } 
+        public string JointSymbol { get => _jointSymbol; set { _jointSymbol = value; OnPropertyChanged(); } }
 
         private string _jointSymbol = "";
 
@@ -91,7 +91,7 @@ namespace mexLib
                 return new MexFilePathError("Not a valid HSD file");
 
             bool passing = false;
-            foreach (var s in ArchiveTools.GetSymbols(stream))
+            foreach (string s in ArchiveTools.GetSymbols(stream))
             {
                 if (s.EndsWith("_joint"))
                     passing = true;
@@ -126,7 +126,7 @@ namespace mexLib
             JointSymbol = "";
             MaterialSymbol = "";
             bool passing = false;
-            foreach (var symbol in ArchiveTools.GetSymbols(s))
+            foreach (string symbol in ArchiveTools.GetSymbols(s))
             {
                 if (symbol.EndsWith("matanim_joint"))
                     MaterialSymbol = symbol;
@@ -145,7 +145,7 @@ namespace mexLib
         /// </summary>
         public void DeleteFiles(MexWorkspace workspace)
         {
-            var path = workspace.GetFilePath(FileName);
+            string path = workspace.GetFilePath(FileName);
 
             if (workspace.FileManager.Exists(path))
                 workspace.FileManager.Remove(path);

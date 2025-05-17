@@ -6,7 +6,7 @@ namespace mexLib.Utilties
     {
         private static readonly Encoding SHIFT_JIS = Encoding.GetEncoding("Shift_JIS");
 
-        private static readonly Dictionary<char, char> CharToShiftChar = new ()
+        private static readonly Dictionary<char, char> CharToShiftChar = new()
             {
                 { '+', '＋' },
                 { '-', '－' },
@@ -56,7 +56,7 @@ namespace mexLib.Utilties
                 }
             }
 
-            var data = SHIFT_JIS.GetBytes(new string(array));
+            byte[] data = SHIFT_JIS.GetBytes(new string(array));
             return SHIFT_JIS.GetString(data, 0, data.Length);
         }
 

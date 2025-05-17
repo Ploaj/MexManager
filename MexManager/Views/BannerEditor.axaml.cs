@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.Controls;
 using GCILib;
 using mexLib;
@@ -61,7 +60,7 @@ public partial class BannerEditor : Window
             LongName = banner.MetaData.LongName;
             LongMaker = banner.MetaData.LongMaker;
             Description = banner.MetaData.Description;
-            var pixels = banner.GetBannerImageRGBA8();
+            byte[] pixels = banner.GetBannerImageRGBA8();
             SwapRedAndGreen(ref pixels);
             Image = new MexImage(pixels, 96, 32, HSDRaw.GX.GXTexFmt.RGB5A3, HSDRaw.GX.GXTlutFmt.IA8);
             _banner = banner;
@@ -85,7 +84,7 @@ public partial class BannerEditor : Window
             };
             if (Image != null)
             {
-                var pixels = Image.GetBGRA();
+                byte[] pixels = Image.GetBGRA();
                 SwapRedAndGreen(ref pixels);
                 _banner.SetBannerImageRGBA8(pixels);
             }
@@ -153,12 +152,12 @@ public partial class BannerEditor : Window
         if (Banner == null)
             return;
 
-        var file = await FileIO.TrySaveFile("Export Banner", "banner.png", FileIO.FilterPng);
+        string? file = await FileIO.TrySaveFile("Export Banner", "banner.png", FileIO.FilterPng);
 
         if (file == null)
             return;
 
-        using var bmp = Banner.Image?.ToBitmap();
+        using Avalonia.Media.Imaging.Bitmap? bmp = Banner.Image?.ToBitmap();
         bmp?.Save(file);
     }
     /// <summary>
@@ -171,14 +170,14 @@ public partial class BannerEditor : Window
         if (Banner == null)
             return;
 
-        var file = await FileIO.TryOpenFile("Import Banner", "", FileIO.FilterPng);
+        string? file = await FileIO.TryOpenFile("Import Banner", "", FileIO.FilterPng);
 
         if (file == null)
             return;
 
         if (Banner.Image != null)
         {
-            using var stream = new FileStream(file, FileMode.Open);
+            using FileStream stream = new(file, FileMode.Open);
             Banner.Image = ImageConverter.FromPNG(stream, HSDRaw.GX.GXTexFmt.RGB5A3, HSDRaw.GX.GXTlutFmt.IA8);
             Banner.Image = ImageConverter.Resize(Banner.Image, 96, 32);
             BannerImage.Source = Banner.Image.ToBitmap();

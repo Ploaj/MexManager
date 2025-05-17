@@ -59,7 +59,7 @@ namespace MexManager.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged(ref _filter, value);
-                var selected = SelectedTrophy;
+                object? selected = SelectedTrophy;
                 ApplyFilter();
                 SelectedTrophy = null;
                 SelectedTrophy = selected;
@@ -85,7 +85,7 @@ namespace MexManager.ViewModels
                 return;
 
             _series.Clear();
-            foreach (var s in _normal.OrderBy(e => e.SortSeries))
+            foreach (MexTrophy? s in _normal.OrderBy(e => e.SortSeries))
             {
                 SeriesOrder.Add(s);
             }
@@ -96,7 +96,7 @@ namespace MexManager.ViewModels
                 return;
 
             FilteredTrophies.Clear();
-            foreach (var c in Trophies)
+            foreach (MexTrophy c in Trophies)
             {
                 if (string.IsNullOrEmpty(Filter) ||
                     CheckFilter(c.Data.Text) ||

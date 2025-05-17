@@ -1,10 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Media;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MexManager.Extensions
 {
@@ -15,7 +10,7 @@ namespace MexManager.Extensions
         public static IBrush GetThemeBrush(string resourceKey)
         {
             if (Application.Current != null &&
-                Application.Current.Styles.TryGetResource(resourceKey, Avalonia.Styling.ThemeVariant.Dark, out var resource) && 
+                Application.Current.Styles.TryGetResource(resourceKey, Avalonia.Styling.ThemeVariant.Dark, out object? resource) &&
                 resource is IBrush brush)
             {
                 return brush;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO.Compression;
 
 namespace mexLib.Utilties
 {
@@ -18,11 +13,11 @@ namespace mexLib.Utilties
         /// <returns></returns>
         public static string TryReadFile(this ZipArchive zip, MexWorkspace workspace, string filename)
         {
-            var e = zip.GetEntry(filename);
+            ZipArchiveEntry? e = zip.GetEntry(filename);
             if (e == null)
                 return "";
 
-            var path = workspace.GetFilePath(filename);
+            string path = workspace.GetFilePath(filename);
             path = workspace.FileManager.GetUniqueFilePath(path);
 
             workspace.FileManager.Set(path, e.Extract());

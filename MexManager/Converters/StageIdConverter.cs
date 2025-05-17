@@ -1,7 +1,7 @@
-﻿using mexLib;
+﻿using Avalonia.Data.Converters;
+using mexLib;
 using System;
 using System.Globalization;
-using Avalonia.Data.Converters;
 
 namespace MexManager.Converters
 {
@@ -11,7 +11,7 @@ namespace MexManager.Converters
         {
             if (Global.Workspace != null && value is int stage_external_id)
             {
-                var internalId = MexStageIDConverter.ToInternalID(stage_external_id);
+                int internalId = MexStageIDConverter.ToInternalID(stage_external_id);
 
                 if (internalId >= 0)
                 {

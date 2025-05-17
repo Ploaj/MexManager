@@ -1,11 +1,11 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Layout;
-using Avalonia.PropertyGrid.Controls.Factories;
 using Avalonia.PropertyGrid.Controls;
-using System.Collections.Generic;
-using PropertyModels.Extensions;
-using mexLib.Attributes;
+using Avalonia.PropertyGrid.Controls.Factories;
 using mexLib;
+using mexLib.Attributes;
+using PropertyModels.Extensions;
+using System.Collections.Generic;
 
 namespace MexManager.Factories
 {
@@ -19,7 +19,7 @@ namespace MexManager.Factories
             if (Global.Workspace == null)
                 return null;
 
-            var propertyDescriptor = context.Property;
+            System.ComponentModel.PropertyDescriptor propertyDescriptor = context.Property;
             MexLinkAttribute? link = propertyDescriptor.GetCustomAttribute<MexLinkAttribute>();
 
             if (link == null)
@@ -48,13 +48,13 @@ namespace MexManager.Factories
             if (coll == null)
                 return null;
 
-            var target = context.Target;
+            object target = context.Target;
             if (propertyDescriptor.GetValue(target) is not int index)
                 return null;
 
-            var type = propertyDescriptor.PropertyType;
+            System.Type type = propertyDescriptor.PropertyType;
 
-            var control = new ComboBox()
+            ComboBox control = new()
             {
                 ItemsSource = coll,
             };

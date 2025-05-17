@@ -62,7 +62,7 @@ namespace mexLib.Types
         public MexStageSelectTemplate()
         {
             if (IconPlacements.Count == 0)
-                foreach (var i in VanillaPlacements)
+                foreach (MexStageSelectIconPlacementTemplate i in VanillaPlacements)
                     IconPlacements.Add(i.Clone());
         }
         /// <summary>
@@ -72,7 +72,7 @@ namespace mexLib.Types
         public void MakeTemplate(IEnumerable<MexStageSelectIcon> icons)
         {
             IconPlacements.Clear();
-            foreach (var i in icons)
+            foreach (MexStageSelectIcon i in icons)
             {
                 IconPlacements.Add(new MexStageSelectIconPlacementTemplate()
                 {
@@ -94,12 +94,12 @@ namespace mexLib.Types
         public void ApplyTemplate(IEnumerable<MexStageSelectIcon> icons)
         {
             int i = 0;
-            foreach (var icon in icons)
+            foreach (MexStageSelectIcon icon in icons)
             {
                 if (i >= IconPlacements.Count)
                     break;
 
-                var tem = IconPlacements[i];
+                MexStageSelectIconPlacementTemplate tem = IconPlacements[i];
 
                 icon.Group = tem.Group;
                 icon.Width = tem.Width;
@@ -124,7 +124,7 @@ namespace mexLib.Types
             float start = AppearSpacing * icon.Group;
             float end = AppearTime + AppearSpacing * icon.Group;
 
-            var keys = new List<FOBJKey>();
+            List<FOBJKey> keys = new();
 
             if (start != 0)
             {
@@ -150,7 +150,7 @@ namespace mexLib.Types
                 InterpolationType = GXInterpolationType.HSD_A_OP_LIN,
             });
 
-            var aobj = new HSD_AOBJ()
+            HSD_AOBJ aobj = new()
             {
             };
 
@@ -175,9 +175,9 @@ namespace mexLib.Types
         /// <returns></returns>
         public HSD_AnimJoint GenerateJointAnim(IEnumerable<MexStageSelectIcon> icons)
         {
-            var root = new HSD_AnimJoint();
+            HSD_AnimJoint root = new();
 
-            foreach (var i in icons)
+            foreach (MexStageSelectIcon i in icons)
                 root.AddChild(GenerateJointAnim(i));
 
             return root;

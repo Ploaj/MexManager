@@ -1,8 +1,8 @@
-﻿using System.Text.Json;
-using System.IO;
+﻿using PropertyModels.ComponentModel.DataAnnotations;
 using System;
 using System.ComponentModel;
-using PropertyModels.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Text.Json;
 
 namespace MexManager
 {
@@ -28,22 +28,22 @@ namespace MexManager
         /// <returns></returns>
         public static ApplicationSettings TryOpen()
         {
-            var configPath = FilePath;
+            string configPath = FilePath;
             if (File.Exists(configPath))
             {
-                var options = new JsonSerializerOptions
+                JsonSerializerOptions options = new()
                 {
                     WriteIndented = true, // For pretty-printing
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase // For camelCase naming
                 };
                 string jsonString = File.ReadAllText(configPath);
-                var file = JsonSerializer.Deserialize<ApplicationSettings>(jsonString, options);
+                ApplicationSettings? file = JsonSerializer.Deserialize<ApplicationSettings>(jsonString, options);
 
                 if (file != null)
                     return file;
             }
 
-            var settings = new ApplicationSettings();
+            ApplicationSettings settings = new();
             settings.Save();
             return new ApplicationSettings();
         }
@@ -53,7 +53,7 @@ namespace MexManager
         /// </summary>
         public void Save()
         {
-            var options = new JsonSerializerOptions
+            JsonSerializerOptions options = new()
             {
                 WriteIndented = true, // For pretty-printing
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase // For camelCase naming

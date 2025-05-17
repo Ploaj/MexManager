@@ -32,7 +32,7 @@ namespace mexLib.Attributes
 
         private static string ComputeHash(string filePath, HashAlgorithm hashAlgorithm, int bufferSize = 4 * 1024 * 1024) // 4MB buffer
         {
-            using FileStream stream = new (filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, FileOptions.SequentialScan);
+            using FileStream stream = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, FileOptions.SequentialScan);
             byte[] hashBytes = hashAlgorithm.ComputeHash(stream);
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
         }

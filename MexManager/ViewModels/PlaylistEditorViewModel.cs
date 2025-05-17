@@ -21,12 +21,12 @@ namespace MexManager.ViewModels
             MoveEntryUpCommand = ReactiveCommand.Create(MoveEntryUp);
             MoveEntryDownCommand = ReactiveCommand.Create(MoveEntryDown);
 
-            
+
         }
 
         private void AddEntry()
         {
-            var entry = new MexPlaylistEntry { MusicID = 0, ChanceToPlay = 50 };
+            MexPlaylistEntry entry = new() { MusicID = 0, ChanceToPlay = 50 };
             Entries.Add(entry);
             entry.MusicID = 20;
         }

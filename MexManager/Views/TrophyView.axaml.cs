@@ -26,7 +26,7 @@ public partial class TrophyView : UserControl
             DataContext is TrophyViewModel model &&
             model.Trophies != null)
         {
-            var error = MexTrophy.FromPackage(Global.Workspace, stream, out MexTrophy? trophy);
+            mexLib.Installer.MexInstallerError? error = MexTrophy.FromPackage(Global.Workspace, stream, out MexTrophy? trophy);
 
             if (error != null)
             {
@@ -58,12 +58,12 @@ public partial class TrophyView : UserControl
             DataContext is TrophyViewModel model &&
             model.Trophies != null)
         {
-            var file = await FileIO.TryOpenFile("Import Trophy", "", FileIO.FilterZip);
+            string? file = await FileIO.TryOpenFile("Import Trophy", "", FileIO.FilterZip);
 
             if (file == null)
                 return;
 
-            using var stream = new FileStream(file, FileMode.Open);
+            using FileStream stream = new(file, FileMode.Open);
             ImportTrophyFromPackage(stream);
         }
     }
@@ -78,12 +78,12 @@ public partial class TrophyView : UserControl
             DataContext is TrophyViewModel model &&
             model.SelectedTrophy is MexTrophy trophy)
         {
-            var file = await FileIO.TrySaveFile("Export Trophy", trophy.Name + ".zip", FileIO.FilterZip);
+            string? file = await FileIO.TrySaveFile("Export Trophy", trophy.Name + ".zip", FileIO.FilterZip);
 
             if (file == null)
                 return;
 
-            using var stream = new FileStream(file, FileMode.Create);
+            using FileStream stream = new(file, FileMode.Create);
             trophy.ToPackage(Global.Workspace, stream);
         }
     }
@@ -97,7 +97,7 @@ public partial class TrophyView : UserControl
         if (DataContext is TrophyViewModel model &&
             model.Trophies != null)
         {
-            var trophy = new MexTrophy()
+            MexTrophy trophy = new()
             {
                 SortSeries = (short)model.SeriesOrder.Count,
             };
@@ -119,12 +119,12 @@ public partial class TrophyView : UserControl
             model.Trophies != null &&
             model.SelectedTrophy is MexTrophy trophy)
         {
-            var index = model.Trophies.IndexOf(trophy);
+            int index = model.Trophies.IndexOf(trophy);
             if (index <= 292)
                 return;
 
             // heck are you sure want to delete
-            var res = await MessageBox.Show($"Are you sure you want\nto remove \"{trophy.Name}\"?", "Remove Trophy", MessageBox.MessageBoxButtons.YesNoCancel);
+            MessageBox.MessageBoxResult res = await MessageBox.Show($"Are you sure you want\nto remove \"{trophy.Name}\"?", "Remove Trophy", MessageBox.MessageBoxButtons.YesNoCancel);
             if (res != MessageBox.MessageBoxResult.Yes)
                 return;
 
@@ -162,7 +162,7 @@ public partial class TrophyView : UserControl
             model.SelectedTrophy is MexTrophy source &&
             model.Trophies != null)
         {
-            using var mem = new MemoryStream();
+            using MemoryStream mem = new();
             source.ToPackage(Global.Workspace, mem);
             mem.Position = 0;
             ImportTrophyFromPackage(mem);
@@ -179,7 +179,7 @@ public partial class TrophyView : UserControl
             model.Trophies != null &&
             model.SelectedTrophy is MexTrophy trophy)
         {
-            var index = model.Trophies.IndexOf(trophy);
+            int index = model.Trophies.IndexOf(trophy);
 
             if (index - 1 <= 292)
                 return;
@@ -200,7 +200,7 @@ public partial class TrophyView : UserControl
             model.Trophies != null &&
             model.SelectedTrophy is MexTrophy trophy)
         {
-            var index = model.Trophies.IndexOf(trophy);
+            int index = model.Trophies.IndexOf(trophy);
 
             if (index + 1 >= model.Trophies.Count)
                 return;
@@ -217,13 +217,13 @@ public partial class TrophyView : UserControl
     /// <param name="e"></param>
     private void NumericUpDown_ValueChanged(object? sender, NumericUpDownValueChangedEventArgs e)
     {
-        if (DataContext is TrophyViewModel model && 
-            model.SelectedTrophy is MexTrophy trophy && 
+        if (DataContext is TrophyViewModel model &&
+            model.SelectedTrophy is MexTrophy trophy &&
             model.Trophies != null &&
             model.SeriesOrder != null)
         {
-            var old_index = trophy.SortSeries;
-            var new_value = e.NewValue;
+            short old_index = trophy.SortSeries;
+            decimal? new_value = e.NewValue;
 
             new_value ??= 0;
 
@@ -233,7 +233,7 @@ public partial class TrophyView : UserControl
             if (new_value >= model.Trophies.Count)
                 new_value = model.Trophies.Count - 1;
 
-            model.SeriesOrder.Move((int)old_index, (int)new_value);
+            model.SeriesOrder.Move(old_index, (int)new_value);
             model.UpdateSeriesOrder();
 
             // reselect trophy

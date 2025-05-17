@@ -1,14 +1,14 @@
-﻿using System.ComponentModel;
+﻿using HSDRaw;
 using HSDRaw.Common;
-using HSDRaw;
 using HSDRaw.MEX;
+using HSDRaw.MEX.Misc;
 using mexLib.Attributes;
 using mexLib.Installer;
 using mexLib.MexScubber;
-using System.Collections.ObjectModel;
-using HSDRaw.MEX.Misc;
-using System.Drawing;
 using mexLib.Utilties;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Drawing;
 using System.IO.Compression;
 
 namespace mexLib.Types
@@ -16,7 +16,7 @@ namespace mexLib.Types
     public partial class MexFighter : MexReactiveObject
     {
         [Category("0 - General"), DisplayName("Name")]
-        public string Name { get => _name; set { _name = value; OnPropertyChanged(); } } 
+        public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
         private string _name = "New Fighter";
 
         [Category("0 - General"), DisplayName("Series")]
@@ -92,10 +92,10 @@ namespace mexLib.Types
         /// <param name="workspace"></param>
         public void ToMxDt(MexGenerator mex, int internalId)
         {
-            var mexData = mex.Data;
-            var externalId = MexFighterIDConverter.ToExternalID(internalId, mex.Workspace.Project.Fighters.Count);
-            var kb = mexData.KirbyData;
-            var fd = mexData.FighterData;
+            MEX_Data mexData = mex.Data;
+            int externalId = MexFighterIDConverter.ToExternalID(internalId, mex.Workspace.Project.Fighters.Count);
+            MEX_KirbyTable kb = mexData.KirbyData;
+            MEX_FighterData fd = mexData.FighterData;
 
             fd.NameText.Set(externalId, new HSDRaw.Common.HSD_String(Name));
             fd.CharFiles.Set(internalId, new MEX_CharFileStrings() { FileName = Files.FighterDataPath, Symbol = Files.FighterDataSymbol });
@@ -118,9 +118,9 @@ namespace mexLib.Types
                 // write misc data
                 mexData.MiscData = new MEX_Misc()
                 {
-                    GawColors = new HSDArrayAccessor<MEX_GawColor>() 
-                    { 
-                        Array = GaWData.Colors.Select(e=>new MEX_GawColor()
+                    GawColors = new HSDArrayAccessor<MEX_GawColor>()
+                    {
+                        Array = GaWData.Colors.Select(e => new MEX_GawColor()
                         {
                             FillColor = Color.FromArgb((int)e.Fill),
                             OutlineColor = Color.FromArgb((int)e.Outline),
@@ -160,7 +160,7 @@ namespace mexLib.Types
                 BitField2 = (int)SSMBitfield2
             });
 
-            fd.VictoryThemeIDs[externalId] = (int)VictoryTheme;
+            fd.VictoryThemeIDs[externalId] = VictoryTheme;
             fd.FighterSongIDs.Set(externalId, new HSDRaw.MEX.Characters.MEX_FighterSongID()
             {
                 SongID1 = (short)FighterMusic1,
@@ -191,16 +191,16 @@ namespace mexLib.Types
             fd.EndingFallScale[externalId] = EndingScreenScale;
 
             // Kirby
-            kb.CapFiles.Set(internalId, new MEX_KirbyCapFiles() 
-            { 
-                FileName = string.IsNullOrEmpty(Files.KirbyCapFileName) ? null : Files.KirbyCapFileName, 
+            kb.CapFiles.Set(internalId, new MEX_KirbyCapFiles()
+            {
+                FileName = string.IsNullOrEmpty(Files.KirbyCapFileName) ? null : Files.KirbyCapFileName,
                 Symbol = string.IsNullOrEmpty(Files.KirbyCapSymbol) ? null : Files.KirbyCapSymbol,
             });
             kb.KirbyEffectIDs[internalId] = (byte)mex.GetEffectID(Files.KirbyEffectFile, Files.KirbyEffectSymbol);
             if (KirbyCostumes.Count > 0)
             {
-                kb.KirbyCostumes.Set(internalId, new MEX_KirbyCostume() 
-                { 
+                kb.KirbyCostumes.Set(internalId, new MEX_KirbyCostume()
+                {
                     Array = KirbyCostumes.Select(e => new MEX_CostumeFileSymbol()
                     {
                         FileName = e.FileName,
@@ -220,7 +220,7 @@ namespace mexLib.Types
             Functions.ToMxDt(mexData, internalId);
 
             // save items
-            var itemEntries = new ushort[Items.Count];
+            ushort[] itemEntries = new ushort[Items.Count];
             for (int i = 0; i < itemEntries.Length; i++)
             {
                 itemEntries[i] = (ushort)(MexDefaultData.BaseItemCount + mex.MexItems.Count);
@@ -235,9 +235,9 @@ namespace mexLib.Types
         /// <param name="mxdt"></param>
         internal void FromMxDt(MexWorkspace workspace, MEX_Data mxdt, MexDOL dol, int internalId)
         {
-            var externalId = MexFighterIDConverter.ToExternalID(internalId, mxdt.MetaData.NumOfInternalIDs);
-            var kb = mxdt.KirbyData;
-            var fd = mxdt.FighterData;
+            int externalId = MexFighterIDConverter.ToExternalID(internalId, mxdt.MetaData.NumOfInternalIDs);
+            MEX_KirbyTable kb = mxdt.KirbyData;
+            MEX_FighterData fd = mxdt.FighterData;
 
             // import general
             Name = fd.NameText[externalId].Value;
@@ -254,7 +254,7 @@ namespace mexLib.Types
             Files.RstAnimFile = fd.ResultAnimFiles[externalId].Value;
             Files.RstAnimCount = (uint)fd.RstRuntime[internalId].AnimMax;
 
-            var effect_id = fd.EffectIDs[internalId];
+            byte effect_id = fd.EffectIDs[internalId];
             if (effect_id != 255)
             {
                 Files.EffectFile = mxdt.EffectTable.EffectFiles[effect_id].FileName;
@@ -268,7 +268,7 @@ namespace mexLib.Types
             if (internalId == 24)
             {
                 GaWData = new FighterGaWExt();
-                foreach (var e in mxdt.MiscData.GawColors.Array)
+                foreach (MEX_GawColor? e in mxdt.MiscData.GawColors.Array)
                 {
                     GaWData.Colors.Add(new GAWColor()
                     {
@@ -325,7 +325,7 @@ namespace mexLib.Types
             Files.KirbyCapFileName = kb.CapFiles[internalId].FileName;
             Files.KirbyCapSymbol = kb.CapFiles[internalId].Symbol;
 
-            var kbeffect_id = kb.KirbyEffectIDs[internalId];
+            byte kbeffect_id = kb.KirbyEffectIDs[internalId];
             if (kbeffect_id != 255)
             {
                 Files.KirbyEffectFile = mxdt.EffectTable.EffectFiles[kbeffect_id].FileName;
@@ -338,7 +338,7 @@ namespace mexLib.Types
             {
                 for (int i = 0; i < costumes.Length; i++)
                 {
-                    KirbyCostumes.Add(new ()
+                    KirbyCostumes.Add(new()
                     {
                         FileName = costumes[i].FileName,
                         JointSymbol = costumes[i].JointSymbol,
@@ -353,7 +353,7 @@ namespace mexLib.Types
             // extract logic pointers from dol since old mex stored the actual data
             if (!MexFighterIDConverter.IsMexFighter(internalId, workspace.Project.Fighters.Count))
             {
-                var oldInternal = (uint)MexFighterIDConverter.ToInternalID(
+                uint oldInternal = (uint)MexFighterIDConverter.ToInternalID(
                     MexFighterIDConverter.ToExternalID(internalId, workspace.Project.Fighters.Count),
                     0x21);
 
@@ -364,9 +364,9 @@ namespace mexLib.Types
 
             // import items
             Items.Clear();
-            foreach (var i in fd.FighterItemLookup[internalId].Entries)
+            foreach (ushort i in fd.FighterItemLookup[internalId].Entries)
             {
-                var item = new MexItem();
+                MexItem item = new();
                 item.FromMexItem(mxdt.ItemTable.MEXItems[i - MexDefaultData.BaseItemCount]);
                 Items.Add(item);
             }
@@ -379,7 +379,7 @@ namespace mexLib.Types
         public void FromDOL(MexDOL dol, uint index)
         {
             // get external id
-            var exid = (uint)MexFighterIDConverter.ToExternalID((int)index, 0x21);
+            uint exid = (uint)MexFighterIDConverter.ToExternalID((int)index, 0x21);
 
             // default data
             Name = MexDefaultData.Fighter_Names[exid];
@@ -416,7 +416,7 @@ namespace mexLib.Types
             if (exid < 0x21 - 7)
             {
                 Files.DemoFile = dol.GetStruct<string>(0x803FFFA8, exid);
-                var demoOffset = dol.GetStruct<uint>(0x803C2468, index);
+                uint demoOffset = dol.GetStruct<uint>(0x803C2468, index);
                 Files.DemoResult = dol.GetStruct<string>(demoOffset + 0x00, 0, 0x10);
                 Files.DemoIntro = dol.GetStruct<string>(demoOffset + 0x04, 0, 0x10);
                 Files.DemoEnding = dol.GetStruct<string>(demoOffset + 0x08, 0, 0x10);
@@ -449,8 +449,8 @@ namespace mexLib.Types
             SubCharacterBehavior = (SubCharacterBehavior)dol.GetStruct<byte>(0x803BCDE0 + 0x02, exid, 3);
 
             // effects
-            var effect_id = dol.GetStruct<byte>(0x803C26FC, index);
-            var kirby_effect_id = dol.GetStruct<byte>(0x803CB46C, index);
+            byte effect_id = dol.GetStruct<byte>(0x803C26FC, index);
+            byte kirby_effect_id = dol.GetStruct<byte>(0x803CB46C, index);
 
             Files.EffectFile = dol.GetStruct<string>(0x803c025c + 0x00, effect_id, 0x0C);
             Files.EffectSymbol = dol.GetStruct<string>(0x803c025c + 0x04, effect_id, 0x0C);
@@ -512,7 +512,7 @@ namespace mexLib.Types
         public MexInstallerError? ToPackage(MexWorkspace workspace, Stream stream, FighterPackOptions options)
         {
             // create zip
-            using var zip = new ZipWriter(stream);
+            using ZipWriter zip = new(stream);
 
             // fighter to package
             zip.WriteAsJson("fighter.json", this);
@@ -537,16 +537,16 @@ namespace mexLib.Types
             if (options.ExportSoundBank)
                 if (SoundBank != 55)
                 {
-                    using var ms = new MemoryStream();
+                    using MemoryStream ms = new();
                     MexSoundGroup.ToPackage(workspace.Project.SoundGroups[SoundBank], ms);
                     zip.Write("sound.zip", ms.ToArray());
                 }
 
             // write costumes
             if (options.ExportCostumes)
-                foreach (var c in Costumes)
+                foreach (MexCostume c in Costumes)
                 {
-                    using var s = new MemoryStream();
+                    using MemoryStream s = new();
                     c.PackToZip(workspace, s);
                     zip.Write(Path.GetFileNameWithoutExtension(c.File.FileName) + ".zip", s.ToArray());
                 }
@@ -563,11 +563,11 @@ namespace mexLib.Types
             fighter = null;
 
             // load zip
-            using var zip = new ZipArchive(stream);
+            using ZipArchive zip = new(stream);
 
             // import fighter from package
             {
-                var entry = zip.GetEntry("fighter.json");
+                ZipArchiveEntry? entry = zip.GetEntry("fighter.json");
                 if (entry == null)
                     return new MexInstallerError("\"fighter.json\" was not found in zip");
 
@@ -600,11 +600,11 @@ namespace mexLib.Types
 
             // load soundbank
             {
-                var entry = zip.GetEntry("sound.zip");
+                ZipArchiveEntry? entry = zip.GetEntry("sound.zip");
 
                 if (entry != null)
                 {
-                    using var ms = new MemoryStream(entry.Extract());
+                    using MemoryStream ms = new(entry.Extract());
                     MexSoundGroup.FromPackage(workspace, ms, out MexSoundGroup? group);
                     if (group != null)
                     {
@@ -622,16 +622,16 @@ namespace mexLib.Types
             }
 
             // import costumes
-            var costumes = fighter.Costumes.Select(e => e.File.FileName).ToList();
+            List<string> costumes = fighter.Costumes.Select(e => e.File.FileName).ToList();
             fighter.Costumes.Clear();
-            foreach (var costume in costumes)
+            foreach (string? costume in costumes)
             {
-                var entry = zip.GetEntry(Path.GetFileNameWithoutExtension(costume) + ".zip");
+                ZipArchiveEntry? entry = zip.GetEntry(Path.GetFileNameWithoutExtension(costume) + ".zip");
                 if (entry != null)
                 {
-                    using var cstream = new MemoryStream(entry.Extract());
-                    var log = new System.Text.StringBuilder();
-                    foreach (var c in MexCostume.FromZip(workspace, cstream, log))
+                    using MemoryStream cstream = new(entry.Extract());
+                    System.Text.StringBuilder log = new();
+                    foreach (MexCostume c in MexCostume.FromZip(workspace, cstream, log))
                         fighter.Costumes.Add(c);
                 }
             }
@@ -648,7 +648,7 @@ namespace mexLib.Types
             Assets.Delete(workspace);
             Media.Delete(workspace);
 
-            foreach (var c in Costumes)
+            foreach (MexCostume c in Costumes)
             {
                 c.DeleteAssets(workspace);
                 //c.DeleteFiles(workspace);// TODO: delete files that are not used by other fighter

@@ -1,12 +1,12 @@
-﻿using HSDRaw.MEX.Stages;
+﻿using HSDRaw.Common;
 using HSDRaw.MEX;
-using mexLib.MexScubber;
-using System.ComponentModel;
-using System.Collections.ObjectModel;
+using HSDRaw.MEX.Stages;
 using mexLib.Attributes;
-using HSDRaw.Common;
 using mexLib.Installer;
+using mexLib.MexScubber;
 using mexLib.Utilties;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO.Compression;
 
 namespace mexLib.Types
@@ -109,7 +109,7 @@ namespace mexLib.Types
         /// <param name="index"></param>
         public void ToMxDt(MexGenerator gen, int index)
         {
-            var sd = gen.Data.StageData;
+            MEX_StageData sd = gen.Data.StageData;
 
             // set stage structs
             sd.StageNames.Set(index, new HSD_String(Name));
@@ -131,7 +131,7 @@ namespace mexLib.Types
             sd.StagePlaylists.Set(index, Playlist.ToMexPlaylist());
 
             // save items
-            var itemEntries = new ushort[Items.Count];
+            ushort[] itemEntries = new ushort[Items.Count];
             for (int i = 0; i < itemEntries.Length; i++)
             {
                 itemEntries[i] = (ushort)(MexDefaultData.BaseItemCount + gen.MexItems.Count);
@@ -140,7 +140,7 @@ namespace mexLib.Types
             sd.StageItemLookup.Set(index, new MEX_ItemLookup() { Entries = itemEntries });
 
             // save functions
-            var stage = new MEX_Stage()
+            MEX_Stage stage = new()
             {
                 StageInternalID = index,
                 StageFileName = FileName,
@@ -165,7 +165,7 @@ namespace mexLib.Types
         /// <param name="i"></param>
         internal void FromMxDt(MEX_Data mxdt, int index)
         {
-            var sd = mxdt.StageData;
+            MEX_StageData sd = mxdt.StageData;
 
             // load stage structs
             Name = sd.StageNames[index].Value;
@@ -181,15 +181,15 @@ namespace mexLib.Types
 
             // load items
             Items.Clear();
-            foreach (var i in sd.StageItemLookup[index].Entries)
+            foreach (ushort i in sd.StageItemLookup[index].Entries)
             {
-                var item = new MexItem();
+                MexItem item = new();
                 item.FromMexItem(mxdt.ItemTable.MEXItems[i - MexDefaultData.BaseItemCount]);
                 Items.Add(item);
             }
 
             // load functions
-            var sf = mxdt.StageFunctions[index];
+            MEX_Stage sf = mxdt.StageFunctions[index];
             FileName = sf.StageFileName;
             MapDescPointer = (uint)sf.GOBJFunctionsPointer;
             MovingCollisionCount = sf.MovingCollisionPointCount;
@@ -214,7 +214,7 @@ namespace mexLib.Types
             SeriesID = MexDefaultData.Stage_Series[index];
 
             // load stage data
-            var functionPointer = dol.GetStruct<uint>(0x803DFEDC, index);
+            uint functionPointer = dol.GetStruct<uint>(0x803DFEDC, index);
 
             if (functionPointer != 0)
             {
@@ -237,7 +237,7 @@ namespace mexLib.Types
                 OnUnknown4 = stage.OnUnknown4;
                 UnknownValue = stage.UnknownValue;
             }
-            
+
             // load additional data
             SoundBank = dol.GetStruct<byte>(0x803BB6B0 + 0x00, index, 0x03);
             ReverbValue1 = dol.GetStruct<byte>(0x803BB6B0 + 0x01, index, 0x03);
@@ -277,14 +277,14 @@ namespace mexLib.Types
         /// <param name="options"></param>
         public static void ToPackage(Stream s, MexWorkspace workspace, MexStage stage, StagePackOptions options)
         {
-            using var zip = new ZipWriter(s);
+            using ZipWriter zip = new(s);
 
             // write stage
             zip.WriteAsJson("stage.json", stage);
 
             // write assets
             stage.Assets.ToPackage(workspace, zip);
-            
+
             if (options.ExportFiles)
             {
                 // write files
@@ -292,7 +292,7 @@ namespace mexLib.Types
                     zip.TryWriteFile(workspace, stage.FileName, stage.FileName);
 
                 // write additional files
-                foreach (var f in stage.AdditionalFiles)
+                foreach (string f in stage.AdditionalFiles)
                     zip.TryWriteFile(workspace, f, f);
             }
 
@@ -300,10 +300,10 @@ namespace mexLib.Types
 
             if (options.ExportSound)
             {
-            // write soundbank
+                // write soundbank
                 if (stage.SoundBank != 55)
                 {
-                    using var ms = new MemoryStream();
+                    using MemoryStream ms = new();
                     MexSoundGroup.ToPackage(workspace.Project.SoundGroups[stage.SoundBank], ms);
                     zip.Write("sound.zip", ms.ToArray());
                 }
@@ -323,7 +323,7 @@ namespace mexLib.Types
 
             // load group entry
             {
-                var entry = zip.GetEntry("stage.json");
+                ZipArchiveEntry? entry = zip.GetEntry("stage.json");
                 if (entry == null)
                     return new MexInstallerError("\"stage.json\" was not found in zip");
 
@@ -338,7 +338,7 @@ namespace mexLib.Types
                 // init playlist
                 stage.Playlist = new MexPlaylist()
                 {
-                    Entries = 
+                    Entries =
                     {
                         new ()
                         {
@@ -355,10 +355,10 @@ namespace mexLib.Types
             // load files
             if (stage.FileName != null)
             {
-                var stage_file = zip.GetEntry(stage.FileName);
+                ZipArchiveEntry? stage_file = zip.GetEntry(stage.FileName);
                 if (stage_file != null)
                 {
-                    var fullPath = workspace.GetFilePath(stage.FileName);
+                    string fullPath = workspace.GetFilePath(stage.FileName);
                     fullPath = workspace.FileManager.GetUniqueFilePath(fullPath);
                     workspace.FileManager.Set(fullPath, stage_file.Extract());
                     stage.FileName = Path.GetFileName(fullPath);
@@ -366,12 +366,12 @@ namespace mexLib.Types
             }
 
             // additional files
-            foreach (var f in stage.AdditionalFiles)
+            foreach (string f in stage.AdditionalFiles)
             {
-                var stage_file = zip.GetEntry(f);
+                ZipArchiveEntry? stage_file = zip.GetEntry(f);
                 if (stage_file != null)
                 {
-                    var fullPath = workspace.GetFilePath(f);
+                    string fullPath = workspace.GetFilePath(f);
                     fullPath = workspace.FileManager.GetUniqueFilePath(fullPath);
                     workspace.FileManager.Set(fullPath, stage_file.Extract());
                 }
@@ -379,11 +379,11 @@ namespace mexLib.Types
 
             // load soundbank
             {
-                var entry = zip.GetEntry("sound.zip");
+                ZipArchiveEntry? entry = zip.GetEntry("sound.zip");
 
                 if (entry != null)
                 {
-                    using var ms = new MemoryStream(entry.Extract());
+                    using MemoryStream ms = new(entry.Extract());
                     MexSoundGroup.FromPackage(workspace, ms, out MexSoundGroup? group);
                     if (group != null)
                     {
@@ -411,7 +411,7 @@ namespace mexLib.Types
             if (FileName != null)
                 ws.FileManager.Remove(ws.GetFilePath(FileName));
 
-            foreach (var f in AdditionalFiles)
+            foreach (string f in AdditionalFiles)
                 ws.FileManager.Remove(ws.GetFilePath(f));
 
             Assets.Delete(ws);

@@ -39,24 +39,24 @@ public partial class PlaylistEditor : UserControl
         else
         {
             Entries = playlist.Entries;
-            foreach (var e in Entries)
+            foreach (MexPlaylistEntry e in Entries)
                 GenerateCell(PlaylistPanel, e);
         }
     }
 
     private void GenerateCell(StackPanel root, MexPlaylistEntry entry)
     {
-        var c = new DockPanel()
+        DockPanel c = new()
         {
 
         };
 
-        var topPanel = new DockPanel();
+        DockPanel topPanel = new();
         c.Children.Add(topPanel);
         DockPanel.SetDock(topPanel, Dock.Top);
 
         {
-            var button = new Button()
+            Button button = new()
             {
                 Content = new Image() { Source = BitmapManager.Minus, Width = 24, Height = 24 }
             };
@@ -71,9 +71,9 @@ public partial class PlaylistEditor : UserControl
             topPanel.Children.Add(button);
         }
         {
-            var button = new Button()
+            Button button = new()
             {
-                Content = new Image() { Source = BitmapManager.PlayIconImage, Width=24, Height=24 }
+                Content = new Image() { Source = BitmapManager.PlayIconImage, Width = 24, Height = 24 }
             };
             ToolTip.SetTip(button, "Play");
 
@@ -86,7 +86,7 @@ public partial class PlaylistEditor : UserControl
             topPanel.Children.Add(button);
         }
         {
-            var button = new Button()
+            Button button = new()
             {
                 Content = new Image() { Source = BitmapManager.ArrowUp, Width = 24, Height = 24 }
             };
@@ -94,8 +94,8 @@ public partial class PlaylistEditor : UserControl
 
             button.Click += (s, a) =>
             {
-                var index = Entries.IndexOf(entry);
-                var control_index = root.Children.IndexOf(c);
+                int index = Entries.IndexOf(entry);
+                int control_index = root.Children.IndexOf(c);
                 if (index > 0 && control_index > 0)
                 {
                     Entries.Move(index, index - 1);
@@ -106,7 +106,7 @@ public partial class PlaylistEditor : UserControl
             topPanel.Children.Add(button);
         }
         {
-            var button = new Button()
+            Button button = new()
             {
                 Content = new Image() { Source = BitmapManager.ArrowDown, Width = 24, Height = 24 }
             };
@@ -114,8 +114,8 @@ public partial class PlaylistEditor : UserControl
 
             button.Click += (s, a) =>
             {
-                var index = Entries.IndexOf(entry);
-                var control_index = root.Children.IndexOf(c);
+                int index = Entries.IndexOf(entry);
+                int control_index = root.Children.IndexOf(c);
                 if (index < Entries.Count - 1 && control_index < root.Children.Count - 1)
                 {
                     Entries.Move(index, index + 1);
@@ -126,7 +126,7 @@ public partial class PlaylistEditor : UserControl
             topPanel.Children.Add(button);
         }
         {
-            var combobox = new ComboBox()
+            ComboBox combobox = new()
             {
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
@@ -141,7 +141,7 @@ public partial class PlaylistEditor : UserControl
             topPanel.Children.Add(combobox);
         }
         {
-            var slider = new Slider()
+            Slider slider = new()
             {
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
                 Minimum = 0,
@@ -162,7 +162,7 @@ public partial class PlaylistEditor : UserControl
 
     private void Button_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        var entry = new MexPlaylistEntry() { MusicID = 5, ChanceToPlay = 50 };
+        MexPlaylistEntry entry = new() { MusicID = 5, ChanceToPlay = 50 };
         Entries.Add(entry);
         GenerateCell(PlaylistPanel, entry);
     }

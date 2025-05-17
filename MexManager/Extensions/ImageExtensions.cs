@@ -42,15 +42,15 @@ namespace MexManager
             }
 
             // Create a MemoryStream from the pixel data
-            using var memoryStream = new MemoryStream(rgbaPixels);
-            using var framebuffer = bmp.Lock();
-                
+            using MemoryStream memoryStream = new(rgbaPixels);
+            using ILockedFramebuffer framebuffer = bmp.Lock();
+
             // Copy pixel data into the WriteableBitmap
-            var dataPointer = framebuffer.Address;
+            IntPtr dataPointer = framebuffer.Address;
 
             // Copy the pixel data into the WriteableBitmap
             Marshal.Copy(swappedPixels, 0, dataPointer, swappedPixels.Length);
-                
+
             return bmp;
         }
         /// <summary>
@@ -63,9 +63,9 @@ namespace MexManager
         /// <exception cref="ArgumentException"></exception>
         public static Bitmap ToBitmap(this MexImage image)
         {
-            var width = image.Width;
-            var height = image.Height;
-            var rgbaPixels = image.GetBGRA();
+            int width = image.Width;
+            int height = image.Height;
+            byte[] rgbaPixels = image.GetBGRA();
 
             // Validate pixel data length
             int expectedSize = width * height * 4; // 4 bytes per pixel (RGBA)
@@ -86,18 +86,18 @@ namespace MexManager
             }
 
             // Create a MemoryStream from the pixel data
-            using var memoryStream = new MemoryStream(rgbaPixels);
+            using MemoryStream memoryStream = new(rgbaPixels);
             {
-                var pixelSize = new PixelSize(width, height);
-                var stride = width * 4; // Each row in bytes (4 bytes per pixel)
-                var dpi = new Vector(96, 96); // Default DPI; adjust if necessary
+                PixelSize pixelSize = new(width, height);
+                int stride = width * 4; // Each row in bytes (4 bytes per pixel)
+                Vector dpi = new(96, 96); // Default DPI; adjust if necessary
 
                 // Create the Bitmap using the MemoryStream and WriteableBitmap
-                var bitmap = new WriteableBitmap(pixelSize, dpi, PixelFormat.Rgba8888, AlphaFormat.Unpremul);
-                using (var framebuffer = bitmap.Lock())
+                WriteableBitmap bitmap = new(pixelSize, dpi, PixelFormat.Rgba8888, AlphaFormat.Unpremul);
+                using (ILockedFramebuffer framebuffer = bitmap.Lock())
                 {
                     // Copy pixel data into the WriteableBitmap
-                    var dataPointer = framebuffer.Address;
+                    IntPtr dataPointer = framebuffer.Address;
 
                     // Copy the pixel data into the WriteableBitmap
                     Marshal.Copy(rgbaPixels, 0, dataPointer, rgbaPixels.Length);

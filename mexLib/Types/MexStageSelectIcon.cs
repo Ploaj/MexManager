@@ -1,11 +1,11 @@
-﻿using HSDRaw.Common.Animation;
-using HSDRaw.Common;
+﻿using HSDRaw.Common;
+using HSDRaw.Common.Animation;
 using HSDRaw.MEX.Menus;
-using mexLib.Attributes;
-using System.ComponentModel;
 using mexLib.AssetTypes;
-using System.Text.Json.Serialization;
+using mexLib.Attributes;
 using PropertyModels.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace mexLib.Types
 {
@@ -205,8 +205,8 @@ namespace mexLib.Types
                 case StageIconStatus.Locked:
                     return ws.Project.ReservedAssets.SSSLockedNullAsset.GetTexFile(ws);
                 case StageIconStatus.Unlocked:
-                    var internalId = MexStageIDConverter.ToInternalID(StageID);
-                    var stage = ws.Project.Stages[internalId];
+                    int internalId = MexStageIDConverter.ToInternalID(StageID);
+                    MexStage stage = ws.Project.Stages[internalId];
                     return stage.Assets.IconAsset.GetTexFile(ws);
                 case StageIconStatus.Decoration:
                     return IconAsset.GetTexFile(ws);
@@ -235,9 +235,9 @@ namespace mexLib.Types
             if (joint_index >= 12 && joint_index <= 16)
                 Group = 2;
 
-            foreach (var t in animjoint.AOBJ.FObjDesc.List)
+            foreach (HSD_FOBJDesc? t in animjoint.AOBJ.FObjDesc.List)
             {
-                var keys = t.GetDecodedKeys();
+                List<HSDRaw.Tools.FOBJKey> keys = t.GetDecodedKeys();
                 switch ((JointTrackType)t.TrackType)
                 {
                     case JointTrackType.HSD_A_J_TRAX:

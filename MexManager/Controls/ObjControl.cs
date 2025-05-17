@@ -1,9 +1,9 @@
-﻿using Avalonia.Media;
-using mexLib.AssetTypes;
+﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia;
-using System;
+using Avalonia.Media;
+using mexLib.AssetTypes;
 using MexManager.Tools;
+using System;
 
 namespace MexManager.Controls
 {

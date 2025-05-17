@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using mexLib;
 using mexLib.Types;
-using MexManager.Extensions;
 using MexManager.ViewModels;
 using System.ComponentModel;
 using System.Reactive.Linq;
@@ -23,7 +22,7 @@ public partial class CSSEditorView : UserControl
                 DataContext is MainViewModel model &&
                 model.CharacterSelect != null)
             {
-                var Icons = model.CharacterSelect.FighterIcons;
+                System.Collections.ObjectModel.ObservableCollection<MexCharacterSelectIcon> Icons = model.CharacterSelect.FighterIcons;
                 //Icons.Move(i, j);
                 (Icons[i], Icons[j]) = (Icons[j], Icons[i]);
             }
@@ -120,7 +119,7 @@ public partial class CSSEditorView : UserControl
         {
             model.CharacterSelect.FighterIcons.Add(new MexCharacterSelectIcon()
             {
-                
+
             });
 
             IconList.SelectedIndex = model.CharacterSelect.FighterIcons.Count - 1;
@@ -138,10 +137,10 @@ public partial class CSSEditorView : UserControl
     {
         if (Global.Workspace != null &&
             DataContext is MainViewModel model &&
-            model.CharacterSelect != null && 
+            model.CharacterSelect != null &&
             model.SelectedCSSIcon is MexCharacterSelectIcon icon)
         {
-            var res = await MessageBox.Show("Are you sure you want\nto remove this icon?", "Remove Icon", MessageBox.MessageBoxButtons.YesNoCancel);
+            MessageBox.MessageBoxResult res = await MessageBox.Show("Are you sure you want\nto remove this icon?", "Remove Icon", MessageBox.MessageBoxButtons.YesNoCancel);
 
             if (res != MessageBox.MessageBoxResult.Yes)
                 return;

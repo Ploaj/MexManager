@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace mexLib.Utilties
 {
@@ -8,7 +7,7 @@ namespace mexLib.Utilties
         public static object SwapEndianness(object obj)
         {
             Type type = obj.GetType();
-            foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+            foreach (FieldInfo field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
                 object? value = field.GetValue(obj);
                 if (value == null)
@@ -73,8 +72,8 @@ namespace mexLib.Utilties
 
         private static int SwapEndianness(int value)
         {
-            return (int)((SwapEndianness((ushort)(value & 0xFFFF)) << 16) |
-                         (SwapEndianness((ushort)((value >> 16) & 0xFFFF))));
+            return (SwapEndianness((ushort)(value & 0xFFFF)) << 16) |
+                         (SwapEndianness((ushort)((value >> 16) & 0xFFFF)));
         }
 
         private static uint SwapEndianness(uint value)
@@ -92,7 +91,7 @@ namespace mexLib.Utilties
         private static ulong SwapEndianness(ulong value)
         {
             return ((ulong)SwapEndianness((uint)(value & 0xFFFFFFFF)) << 32) |
-                   ((ulong)SwapEndianness((uint)((value >> 32) & 0xFFFFFFFF)));
+                   SwapEndianness((uint)((value >> 32) & 0xFFFFFFFF));
         }
 
         private static float SwapEndianness(float value)

@@ -11,7 +11,7 @@ namespace mexLib.Utilties
         /// <returns></returns>
         public static List<T> QuadToList<T>(List<T> input)
         {
-            var output = new List<T>();
+            List<T> output = new();
 
             for (int i = 0; i < input.Count; i += 4)
             {
@@ -33,15 +33,15 @@ namespace mexLib.Utilties
         /// <returns></returns>
         public static List<GX_Vertex> StripToList(List<GX_Vertex> input)
         {
-            var output = new List<GX_Vertex>();
+            List<GX_Vertex> output = new();
 
             for (int index = 2; index < input.Count; index++)
             {
                 bool isEven = index % 2 != 1;
 
-                var vert1 = input[index - 2];
-                var vert2 = isEven ? input[index] : input[index - 1];
-                var vert3 = isEven ? input[index - 1] : input[index];
+                GX_Vertex vert1 = input[index - 2];
+                GX_Vertex vert2 = isEven ? input[index] : input[index - 1];
+                GX_Vertex vert3 = isEven ? input[index - 1] : input[index];
 
                 if (!vert1.POS.Equals(vert2.POS) && !vert2.POS.Equals(vert3.POS) && !vert3.POS.Equals(vert1.POS))
                 {

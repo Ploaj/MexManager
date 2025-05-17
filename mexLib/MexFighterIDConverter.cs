@@ -1,9 +1,4 @@
 ﻿using HSDRaw.MEX;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace mexLib
 {
@@ -47,7 +42,7 @@ namespace mexLib
         /// <returns></returns>
         public static int ToExternalID(int internalID, int characterCount)
         {
-            var addedChars = characterCount - BaseCharacterCount;
+            int addedChars = characterCount - BaseCharacterCount;
             bool isSpecialCharacter = internalID >= characterCount - InternalSpecialCharCount;
 
             if (internalID >= characterCount - InternalSpecialCharCount - addedChars &&

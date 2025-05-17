@@ -6,11 +6,8 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using MeleeMedia.Audio;
-using mexLib;
 using MexManager.Tools;
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Timers;
 
 namespace MexManager.Views;
@@ -48,7 +45,7 @@ public partial class AudioLoopEditor : Window
 
             _endPercentage = value;
             player.EndPercentage = value;
-            var pos = value * WaveformCanvas.Bounds.Width;
+            double pos = value * WaveformCanvas.Bounds.Width;
             if (endLine != null && DSP != null)
             {
                 endLine.StartPoint = new Point(pos, 0);
@@ -67,8 +64,8 @@ public partial class AudioLoopEditor : Window
             if (value > EndPercentage)
                 value = EndPercentage;
 
-            if (DSP != null && 
-                loopLine != null && 
+            if (DSP != null &&
+                loopLine != null &&
                 LoopTimeSpanPicker != null)
             {
                 // set dsp loop point
@@ -76,7 +73,7 @@ public partial class AudioLoopEditor : Window
                 player.LoopPointPercent = value;
 
                 // update line
-                var pos = value * WaveformCanvas.Bounds.Width;
+                double pos = value * WaveformCanvas.Bounds.Width;
                 loopLine.StartPoint = new Point(pos, 0);
                 loopLine.EndPoint = new Point(pos, WaveformCanvas.Bounds.Height);
 
@@ -123,9 +120,9 @@ public partial class AudioLoopEditor : Window
     {
         if (DSP != null)
         {
-            foreach (var c in DSP.Channels)
+            foreach (DSPChannel? c in DSP.Channels)
             {
-                var newSize = (int)(EndPercentage * c.Data.Length);// * dsp.Channels[0].LoopStart / 2f * 1.75f;
+                int newSize = (int)(EndPercentage * c.Data.Length);// * dsp.Channels[0].LoopStart / 2f * 1.75f;
 
                 if (newSize != c.Data.Length)
                 {
@@ -151,7 +148,7 @@ public partial class AudioLoopEditor : Window
         positionUpdateTimer.Elapsed += async (sender, e) =>
         {
             // Update the current position based on the sound player's playback position
-            currentPercentage = player.Percentage; 
+            currentPercentage = player.Percentage;
 
             // Update the UI on the main thread
             if (Dispatcher.UIThread != null)
@@ -207,7 +204,7 @@ public partial class AudioLoopEditor : Window
             WaveformCanvas.LayoutUpdated -= OnCanvasLayoutUpdated;
 
             // Draw waveform on the canvas
-            var wav = DSP.ToWAVE();
+            WAVE wav = DSP.ToWAVE();
 
             if (wav.Channels.Count > 1)
                 DrawWaveform(wav.Channels[0], wav.Channels[1], wav.BitsPerSample, WaveformCanvas);
@@ -301,7 +298,7 @@ public partial class AudioLoopEditor : Window
         pointerDown = true;
 
         // Check if the mouse is near the scrubber line
-        var pointerPosition = e.GetPosition(WaveformCanvas);
+        Point pointerPosition = e.GetPosition(WaveformCanvas);
 
         bool endLineHoverd = Math.Abs(pointerPosition.X - endLine.StartPoint.X) < 8;
         bool loopLineHoverd = Math.Abs(pointerPosition.X - loopLine.StartPoint.X) < 8;
@@ -337,7 +334,7 @@ public partial class AudioLoopEditor : Window
         if (loopLine == null || endLine == null)
             return;
 
-        var pointerPosition = e.GetPosition(WaveformCanvas);
+        Point pointerPosition = e.GetPosition(WaveformCanvas);
 
         // Check if the mouse is near the scrubber line
         if (Math.Abs(pointerPosition.X - loopLine.StartPoint.X) < 8 && isDragging == null)
@@ -379,15 +376,15 @@ public partial class AudioLoopEditor : Window
     {
         if (pointerDown)
         {
-            var xPosition = pointerPosition.X;
+            double xPosition = pointerPosition.X;
             if (xPosition < 0) xPosition = 0;
             if (xPosition > WaveformCanvas.Bounds.Width) xPosition = WaveformCanvas.Bounds.Width;
 
-            var percent = xPosition / WaveformCanvas.Bounds.Width;
+            double percent = xPosition / WaveformCanvas.Bounds.Width;
 
             if (Math.Abs(percent - player.Percentage) > 0.01)
             {
-                var playing = player.State == OpenTK.Audio.OpenAL.ALSourceState.Playing;
+                bool playing = player.State == OpenTK.Audio.OpenAL.ALSourceState.Playing;
                 player.SeekPercentage(percent);
                 if (playing)
                     player.Play();
@@ -468,7 +465,7 @@ public partial class AudioLoopEditor : Window
             double rightY = midY - maxRightSample * scaleFactor;
 
             // Draw the lines representing the left and right channel waveforms
-            var leftLine = new Line
+            Line leftLine = new()
             {
                 StartPoint = new Point(x, midY),
                 EndPoint = new Point(x, leftY),
@@ -476,7 +473,7 @@ public partial class AudioLoopEditor : Window
                 StrokeThickness = 1
             };
 
-            var rightLine = new Line
+            Line rightLine = new()
             {
                 StartPoint = new Point(x, midY),
                 EndPoint = new Point(x, canvasHeight - rightY),
@@ -503,7 +500,7 @@ public partial class AudioLoopEditor : Window
                 loopLine.Stroke = check ? Brushes.White : Brushes.DarkGray;
 
             if (DSP != null)
-                foreach (var c in DSP.Channels)
+                foreach (DSPChannel? c in DSP.Channels)
                 {
                     c.LoopFlag = (short)(check ? 1 : 0);
                 }
@@ -521,11 +518,11 @@ public partial class AudioLoopEditor : Window
         if (Global.Workspace == null)
             return;
 
-        var file = await FileIO.TryOpenFile("Import Music", "", FileIO.FilterMusic);
+        string? file = await FileIO.TryOpenFile("Import Music", "", FileIO.FilterMusic);
 
         if (file != null)
         {
-            var hps = new DSP();
+            DSP hps = new();
             if (hps.FromFile(file))
             {
                 SetAudio(hps);
