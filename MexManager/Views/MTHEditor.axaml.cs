@@ -41,7 +41,7 @@ public partial class MTHEditor : UserControl
 
     private string? _filePath;
 
-    private readonly Bitmap? _previewBitmap;
+    //private readonly Bitmap? _previewBitmap;
 
     /// <summary>
     /// 
@@ -217,8 +217,7 @@ public partial class MTHEditor : UserControl
 
         _timer.Stop();
 
-        if (_reader != null)
-            _reader.Dispose();
+        _reader?.Dispose();
 
         if (string.IsNullOrEmpty(filePath) ||
             !File.Exists(filePath))
@@ -319,7 +318,7 @@ public partial class MTHEditor : UserControl
         if (folder == null)
             return;
 
-        List<string> toImport = new();
+        List<string> toImport = [];
         foreach (string f in Directory.GetFiles(folder))
         {
             string ext = Path.GetExtension(f);

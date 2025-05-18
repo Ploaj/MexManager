@@ -104,6 +104,7 @@ namespace mexLib.Installer
             }
 
             // load stages
+            Dictionary<uint, (uint, uint)> descLookup = new ();
             for (int i = 0; i < mxdt.MetaData.NumOfInternalStage; i++)
             {
                 MexStage group = new();
@@ -134,6 +135,19 @@ namespace mexLib.Installer
 
                         group.MapDescPointer = dol.GetStruct<uint>(functionPointer + 4, 0);
                         group.MovingCollisionPointer = dol.GetStruct<uint>(functionPointer + 44, 0);
+
+                        descLookup.TryAdd(group.OnStageLoad, (group.MapDescPointer, group.MovingCollisionPointer));
+                    }
+                }
+                else
+                {
+                    // if someone cloned a stage we check the onload
+                    // and match these pointers based on that
+                    if (group.OnStageLoad != 0 &&
+                        descLookup.TryGetValue(group.OnStageLoad, out var v))
+                    {
+                        group.MapDescPointer = v.Item1;
+                        group.MovingCollisionPointer = v.Item2;
                     }
                 }
             }

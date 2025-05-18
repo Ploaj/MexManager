@@ -109,14 +109,18 @@ namespace mexLib
             };
 
             // copy files from source
-            //File.Copy(Path.Combine(mexPath, "files/MxDt.dat"), workspace.GetFilePath("MxDt.dat"), overwrite: true);
-            //File.Copy(Path.Combine(mexPath, "files/GmRst.usd"), workspace.GetFilePath("GmRst.usd"), overwrite: true);
-            //File.Copy(Path.Combine(mexPath, "files/MnSlChr.usd"), workspace.GetFilePath("MnSlChr.usd"), overwrite: true);
-            //File.Copy(Path.Combine(mexPath, "files/MnSlMap.usd"), workspace.GetFilePath("MnSlMap.usd"), overwrite: true);
-            //File.Copy(Path.Combine(mexPath, "files/SmSt.dat"), workspace.GetFilePath("SmSt.dat"), overwrite: true);
-            //File.Copy(Path.Combine(mexPath, "files/IfAll.usd"), workspace.GetFilePath("IfAll.usd"), overwrite: true);
-            //File.Copy(Path.Combine(mexPath, "files/PlCo.dat"), workspace.GetFilePath("PlCo.dat"), overwrite: true);
-            //File.Copy(Path.Combine(mexPath, "files/audio/us/smash2.sem"), workspace.GetFilePath("audio/us/smash2.sem"), overwrite: true);
+            var fullPath = mexPath + "\\";
+            if (!fullPath.Equals(workspace.FilePath))
+            {
+                File.Copy(Path.Combine(mexPath, "files/MxDt.dat"), workspace.GetFilePath("MxDt.dat"), overwrite: true);
+                File.Copy(Path.Combine(mexPath, "files/GmRst.usd"), workspace.GetFilePath("GmRst.usd"), overwrite: true);
+                File.Copy(Path.Combine(mexPath, "files/MnSlChr.usd"), workspace.GetFilePath("MnSlChr.usd"), overwrite: true);
+                File.Copy(Path.Combine(mexPath, "files/MnSlMap.usd"), workspace.GetFilePath("MnSlMap.usd"), overwrite: true);
+                File.Copy(Path.Combine(mexPath, "files/SmSt.dat"), workspace.GetFilePath("SmSt.dat"), overwrite: true);
+                File.Copy(Path.Combine(mexPath, "files/IfAll.usd"), workspace.GetFilePath("IfAll.usd"), overwrite: true);
+                File.Copy(Path.Combine(mexPath, "files/PlCo.dat"), workspace.GetFilePath("PlCo.dat"), overwrite: true);
+                File.Copy(Path.Combine(mexPath, "files/audio/us/smash2.sem"), workspace.GetFilePath("audio/us/smash2.sem"), overwrite: true);
+            }
 
             // install mex system
             MexInstallerError? error = MxDtImporter.Install(workspace);
