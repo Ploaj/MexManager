@@ -56,12 +56,12 @@
 					Command="{Binding LaunchCommand}">
 				</MenuItem>
 			</MenuItem>
-			<MenuItem Header="Tools">
+			<!--MenuItem Header="Tools">
 				<MenuItem
-					Header="Edit Banner"
+					Header="Banner Editor"
 					Command="{Binding EditBannerCommand}">
 				</MenuItem>
-			</MenuItem>
+			</MenuItem-->
 			<MenuItem Header="_Config">
 				<MenuItem Header="Edit"
 						  Click="OnConfigClick">
@@ -82,6 +82,14 @@
 			<TabControl Margin="0"
 						Padding="0"
 						TabStripPlacement="Left">
+				<TabItem ToolTip.Tip="Info">
+					<TabItem.Header>
+						<Image Source="avares://MexManager/Assets/Menu/category_info.png"
+								Width="32"
+								Height="32"/>
+					</TabItem.Header>
+					<views:ProjectView/>
+				</TabItem>
 				<TabItem ToolTip.Tip="Fighters">
 					<TabItem.Header>
 						<Image Source="avares://MexManager/Assets/Menu/category_fighter.png"

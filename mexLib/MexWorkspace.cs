@@ -477,6 +477,12 @@ namespace mexLib
 
             Debug.WriteLine("Loaded trophy data in " + sw.Elapsed.ToString());
 
+            sw.Start();
+            Project.Build.LoadBanner(this);
+            sw.Stop();
+
+            Debug.WriteLine("Loaded banner data in " + sw.Elapsed.ToString());
+
             //sw.Start();
             //LoadResultData();
             //sw.Stop();

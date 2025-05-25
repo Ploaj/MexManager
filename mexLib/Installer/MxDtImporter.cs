@@ -73,6 +73,9 @@ namespace mexLib.Installer
             if (mxdt == null)
                 return new MexInstallerError("Error reading MxDt.dat");
 
+            // load meta data
+            project.Build.FromMxDt(mxdt);
+
             // load fighters
             for (uint i = 0; i < mxdt.MetaData.NumOfInternalIDs; i++)
             {

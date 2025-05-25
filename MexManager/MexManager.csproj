@@ -101,4 +101,8 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\TrophyView.axaml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\ProjectView.axaml" />
+  </ItemGroup>
 </Project>

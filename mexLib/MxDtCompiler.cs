@@ -281,6 +281,7 @@ namespace mexLib
                 LastMinor = proj.LastMinorSceneID,
                 TrophyCount = proj.Trophies.Count,
                 TrophySDOffset = proj.Trophies.Count + proj.Trophies.Count(e => e.HasUSData) + 4,
+                BuildInfo = proj.Build.ToMxDt(),
             };
             mexData.MetaData._s.SetByte(0, workspace.VersionMajor);
             mexData.MetaData._s.SetByte(1, workspace.VersionMinor);

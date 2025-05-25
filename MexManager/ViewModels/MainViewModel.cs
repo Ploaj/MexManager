@@ -166,6 +166,16 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    private MexBuildInfo? _buildInfo;
+    public MexBuildInfo? BuildInfo
+    {
+        get => _buildInfo;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _buildInfo, value);
+        }
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -232,6 +242,7 @@ public partial class MainViewModel : ViewModelBase
             SoundViewModel.SoundGroups = null;
             ReservedAssets = null;
             TrophyViewModel.Trophies = null;
+            BuildInfo = null;
         }
         else
         {
@@ -250,6 +261,8 @@ public partial class MainViewModel : ViewModelBase
             TrophyViewModel.Trophies = Global.Workspace.Project.Trophies;
             if (TrophyViewModel.Trophies.Count > 0)
                 TrophyViewModel.SelectedTrophy = TrophyViewModel.Trophies[0];
+            BuildInfo = Global.Workspace.Project.Build;
+
         }
     }
     /// <summary>

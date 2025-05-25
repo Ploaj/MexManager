@@ -1,0 +1,187 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
+			 xmlns:controls="clr-namespace:MexManager.Controls"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
+             x:Class="MexManager.Views.ProjectView">
+
+	<DockPanel>
+		<TextBlock
+			Margin="12 10 0 0"
+			DockPanel.Dock="Top"
+			FontSize="24"
+			Text="Project Data"/>
+		<Grid
+			Margin="12 0"
+			ColumnDefinitions="* *"
+			HorizontalAlignment="Left"
+			MinWidth="700"
+			RowDefinitions="40 32 32 32 32 32 32 32 32 64 32 32 32 128">
+
+			<controls:TextureAssetEditor
+				Grid.Column="0"
+				Grid.Row="0"
+				Grid.RowSpan="4"
+				Margin="0 15 0 0"
+				DockPanel.Dock="Top"
+					Width="220"
+					Height="140"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Center"
+				DataContext="{ Binding BuildInfo.BannerAsset }"/>
+			
+			<TextBlock
+				Grid.Column="1"
+				Grid.Row="0"
+				Text="Build Name"
+				VerticalAlignment="Center"/>
+			<TextBox
+				Height="24"
+				Grid.Column="1"
+				Grid.Row="1"
+				Text="{Binding BuildInfo.Name, Mode=TwoWay}"
+				Margin="0 0 24 0"/>
+
+			<TextBlock
+				Grid.Column="1"
+				Grid.Row="2"
+				Text="Version"
+				VerticalAlignment="Center"/>
+			<StackPanel
+				Grid.Column="1"
+				Grid.Row="3"
+				Orientation="Horizontal">
+				<NumericUpDown
+					Height="24"
+					Maximum="255"
+					Minimum="0"
+					Increment="1"
+					FormatString="F0"
+					ShowButtonSpinner="False"
+					HorizontalAlignment="Right"
+					Value="{Binding BuildInfo.MajorVersion, Mode=TwoWay}"
+					ToolTip.Tip="Major"/>
+				<TextBlock Text="." VerticalAlignment="Center" Padding="8 0"/>
+				<NumericUpDown
+					Height="24"
+					Maximum="255"
+					Minimum="0"
+					Increment="1"
+					FormatString="F0"
+					ShowButtonSpinner="False"
+					HorizontalAlignment="Right"
+					Value="{Binding BuildInfo.MinorVersion, Mode=TwoWay}"
+					ToolTip.Tip="Minor"/>
+				<TextBlock Text="." VerticalAlignment="Center" Padding="8 0"/>
+				<NumericUpDown
+					Height="24"
+					Maximum="255"
+					Minimum="0"
+					Increment="1"
+					FormatString="F0"
+					ShowButtonSpinner="False"
+					HorizontalAlignment="Right"
+					Value="{Binding BuildInfo.PatchVersion, Mode=TwoWay}"
+					ToolTip.Tip="Patch"/>
+			</StackPanel>
+
+
+			<TextBlock
+				Grid.Column="0"
+				Grid.Row="4"
+				Text="Name"
+				VerticalAlignment="Center"/>
+			<TextBox
+				Height="24"
+				Grid.Column="0"
+				Grid.Row="5"
+				MaxLength="31"
+				Text="{Binding BuildInfo.ShortName, Mode=TwoWay}"
+				Margin="0 0 24 0"/>
+
+			<TextBlock
+				Grid.Column="1"
+				Grid.Row="4"
+				Text="Full Name"
+				VerticalAlignment="Center"/>
+			<TextBox
+				Height="24"
+				Grid.Column="1"
+				Grid.Row="5"
+				MaxLength="63"
+				Text="{Binding BuildInfo.LongName, Mode=TwoWay}"
+				Margin="0 0 24 0"/>
+
+			<TextBlock
+				Grid.Column="0"
+				Grid.Row="6"
+				Text="Creator"
+				VerticalAlignment="Center"/>
+			<TextBox
+				Height="24"
+				Grid.Column="0"
+				Grid.Row="7"
+				MaxLength="31"
+				Text="{Binding BuildInfo.ShortMaker, Mode=TwoWay}"
+				Margin="0 0 24 0"/>
+
+			<TextBlock
+				Grid.Column="1"
+				Grid.Row="6"
+				Text="Full Creator"
+				VerticalAlignment="Center"/>
+			<TextBox
+				Height="24"
+				Grid.Column="1"
+				Grid.Row="7"
+				MaxLength="63"
+				Text="{Binding BuildInfo.LongMaker, Mode=TwoWay}"
+				Margin="0 0 24 0"/>
+
+			<TextBlock
+				Grid.Column="0"
+				Grid.Row="8"
+				Text="Description"
+				VerticalAlignment="Center"/>
+			<TextBox
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
+				Grid.Row="9"
+				AcceptsReturn="True"
+				TextWrapping="Wrap"
+				MaxLength="127"
+				Text="{Binding BuildInfo.Description, Mode=TwoWay}"/>
+
+			<TextBlock
+				Grid.Column="0"
+				Grid.Row="10"
+				Text="Save Data"
+				VerticalAlignment="Center"/>
+			<TextBox
+				Height="24"
+				Grid.Column="0"
+				Grid.Row="11"
+				MaxLength="63"
+				Text="{Binding BuildInfo.SaveFile, Mode=TwoWay}"
+				Margin="0 0 24 0"/>
+
+			<TextBlock
+				Grid.Column="0"
+				Grid.Row="12"
+				Text="Crash Message"
+				VerticalAlignment="Center"/>
+			<TextBox
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
+				Grid.Row="13"
+				FontFamily="Consolas"
+				AcceptsReturn="True"
+				TextWrapping="Wrap"
+				MaxLength="1000"
+				Text="{Binding BuildInfo.CrashMessage, Mode=TwoWay}"/>
+
+		</Grid>
+	</DockPanel>
+</UserControl>

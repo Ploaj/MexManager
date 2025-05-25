@@ -15,6 +15,8 @@ namespace mexLib
 
         public int LastMinorSceneID { get; set; } = 45;
 
+        public MexBuildInfo Build { get; set; } = new MexBuildInfo();
+
         public MexPlaylist MenuPlaylist { get; set; } = new MexPlaylist();
 
         public MexReservedAssets ReservedAssets { get; set; } = new MexReservedAssets();
@@ -483,6 +485,9 @@ namespace mexLib
         /// <param name="path"></param>
         public void Save(MexWorkspace workspace)
         {
+            // save banner
+            Build.SaveBanner(workspace);
+
             // save fighters
             FighterSaveMap.Save(Fighters, workspace.GetDataPath("fighters//"));
 
