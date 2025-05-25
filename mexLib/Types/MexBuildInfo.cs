@@ -237,7 +237,7 @@ namespace mexLib.Types
             SwapRedAndGreen(ref pixels);
             banner.SetBannerImageRGBA8(pixels);
 
-            ws.FileManager.Set("opening.bnr", banner.GetData());
+            ws.FileManager.Set(ws.GetFilePath("opening.bnr"), banner.GetData());
         }
         /// <summary>
         /// 
