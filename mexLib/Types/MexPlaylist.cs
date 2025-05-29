@@ -47,6 +47,9 @@ namespace mexLib.Types
             {
                 if (Entries[i].MusicID == id)
                     Entries.RemoveAt(i);
+                else
+                if (Entries[i].MusicID > id)
+                    Entries[i].MusicID -= 1;
             }
         }
         /// <summary>
