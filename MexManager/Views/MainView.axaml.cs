@@ -231,7 +231,7 @@ public partial class MainView : UserControl
         if (Global.Workspace != null &&
             MusicList.SelectedItem is MexMusic music)
         {
-            string hps = Global.Workspace.GetFilePath($"audio\\{music.FileName}");
+            string hps = Global.Workspace.GetFilePath($"audio/{music.FileName}");
 
             if (Global.Files.Exists(hps))
             {
@@ -271,7 +271,7 @@ public partial class MainView : UserControl
             if (hps.FromFile(file))
             {
                 string fileName = Path.GetFileNameWithoutExtension(file) + ".hps";
-                string? path = Global.Workspace?.GetFilePath("audio\\" + fileName);
+                string? path = Global.Workspace?.GetFilePath("audio/" + fileName);
 
                 if (Global.Files.Exists(path))
                 {
@@ -313,7 +313,7 @@ public partial class MainView : UserControl
 
         if (MusicList.SelectedItem is MexMusic music)
         {
-            string? path = Global.Workspace?.GetFilePath("audio\\" + music.FileName);
+            string? path = Global.Workspace?.GetFilePath("audio/" + music.FileName);
 
             if (!Global.Files.Exists(path))
             {
@@ -365,7 +365,7 @@ public partial class MainView : UserControl
                 MessageBox.MessageBoxResult res = await MessageBox.Show($"Would you like to delete\n{music.FileName} as well?", "Music Removal", MessageBox.MessageBoxButtons.YesNoCancel);
                 if (res == MessageBox.MessageBoxResult.Yes)
                 {
-                    Global.Files.Remove(Global.Workspace.GetFilePath($"audio\\{music.FileName}"));
+                    Global.Files.Remove(Global.Workspace.GetFilePath($"audio/{music.FileName}"));
                 }
 
                 System.Collections.IEnumerable source = MusicList.ItemsSource;
@@ -386,7 +386,7 @@ public partial class MainView : UserControl
         {
             Global.StopMusic();
 
-            string path = Global.Workspace.GetFilePath($"audio\\{music.FileName}");
+            string path = Global.Workspace.GetFilePath($"audio/{music.FileName}");
 
             if (!Global.Files.Exists(path))
             {

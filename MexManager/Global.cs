@@ -41,7 +41,7 @@ namespace MexManager
         {
             if (Workspace != null)
             {
-                string hps = Workspace.GetFilePath($"audio\\{music.FileName}");
+                string hps = Workspace.GetFilePath($"audio/{music.FileName}");
 
                 if (Files.Exists(hps))
                 {
