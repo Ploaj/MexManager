@@ -362,7 +362,7 @@ namespace mexLib.Types
             }
 
             // create ssm path
-            string ssmPath = workspace.FileManager.GetUniqueFilePath(workspace.GetFilePath($"audio\\us\\{group.FileName}"));
+            string ssmPath = workspace.FileManager.GetUniqueFilePath(workspace.GetFilePath($"audio/us/{group.FileName}"));
             group.FileName = Path.GetFileName(ssmPath);
 
             // save ssm file

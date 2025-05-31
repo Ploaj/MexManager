@@ -425,7 +425,7 @@ public partial class SoundGroupView : UserControl
                 return null;
 
             // get unique path
-            string uniquePath = Global.Workspace.FileManager.GetUniqueFilePath(Global.Workspace.GetFilePath($"audio\\us\\{File}"));
+            string uniquePath = Global.Workspace.FileManager.GetUniqueFilePath(Global.Workspace.GetFilePath($"audio/us/{File}"));
 
             // generate group
             MexSoundGroup group = new()
@@ -522,7 +522,7 @@ public partial class SoundGroupView : UserControl
                 return null;
 
             // get unique path
-            string uniquePath = Global.Workspace.FileManager.GetUniqueFilePath(Global.Workspace.GetFilePath($"audio\\us\\{File}"));
+            string uniquePath = Global.Workspace.FileManager.GetUniqueFilePath(Global.Workspace.GetFilePath($"audio/us/{File}"));
 
             // generate group
             MexSoundGroup group = new()
@@ -611,7 +611,7 @@ public partial class SoundGroupView : UserControl
                     "Delete File",
                     MessageBox.MessageBoxButtons.YesNoCancel);
                 if (res == MessageBox.MessageBoxResult.Yes)
-                    Global.Workspace.FileManager.Remove(Global.Workspace.GetFilePath($"audio\\us\\{group.FileName}"));
+                    Global.Workspace.FileManager.Remove(Global.Workspace.GetFilePath($"audio/us/{group.FileName}"));
 
                 GroupList.RefreshList();
                 GroupList.SelectedIndex = selected;

@@ -34,7 +34,7 @@ namespace mexLib
         /// <returns></returns>
         public string GetDataPath(string fileName)
         {
-            return $"{FilePath}data\\{fileName}";
+            return $"{FilePath}data/{fileName}";
         }
         /// <summary>
         /// 
@@ -43,7 +43,7 @@ namespace mexLib
         /// <returns></returns>
         public string GetFilePath(string fileName)
         {
-            return $"{FilePath}files\\{fileName}";
+            return $"{FilePath}files/{fileName}";
         }
         /// <summary>
         /// 
@@ -52,7 +52,7 @@ namespace mexLib
         /// <returns></returns>
         public string GetAssetPath(string fileName)
         {
-            return $"{FilePath}assets\\{fileName}";
+            return $"{FilePath}assets/{fileName}";
         }
         /// <summary>
         /// 
@@ -61,7 +61,7 @@ namespace mexLib
         /// <returns></returns>
         public string GetSystemPath(string fileName)
         {
-            return $"{FilePath}sys\\{fileName}";
+            return $"{FilePath}sys/{fileName}";
         }
         /// <summary>
         /// 
@@ -99,7 +99,7 @@ namespace mexLib
             IEnumerable<MexCode> defaultCodes)
         {
             // get project path
-            string projectPath = Path.GetDirectoryName(projectFile) + "\\";
+            string projectPath = Path.GetDirectoryName(projectFile) + "/";
 
             // create workspace
             MexWorkspace workspace = new()
@@ -109,7 +109,7 @@ namespace mexLib
             };
 
             // copy files from source
-            var fullPath = mexPath + "\\";
+            var fullPath = mexPath + "/";
             if (!fullPath.Equals(workspace.FilePath))
             {
                 File.Copy(Path.Combine(mexPath, "files/MxDt.dat"), workspace.GetFilePath("MxDt.dat"), overwrite: true);
@@ -158,15 +158,15 @@ namespace mexLib
             if (!File.Exists(isoPath))
                 throw new FileNotFoundException("Melee ISO not found");
 
-            string projectPath = Path.GetDirectoryName(projectFile) + "\\";
+            string projectPath = Path.GetDirectoryName(projectFile) + "/";
 
-            //Directory.Delete(projectPath + "\\assets", recursive: true);
+            //Directory.Delete(projectPath + "/assets", recursive: true);
 
-            string sys = projectPath + "\\sys";
+            string sys = projectPath + "/sys";
             if (!Directory.Exists(sys))
                 Directory.CreateDirectory(sys);
 
-            string files = projectPath + "\\files";
+            string files = projectPath + "/files";
             if (!Directory.Exists(files))
                 Directory.CreateDirectory(files);
 
@@ -242,8 +242,8 @@ namespace mexLib
         /// <returns></returns>
         public byte[] GetDOL()
         {
-            string sys = FilePath + "\\sys";
-            return File.ReadAllBytes($"{sys}\\main.dol");
+            string sys = FilePath + "/sys";
+            return File.ReadAllBytes($"{sys}/main.dol");
         }
         /// <summary>
         /// 
@@ -260,7 +260,7 @@ namespace mexLib
             // create workspace
             workspace = new MexWorkspace()
             {
-                FilePath = Path.GetDirectoryName(projectFilePath) + "\\",
+                FilePath = Path.GetDirectoryName(projectFilePath) + "/",
                 ProjectFilePath = projectFilePath,
             };
 

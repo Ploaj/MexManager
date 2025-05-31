@@ -117,7 +117,7 @@ namespace mexLib.Installer
             {
                 FileName = "null.ssm",
             });
-            new SSM() { Name = "null.ssm", StartIndex = 5000 }.Save(workspace.GetFilePath("audio\\us\\null.ssm"));
+            new SSM() { Name = "null.ssm", StartIndex = 5000 }.Save(workspace.GetFilePath("audio/us/null.ssm"));
 
             // load scenes
             project.SceneData = InstallScenes(dol);
@@ -439,7 +439,7 @@ namespace mexLib.Installer
                 return new MexInstallerError("Error reading MnSlChr.usd");
 
             // extract csps
-            string cspFolder = workspace.GetAssetPath("csp\\");
+            string cspFolder = workspace.GetAssetPath("csp/");
             Directory.CreateDirectory(cspFolder);
 
             // stride is 30
