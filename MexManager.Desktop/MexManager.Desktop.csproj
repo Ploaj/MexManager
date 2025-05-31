@@ -7,6 +7,8 @@
 		<Nullable>enable</Nullable>
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<PublishTrimmed>true</PublishTrimmed>
+		<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 	</PropertyGroup>
 	<ItemGroup>
