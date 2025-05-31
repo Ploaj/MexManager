@@ -236,11 +236,9 @@ namespace mexLib
             for (int i = 0; i < proj.SoundGroups.Count; i++)
             {
                 MexSoundGroupGroup group = proj.SoundGroups[i].Group;
-                int size = proj.SoundGroups[i].ToMxDt(gen, i);
-
+                proj.SoundGroups[i].ToMxDt(gen, i);
                 //if (!groupSizes.ContainsKey(group))
                 //    groupSizes.Add(group, new List<int>());
-
                 //groupSizes[group].Add(size);
             }
 

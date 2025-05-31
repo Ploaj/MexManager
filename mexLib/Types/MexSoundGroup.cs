@@ -104,6 +104,8 @@ namespace mexLib.Types
         [Browsable(false)]
         public ObservableCollection<SemScript>? Scripts { get => _scripts; set { _scripts = value; OnPropertyChanged(); } }
 
+        private uint _bufferSize { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
@@ -126,16 +128,17 @@ namespace mexLib.Types
         /// </summary>
         /// <param name="gen"></param>
         /// <param name="index"></param>
-        public int ToMxDt(MexGenerator gen, int index)
+        public uint ToMxDt(MexGenerator gen, int index)
         {
             MEX_SSMTable st = gen.Data.SSMTable;
 
             // getting the actual buffer size is "more correct"
-            using FileStream stream = new(gen.Workspace.GetFilePath("audio//us//" + FileName), FileMode.Open);
-            stream.Seek(0x04, SeekOrigin.Begin);
-            int bufferSize = ((stream.ReadByte() & 0xFF) << 24) | ((stream.ReadByte() & 0xFF) << 16) | ((stream.ReadByte() & 0xFF) << 8) | (stream.ReadByte() & 0xFF);
+            //using FileStream stream = new(gen.Workspace.GetFilePath("audio//us//" + FileName), FileMode.Open);
+            //stream.Seek(0x04, SeekOrigin.Begin);
+            //int bufferSize = ((stream.ReadByte() & 0xFF) << 24) | ((stream.ReadByte() & 0xFF) << 16) | ((stream.ReadByte() & 0xFF) << 8) | (stream.ReadByte() & 0xFF);
 
             //var bufferSize = (int)gen.Workspace.GetFileSize("audio//us//" + FileName);
+            var bufferSize = _bufferSize;
             if (bufferSize % 0x20 != 0)
                 bufferSize += 0x20 - (bufferSize % 0x20);
 
@@ -143,7 +146,7 @@ namespace mexLib.Types
             st.SSM_BufferSizes.Set(index, new MEX_SSMSizeAndFlags()
             {
                 Flag = (int)Flags,
-                SSMFileSize = bufferSize,
+                SSMFileSize = (int)bufferSize,
             });
             st.SSM_LookupTable.Set(index, new MEX_SSMLookup()
             {
@@ -163,6 +166,7 @@ namespace mexLib.Types
 
             FileName = st.SSM_SSMFiles[index].Value;
             Flags = (uint)st.SSM_BufferSizes[index].Flag;
+            _bufferSize = (uint)st.SSM_BufferSizes[index].SSMFileSize;
             GroupFlags = (uint)st.SSM_LookupTable[index].EntireFlag;
             Name = Path.GetFileNameWithoutExtension(FileName).FirstCharToUpper();
         }
@@ -178,16 +182,18 @@ namespace mexLib.Types
         /// 
         /// </summary>
         /// <returns></returns>
-        public byte[] PackSSM()
+        public byte[] PackSSM(int start_offset)
         {
             SSM ssm = new()
             {
                 Name = Name,
+                StartIndex = start_offset,
                 Sounds = Sounds.Select(e => e.DSP).ToArray(),
             };
 
             using MemoryStream stream = new();
             ssm.WriteToStream(stream, out int bs);
+            _bufferSize = (uint)bs;
             return stream.ToArray();
         }
         /// <summary>
@@ -199,6 +205,7 @@ namespace mexLib.Types
         {
             SSM ssm = new();
             ssm.Open(Path.GetFileName(fullPath), workspace.FileManager.GetStream(fullPath));
+            _bufferSize = ssm.BufferSize;
 
             if (replace)
                 Sounds.Clear();
@@ -219,6 +226,7 @@ namespace mexLib.Types
             Type = group.Type;
             SubType = group.SubType;
             Mushroom = group.Mushroom;
+            _bufferSize = group._bufferSize;
 
             if (Scripts != null &&
                 group.Scripts != null)
@@ -285,7 +293,7 @@ namespace mexLib.Types
 
                 zip.WriteAsJson("scripts.json", group.Scripts.Select(e => e.Name).ToArray());
             }
-            zip.Write(group.FileName, group.PackSSM());
+            zip.Write(group.FileName, group.PackSSM(0));
         }
         /// <summary>
         /// 
@@ -366,7 +374,7 @@ namespace mexLib.Types
             group.FileName = Path.GetFileName(ssmPath);
 
             // save ssm file
-            workspace.FileManager.Set(ssmPath, group.PackSSM());
+            workspace.FileManager.Set(ssmPath, group.PackSSM(0));
 
             return null;
         }

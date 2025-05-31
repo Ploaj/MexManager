@@ -396,16 +396,7 @@ namespace mexLib
                 }
 
                 // save ssm
-                SSM ssm = new()
-                {
-                    Name = group.Name,
-                    StartIndex = soundIndex,
-                    Sounds = group.Sounds.Select(e => e.DSP).ToArray()
-                };
-
-                using MemoryStream stream = new();
-                ssm.WriteToStream(stream, out int bufferSize);
-                FileManager.Set(GetFilePath($"audio//us//{group.FileName}"), stream.ToArray());
+                FileManager.Set(GetFilePath($"audio/us/{group.FileName}"), group.PackSSM(soundIndex));
 
                 // generate sem
                 SemScript[] scripts = group.Scripts.Select((e, i) =>
