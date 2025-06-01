@@ -56,11 +56,11 @@ namespace mexLib.Types
                 JointID = (byte)(index + 1),
                 UnkID = (byte)(index + 1),
 
-                X1 = X - CollisionSizeX / 2 * ScaleX + CollisionOffsetX,
-                Y1 = Y - CollisionSizeX / 2 * ScaleY + CollisionOffsetY,
+                X1 = (float)(X - CollisionSizeX / 2.0 * ScaleX + CollisionOffsetX),
+                Y1 = (float)(Y - CollisionSizeY / 2.0 * ScaleY + CollisionOffsetY),
 
-                X2 = X + CollisionSizeX / 2 * ScaleX + CollisionOffsetX,
-                Y2 = Y + CollisionSizeX / 2 * ScaleY + CollisionOffsetY,
+                X2 = (float)(X + CollisionSizeX / 2.0 * ScaleX + CollisionOffsetX),
+                Y2 = (float)(Y + CollisionSizeY / 2.0 * ScaleY + CollisionOffsetY),
             };
         }
         public override int ImageKey => Fighter;
