@@ -8,6 +8,7 @@ using mexLib.MexScubber;
 using mexLib.Utilties;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.IO.Compression;
 
@@ -27,7 +28,19 @@ namespace mexLib.Types
         public bool CanWallJump { get; set; }
 
         [Category("0 - General"), DisplayName("Sub-Fighter"), Description("The fighter associated with this fighter (Sheik/Zelda and Ice Climbers)")]
-        public int SubCharacter { get; set; }
+        public int SubCharacter
+        {
+            get => _subCharacter; 
+            set
+            {
+                _subCharacter = value;
+                if (_subCharacter > 255)
+                    _subCharacter = 255;
+                if (_subCharacter < 0)
+                    _subCharacter = 0;
+            }
+        }
+        private int _subCharacter = 0;
 
         [Category("0 - General"), DisplayName("Sub-Fighter Behavior"), Description("The association between this fighter and the sub-fighter")]
         public SubCharacterBehavior SubCharacterBehavior { get; set; }

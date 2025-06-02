@@ -127,7 +127,8 @@ namespace mexLib
             // fighter
             foreach (MexFighter f in Fighters)
             {
-                if (f.SubCharacter >= externalId)
+                if (f.SubCharacter < 255 && 
+                    f.SubCharacter >= externalId)
                     f.SubCharacter += 1;
             }
 
@@ -161,7 +162,8 @@ namespace mexLib
                 if (fighter.SubCharacter == externalId)
                     fighter.SubCharacter = -1;
                 else
-                if (fighter.SubCharacter > externalId && fighter.SubCharacter < 255)
+                if (fighter.SubCharacter > externalId && 
+                    fighter.SubCharacter < 255)
                     fighter.SubCharacter -= 1;
             }
 
