@@ -62,9 +62,10 @@ namespace mexLib.Types
 
             if (mEX_Playlist.MenuPlaylist == null)
                 return;
-
-            foreach (MEX_PlaylistItem? e in mEX_Playlist.MenuPlaylist.Array)
+            
+            for (int i = 0; i < mEX_Playlist.MenuPlayListCount; i++)
             {
+                var e = mEX_Playlist.MenuPlaylist[i];
                 Entries.Add(new MexPlaylistEntry()
                 {
                     MusicID = e.HPSID,

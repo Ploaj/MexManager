@@ -5,7 +5,8 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="MexManager.Controls.PlaylistEditor">
 
-	<DockPanel>
+	<DockPanel
+		LastChildFill="True">
 		<Button
 			DockPanel.Dock="Top"
 			Content="Add Entry"
@@ -21,11 +22,13 @@
 				</TextBlock>
 			</StackPanel>
 		</Button>
-		<StackPanel 
-			Name="PlaylistPanel"
-			DockPanel.Dock="Top"
-			Orientation="Vertical">
-		</StackPanel>
+		<ScrollViewer
+			VerticalScrollBarVisibility="Auto">
+			<!-- Optional: limit height -->
+			<StackPanel
+				Name="PlaylistPanel"
+				Orientation="Vertical"/>
+		</ScrollViewer>
 	</DockPanel>
 	<!--<ListBox ItemsSource="{Binding Entries}">
 			<ListBox.ItemTemplate>
