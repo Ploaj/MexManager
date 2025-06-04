@@ -30,6 +30,12 @@ namespace mexLib.Installer
 
     public class MxDtImporter
     {
+
+        public static void FixMoveLogicPointers(MexWorkspace workspace)
+        {
+            workspace.GetDOL();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -84,6 +90,7 @@ namespace mexLib.Installer
                 fighter.LoadFromPlCo(plco, i);
                 project.Fighters.Add(fighter);
             }
+            MexInstaller.CorrectFixMoveLogicPointers(workspace);
 
             // load music
             ShiftJIS.ToShiftJIS("");

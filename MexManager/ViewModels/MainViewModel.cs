@@ -1,4 +1,5 @@
 ﻿using GCILib;
+using mexLib.Installer;
 using mexLib.Types;
 using MexManager.Tools;
 using MexManager.Views;
@@ -226,7 +227,7 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// 
     /// </summary>
-    public void UpdateWorkspace()
+    public async void UpdateWorkspace()
     {
         if (Global.Workspace == null)
         {
@@ -263,6 +264,14 @@ public partial class MainViewModel : ViewModelBase
                 TrophyViewModel.SelectedTrophy = TrophyViewModel.Trophies[0];
             BuildInfo = Global.Workspace.Project.Build;
 
+            // check to fix move logic pointers
+            if (Global.Workspace.Project.Fighters.Count > 0 &&
+                Global.Workspace.Project.Fighters[0].Functions.MoveLogicPointer == 0)
+            {
+                var mes = await MessageBox.Show("It looks like some fighters are missing move logic pointers.\nWould you like to fix them now?", "Fix Move Logic", MessageBox.MessageBoxButtons.YesNoCancel);
+                if (mes == MessageBox.MessageBoxResult.Yes)
+                    MexInstaller.CorrectFixMoveLogicPointers(Global.Workspace);
+            }
         }
     }
     /// <summary>

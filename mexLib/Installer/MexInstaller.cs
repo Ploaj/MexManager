@@ -18,7 +18,30 @@ namespace mexLib.Installer
 
     public class MexInstaller
     {
+        /// <summary>
+        /// Resets all fighters move logic pointers
+        /// </summary>
+        /// <param name="workspace"></param>
+        public static void CorrectFixMoveLogicPointers(MexWorkspace workspace)
+        {
+            MexDOL dol = new MexDOL(workspace.GetDOL());
+            Dictionary<uint, (uint, uint)> onloadToLogic = new ();
+            for (uint i = 0; i < 0x21; i++)
+            {
+                onloadToLogic.Add(dol.GetStruct<uint>(0x803C1154, i), 
+                    (dol.GetStruct<uint>(0x803C12E0, i), dol.GetStruct<uint>(0x803C1364, i)));
+            }
 
+            foreach (var f in workspace.Project.Fighters)
+            {
+                if (f.Functions.MoveLogicPointer == 0 &&
+                    onloadToLogic.TryGetValue(f.Functions.OnLoad, out (uint, uint) p))
+                {
+                    f.Functions.MoveLogicPointer = p.Item1;
+                    f.Functions.DemoMoveLogicPointer = p.Item2;
+                }
+            }
+        }
         /// <summary>
         /// 
         /// </summary>

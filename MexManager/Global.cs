@@ -1,5 +1,6 @@
 ﻿using MeleeMedia.Audio;
 using mexLib;
+using mexLib.Installer;
 using mexLib.Types;
 using mexLib.Utilties;
 using MexManager.Views;
@@ -131,9 +132,14 @@ namespace MexManager
 
             if (MexWorkspace.TryOpenWorkspace(filepath, out MexWorkspace? workspace))
             {
+                // load most recent codes patch
                 MexCode? mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
                 if (workspace != null && mainCode != null)
+                {
+                    // update codes
                     workspace.Project.MainCode = mainCode;
+                }
+                // set working workspace
                 Workspace = workspace;
                 return true;
             }
