@@ -341,6 +341,7 @@ public partial class MainViewModel : ViewModelBase
         if (file == null)
             return;
 
+        // unselect fighter for so the move stream isn't loaded
         SelectedFighter = null;
 
         ProgressWindow progressWindow = new();

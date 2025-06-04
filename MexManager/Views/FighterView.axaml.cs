@@ -107,8 +107,10 @@ public partial class FighterView : UserControl
                 if (!await PropertyGridPopup.ShowDialog("Fighter Export Options", "Export Fighter", options))
                     return;
 
+                FighterList.SelectedItem = null;
                 using FileStream stream = new(file, FileMode.Create);
                 fighter.ToPackage(Global.Workspace, stream, options);
+                FighterList.SelectedItem = fighter;
             }
         }
     }
