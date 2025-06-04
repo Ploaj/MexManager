@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using DynamicData;
 using MeleeMedia.Audio;
 using mexLib;
 using mexLib.Types;
@@ -621,30 +622,86 @@ public partial class SoundGroupView : UserControl
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="g"></param>
+    private async void TryAddSoundGroup(MexSoundGroup g)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        // check if file already exists
+        var sg = Global.Workspace.Project.SoundGroups.FirstOrDefault(e => e.FileName == g.FileName);
+        if (sg != null)
+        {
+            var res = await MessageBox.Show($"\"{g.FileName}\" already exists.\nWould you like to overwrite it?", "Overwrite Soundbank", MessageBox.MessageBoxButtons.YesNoCancel);
+            if (res == MessageBox.MessageBoxResult.Yes)
+            {
+                Global.Workspace.Project.SoundGroups.Replace(sg, g);
+            }
+            else
+            {
+                var path = Global.Workspace.GetFilePath("audio/us/" + g.FileName);
+                g.FileName = Path.GetFileName(Global.Workspace.FileManager.GetUniqueFilePath(path));
+                Global.Workspace.Project.AddSoundGroup(g);
+            }
+        }
+        else
+        {
+            Global.Workspace.Project.AddSoundGroup(g);
+        }
+
+        // select group
+        GroupList.SelectedItem = g;
+
+    }
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private async void ImportGroup_Click(object? sender, RoutedEventArgs e)
     {
         if (Global.Workspace != null)
         {
-            string? file = await FileIO.TryOpenFile("Import Sound Group", "", FileIO.FilterZip);
+            string? file = await FileIO.TryOpenFile("Import Sound Group", "",
+            [
+                new ("Supported Formats (ZIP, SPK)")
+                {
+                    Patterns = [ "*.zip", "*.spk"],
+                },
+            ]);
 
             if (file == null)
                 return;
 
-            using FileStream fs = new(file, FileMode.Open);
-            mexLib.Installer.MexInstallerError? res = MexSoundGroup.FromPackage(Global.Workspace, fs, out MexSoundGroup? group);
-            if (res == null)
+            switch (Path.GetExtension(file).ToLower())
             {
-                if (group != null)
-                {
-                    Global.Workspace.Project.AddSoundGroup(group);
-                    GroupList.SelectedItem = group;
-                }
-            }
-            else
-            {
-                await MessageBox.Show(res.Message, "Import Sound Failed", MessageBox.MessageBoxButtons.Ok);
+                case ".spk":
+                    {
+                        using FileStream fs = new(file, FileMode.Open);
+                        var group = MexSoundGroup.FromSPK(fs);
+                        if (group != null)
+                        {
+                            TryAddSoundGroup(group);
+                        }
+                    }
+                    break;
+                case ".zip":
+                    {
+                        using FileStream fs = new(file, FileMode.Open);
+                        mexLib.Installer.MexInstallerError? res = MexSoundGroup.FromPackage(Global.Workspace, fs, out MexSoundGroup? group);
+                        if (res == null)
+                        {
+                            if (group != null)
+                            {
+                                TryAddSoundGroup(group);
+                            }
+                        }
+                        else
+                        {
+                            await MessageBox.Show(res.Message, "Import Sound Failed", MessageBox.MessageBoxButtons.Ok);
+                        }
+                    }
+                    break;
             }
         }
     }
