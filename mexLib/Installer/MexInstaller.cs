@@ -436,11 +436,11 @@ namespace mexLib.Installer
 
             for (int i = 0; i < emblem_joints.Length; i++)
             {
-                if (i < workspace.Project.Series.Count)
-                {
-                    if (emblem_joints[i].Dobj != null)
-                        workspace.Project.Series[i].ModelAsset.SetFromDObj(workspace, emblem_joints[i].Dobj);
-                }
+                while (workspace.Project.Series.Count <= i)
+                    workspace.Project.Series.Add(new MexSeries());
+
+                if (emblem_joints[i].Dobj != null)
+                    workspace.Project.Series[i].ModelAsset.SetFromDObj(workspace, emblem_joints[i].Dobj);
             }
 
             return null;

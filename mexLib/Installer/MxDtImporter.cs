@@ -386,11 +386,14 @@ namespace mexLib.Installer
             {
                 List<FOBJKey> keys = emblems.MaterialAnimation.TextureAnimation.AnimationObject.FObjDesc.GetDecodedKeys();
                 HSDRaw.Common.HSD_TOBJ[] tobjs = emblems.MaterialAnimation.TextureAnimation.ToTOBJs();
-                for (int i = 0; i < project.Series.Count; i++)
+                for (int i = 0; i <= keys.Max(e => e.Frame); i++)
                 {
                     FOBJKey? key = keys.Find(e => e.Frame == i);
                     if (key != null)
                     {
+                        while (project.Series.Count <= i)
+                            project.Series.Add(new MexSeries());
+
                         project.Series[i].IconAsset.SetFromMexImage(workspace, new MexImage(tobjs[(int)key.Value]));
                     }
                 }
