@@ -321,12 +321,20 @@ public partial class MainView : UserControl
                 return;
             }
 
-            string? file = await FileIO.TrySaveFile("Export Music", "", FileIO.FilterWav);
+            string? file = await FileIO.TrySaveFile("Export Music", "", FileIO.FilterMusicExport);
 
             if (path != null && file != null)
             {
-                DSP dsp = HPS.ToDSP(Global.Files.Get(path));
-                System.IO.File.WriteAllBytes(file, dsp.ToWAVE().ToFile());
+                switch (Path.GetExtension(file).ToLower())
+                {
+                    case ".hps":
+                        File.WriteAllBytes(file, Global.Files.Get(path));
+                        break;
+                    case ".wav":
+                        DSP dsp = HPS.ToDSP(Global.Files.Get(path));
+                        File.WriteAllBytes(file, dsp.ToWAVE().ToFile());
+                        break;
+                }
             }
         }
     }

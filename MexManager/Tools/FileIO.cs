@@ -73,7 +73,15 @@ namespace MexManager.Tools
         [
             new FilePickerFileType("Support Audio Formats")
                 {
-                    Patterns = [ "*.wav", "*.brstm" ],
+                    Patterns = [ "*.wav", "*.brstm", "*.hps" ],
+                },
+        ];
+
+        public static readonly FilePickerFileType[] FilterMusicExport =
+        [
+            new FilePickerFileType("Support Audio Formats")
+                {
+                    Patterns = ["*.hps", "*.wav" ],
                 },
         ];
 
