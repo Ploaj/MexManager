@@ -263,10 +263,10 @@ namespace mexLib
 
             // check for file system
             var projectDirectory = Path.GetDirectoryName(projectFilePath) + "/";
-            var sysPath = Path.Combine(projectFilePath, "sys/");
-            var filesPath = Path.Combine(projectFilePath, "files/");
-            var dataPath = Path.Combine(projectFilePath, "data/");
-            var assetsPath = Path.Combine(projectFilePath, "assets/");
+            var sysPath = Path.Combine(projectDirectory, "sys/");
+            var filesPath = Path.Combine(projectDirectory, "files/");
+            var dataPath = Path.Combine(projectDirectory, "data/");
+            var assetsPath = Path.Combine(projectDirectory, "assets/");
             if (!Directory.Exists(sysPath))
             {
                 error = $"\"sys\" folder not found at:\n\n\"{sysPath}\"\n\nMake sure you extract the entire iso disc to the project directory!";
