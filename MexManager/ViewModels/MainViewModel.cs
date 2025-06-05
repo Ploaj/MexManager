@@ -4,6 +4,7 @@ using mexLib.Types;
 using MexManager.Tools;
 using MexManager.Views;
 using ReactiveUI;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -18,6 +19,7 @@ public partial class MainViewModel : ViewModelBase
     public ICommand LaunchCommand { get; }
     public ICommand EditBannerCommand { get; }
     public ICommand ExportISOCommand { get; }
+    public ICommand UpdateCommand { get; }
 
 
     public SoundGroupModel SoundViewModel { get; } = new SoundGroupModel();
@@ -187,6 +189,12 @@ public partial class MainViewModel : ViewModelBase
         WorkspaceLoadedCommand = new RelayCommand((e) => { }, IsWorkSpaceLoaded);
         LaunchCommand = new RelayCommand(LaunchMenuItem_Click, IsDolphinPathSet);
         ExportISOCommand = new RelayCommand(ExportISO_Click, IsWorkSpaceLoaded);
+        UpdateCommand = new RelayCommand(Update_Click, UpdateReady);
+
+        _ = Updater.CheckLatest(() =>
+        {
+            ((RelayCommand)UpdateCommand).RaiseCanExecuteChanged();
+        });
 
         AddStagePageCommand = new RelayCommand(AddStagePage, null);
         DeleteStagePageCommand = new RelayCommand(DeleteStagePage, IsWorkSpaceLoaded);
@@ -378,5 +386,45 @@ public partial class MainViewModel : ViewModelBase
 
         // Create and show the progress window
         await progressWindow.ShowDialog(App.MainWindow);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="parameter"></param>
+    public async void Update_Click(object? parameter)
+    {
+        var res = await MessageBox.Show($"Would you like to update MexManager to latest?\n\n{Updater.Version}\n\n{Updater.LatestRelease?.Body}", 
+            "Update MexManager",
+            MessageBox.MessageBoxButtons.YesNoCancel);
+
+        if (res != MessageBox.MessageBoxResult.Yes)
+            return;
+
+        // save changes if workspace is loaded
+        if (Global.Workspace != null)
+        {
+            MessageBox.MessageBoxResult res2 = await MessageBox.Show("Save Changes to current project?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
+
+            switch (res2)
+            {
+                case MessageBox.MessageBoxResult.Yes:
+                    Global.SaveWorkspace();
+                    break;
+                case MessageBox.MessageBoxResult.Cancel:
+                    return;
+            }
+        }
+
+        // perform update
+        Updater.Update();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="parameter"></param>
+    /// <returns></returns>
+    public static bool UpdateReady(object? parameter)
+    {
+        return Updater.UpdateReady;
     }
 }

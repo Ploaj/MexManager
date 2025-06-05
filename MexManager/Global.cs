@@ -34,8 +34,6 @@ namespace MexManager
 
         public static void Initialize()
         {
-            // TODO: check update for tool
-            //Updater.UpdateCodes();
         }
 
         public static void PlayMusic(MexMusic music)

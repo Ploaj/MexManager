@@ -1,19 +1,24 @@
 ﻿using MexManager.Tools;
+using Octokit;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace MexManager
 {
     public class Updater
     {
-        //static Release[] releases;
+        static Release[]? releases;
 
-        //public static Release LatestRelease;
+        public static Release? LatestRelease;
 
-        //public static string DownloadURL;
-        //public static string Version;
+        public static string? DownloadURL;
+        public static string? Version;
 
-        //public static bool UpdateReady;
+        public static bool UpdateReady;
 
         /// <summary>
         /// 
@@ -58,56 +63,90 @@ namespace MexManager
             //return false;
         }
 
+        public delegate void OnUpdateReader();
+
         /// <summary>
         /// 
         /// </summary>
-        //public static void CheckLatest()
-        //{
-        //    string currentVersion = "";
-        //    if (File.Exists(Path.Combine(ApplicationSettings.ExecutablePath, "version.txt")))
-        //        currentVersion = File.ReadAllText(Path.Combine(ApplicationSettings.ExecutablePath, "version.txt"));
+        public static async Task CheckLatest(OnUpdateReader onready)
+        {
+            string currentVersion = "";
+            var versionText = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "version.txt");
+            if (File.Exists(versionText))
+                currentVersion = File.ReadAllText(versionText);
 
-        //    try
-        //    {
-        //        var client = new GitHubClient(new ProductHeaderValue("mex-updater"));
-        //        GetReleases(client).Wait();
+            try
+            {
+                var client = new GitHubClient(new ProductHeaderValue("mex-updater"));
+                await GetReleases(client);
 
-        //        foreach (Release latest in releases)
-        //        {
-        //            if (latest.Prerelease &&
-        //                latest.Assets.Count > 0 &&
-        //                !latest.Assets[0].UpdatedAt.ToString().Equals(currentVersion))
-        //            {
-        //                Console.WriteLine($"Name: {latest.Name}");
-        //                Console.WriteLine($"URL: {latest.Assets[0].BrowserDownloadUrl}");
-        //                Console.WriteLine($"Upload Date: {latest.Assets[0].UpdatedAt}");
+                if (releases == null)
+                    return;
 
-        //                LatestRelease = latest;
-        //                DownloadURL = latest.Assets[0].BrowserDownloadUrl;
-        //                Version = latest.Assets[0].UpdatedAt.ToString();
-        //                UpdateReady = true;
-        //                break;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine($"Failed to get latest update\n{e.ToString()}");
-        //    }
-        //}
+                foreach (Release latest in releases)
+                {
+                    if (latest.Prerelease &&
+                        latest.Assets.Count > 0 &&
+                        !latest.Assets[0].UpdatedAt.ToString().Equals(currentVersion))
+                    {
+                        Logger.WriteLine($"Check Update");
+                        Logger.WriteLine($"Name: {latest.Name}");
+                        Logger.WriteLine($"URL: {latest.Assets[0].BrowserDownloadUrl}");
+                        Logger.WriteLine($"Upload Date: {latest.Assets[0].UpdatedAt}");
 
+                        LatestRelease = latest;
+                        DownloadURL = latest.Assets[0].BrowserDownloadUrl;
+                        Version = latest.Assets[0].UpdatedAt.ToString();
+                        UpdateReady = true;
+                        onready?.Invoke();
+                        break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLine($"Failed to get latest update\n{e.ToString()}");
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        static async Task GetReleases(GitHubClient client)
+        {
+            List<Release> Releases = [];
+            foreach (Release r in await client.Repository.Release.GetAll("Ploaj", "MexManager"))
+                Releases.Add(r);
+            releases = Releases.ToArray();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void Update()
+        {
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="client"></param>
-        ///// <returns></returns>
-        //static async Task GetReleases(GitHubClient client)
-        //{
-        //    List<Release> Releases = new List<Release>();
-        //    foreach (Release r in await client.Repository.Release.GetAll("akaneia", "mexTool"))
-        //        Releases.Add(r);
-        //    releases = Releases.ToArray();
-        //}
+            File.Delete(Path.Combine(baseDir, "MexManagerUpdater_.exe"));
+            File.Copy(Path.Combine(baseDir, "MexManagerUpdater.exe"), Path.Combine(baseDir, "MexManagerUpdater_.exe"));
+
+            Process p = new Process();
+            p.StartInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MexManagerUpdater_.exe");
+            p.StartInfo.Arguments = $"{Updater.DownloadURL} \"{Updater.Version}\" -r";
+            p.StartInfo.UseShellExecute = true;
+            p.StartInfo.Verb = "runas";
+            try
+            {
+                p.Start();
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLine("Failed to start updater: " + ex.Message);
+                return;
+            }
+
+            // Exit the current Avalonia application
+            Environment.Exit(0);
+        }
     }
 }
