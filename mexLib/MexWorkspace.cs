@@ -249,18 +249,49 @@ namespace mexLib
         /// 
         /// </summary>
         /// <returns></returns>
-        public static bool TryOpenWorkspace(string projectFilePath, out MexWorkspace? workspace)
+        public static bool TryOpenWorkspace(string projectFilePath, out MexWorkspace? workspace, out string error)
         {
             workspace = null;
+            error = "";
 
             // validate
             if (!File.Exists(projectFilePath))
+            {
+                error = $"Project file not found!\n\"{projectFilePath}\"";
                 return false;
+            }
+
+            // check for file system
+            var projectDirectory = Path.GetDirectoryName(projectFilePath) + "/";
+            var sysPath = Path.Combine(projectFilePath, "sys/");
+            var filesPath = Path.Combine(projectFilePath, "files/");
+            var dataPath = Path.Combine(projectFilePath, "data/");
+            var assetsPath = Path.Combine(projectFilePath, "assets/");
+            if (!Directory.Exists(sysPath))
+            {
+                error = $"\"sys\" folder not found at:\n\n\"{sysPath}\"\n\nMake sure you extract the entire iso disc to the project directory!";
+                return false;
+            }
+            if (!Directory.Exists(filesPath))
+            {
+                error = $"\"files\" folder not found at:\n\n\"{filesPath}\"\n\nMake sure you extract the entire iso disc to the project directory!";
+                return false;
+            }
+            if (!Directory.Exists(dataPath))
+            {
+                error = $"\"data\" folder not found at:\n\n\"{dataPath}\"";
+                return false;
+            }
+            if (!Directory.Exists(assetsPath))
+            {
+                error = $"\"assets\" folder not found at:\n\n\"{assetsPath}\"";
+                return false;
+            }
 
             // create workspace
             workspace = new MexWorkspace()
             {
-                FilePath = Path.GetDirectoryName(projectFilePath) + "/",
+                FilePath = projectDirectory,
                 ProjectFilePath = projectFilePath,
             };
 

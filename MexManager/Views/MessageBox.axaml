@@ -4,22 +4,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="160"
         x:Class="MexManager.MessageBox"
-        Width="320" Height="160"
+        Width="480" Height="240"
         WindowStartupLocation="CenterOwner"
 		KeyDown="OnKeyDown">
 	
-	<StackPanel HorizontalAlignment="Center"
-				   Margin="20">
-		<TextBlock HorizontalAlignment="Center"
-				   Name="Text" 
-				   Text="Test"/>
-		<StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Name="Buttons">
+	<DockPanel Margin="20">
+		<StackPanel 
+				HorizontalAlignment="Center" 
+				Orientation="Horizontal"
+				Name="Buttons"
+			    DockPanel.Dock="Bottom" >
 			<StackPanel.Styles>
 				<Style Selector="Button">
 					<Setter Property="Margin" Value="5"/>
 				</Style>
 			</StackPanel.Styles>
-
 		</StackPanel>
-	</StackPanel>
+		<TextBlock HorizontalAlignment="Center"
+				   Name="Text"
+				   Text="Test"
+				   TextWrapping="Wrap"
+				   DockPanel.Dock="Bottom"/>
+	</DockPanel>
 </Window>

@@ -130,7 +130,7 @@ namespace MexManager
                 CloseWorkspace();
             }
 
-            if (MexWorkspace.TryOpenWorkspace(filepath, out MexWorkspace? workspace))
+            if (MexWorkspace.TryOpenWorkspace(filepath, out MexWorkspace? workspace, out string error))
             {
                 // load most recent codes patch
                 MexCode? mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
@@ -142,6 +142,10 @@ namespace MexManager
                 // set working workspace
                 Workspace = workspace;
                 return true;
+            }
+            else
+            {
+                MessageBox.Show(error, "Open Project Error", MessageBox.MessageBoxButtons.Ok);
             }
             return false;
         }
