@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MexManager
@@ -127,11 +128,23 @@ namespace MexManager
         {
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
-            File.Delete(Path.Combine(baseDir, "MexManagerUpdater_.exe"));
-            File.Copy(Path.Combine(baseDir, "MexManagerUpdater.exe"), Path.Combine(baseDir, "MexManagerUpdater_.exe"));
+            var updatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MexManagerUpdater.exe");
+
+            var assembly = Assembly.GetExecutingAssembly();
+            
+            using (var stream = assembly.GetManifestResourceStream("MexManager.MexManagerUpdater.exe"))
+            {
+                if (stream == null)
+                    throw new Exception($"Resource MexManagerUpdater not found.");
+
+                using (var fileStream = new FileStream(updatePath, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+                {
+                    stream.CopyTo(fileStream);
+                }
+            }
 
             Process p = new Process();
-            p.StartInfo.FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MexManagerUpdater_.exe");
+            p.StartInfo.FileName = updatePath;
             p.StartInfo.Arguments = $"{Updater.DownloadURL} \"{Updater.Version}\" -r";
             p.StartInfo.UseShellExecute = true;
             p.StartInfo.Verb = "runas";

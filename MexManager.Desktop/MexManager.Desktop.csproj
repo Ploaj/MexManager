@@ -12,7 +12,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="icon.ico" />
-		<None Remove="MexManagerUpdater.exe" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -63,12 +62,5 @@
 
 	<ItemGroup>
 		<UpToDateCheckInput Remove="icon.ico" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Include="MexManagerUpdater.exe">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-	  </Content>
 	</ItemGroup>
 </Project>

@@ -51,6 +51,7 @@
     <None Remove="Assets\Menu\css_hand_point.png" />
     <None Remove="Assets\Menu\css_template.png" />
     <None Remove="Assets\Menu\sss_template.png" />
+    <None Remove="MexManagerUpdater.exe" />
   </ItemGroup>
 
   <ItemGroup>
@@ -104,5 +105,12 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\ProjectView.axaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MexManagerUpdater.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
