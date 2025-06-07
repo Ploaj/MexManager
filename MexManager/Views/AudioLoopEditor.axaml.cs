@@ -5,9 +5,12 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
+using DynamicData;
 using MeleeMedia.Audio;
 using MexManager.Tools;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Timers;
 
 namespace MexManager.Views;
@@ -512,8 +515,12 @@ public partial class AudioLoopEditor : Window
         Result = AudioEditorResult.SaveChanges;
         this.Close();
     }
-
-    private async void MenuItem_Click_1(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void MenuItem_Click_1(object? sender, RoutedEventArgs e)
     {
         if (Global.Workspace == null)
             return;
@@ -532,5 +539,51 @@ public partial class AudioLoopEditor : Window
                 await MessageBox.Show($"Failed to import file\n{file}", "Import Music Error", MessageBox.MessageBoxButtons.Ok);
             }
         }
+    }
+    public class GenSilence
+    {
+        [DisplayName("Time in Seconds")]
+        [Description("1 = 1 second 0.5 = half a second")]
+        public float Time { get; set; } = 0.05f;
+    }
+    private readonly static GenSilence SilenceSetting = new GenSilence();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void GenerateSilence_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Global.Workspace == null)
+            return;
+
+        if (DSP == null)
+            return;
+
+        var res = await PropertyGridPopup.ShowDialog("Generate Silence", "OK", SilenceSetting);
+
+        if (!res)
+            return;
+
+        if (SilenceSetting.Time <= 0)
+            return;
+
+        var wave = DSP.ToWAVE();
+        var gen = (int)(wave.Frequency * SilenceSetting.Time);
+
+        List<short[]> newChannels = [];
+        foreach (var c in wave.Channels)
+        {
+            short[] d = new short[c.Length + gen];
+            Array.Copy(c, d, c.Length);
+            newChannels.Add(d);
+        }
+        wave.Channels.Clear();
+        wave.Channels.AddRange(newChannels);
+
+        DSP.FromWAVE(wave.ToFile());
+
+        SetAudio(DSP);
     }
 }

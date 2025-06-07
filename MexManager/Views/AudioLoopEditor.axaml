@@ -31,6 +31,20 @@
 					</StackPanel>
 				</MenuItem.Header>
 			</MenuItem>
+			<MenuItem>
+				<MenuItem.Header>
+					<StackPanel
+						Orientation="Horizontal">
+						<Image Source="avares://MexManager/Assets/Common/icon_edit.png"
+							   Width="32"/>
+						<TextBlock
+							VerticalAlignment="Center">Edit</TextBlock>
+					</StackPanel>
+				</MenuItem.Header>
+				<MenuItem
+					Header="_Generate Silence"
+						Click="GenerateSilence_Click"/>
+			</MenuItem>
 		</Menu>
 		<Button
 			HorizontalAlignment="Stretch"
