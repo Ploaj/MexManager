@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -131,6 +132,42 @@ namespace MexManager.Tools
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
+        public async static Task<IEnumerable<string>> TryOpenFiles(string title, string fileName, IReadOnlyList<FilePickerFileType> types)
+        {
+            // Get the top-level window
+            Avalonia.Controls.TopLevel? topLevel = App.TopLevel;
+
+            // Check if top-level window is available
+            if (topLevel == null)
+                return Enumerable.Empty<string>();
+
+            // Open the file picker dialog
+            IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(
+                new FilePickerOpenOptions
+                {
+                    Title = title,
+                    SuggestedFileName = fileName,
+                    FileTypeFilter = types,
+                    AllowMultiple = true,
+                });
+
+            // Check if any files were selected
+            if (files == null || files.Count == 0)
+                return Enumerable.Empty<string>();
+
+            // Return decoded file paths
+            return files
+                .Select(f => f?.Path?.AbsolutePath)
+                .Where(p => p != null)
+                .Select(p => Uri.UnescapeDataString(p!))
+                .ToList();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public async static Task<string?> TryOpenFile(string title, string fileName, IReadOnlyList<FilePickerFileType> types)
         {
             // Get the top-level window
@@ -146,7 +183,7 @@ namespace MexManager.Tools
                 {
                     Title = title,
                     SuggestedFileName = fileName,
-                    FileTypeFilter = types
+                    FileTypeFilter = types,
                 });
 
             // Check if any files were selected

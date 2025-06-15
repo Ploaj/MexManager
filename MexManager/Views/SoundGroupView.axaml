@@ -89,12 +89,20 @@
 					<Menu DockPanel.Dock="Top"
 							Height="48">
 						<controls:IconMenuItem
-							Text="Add"
+							Text="Create"
 							ToolTip.Tip="Add"
 							IconSource="avares://MexManager/Assets/Common/icon_plus.png"
-							Click="AddScript_Click"
 							IsEnabled="{Binding SelectedSoundGroup, Converter={StaticResource NullToBoolConverter}}"
-							/>
+							>
+							<MenuItem Header="_New Script"
+									  Click="AddScript_Click"
+									  IsEnabled="{Binding SelectedSoundGroup, Converter={StaticResource NullToBoolConverter}}"
+									  />
+							<MenuItem Header="_New Scripts"
+									  Click="AddMushroom_Click"
+									  IsEnabled="{Binding SelectedSoundGroup, Converter={StaticResource NullToBoolConverter}}"
+									  />
+						</controls:IconMenuItem>
 						<controls:IconMenuItem
 							Text="Remove"
 							ToolTip.Tip="Remove"

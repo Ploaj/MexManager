@@ -34,7 +34,7 @@ namespace mexLib.Installer
 
             foreach (var f in workspace.Project.Fighters)
             {
-                if (f.Functions.MoveLogicPointer == 0 &&
+                if ((f.Functions.MoveLogicPointer == 0 || f.Functions.DemoMoveLogicPointer == 0) &&
                     onloadToLogic.TryGetValue(f.Functions.OnLoad, out (uint, uint) p))
                 {
                     f.Functions.MoveLogicPointer = p.Item1;

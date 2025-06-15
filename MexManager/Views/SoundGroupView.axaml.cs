@@ -11,6 +11,7 @@ using MexManager.Tools;
 using MexManager.ViewModels;
 using PropertyModels.ComponentModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 
@@ -85,24 +86,28 @@ public partial class SoundGroupView : UserControl
         if (DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup != null)
         {
-            string? file = await FileIO.TryOpenFile("Import Sound", "", FileIO.FilterMusic);
+            var file = await FileIO.TryOpenFiles("Import Sound", "", FileIO.FilterMusic);
 
             if (file == null)
                 return;
 
-            DSP dsp = new();
-            if (dsp.FromFile(file))
+            foreach (var f in file)
             {
-                model.SelectedSoundGroup.Sounds.Add(new MexSound()
+                DSP dsp = new();
+                if (dsp.FromFile(f))
                 {
-                    Name = System.IO.Path.GetFileNameWithoutExtension(file),
-                    DSP = dsp,
-                });
+                    model.SelectedSoundGroup.Sounds.Add(new MexSound()
+                    {
+                        Name = System.IO.Path.GetFileNameWithoutExtension(f),
+                        DSP = dsp,
+                    });
+                }
+                else
+                {
+                    await MessageBox.Show($"Failed to import file\n{file}", "Import Sound Error", MessageBox.MessageBoxButtons.Ok);
+                }
             }
-            else
-            {
-                await MessageBox.Show($"Failed to import file\n{file}", "Import Music Error", MessageBox.MessageBoxButtons.Ok);
-            }
+
         }
     }
     /// <summary>
@@ -201,9 +206,12 @@ public partial class SoundGroupView : UserControl
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void AddScript_Click(object? sender, RoutedEventArgs e)
+    /// <param name="id"></param>
+    /// <param name="reverb"></param>
+    /// <param name="priorty"></param>
+    /// <param name="volume"></param>
+    /// <param name="pitch"></param>
+    private SemScript? CreateAndAddSound(string name, int id, int reverb, int priorty, int volume, int pitch = 0)
     {
         if (DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup is MexSoundGroup group &&
@@ -211,18 +219,115 @@ public partial class SoundGroupView : UserControl
         {
             SemScript newScript = new()
             {
-                Name = "SFX_Untitled",
+                Name = name,
                 Script =
                 {
-                    new SemCommand(SemCode.Sound, 0),
-                    new SemCommand(SemCode.SetReverb, 1),
-                    new SemCommand(SemCode.SetPriority, 15),
-                    new SemCommand(SemCode.SetVolume, 255),
+                    new SemCommand(SemCode.Sound, id),
+                    new SemCommand(SemCode.SetReverb, reverb),
+                    new SemCommand(SemCode.SetPriority, priorty),
+                    new SemCommand(SemCode.SetVolume, volume),
                     new SemCommand(SemCode.End, 0),
                 }
             };
+
+            if (pitch != 0)
+                newScript.Script.Insert(2, new SemCommand(SemCode.SetPitch, pitch));
+
             group.Scripts.Add(newScript);
-            ScriptList.SelectedItem = newScript;
+            return newScript;
+        }
+        return null;
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void AddScript_Click(object? sender, RoutedEventArgs e)
+    {
+        var s = CreateAndAddSound("SFX_Untitled", 0, 1, 15, 255);
+        if (s != null)
+            ScriptList.SelectedItem = s;
+    }
+    public class SoundGenSettings
+    {
+        [DisplayName("Sound ID Offset")]
+        [Range(0, 1000)]
+        public int Offset { get; set; } = 0;
+
+        [DisplayName("Sound ID Count")]
+        [Range(1, 100)]
+        public int Count { get; set; } = 1;
+
+        public byte Reverb { get; set; } = 1;
+
+        public byte Priority { get; set; } = 15;
+
+        public byte Volume { get; set; } = 204;
+
+        [DisplayName("Use Sound Names")]
+        [Description("Use the names of sounds in the soundbank.")]
+        public bool UseSoundBankNames { get; set; } = true;
+
+        [DisplayName("Is Mushroom Sound")]
+        [Description("Create big and small mushroom noises (pitch shifted)")]
+        public bool IsMushroom { get; set; } = false;
+
+        [DisplayName("Mushroom Pitch (Small)")]
+        public int SmallPitch { get; set; } = 450;
+
+        [DisplayName("Mushroom Pitch (Big)")]
+        public int BigPitch { get; set; } = -350;
+    }
+    private static SoundGenSettings _soundGenSettings = new SoundGenSettings();
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void AddMushroom_Click(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is SoundGroupModel model &&
+            model.SelectedSoundGroup is MexSoundGroup group &&
+            group.Scripts != null)
+        {
+            var res = await PropertyGridPopup.ShowDialog("Generate Sound Settings", "Generate", _soundGenSettings);
+
+            if (!res)
+                return;
+
+            for (int i = _soundGenSettings.Offset; i < _soundGenSettings.Offset + _soundGenSettings.Count; i++)
+            {
+                var name = "SFX_Untitled";
+
+                if (_soundGenSettings.UseSoundBankNames && 
+                    i < model.SelectedSoundGroup.Sounds.Count)
+                {
+                    name = $"SFX_{model.SelectedSoundGroup.Sounds[i].Name}";
+                }
+
+                CreateAndAddSound(name, i, _soundGenSettings.Reverb, _soundGenSettings.Priority, _soundGenSettings.Volume);
+
+                if (_soundGenSettings.IsMushroom)
+                {
+                    var bigname = "SFXB_Untitled";
+                    var smallname = "SFXS_Untitled";
+
+                    if (_soundGenSettings.UseSoundBankNames &&
+                        i < model.SelectedSoundGroup.Sounds.Count)
+                    {
+                        var index = name.LastIndexOf("_");
+                        if (index != -1)
+                        {
+                            bigname = name.Insert(index, "B");
+                            smallname = name.Insert(index, "S");
+                        }
+                    }
+
+                    CreateAndAddSound(bigname, i, _soundGenSettings.Reverb, _soundGenSettings.Priority, _soundGenSettings.Volume, _soundGenSettings.BigPitch);
+                    CreateAndAddSound(smallname, i, _soundGenSettings.Reverb, _soundGenSettings.Priority, _soundGenSettings.Volume, _soundGenSettings.SmallPitch);
+                }
+            }
         }
     }
     /// <summary>
