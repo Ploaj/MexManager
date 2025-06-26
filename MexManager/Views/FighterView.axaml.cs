@@ -1,10 +1,13 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
+using HSDRaw;
 using mexLib;
 using mexLib.Types;
 using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -472,6 +475,56 @@ public partial class FighterView : UserControl
             {
                 fighter.KirbyCostumes.Clear();
             }
+        }
+    }
+
+    private readonly static string[] BoneLookups = ["TopN", "TransN", "XRotN", "YRotN", "HipN", "WaistN", "LLegJA", "LLegJ", "LKneeJ", "LFootJA", "LFootJ", "RLegJA", "RLegJ", "RKneeJ", "RFootJA", "RFootJ", "WaistNb", "Bust", "LShoulderN", "LShoulderJA", "LShoulderJ", "LArmJ", "LHandN", "L1stNa", "L1stNb", "L2ndNa", "L2ndNb", "L3rdNa", "L3rdNb", "L4thNa", "L4thNb", "LHaveN", "LThumbNa", "LThumbNb", "NeckN", "HeadN", "RShoulderN", "RShoulderJA", "RShoulderJ", "RArmJ", "RHandN", "R1stNa", "R1stNb", "R2ndNa", "R2ndNb", "R3rdNa", "R3rdNb", "R4thNa", "R4thNb", "RHaveN", "RThumbNa", "RThumbNb", "ThrowN", "TransN2"];
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void ImportBonesFromIni(object? sender, RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter)
+        {
+            var f = await FileIO.TryOpenFile("Import Bone INI", "", BoneINI.FileFilter);
+
+            if (f == null)
+                return;
+
+            // load bone ini
+            var ini = new BoneINI(f);
+
+            // get bone table lookup
+            var boneTable = fighter.BoneDefinitions.Lookup;
+            var attr = boneTable._s.GetCreateReference<HSDAccessor>(4);
+            if (attr._s.Length < BoneLookups.Length)
+                attr._s.Resize(BoneLookups.Length);
+
+            // set bone count
+            boneTable.BoneCount = ini.Count;
+
+            // search for bone indices
+            for (int i = 0; i < BoneLookups.Length; i++)
+            {
+                var index = ini.IndexOf(BoneLookups[i]);
+
+                if (index < 0 || index > 255)
+                    attr._s.SetByte(i, 255);
+                else
+                    attr._s.SetByte(i, (byte)index);
+            }
+
+            // this is so the reverse lookup gets updated
+            boneTable.Top = boneTable.Top;
+
+            // update display
+            model.SelectedFighter = null;
+            model.SelectedFighter = fighter;
         }
     }
 }

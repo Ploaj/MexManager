@@ -387,37 +387,45 @@
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Bones">
-				<TabControl>
-					<TabItem Header="Common">
-						<ScrollViewer>
-							<views:PropertyGridExt
-								Margin="4"
-								AllowQuickFilter="False"
-								AllowToggleView="False"
-								AllowFilter="False"
-								NameWidth="0"
-								ShowTitle="False"
-								ShowStyle="Builtin"
-								Padding="0"
-								DataContext="{Binding SelectedFighter.BoneDefinitions.Lookup}">
-							</views:PropertyGridExt>
-						</ScrollViewer>
-					</TabItem>
-					<TabItem Header="Ext">
-						<ScrollViewer>
-							<views:PropertyGridExt
-								Margin="4"
-								AllowQuickFilter="False"
-								AllowToggleView="False"
-								AllowFilter="False"
-								NameWidth="0"
-								ShowTitle="False"
-								ShowStyle="Builtin"
-								DataContext="{Binding SelectedFighter.BoneDefinitions}">
-							</views:PropertyGridExt>
-						</ScrollViewer>
-					</TabItem>
-				</TabControl>
+				<ScrollViewer>
+					<StackPanel Orientation="Vertical">
+						<Menu>
+							<MenuItem Header="_Import From (*.ini)"
+									  Click="ImportBonesFromIni" />
+						</Menu>
+						<TabControl>
+							<TabItem Header="Common">
+								<ScrollViewer>
+									<views:PropertyGridExt
+										Margin="4"
+										AllowQuickFilter="False"
+										AllowToggleView="False"
+										AllowFilter="False"
+										NameWidth="0"
+										ShowTitle="False"
+										ShowStyle="Builtin"
+										Padding="0"
+										DataContext="{Binding SelectedFighter.BoneDefinitions.Lookup}">
+									</views:PropertyGridExt>
+								</ScrollViewer>
+							</TabItem>
+							<TabItem Header="Ext">
+								<ScrollViewer>
+									<views:PropertyGridExt
+										Margin="4"
+										AllowQuickFilter="False"
+										AllowToggleView="False"
+										AllowFilter="False"
+										NameWidth="0"
+										ShowTitle="False"
+										ShowStyle="Builtin"
+										DataContext="{Binding SelectedFighter.BoneDefinitions}">
+									</views:PropertyGridExt>
+								</ScrollViewer>
+							</TabItem>
+						</TabControl>
+					</StackPanel>
+				</ScrollViewer>
 			</TabItem>
 			<TabItem
 				Header="GaW Colors"
