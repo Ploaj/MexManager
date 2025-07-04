@@ -28,6 +28,12 @@ namespace mexLib.Types
         /// <param name="index"></param>
         public void LoadFromPlCo(SBM_ftLoadCommonData plco, uint index)
         {
+            if (index >= plco.BoneTables.Length)
+            {
+                BoneDefinitions.Lookup = new SBM_BoneLookupTable();
+                BoneDefinitions.Ext.Clear();
+            }
+
             BoneDefinitions.Lookup = plco.BoneTables[(int)index];
 
             BoneDefinitions.Ext.Clear();

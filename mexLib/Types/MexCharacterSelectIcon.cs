@@ -15,8 +15,7 @@ namespace mexLib.Types
         public int Fighter { get => _fighter; set { _fighter = value; OnPropertyChanged(); } }
         private int _fighter;
 
-        [Browsable(false)]
-        public int SFXID { get; set; }
+        public int SFXID { get; set; } = 205;
 
         private float _collisionOffsetX = 0.0f;
 
