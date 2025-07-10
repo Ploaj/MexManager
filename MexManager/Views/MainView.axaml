@@ -39,8 +39,12 @@
 						Command="{Binding ExportISOCommand}"/>
 				<Separator/>
 				<MenuItem Header="_Create From">
+					<MenuItem Header="_mex ISO"
+							  Click="CreateFromMexISO_Click"
+							  ToolTip.Tip="Create from a pre-existing m-ex installed ISO"/>
 					<MenuItem Header="_mexTool File System"
-							  Click="CreateFromMexFileSystem_Click"/>
+							  Click="CreateFromMexFileSystem_Click"
+							  ToolTip.Tip="Create from a pre-existing m-ex installed file system"/>
 				</MenuItem>
 				<Separator/>
 				<MenuItem Header="_Close Workspace"

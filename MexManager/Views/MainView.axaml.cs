@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using MeleeMedia.Audio;
 using mexLib.Types;
+using mexLib.Utilties;
 using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
@@ -135,6 +136,71 @@ public partial class MainView : UserControl
 
         // create new workspace
         mexLib.MexWorkspace? workspace = Global.CreateWorkspace(file);
+
+        if (workspace == null)
+            await MessageBox.Show("Unable to create workspace", "Create Workspace", MessageBox.MessageBoxButtons.Ok);
+
+        Context.UpdateWorkspace();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void CreateFromMexISO_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Context == null)
+            return;
+
+        await MessageBox.Show("Note: if you have access to the project's \".mexproj\" file,\nplease use that instead of this importer.", "m-ex Import", MessageBox.MessageBoxButtons.Ok);
+
+        // check if workspace currently open
+        if (Global.Workspace != null)
+        {
+            MessageBox.MessageBoxResult rst = await MessageBox.Show(
+                "Save changes to current workspace?",
+                "New Workspace",
+                MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (rst == MessageBox.MessageBoxResult.Yes)
+            {
+                Global.SaveWorkspace();
+            }
+            else if (rst == MessageBox.MessageBoxResult.Cancel)
+            {
+                return;
+            }
+        }
+
+        // get dol source
+        string? mexiso = await FileIO.TryOpenFile("m-ex ISO", "", FileIO.FilterISO);
+        if (mexiso == null)
+            return;
+
+        // Start async operation to open the dialog.
+        string? filepath = await FileIO.TrySaveFile("Save Workspace", "project.mexproj", FileIO.FilterMexProject);
+
+        // get output path
+        var output = Path.GetDirectoryName(filepath);
+        if (output == null)
+            return;
+
+        // extract iso contents
+        await ProgressWindow.DisplayProgress((w) =>
+        {
+            ISOTool.ExtractToFileSystem(mexiso, output, (r, t) =>
+            {
+                w.ReportProgress(t.ProgressPercentage, t.UserState);
+            });
+        });
+
+        var dolPath = Path.Combine(output, Path.Combine("sys", "main.dol"));
+
+        if (!File.Exists(dolPath))
+            return;
+
+        // create new workspace
+        mexLib.MexWorkspace? workspace = Global.CreateWorkspaceFromMex(dolPath);
 
         if (workspace == null)
             await MessageBox.Show("Unable to create workspace", "Create Workspace", MessageBox.MessageBoxButtons.Ok);
