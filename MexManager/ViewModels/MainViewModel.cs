@@ -285,9 +285,9 @@ public partial class MainViewModel : ViewModelBase
     /// <summary>
     /// 
     /// </summary>
-    public void OpenWorkspace(string path)
+    public async void OpenWorkspace(string path)
     {
-        Global.LoadWorkspace(path);
+        await Global.LoadWorkspace(path);
         UpdateWorkspace();
     }
     /// <summary>

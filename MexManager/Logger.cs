@@ -10,6 +10,11 @@ namespace MexManager
         private static readonly object _lock = new();
         private static bool _disposed = false;
 
+        public static StreamWriter GetWriter()
+        {
+            return _writer;
+        }
+
         public static void WriteLine(string line)
         {
             lock (_lock)

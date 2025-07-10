@@ -159,6 +159,9 @@ namespace mexLib
             // fighter
             foreach (MexFighter fighter in Fighters)
             {
+                if (fighter.SubCharacter < 0)
+                    continue;
+
                 if (fighter.SubCharacter == externalId)
                     fighter.SubCharacter = -1;
                 else
@@ -170,6 +173,9 @@ namespace mexLib
             // css icons
             foreach (MexCharacterSelectIcon icon in CharacterSelect.FighterIcons)
             {
+                if (icon.Fighter < 0)
+                    continue;
+
                 if (icon.Fighter == externalId)
                 {
                     icon.Fighter = 0;

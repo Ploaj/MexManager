@@ -3,10 +3,13 @@ using mexLib;
 using mexLib.Installer;
 using mexLib.Types;
 using mexLib.Utilties;
+using MexManager.Tools;
 using MexManager.Views;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MexManager
 {
@@ -121,14 +124,9 @@ namespace MexManager
         /// </summary>
         /// <param name="filepath"></param>
         /// <returns></returns>
-        public static bool LoadWorkspace(string filepath)
+        private static bool TryOpenWorkspace(string filepath, out string error, out bool isomissing)
         {
-            if (Workspace != null)
-            {
-                CloseWorkspace();
-            }
-
-            if (MexWorkspace.TryOpenWorkspace(filepath, out MexWorkspace? workspace, out string error))
+            if (MexWorkspace.TryOpenWorkspace(filepath, out MexWorkspace? workspace, out error, out isomissing))
             {
                 // load most recent codes patch
                 MexCode? mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
@@ -141,9 +139,82 @@ namespace MexManager
                 Workspace = workspace;
                 return true;
             }
-            else
+
+            return false;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        private static async Task<bool> TryExtractISO(string iso, string filepath)
+        {
+            if (!File.Exists(iso))
+                return false;
+
+            var output = Path.GetDirectoryName(filepath) + "/";
+
+            if (!Directory.Exists(output))
+                return false;
+
+            await ProgressWindow.DisplayProgress((w) =>
             {
-                MessageBox.Show(error, "Open Project Error", MessageBox.MessageBoxButtons.Ok);
+                ISOTool.ExtractToFileSystem(iso, output, (r, t) =>
+                {
+                    w.ReportProgress(t.ProgressPercentage, t.UserState);
+                });
+            });
+
+            return true;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filepath"></param>
+        /// <returns></returns>
+        public static async Task<bool> LoadWorkspace(string filepath)
+        {
+            if (Workspace != null)
+            {
+                CloseWorkspace();
+            }
+
+            if (!TryOpenWorkspace(filepath, out string error, out bool isomissing))
+            {
+                await MessageBox.Show(error, "Open Project Error", MessageBox.MessageBoxButtons.Ok);
+
+                if (isomissing)
+                {
+                    if (!File.Exists(filepath))
+                        return false;
+                    
+                    MexProject? proj = MexJsonSerializer.Deserialize<MexProject>(filepath);
+                    if (proj == null)
+                        return false;
+
+                    var res = await MessageBox.Show($"Please select the \"{proj.Build.Name}\" v{proj.Build.MajorVersion}.{proj.Build.MinorVersion}.{proj.Build.PatchVersion} ISO.", "Extract ISO", MessageBox.MessageBoxButtons.OkCancel);
+
+                    if (res == MessageBox.MessageBoxResult.Ok)
+                    {
+                        var iso = await FileIO.TryOpenFile("Source ISO", "", FileIO.FilterISO);
+                        if (iso == null)
+                            return false;
+
+                        // extract files
+                        if (!await TryExtractISO(iso, filepath))
+                            return false;
+
+                        // try to open after extract files
+                        if (TryOpenWorkspace(filepath, out error, out isomissing))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            await MessageBox.Show(error, "Open Project Error", MessageBox.MessageBoxButtons.Ok);
+                            return false;
+                        }
+                            
+                    }
+                }
             }
             return false;
         }
@@ -155,7 +226,7 @@ namespace MexManager
             if (Workspace == null)
                 return;
 
-            Workspace.Save();
+            Workspace.Save(Logger.GetWriter());
         }
         /// <summary>
         /// 

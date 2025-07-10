@@ -141,7 +141,7 @@ namespace mexLib
                 }
             }
             workspace.LoadMiscData();
-            workspace.Save();
+            workspace.Save(null);
 
             return workspace;
         }
@@ -232,7 +232,7 @@ namespace mexLib
 
             workspace.LoadMiscData();
 
-            workspace.Save();
+            workspace.Save(null);
 
             return workspace;
         }
@@ -249,10 +249,11 @@ namespace mexLib
         /// 
         /// </summary>
         /// <returns></returns>
-        public static bool TryOpenWorkspace(string projectFilePath, out MexWorkspace? workspace, out string error)
+        public static bool TryOpenWorkspace(string projectFilePath, out MexWorkspace? workspace, out string error, out bool isomissing)
         {
             workspace = null;
             error = "";
+            isomissing = false;
 
             // validate
             if (!File.Exists(projectFilePath))
@@ -269,11 +270,13 @@ namespace mexLib
             var assetsPath = Path.Combine(projectDirectory, "assets/");
             if (!Directory.Exists(sysPath))
             {
+                isomissing = true;
                 error = $"\"sys\" folder not found at:\n\n\"{sysPath}\"\n\nMake sure you extract the entire iso disc to the project directory!";
                 return false;
             }
             if (!Directory.Exists(filesPath))
             {
+                isomissing = true;
                 error = $"\"files\" folder not found at:\n\n\"{filesPath}\"\n\nMake sure you extract the entire iso disc to the project directory!";
                 return false;
             }
@@ -310,7 +313,7 @@ namespace mexLib
         /// <summary>
         /// 
         /// </summary>
-        public void Save()
+        public void Save(StreamWriter? output)
         {
             Stopwatch sw = new();
             TimeSpan total = new();
@@ -321,28 +324,28 @@ namespace mexLib
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Compiled sounds {sw.Elapsed}");
+            output?.WriteLine($"Compiled sounds {sw.Elapsed}");
 
             sw.Start();
             MxDtCompiler.Compile(this);
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Compiled MxDt {sw.Elapsed}");
+            output?.WriteLine($"Compiled MxDt {sw.Elapsed}");
 
             sw.Start();
             GeneratePlCo.Compile(this);
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Compiled PlCo {sw.Elapsed}");
+            output?.WriteLine($"Compiled PlCo {sw.Elapsed}");
 
             sw.Restart();
             GenerateIfAll.Compile(this);
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Generate IfAll {sw.Elapsed}");
+            output?.WriteLine($"Generate IfAll {sw.Elapsed}");
 
             // generate mexSelectChr
             sw.Restart();
@@ -350,7 +353,7 @@ namespace mexLib
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Generate MnSlChr {sw.Elapsed}");
+            output?.WriteLine($"Generate MnSlChr {sw.Elapsed}");
 
             // generate mexSelectStage
             sw.Restart();
@@ -358,7 +361,7 @@ namespace mexLib
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Generate MnSlMap {sw.Elapsed}");
+            output?.WriteLine($"Generate MnSlMap {sw.Elapsed}");
 
             // generate result screen
             sw.Restart();
@@ -366,14 +369,14 @@ namespace mexLib
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Generate GmRst {sw.Elapsed}");
+            output?.WriteLine($"Generate GmRst {sw.Elapsed}");
 
             sw.Start();
             GenerateTrophy.Compile(this);
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Compiled Trophies {sw.Elapsed}");
+            output?.WriteLine($"Compiled Trophies {sw.Elapsed}");
 
             // compile codes
             sw.Restart();
@@ -381,7 +384,7 @@ namespace mexLib
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Compiled codes {sw.Elapsed}");
+            output?.WriteLine($"Compiled codes {sw.Elapsed}");
 
             // save data
             sw.Restart();
@@ -389,7 +392,7 @@ namespace mexLib
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Save Project Data {sw.Elapsed}");
+            output?.WriteLine($"Save Project Data {sw.Elapsed}");
 
             // save files
             sw.Start();
@@ -397,9 +400,9 @@ namespace mexLib
             sw.Stop();
             total += sw.Elapsed;
 
-            Debug.WriteLine($"Save files {sw.Elapsed}");
+            output?.WriteLine($"Save files {sw.Elapsed}");
 
-            Debug.WriteLine($"Total Save Time {total}");
+            output?.WriteLine($"Total Save Time {total}");
         }
         /// <summary>
         /// 

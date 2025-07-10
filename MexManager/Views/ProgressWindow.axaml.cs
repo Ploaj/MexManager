@@ -1,8 +1,10 @@
 using Avalonia.Controls;
+using mexLib.Utilties;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MexManager;
 
@@ -28,9 +30,9 @@ public partial class ProgressWindow : Window
             get
             {
                 if (Completed)
-                    return "ISO Generated!";
+                    return "Process Completed!";
                 else
-                    return "Creating ISO Please Wait...";
+                    return "Please wait for process to complete...";
             }
         }
 
@@ -45,6 +47,37 @@ public partial class ProgressWindow : Window
     {
         InitializeComponent();
         DataContext = new ProcessViewModel();
+    }
+
+    public delegate void UpdateProgressHandler(BackgroundWorker w);
+    /// <summary>
+    /// 
+    /// </summary>
+    public static async Task<bool> DisplayProgress(UpdateProgressHandler e)
+    {
+        if (App.MainWindow == null)
+            return false;
+
+        ProgressWindow progressWindow = new();
+
+        BackgroundWorker backgroundWorker = new()
+        {
+            WorkerReportsProgress = true,
+        };
+
+        backgroundWorker.DoWork += (s, k) =>
+        {
+            e.Invoke(backgroundWorker);
+        };
+        backgroundWorker.ProgressChanged += progressWindow.UpdateProgress;
+
+        // Start the BackgroundWorker task
+        backgroundWorker.RunWorkerAsync();
+
+        // Create and show the progress window
+        await progressWindow.ShowDialog(App.MainWindow);
+
+        return true;
     }
 
     private readonly StringBuilder _logBuilder = new();

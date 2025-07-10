@@ -34,13 +34,11 @@ namespace mexLib.Types
             set
             {
                 _subCharacter = value;
-                if (_subCharacter > 255)
-                    _subCharacter = 255;
-                if (_subCharacter < 0)
-                    _subCharacter = 0;
+                if (_subCharacter >= 255)
+                    _subCharacter = -1;
             }
         }
-        private int _subCharacter = 0;
+        private int _subCharacter = -1;
 
         [Category("0 - General"), DisplayName("Sub-Fighter Behavior"), Description("The association between this fighter and the sub-fighter")]
         public SubCharacterBehavior SubCharacterBehavior { get; set; }

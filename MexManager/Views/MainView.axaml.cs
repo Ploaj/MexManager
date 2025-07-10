@@ -151,6 +151,8 @@ public partial class MainView : UserControl
         if (Context == null)
             return;
 
+        await MessageBox.Show("Note: if you have access to the project's \".mexproj\" file,\nplease use that instead of this importer.", "m-ex Import", MessageBox.MessageBoxButtons.Ok);
+
         // check if workspace currently open
         if (Global.Workspace != null)
         {

@@ -212,9 +212,6 @@ public partial class MTHEditor : UserControl
     /// <param name="filePath"></param>
     public void SetVideo(string filePath)
     {
-        if (Global.Workspace == null)
-            return;
-
         _timer.Stop();
 
         _reader?.Dispose();
@@ -228,6 +225,9 @@ public partial class MTHEditor : UserControl
             _filePath = filePath;
             return;
         }
+
+        if (Global.Workspace == null)
+            return;
 
         Stream? stream = Global.Workspace.FileManager.GetStream(filePath);
         _reader = new MTHReader(stream);
