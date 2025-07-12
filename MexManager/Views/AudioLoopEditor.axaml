@@ -98,8 +98,7 @@
 			</StackPanel>
 		</DockPanel>
 		<Canvas Name="WaveformCanvas"
-				Width="640"
-				Height="200"
+				Margin="20"
 				Background="Black"
 				DockPanel.Dock="Left">
 		</Canvas>

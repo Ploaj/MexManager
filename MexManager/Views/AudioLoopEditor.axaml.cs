@@ -5,7 +5,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
-using DynamicData;
 using MeleeMedia.Audio;
 using MexManager.Tools;
 using System;
@@ -86,11 +85,29 @@ public partial class AudioLoopEditor : Window
         }
     }
 
+    public const int LINE_COUNT = 300;
+    private List<Line> leftLines = new List<Line>();
+    private List<Line> rightLines = new List<Line>();
+    private WAVE? WavCache = null;
+    private Size _lastSize;
+
     private Timer? positionUpdateTimer; // Timer for updating playback position
 
     public AudioLoopEditor()
     {
         InitializeComponent();
+
+        InitCanvas();
+
+        WaveformCanvas.LayoutUpdated += (s, e) =>
+        {
+            var currentSize = WaveformCanvas.Bounds.Size;
+            if (_lastSize != currentSize)
+            {
+                _lastSize = currentSize;
+                OnRedraw(s, e);
+            }
+        };
 
         player = new AudioPlayer();
 
@@ -110,6 +127,7 @@ public partial class AudioLoopEditor : Window
 
         Closing += (s, e) =>
         {
+            Resized -= OnRedraw;
             positionUpdateTimer?.Stop();
             positionUpdateTimer?.Dispose();
             player.Dispose();
@@ -187,46 +205,49 @@ public partial class AudioLoopEditor : Window
     public void SetAudio(DSP dsp)
     {
         DSP = dsp;
+        WavCache = dsp.ToWAVE();
         player.LoadDSP(dsp);
 
         //
         EnableLoopCheckBox.IsChecked = dsp.LoopSound;
 
-        // Subscribe to the LayoutUpdated event
-        WaveformCanvas.LayoutUpdated += OnCanvasLayoutUpdated;
+        // initialize dsp
+        EndPercentage = 1;
+        LoopPercentage = (DSP.LoopPointMilliseconds / DSP.TotalMilliseconds);
+
+        // redraw
+        OnRedraw(null, EventArgs.Empty);
     }
     /// <summary>
     /// 
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnCanvasLayoutUpdated(object? sender, EventArgs e)
+    private void OnRedraw(object? sender, EventArgs e)
     {
-        if (WaveformCanvas.Bounds.Width > 0 && WaveformCanvas.Bounds.Height > 0 && DSP != null)
-        {
-            WaveformCanvas.LayoutUpdated -= OnCanvasLayoutUpdated;
+        System.Diagnostics.Debug.WriteLine("Redraw " + WaveformCanvas.Bounds.Width);
 
-            // Draw waveform on the canvas
-            WAVE wav = DSP.ToWAVE();
+        EndPercentage = EndPercentage;
+        LoopPercentage = LoopPercentage;
+        UpdateOverlay();
+        DrawWaveform();
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void InitCanvas()
+    {
+        WaveformCanvas.Children.Clear();
 
-            if (wav.Channels.Count > 1)
-                DrawWaveform(wav.Channels[0], wav.Channels[1], wav.BitsPerSample, WaveformCanvas);
-            if (wav.Channels.Count > 0)
-                DrawWaveform(wav.Channels[0], wav.Channels[0], wav.BitsPerSample, WaveformCanvas);
-            else
-            {
-                return;
-            }
+        InitWaveForm(WaveformCanvas);
 
-            // initial scrubbers
-            InitializeScrubberLine(WaveformCanvas);
+        // initial scrubbers
+        InitializeScrubberLine(WaveformCanvas);
 
-            // intialize timer
-            InitializeTimer();
-
-            EndPercentage = 1;
-            LoopPercentage = (DSP.LoopPointMilliseconds / DSP.TotalMilliseconds);
-        }
+        // intialize timer
+        InitializeTimer();
     }
     /// <summary>
     /// 
@@ -241,8 +262,6 @@ public partial class AudioLoopEditor : Window
             [Canvas.LeftProperty] = 0
         };
         canvas.Children.Add(playbackOverlay);
-
-        UpdateOverlay();
 
         // loop line
         loopLine = new Line
@@ -275,6 +294,9 @@ public partial class AudioLoopEditor : Window
             pointerDown = false;
         };
     }
+    /// <summary>
+    /// 
+    /// </summary>
     private void UpdateOverlay()
     {
         if (playbackOverlay == null)
@@ -289,6 +311,9 @@ public partial class AudioLoopEditor : Window
         playbackOverlay.Width = overlayWidth;
         playbackOverlay.Height = WaveformCanvas.Bounds.Height;
     }
+    /// <summary>
+    /// 
+    /// </summary>
     private bool pointerDown;
     private void Canvas_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
@@ -385,7 +410,7 @@ public partial class AudioLoopEditor : Window
 
             double percent = xPosition / WaveformCanvas.Bounds.Width;
 
-            if (Math.Abs(percent - player.Percentage) > 0.01)
+            if (Math.Abs(percent - player.Percentage) > 0.001)
             {
                 bool playing = player.State == OpenTK.Audio.OpenAL.ALSourceState.Playing;
                 player.SeekPercentage(percent);
@@ -436,20 +461,70 @@ public partial class AudioLoopEditor : Window
     /// <param name="bitsPerSample"></param>
     /// <param name="sampleRate"></param>
     /// <param name="canvas"></param>
-    private static void DrawWaveform(short[] leftChannel, short[] rightChannel, int bitsPerSample, Canvas canvas)
+    private void InitWaveForm(Canvas canvas)
     {
-        canvas.Children.Clear();
-
-        double canvasWidth = canvas.Bounds.Width;
         double canvasHeight = canvas.Bounds.Height;
+        double midY = canvasHeight / 2.0;
+
+        for (int x = 0; x < LINE_COUNT; x++)
+        {
+            // Draw the lines representing the left and right channel waveforms
+            Line leftLine = new()
+            {
+                StartPoint = new Point(x, midY),
+                EndPoint = new Point(x, midY),
+                Stroke = Brushes.Blue,
+                StrokeThickness = 1
+            };
+
+            Line rightLine = new()
+            {
+                StartPoint = new Point(x, midY),
+                EndPoint = new Point(x, midY),
+                Stroke = Brushes.Red,
+                StrokeThickness = 1
+            };
+
+            canvas.Children.Add(leftLine);
+            canvas.Children.Add(rightLine);
+
+            leftLines.Add(leftLine);
+            rightLines.Add(rightLine);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="leftChannel"></param>
+    /// <param name="rightChannel"></param>
+    /// <param name="bitsPerSample"></param>
+    /// <param name="sampleRate"></param>
+    /// <param name="canvas"></param>
+    private void DrawWaveform()
+    {
+        if (WavCache == null)
+            return;
+
+        if (WavCache.Channels.Count <= 0)
+            return;
+
+        int bitsPerSample = WavCache.BitsPerSample;
+        short[] leftChannel = WavCache.Channels[0];
+        short[] rightChannel = WavCache.Channels.Count > 1 ? WavCache.Channels[1] : WavCache.Channels[0];
+        double canvasWidth = WaveformCanvas.Bounds.Width;
+        double canvasHeight = WaveformCanvas.Bounds.Height;
+
+        if (canvasWidth == 0 || leftChannel.Length == 0 || leftLines.Count == 0)
+            return;
 
         double midY = canvasHeight / 2.0;
         double scaleFactor = (midY / (Math.Pow(2, bitsPerSample - 1) - 1));
 
         int totalSamples = leftChannel.Length;
-        double samplesPerPixel = totalSamples / canvasWidth;
+        int count = leftLines.Count;
+        double samplesPerPixel = totalSamples / count;
 
-        for (int x = 0; x < canvasWidth; x++)
+        for (int x = 0; x < count; x++)
         {
             int startSampleIndex = (int)(x * samplesPerPixel);
             int endSampleIndex = Math.Min((int)((x + 1) * samplesPerPixel), totalSamples);
@@ -465,27 +540,16 @@ public partial class AudioLoopEditor : Window
             }
 
             double leftY = midY - maxLeftSample * scaleFactor;
-            double rightY = midY - maxRightSample * scaleFactor;
+            double rightY = midY + maxRightSample * scaleFactor;
+
+            double xpos = (x / (count - 1.0)) * canvasWidth;
 
             // Draw the lines representing the left and right channel waveforms
-            Line leftLine = new()
-            {
-                StartPoint = new Point(x, midY),
-                EndPoint = new Point(x, leftY),
-                Stroke = Brushes.Blue,
-                StrokeThickness = 1
-            };
+            leftLines[x].StartPoint = new Point(xpos, midY);
+            leftLines[x].EndPoint = new Point(xpos, leftY);
 
-            Line rightLine = new()
-            {
-                StartPoint = new Point(x, midY),
-                EndPoint = new Point(x, canvasHeight - rightY),
-                Stroke = Brushes.Red,
-                StrokeThickness = 1
-            };
-
-            canvas.Children.Add(leftLine);
-            canvas.Children.Add(rightLine);
+            rightLines[x].StartPoint = new Point(xpos, midY);
+            rightLines[x].EndPoint = new Point(xpos, rightY);
         }
     }
     /// <summary>
@@ -509,7 +573,11 @@ public partial class AudioLoopEditor : Window
                 }
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void Button_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         Result = AudioEditorResult.SaveChanges;
