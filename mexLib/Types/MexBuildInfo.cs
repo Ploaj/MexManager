@@ -265,7 +265,7 @@ namespace mexLib.Types
                 MinorVersion = b.MinorVersion;
                 PatchVersion = b.PatchVersion;
                 SaveFile = b.SaveFile;
-                CrashMessage = b.CrashMessage;
+                CrashMessage = b.CrashMessage.Replace("\\r\\n", Environment.NewLine).Replace("\\t", "\t");
             }
         }
         /// <summary>

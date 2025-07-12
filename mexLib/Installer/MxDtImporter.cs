@@ -1,6 +1,7 @@
 ﻿using HSDRaw;
 using HSDRaw.Common.Animation;
 using HSDRaw.Melee;
+using HSDRaw.Melee.Mn;
 using HSDRaw.MEX;
 using HSDRaw.MEX.Menus;
 using HSDRaw.MEX.Stages;
@@ -271,11 +272,14 @@ namespace mexLib.Installer
                 // extract random banner
                 if (icon.IconState == 3)
                 {
-                    if (iconkeys.Find(e => e.Frame == 1) is FOBJKey keyrandom)
+                    if (bannerkeys.Find(e => e.Frame == i) is FOBJKey keyrandom)
                         project.ReservedAssets.SSSRandomBannerAsset.SetFromMexImage(
                             workspace,
                             new MexImage(bannertobjs[(int)keyrandom.Value]));
                 }
+
+                if (icon.IconState != 2)
+                    continue;
 
                 // convert icon external id to internal id
                 int internalId = MexStageIDConverter.ToInternalID(icon.ExternalID);
@@ -341,6 +345,25 @@ namespace mexLib.Installer
                 project.ReservedAssets.CSSBackAsset.SetFromMexImage(
                     workspace,
                     new MexImage(icons[0].Dobj.Mobj.Textures));
+
+            // get locked icon
+            SBM_SelectChrDataTable? dataTable = file["MnSelectChrDataTable"].Data as SBM_SelectChrDataTable;
+            if (dataTable != null)
+            {
+                var matanim = dataTable.MenuMaterialAnimation.TreeList;
+                if (matanim.Count >= 17)
+                {
+                    var anim = matanim[17].MaterialAnimation;
+                    if (anim.Next != null &&
+                        anim.Next.TextureAnimation != null)
+                    {
+                        var luigi = anim.Next.TextureAnimation.ToTOBJs();
+
+                        if (luigi.Length > 1)
+                            project.ReservedAssets.CSSNullAsset.SetFromMexImage(workspace, new MexImage(luigi[1]));
+                    }
+                }
+            }
 
             for (int internalId = 0; internalId < mexSelectChr.CSPStride; internalId++)
             {
