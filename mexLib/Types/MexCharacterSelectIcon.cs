@@ -62,7 +62,16 @@ namespace mexLib.Types
                 Y2 = (float)(Y + CollisionSizeY / 2.0 * ScaleY + CollisionOffsetY),
             };
         }
-        public override int ImageKey => Fighter;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetIconHash(MexWorkspace ws)
+        {
+            int internalId = MexFighterIDConverter.ToInternalID(Fighter, ws.Project.Fighters.Count);
+            MexFighter fighter = ws.Project.Fighters[internalId];
+            return fighter.Assets.CSSIconAsset.GetHashCode();
+        }
         /// <summary>
         /// 
         /// </summary>

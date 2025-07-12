@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Text.Json.Serialization;
 
 namespace mexLib.Types
 {
@@ -39,9 +38,7 @@ namespace mexLib.Types
         [Browsable(false)]
         public abstract (float, float) CollisionSize { get; }
 
-        [Browsable(false)]
-        [JsonIgnore]
-        public abstract int ImageKey { get; }
+        public abstract int GetIconHash(MexWorkspace workspace);
 
         public abstract MexImage? GetIconImage(MexWorkspace workspace);
 

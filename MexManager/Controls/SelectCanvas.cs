@@ -344,6 +344,9 @@ namespace MexManager.Controls
 
         private readonly Dictionary<int, Bitmap> IconBitmapCache = [];
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void RefreshImageCache()
         {
             IconBitmapCache.Clear();
@@ -357,16 +360,18 @@ namespace MexManager.Controls
         {
             if (Global.Workspace != null)
             {
-                if (!IconBitmapCache.ContainsKey(icon.ImageKey))
+                var hash = icon.GetIconHash(Global.Workspace);
+
+                if (!IconBitmapCache.ContainsKey(hash))
                 {
                     mexLib.MexImage? tex = icon.GetIconImage(Global.Workspace);
 
                     if (tex != null)
-                        IconBitmapCache.Add(icon.ImageKey, tex.ToBitmap());
+                        IconBitmapCache.Add(hash, tex.ToBitmap());
                 }
 
-                if (IconBitmapCache.ContainsKey(icon.ImageKey))
-                    return IconBitmapCache[icon.ImageKey];
+                if (IconBitmapCache.ContainsKey(hash))
+                    return IconBitmapCache[hash];
             }
 
             return null;

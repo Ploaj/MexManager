@@ -258,4 +258,14 @@ public partial class SSSEditorView : UserControl
                 System.IO.File.WriteAllText(file, MexJsonSerializer.Serialize(model.StageSelect.Template));
         }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void RefreshIcons_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        SelectScreen.RefreshImageCache();
+        SelectScreen.InvalidateVisual();
+    }
 }

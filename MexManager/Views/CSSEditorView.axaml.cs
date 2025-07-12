@@ -224,4 +224,14 @@ public partial class CSSEditorView : UserControl
 
         SelectScreen.InvalidateVisual();
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void RefreshIcons_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        SelectScreen.RefreshImageCache();
+        SelectScreen.InvalidateVisual();
+    }
 }

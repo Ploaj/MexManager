@@ -1,8 +1,10 @@
 ﻿using HSDRaw.Common;
 using HSDRaw.Common.Animation;
 using HSDRaw.MEX.Menus;
+using mexLib;
 using mexLib.AssetTypes;
 using mexLib.Attributes;
+using mexLib.Types;
 using PropertyModels.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
@@ -174,22 +176,35 @@ namespace mexLib.Types
             }
         }
 
+        public override (float, float) CollisionOffset => (0, 0);
+        public override (float, float) CollisionSize => (Width, Height);
+
         /// <summary>
         /// 
         /// </summary>
-        [JsonIgnore]
-        public override int ImageKey => Status switch
+        /// <returns></returns>
+        private MexTextureAsset GetStageTextureAsset(MexWorkspace ws)
         {
-            StageIconStatus.Random => -2,
-            StageIconStatus.Locked => -1,
-            StageIconStatus.Unlocked => StageID,
-            StageIconStatus.Hidden => -3,
-            StageIconStatus.Decoration => IconAsset.GetHashCode(),
-            _ => -3
-        };
+            int internalId = MexStageIDConverter.ToInternalID(StageID);
+            MexStage stage = ws.Project.Stages[internalId];
+            return stage.Assets.IconAsset;
+        }
 
-        public override (float, float) CollisionOffset => (0, 0);
-        public override (float, float) CollisionSize => (Width, Height);
+        /// <summary>
+        /// 
+        /// </summary>
+        public override int GetIconHash(MexWorkspace ws)
+        {
+            switch (Status)
+            {
+                case StageIconStatus.Random: return -2;
+                case StageIconStatus.Locked: return -1;
+                case StageIconStatus.Unlocked: return GetStageTextureAsset(ws).GetHashCode();
+                case StageIconStatus.Hidden: return -3;
+                case StageIconStatus.Decoration: return IconAsset.GetHashCode();
+                default: return -3;
+            };
+        }
 
         /// <summary>
         /// 
@@ -205,9 +220,7 @@ namespace mexLib.Types
                 case StageIconStatus.Locked:
                     return ws.Project.ReservedAssets.SSSLockedNullAsset.GetTexFile(ws);
                 case StageIconStatus.Unlocked:
-                    int internalId = MexStageIDConverter.ToInternalID(StageID);
-                    MexStage stage = ws.Project.Stages[internalId];
-                    return stage.Assets.IconAsset.GetTexFile(ws);
+                    return GetStageTextureAsset(ws).GetTexFile(ws);
                 case StageIconStatus.Decoration:
                     return IconAsset.GetTexFile(ws);
                 case StageIconStatus.Hidden:

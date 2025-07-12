@@ -120,13 +120,17 @@
 				</DockPanel>
 			</TabItem>
 			<TabItem Header="Preview">
-				<views:PropertyGridExt
-					Name="SelectScreenProperties"
-					Margin="4"
-					AllowQuickFilter="False"
-					AllowFilter="False"
-					AllowToggleView="False">
-				</views:PropertyGridExt>
+				<StackPanel Orientation="Vertical">
+					<Button Click="RefreshIcons_Click"
+							ToolTip.Tip="Refreshes the icon display to reflect changes to icons">Refresh Icons</Button>
+					<views:PropertyGridExt
+						Name="SelectScreenProperties"
+						Margin="4"
+						AllowQuickFilter="False"
+						AllowFilter="False"
+						AllowToggleView="False">
+					</views:PropertyGridExt>
+				</StackPanel>
 			</TabItem>
 		</TabControl>
 		</Border>
