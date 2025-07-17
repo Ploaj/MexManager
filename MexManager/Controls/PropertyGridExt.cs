@@ -2,7 +2,7 @@
 using Avalonia.PropertyGrid.Services;
 using MexManager.Factories;
 
-namespace MexManager.Views
+namespace MexManager.Controls
 {
     public class PropertyGridExt : PropertyGrid
     {
@@ -15,5 +15,4 @@ namespace MexManager.Views
             CellEditFactoryService.Default.AddFactory(new MexFilePathFactory());
         }
     }
-
 }

@@ -14,12 +14,12 @@ namespace MexManager
     {
         static Release[]? releases;
 
-        public static Release? LatestRelease;
+        public static Release? LatestRelease { get; internal set; }
 
-        public static string? DownloadURL;
-        public static string? Version;
+        public static string? DownloadURL { get; internal set; }
+        public static string? Version { get; internal set; }
 
-        public static bool UpdateReady;
+        public static bool UpdateReady { get; internal set; }
 
         /// <summary>
         /// 
@@ -106,7 +106,7 @@ namespace MexManager
             }
             catch (Exception e)
             {
-                Logger.WriteLine($"Failed to get latest update\n{e.ToString()}");
+                Logger.WriteLine($"Failed to get latest update\n{e}");
             }
         }
         /// <summary>
@@ -128,24 +128,24 @@ namespace MexManager
         {
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
-            var updatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MexManagerUpdater.exe");
+            var updatePath = Path.Combine(baseDir, "MexManagerUpdater.exe");
 
             var assembly = Assembly.GetExecutingAssembly();
-            
-            using (var stream = assembly.GetManifestResourceStream("MexManager.MexManagerUpdater.exe"))
+
+            using var stream = assembly.GetManifestResourceStream("MexManager.MexManagerUpdater.exe");
             {
                 if (stream == null)
                     throw new Exception($"Resource MexManagerUpdater not found.");
 
-                using (var fileStream = new FileStream(updatePath, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+                using var fileStream = new FileStream(updatePath, System.IO.FileMode.Create, System.IO.FileAccess.Write);
                 {
                     stream.CopyTo(fileStream);
                 }
             }
 
-            Process p = new Process();
+            Process p = new ();
             p.StartInfo.FileName = updatePath;
-            p.StartInfo.Arguments = $"{Updater.DownloadURL} \"{Updater.Version}\" -r";
+            p.StartInfo.Arguments = $"\"{Updater.DownloadURL}\" \"{Updater.Version}\" -r";
             p.StartInfo.UseShellExecute = true;
             p.StartInfo.Verb = "runas";
             try

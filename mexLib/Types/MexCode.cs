@@ -1,56 +1,13 @@
 ﻿using mexLib.Utilties;
 using System.ComponentModel;
-using System.Text.Json.Serialization;
 
 namespace mexLib.Types
 {
     /// <summary>
     /// 
     /// </summary>
-    public class MexCodeCompileError
+    public class MexCode : MexCodeBase
     {
-        public int LineIndex { get; set; }
-
-        public string Description { get; set; }
-
-        public MexCodeCompileError(int lineIndex, string description)
-        {
-            LineIndex = lineIndex;
-            Description = description;
-        }
-
-        public override string ToString()
-        {
-            if (LineIndex != -1)
-                return $"Error: {Description} on line {LineIndex}";
-            else
-                return $"Error: {Description}";
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public class MexCode : MexReactiveObject
-    {
-        [Browsable(false)]
-        public bool Enabled { get; set; } = true;
-
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-                OnPropertyChanged();
-            }
-        }
-        private string _name = "";
-
-        public string Creator { get; set; } = "";
-
-        public string Description { get; set; } = "";
-
         [Browsable(false)]
         public string Source
         {
@@ -66,17 +23,9 @@ namespace mexLib.Types
 
         private byte[]? _compiled;
 
-        [Browsable(false)]
-        [JsonIgnore]
-        public MexCodeCompileError? CompileError
-        {
-            get => _compileError; internal set
-            {
-                _compileError = value;
-                OnPropertyChanged();
-            }
-        }
-        private MexCodeCompileError? _compileError;
+        public string Creator { get; set; } = "";
+
+        public string Description { get; set; } = "";
 
         /// <summary>
         /// 
@@ -94,41 +43,6 @@ namespace mexLib.Types
         public byte[]? GetCompiled()
         {
             return _compiled;
-        }
-        /// <summary>
-        /// Returns a list of used addresses
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<uint> UsedAddresses()
-        {
-            byte[]? code = GetCompiled();
-
-            if (code == null)
-                yield break;
-
-            for (int i = 0; i < code.Length;)
-            {
-                switch (code[i])
-                {
-                    case 0x00:
-                    case 0x02:
-                    case 0x04:
-                        {
-                            yield return (uint)(0x80000000 | ((code[i + 1] & 0xFF) << 16 | (code[i + 2] & 0xFF) << 8 | code[i + 3] & 0xFF));
-                            i += 8;
-                        }
-                        break;
-                    case 0xC2:
-                        {
-                            yield return (uint)(0x80000000 | ((code[i + 1] & 0xFF) << 16 | (code[i + 2] & 0xFF) << 8 | code[i + 3] & 0xFF));
-                            i += 4;
-                            i += ((code[i] & 0xFF) << 24 | (code[i + 1] & 0xFF) << 16 | (code[i + 2] & 0xFF) << 8 | code[i + 3] & 0xFF) * 8 + 4;
-                        }
-                        break;
-                    default:
-                        throw new NotSupportedException($"Code type unknown/unsupported: 0x{code[i]:X2}");
-                }
-            }
         }
         /// <summary>
         /// 
@@ -230,21 +144,37 @@ namespace mexLib.Types
         /// 
         /// </summary>
         /// <returns></returns>
-        public MexCodeCompileError? TryCheckConflicts(MexCode code)
+        /// <exception cref="NotSupportedException"></exception>
+        public override IEnumerable<uint> UsedAddresses()
         {
-            if (CompileError != null)
-                return CompileError;
+            byte[]? code = GetCompiled();
 
-            IEnumerable<uint> add1 = UsedAddresses();
-            IEnumerable<uint> add2 = code.UsedAddresses();
+            if (code == null)
+                yield break;
 
-            foreach (uint i in add1.Intersect(add2))
+            for (int i = 0; i < code.Length;)
             {
-                CompileError = new MexCodeCompileError(-1, $"Conflicting address {i:X8} with \"{code.Name}\"");
-                return CompileError;
+                switch (code[i])
+                {
+                    case 0x00:
+                    case 0x02:
+                    case 0x04:
+                        {
+                            yield return (uint)(0x80000000 | ((code[i + 1] & 0xFF) << 16 | (code[i + 2] & 0xFF) << 8 | code[i + 3] & 0xFF));
+                            i += 8;
+                        }
+                        break;
+                    case 0xC2:
+                        {
+                            yield return (uint)(0x80000000 | ((code[i + 1] & 0xFF) << 16 | (code[i + 2] & 0xFF) << 8 | code[i + 3] & 0xFF));
+                            i += 4;
+                            i += ((code[i] & 0xFF) << 24 | (code[i + 1] & 0xFF) << 16 | (code[i + 2] & 0xFF) << 8 | code[i + 3] & 0xFF) * 8 + 4;
+                        }
+                        break;
+                    default:
+                        throw new NotSupportedException($"Code type unknown/unsupported: 0x{code[i]:X2}");
+                }
             }
-
-            return null;
         }
         /// <summary>
         /// 

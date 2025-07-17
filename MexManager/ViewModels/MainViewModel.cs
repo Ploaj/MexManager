@@ -159,6 +159,20 @@ public partial class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _codes, value);
     }
 
+    private object? _selectedPatch;
+    public object? SelectedPatch
+    {
+        get => _selectedPatch;
+        set => this.RaiseAndSetIfChanged(ref _selectedPatch, value);
+    }
+
+    private ObservableCollection<MexCodePatch>? _patches;
+    public ObservableCollection<MexCodePatch>? Patches
+    {
+        get => _patches;
+        set => this.RaiseAndSetIfChanged(ref _patches, value);
+    }
+
     private MexPlaylist? _menuPlaylist;
     public MexPlaylist? MenuPlaylist
     {
@@ -245,6 +259,7 @@ public partial class MainViewModel : ViewModelBase
             MenuPlaylist = null;
             Series = null;
             Codes = null;
+            Patches = null;
             CharacterSelect = null;
             StagePages = null;
             StageSelect = null;
@@ -261,6 +276,7 @@ public partial class MainViewModel : ViewModelBase
             MenuPlaylist = Global.Workspace.Project.MenuPlaylist;
             Series = Global.Workspace.Project.Series;
             Codes = Global.Workspace.Project.Codes;
+            Patches = Global.Workspace.Project.Patches;
             CharacterSelect = Global.Workspace.Project.CharacterSelect;
             StagePages = Global.Workspace.Project.StageSelects;
             if (StagePages.Count > 0)
@@ -391,7 +407,7 @@ public partial class MainViewModel : ViewModelBase
     /// 
     /// </summary>
     /// <param name="parameter"></param>
-    public async void Update_Click(object? parameter)
+    public static async void Update_Click(object? parameter)
     {
         var res = await MessageBox.Show($"Would you like to update MexManager to latest?\n\n{Updater.Version}\n\n{Updater.LatestRelease?.Body}", 
             "Update MexManager",

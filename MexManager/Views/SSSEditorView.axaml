@@ -93,14 +93,14 @@
 			<TabControl DockPanel.Dock="Left"
 						IsEnabled="{Binding StageSelect, Converter={StaticResource NullToBoolConverter}}">
 				<TabItem Header="Page">
-					<views:PropertyGridExt
+					<controls:PropertyGridExt
 						Name="StageSelectProperties"
 						Margin="4"
 						AllowQuickFilter="False"
 						AllowFilter="False"
 						AllowToggleView="False"
 						DataContext="{ Binding StageSelect }">
-					</views:PropertyGridExt>
+					</controls:PropertyGridExt>
 				</TabItem>
 				<TabItem Header="Icons">
 					<DockPanel>
@@ -159,7 +159,7 @@
 								</ListBox>
 							</ScrollViewer>
 							<ScrollViewer Grid.Column="1">
-								<views:PropertyGridExt
+								<controls:PropertyGridExt
 									Name="IconPropertyGrid"
 									Margin="4"
 									NameWidth="96"
@@ -169,7 +169,7 @@
 									AllowToggleView="False"
 									ShowStyle="Builtin"
 									DataContext="{Binding SelectedSSSIcon}">
-								</views:PropertyGridExt>
+								</controls:PropertyGridExt>
 							</ScrollViewer>
 						</Grid>
 					</DockPanel>
@@ -205,7 +205,7 @@
 							DockPanel.Dock="Top"/>
 						<TabControl>
 							<TabItem Header="General">
-								<views:PropertyGridExt
+								<controls:PropertyGridExt
 										Name="TemplatePropertyGrid"
 										DataContext="{ Binding StageSelect.Template }"
 										Margin="4"
@@ -213,7 +213,7 @@
 										AllowFilter="False"
 										AllowToggleView="False"
 										DockPanel.Dock="Top">
-								</views:PropertyGridExt>
+								</controls:PropertyGridExt>
 							</TabItem>
 							<TabItem Header="Placements">
 								<DockPanel>
@@ -226,7 +226,7 @@
 										</ListBox>
 									</ScrollViewer>
 									<ScrollViewer DockPanel.Dock="Right">
-										<views:PropertyGridExt
+										<controls:PropertyGridExt
 											DockPanel.Dock="Left"
 											Margin="4"
 											NameWidth="96"
@@ -235,7 +235,7 @@
 											AllowToggleView="False"
 											ShowStyle="Builtin"
 											DataContext="{Binding SelectedSSSTemplateIcon}">
-										</views:PropertyGridExt>
+										</controls:PropertyGridExt>
 									</ScrollViewer>
 								</DockPanel>
 							</TabItem>
@@ -246,14 +246,14 @@
 					<StackPanel Orientation="Vertical">
 						<Button Click="RefreshIcons_Click"
 								ToolTip.Tip="Refreshes the icon display to reflect changes to icons">Refresh Icons</Button>
-						<views:PropertyGridExt
+						<controls:PropertyGridExt
 							Name="SelectScreenProperties"
 							Margin="4"
 							AllowQuickFilter="False"
 							AllowFilter="False"
 							AllowToggleView="False"
 							DataContext="{ Binding SelectScreen.Properties }">
-						</views:PropertyGridExt>
+						</controls:PropertyGridExt>
 					</StackPanel>
 				</TabItem>
 			</TabControl>

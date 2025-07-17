@@ -114,22 +114,22 @@
 			DockPanel.Dock="Right">
 			<TabItem Header="General">
 				<ScrollViewer>
-					<views:PropertyGridExt
+					<controls:PropertyGridExt
 						Margin="4"
 						AllowQuickFilter="False"
 						DataContext="{Binding SelectedFighter}">
-					</views:PropertyGridExt>
+					</controls:PropertyGridExt>
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Files">
 				<ScrollViewer>
-					<views:PropertyGridExt
+					<controls:PropertyGridExt
 						Margin="4"
 						AllowQuickFilter="False"
 						AllowFilter="False"
 						AllowToggleView="False"
 						DataContext="{Binding SelectedFighter.Files}">
-					</views:PropertyGridExt>
+					</controls:PropertyGridExt>
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Costumes">
@@ -310,11 +310,11 @@
 			</TabItem>
 			<TabItem Header="Assets">
 				<ScrollViewer>
-					<views:PropertyGridExt
+					<controls:PropertyGridExt
 						Margin="4"
 						AllowQuickFilter="False"
 						DataContext="{Binding SelectedFighter.Assets}">
-					</views:PropertyGridExt>
+					</controls:PropertyGridExt>
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Media">
@@ -379,11 +379,11 @@
 			</TabItem>
 			<TabItem Header="Code">
 				<ScrollViewer>
-					<views:PropertyGridExt
+					<controls:PropertyGridExt
 						Margin="4"
 						AllowQuickFilter="False"
 						DataContext="{Binding SelectedFighter.Functions}">
-					</views:PropertyGridExt>
+					</controls:PropertyGridExt>
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Bones">
@@ -396,7 +396,7 @@
 						<TabControl>
 							<TabItem Header="Common">
 								<ScrollViewer>
-									<views:PropertyGridExt
+									<controls:PropertyGridExt
 										Margin="4"
 										AllowQuickFilter="False"
 										AllowToggleView="False"
@@ -406,12 +406,12 @@
 										ShowStyle="Builtin"
 										Padding="0"
 										DataContext="{Binding SelectedFighter.BoneDefinitions.Lookup}">
-									</views:PropertyGridExt>
+									</controls:PropertyGridExt>
 								</ScrollViewer>
 							</TabItem>
 							<TabItem Header="Ext">
 								<ScrollViewer>
-									<views:PropertyGridExt
+									<controls:PropertyGridExt
 										Margin="4"
 										AllowQuickFilter="False"
 										AllowToggleView="False"
@@ -420,7 +420,7 @@
 										ShowTitle="False"
 										ShowStyle="Builtin"
 										DataContext="{Binding SelectedFighter.BoneDefinitions}">
-									</views:PropertyGridExt>
+									</controls:PropertyGridExt>
 								</ScrollViewer>
 							</TabItem>
 						</TabControl>

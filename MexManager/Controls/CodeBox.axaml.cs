@@ -55,18 +55,7 @@ public partial class CodeBox : UserControl
             }
             else if (Global.Workspace != null)
             {
-                foreach (MexCode c in Global.Workspace.Project.GetAllCodes())
-                {
-                    if (c == code)
-                        continue;
-
-                    MexCodeCompileError? res = code.TryCheckConflicts(c);
-                    if (res != null)
-                    {
-                        SetError(res.ToString());
-                        break;
-                    }
-                }
+                SetError(Global.Workspace.Project.CheckCodeConflict(code)?.ToString());
             }
         }
     }

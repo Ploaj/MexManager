@@ -380,7 +380,7 @@ namespace mexLib
 
             // compile codes
             sw.Restart();
-            FileManager.Set(GetFilePath("codes.gct"), CodeLoader.ToGCT(Project.GetAllCodes()));
+            FileManager.Set(GetFilePath("codes.gct"), CodeLoader.ToGCT(Project.GetAllGekkoCodes()));
             sw.Stop();
             total += sw.Elapsed;
 

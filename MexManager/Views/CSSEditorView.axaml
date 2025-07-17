@@ -74,7 +74,7 @@
 								</ListBox>
 							</ScrollViewer>
 							<ScrollViewer Grid.Column="1">
-								<views:PropertyGridExt
+								<controls:PropertyGridExt
 									Name="IconPropertyGrid"
 									Margin="4"
 									NameWidth="96"
@@ -84,7 +84,7 @@
 									AllowToggleView="False"
 									ShowStyle="Builtin"
 									DataContext="{Binding SelectedCSSIcon}">
-								</views:PropertyGridExt>
+								</controls:PropertyGridExt>
 							</ScrollViewer>
 						</Grid>
 					</DockPanel>
@@ -95,14 +95,14 @@
 						IsChecked="{Binding AutoApplyCSSTemplate}"
 						Content="Use Template"
 						DockPanel.Dock="Top"/>
-					<views:PropertyGridExt
+					<controls:PropertyGridExt
 						Name="TemplatePropertyGrid"
 						DataContext="{ Binding CharacterSelect.Template }"
 						Margin="4"
 						AllowQuickFilter="False"
 						AllowFilter="False"
 						AllowToggleView="False">
-					</views:PropertyGridExt>
+					</controls:PropertyGridExt>
 				</DockPanel>
 			</TabItem>
 			<TabItem Header="Params">
@@ -110,26 +110,26 @@
 					<Button Content="Apply Compression"
 							DockPanel.Dock="Top"
 							Click="ApplyCompression_Click"/>
-					<views:PropertyGridExt
+					<controls:PropertyGridExt
 						DataContext="{ Binding CharacterSelect }"
 						Margin="4"
 						AllowQuickFilter="False"
 						AllowFilter="False"
 						AllowToggleView="False">
-					</views:PropertyGridExt>
+					</controls:PropertyGridExt>
 				</DockPanel>
 			</TabItem>
 			<TabItem Header="Preview">
 				<StackPanel Orientation="Vertical">
 					<Button Click="RefreshIcons_Click"
 							ToolTip.Tip="Refreshes the icon display to reflect changes to icons">Refresh Icons</Button>
-					<views:PropertyGridExt
+					<controls:PropertyGridExt
 						Name="SelectScreenProperties"
 						Margin="4"
 						AllowQuickFilter="False"
 						AllowFilter="False"
 						AllowToggleView="False">
-					</views:PropertyGridExt>
+					</controls:PropertyGridExt>
 				</StackPanel>
 			</TabItem>
 		</TabControl>

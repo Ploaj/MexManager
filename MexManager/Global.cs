@@ -203,7 +203,7 @@ namespace MexManager
                             return false;
 
                         // try to open after extract files
-                        if (TryOpenWorkspace(filepath, out error, out isomissing))
+                        if (TryOpenWorkspace(filepath, out error, out _))
                         {
                             return true;
                         }

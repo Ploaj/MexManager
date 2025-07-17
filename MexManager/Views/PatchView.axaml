@@ -1,0 +1,94 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:MexManager.ViewModels"
+			 xmlns:views="clr-namespace:MexManager.Views"
+			 xmlns:controls="clr-namespace:MexManager.Controls"
+			 xmlns:converters="clr-namespace:MexManager.Converters"
+			 xmlns:pgc="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MexManager.Views.PatchView">
+	<DockPanel>
+		<DockPanel
+				DockPanel.Dock="Left">
+			<Menu
+				DockPanel.Dock="Top"
+				Height="48">
+				<controls:IconMenuItem
+					Text="Import"
+					ToolTip.Tip="Import"
+					Click="AddCode_Click"
+					IconSource="avares://MexManager/Assets/Common/file_import.png"/>
+				<controls:IconMenuItem
+					Text="Export"
+					ToolTip.Tip="Export"
+					Click="ExportCode_Click"
+					IconSource="avares://MexManager/Assets/Common/file_export.png"/>
+				<controls:IconMenuItem
+					Text="Remove"
+					ToolTip.Tip="Remove"
+					Click="RemoveCode_Click"
+					IconSource="avares://MexManager/Assets/Common/icon_delete.png"/>
+			</Menu>
+			<ListBox
+				DockPanel.Dock="Top"
+				Name="CodesList"
+				Width="400"
+				ItemsSource="{Binding Patches}"
+				SelectedItem="{Binding SelectedPatch, Mode=TwoWay}">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<StackPanel Orientation="Horizontal"
+									Height="24">
+							<CheckBox IsChecked="{Binding Enabled}"/>
+							<TextBlock Text="{Binding Name}"
+									   VerticalAlignment="Center"/>
+						</StackPanel>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</DockPanel>
+		<DockPanel>
+			<pgc:PropertyGrid
+							DockPanel.Dock="Top"
+							VerticalAlignment="Top"
+							AllowFilter="False"
+							AllowQuickFilter="False"
+							ShowStyle="Builtin"
+							Margin="4"
+							DataContext="{Binding SelectedPatch}"/>
+			<TextBlock
+				DockPanel.Dock="Top"
+				Name="ErrorBlock"
+				FontFamily="Consolas"
+				Height="16"/>
+			<ScrollViewer
+				DockPanel.Dock="Top">
+				<Grid Margin="4">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+
+					<!-- Line Numbers -->
+					<TextBlock x:Name="LineNumbers"
+								Grid.Column="0"
+								FontFamily="Consolas"
+								VerticalAlignment="Top"
+								HorizontalAlignment="Right"
+								Margin="5"
+								Width="32" />
+
+					<!-- The TextBox -->
+					<TextBox x:Name="MainTextBox"
+							Text="{Binding SelectedPatch.Disassembled}"
+							Grid.Column="1"
+							FontFamily="Consolas"
+							IsReadOnly="True"
+							TextWrapping="Wrap" />
+				</Grid>
+			</ScrollViewer>
+		</DockPanel>
+	</DockPanel>
+</UserControl>

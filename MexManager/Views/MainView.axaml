@@ -384,6 +384,15 @@
 						</DockPanel>
 					</DockPanel>
 				</TabItem>
+				<TabItem ToolTip.Tip="Patches">
+					<TabItem.Header>
+						<Image Source="avares://MexManager/Assets/Menu/category_patch.png"
+								Width="32"
+								Height="32"/>
+					</TabItem.Header>
+					<views:PatchView
+						Name="PatchPage"/>
+				</TabItem>
 			</TabControl>
 		</DockPanel>
 	</DockPanel>

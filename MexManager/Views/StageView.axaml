@@ -100,12 +100,12 @@
 						<Button Content="Generate Banner"
 								Click="StageGenerateBanner_Click"
 								IsVisible="False"/>
-						<views:PropertyGridExt
+						<controls:PropertyGridExt
 							Name="StageAssetPropertyGrid"
 							Margin="4"
 							AllowQuickFilter="False"
 							DataContext="{Binding SelectedStage.Assets}">
-						</views:PropertyGridExt>
+						</controls:PropertyGridExt>
 					</StackPanel>
 				</ScrollViewer>
 			</TabItem>

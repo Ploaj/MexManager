@@ -54,6 +54,14 @@ namespace MexManager.Tools
                 },
         ];
 
+        public static readonly FilePickerFileType[] FilterHSD =
+        [
+            new FilePickerFileType("HSD")
+                {
+                    Patterns = [ "*.dat" ],
+                },
+        ];
+
         public static readonly FilePickerFileType[] FilterJpeg =
         [
             new FilePickerFileType("JPEG")
@@ -139,7 +147,7 @@ namespace MexManager.Tools
 
             // Check if top-level window is available
             if (topLevel == null)
-                return Enumerable.Empty<string>();
+                return [];
 
             // Open the file picker dialog
             IReadOnlyList<IStorageFile> files = await topLevel.StorageProvider.OpenFilePickerAsync(

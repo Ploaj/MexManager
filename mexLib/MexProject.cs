@@ -1,4 +1,6 @@
-﻿using HSDRaw.MEX.Scenes;
+﻿using HSDRaw;
+using HSDRaw.MEX.Scenes;
+using mexLib.HsdObjects;
 using mexLib.Types;
 using mexLib.Utilties;
 using System.Collections.ObjectModel;
@@ -26,6 +28,9 @@ namespace mexLib
 
         [JsonIgnore]
         public ObservableCollection<MexCode> Codes { get; set; } = new ObservableCollection<MexCode>();
+
+        [JsonIgnore]
+        public ObservableCollection<MexCodePatch> Patches { get; set; } = new ObservableCollection<MexCodePatch>();
 
         [JsonIgnore]
         public MexCharacterSelect CharacterSelect { get; set; } = new MexCharacterSelect();
@@ -105,13 +110,39 @@ namespace mexLib
         /// 
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<MexCode> GetAllCodes()
+        public IEnumerable<MexCode> GetAllGekkoCodes()
         {
             yield return MainCode;
 
             foreach (MexCode c in Codes)
                 if (c.Enabled)
                     yield return c;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public MexCodeCompileError? CheckCodeConflict(MexCodeBase code)
+        {
+            foreach (MexCodeBase c in GetAllGekkoCodes())
+            {
+                if (c == code)
+                    continue;
+
+                MexCodeCompileError? res = code.TryCheckConflicts(c);
+                if (res != null)
+                    return res;
+            }
+            foreach (MexCodeBase c in Patches)
+            {
+                if (c == code)
+                    continue;
+
+                MexCodeCompileError? res = code.TryCheckConflicts(c);
+                if (res != null)
+                    return res;
+            }
+            return null;
         }
         /// <summary>
         /// 
@@ -418,6 +449,45 @@ namespace mexLib
                     proj.Codes.Add(code);
             }
 
+            // load patches
+            var patchPath = ws.GetFilePath("MxPt.dat");
+            if (File.Exists(patchPath))
+            {
+                try
+                {
+                    var f = new HSDRawFile(patchPath);
+                    foreach (var r in f.Roots)
+                    {
+                        proj.Patches.Add(new MexCodePatch(r.Name, new HSDFunctionDat()
+                        {
+                            _s = r.Data._s
+                        })
+                        {
+                            Enabled = true
+                        });
+                    }
+                } catch { }
+            }
+            var patchPath2 = ws.GetFilePath("MxPt_.dat");
+            if (File.Exists(patchPath2))
+            {
+                try
+                {
+                    var f = new HSDRawFile(patchPath2);
+                    foreach (var r in f.Roots)
+                    {
+                        proj.Patches.Add(new MexCodePatch(r.Name, new HSDFunctionDat()
+                        {
+                            _s = r.Data._s
+                        })
+                        { 
+                            Enabled = false
+                        });
+                    }
+                }
+                catch { }
+            }
+
             // Load character select
             MexJsonSerializer.LoadData<MexCharacterSelect>(ws.GetDataPath("css.json"), data => proj.CharacterSelect = data);
 
@@ -518,6 +588,37 @@ namespace mexLib
 
             // save codes
             File.WriteAllBytes(workspace.GetFilePath("codes.ini"), CodeLoader.ToINI(Codes));
+
+            // save patch
+            if (Patches.Count > 0)
+            {
+                {
+                    var f = new HSDRawFile();
+                    foreach (var p in Patches)
+                    {
+                        if (p.Enabled)
+                            f.Roots.Add(new HSDRootNode()
+                            {
+                                Name = p.Name,
+                                Data = p.Function,
+                            });
+                    }
+                    f.Save(workspace.GetFilePath("MxPt.dat"));
+                }
+                {
+                    var f = new HSDRawFile();
+                    foreach (var p in Patches)
+                    {
+                        if (!p.Enabled)
+                            f.Roots.Add(new HSDRootNode()
+                            {
+                                Name = p.Name,
+                                Data = p.Function,
+                            });
+                    }
+                    f.Save(workspace.GetFilePath("MxPt_.dat"));
+                }
+            }
 
             // save character select
             File.WriteAllText(workspace.GetDataPath("css.json"), MexJsonSerializer.Serialize(CharacterSelect));

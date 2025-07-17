@@ -19,7 +19,7 @@
 			DockPanel.Dock="Top"/>
 		<Separator
 			DockPanel.Dock="Top"/>
-		<views:PropertyGridExt
+		<controls:PropertyGridExt
 			Name="ScriptPropertyGrid"
 			DockPanel.Dock="Top"
 			Margin="4"
@@ -30,7 +30,7 @@
 			ShowStyle="Builtin"
 			ShowTitle="False"
 			DataContext="{Binding}">
-		</views:PropertyGridExt>
+		</controls:PropertyGridExt>
 		<Menu Height="48"
 			DockPanel.Dock="Top">
 			<controls:IconMenuItem

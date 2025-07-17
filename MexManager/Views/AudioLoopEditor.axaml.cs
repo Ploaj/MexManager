@@ -86,8 +86,8 @@ public partial class AudioLoopEditor : Window
     }
 
     public const int LINE_COUNT = 300;
-    private List<Line> leftLines = new List<Line>();
-    private List<Line> rightLines = new List<Line>();
+    private List<Line> leftLines = [];
+    private List<Line> rightLines = [];
     private WAVE? WavCache = null;
     private Size _lastSize;
 
@@ -227,8 +227,8 @@ public partial class AudioLoopEditor : Window
     {
         System.Diagnostics.Debug.WriteLine("Redraw " + WaveformCanvas.Bounds.Width);
 
-        EndPercentage = EndPercentage;
-        LoopPercentage = LoopPercentage;
+        EndPercentage = _endPercentage;
+        LoopPercentage = DSP == null ? 0 : DSP.LoopPointMilliseconds / DSP.TotalMilliseconds;
         UpdateOverlay();
         DrawWaveform();
     }
@@ -614,7 +614,7 @@ public partial class AudioLoopEditor : Window
         [Description("1 = 1 second 0.5 = half a second")]
         public float Time { get; set; } = 0.05f;
     }
-    private readonly static GenSilence SilenceSetting = new GenSilence();
+    private readonly static GenSilence SilenceSetting = new ();
 
     /// <summary>
     /// 

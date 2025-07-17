@@ -77,11 +77,11 @@
 			DockPanel.Dock="Right">
 			<TabItem Header="General">
 				<ScrollViewer>
-					<views:PropertyGridExt
+					<controls:PropertyGridExt
 						Margin="4"
 						AllowQuickFilter="False"
 						DataContext="{Binding SelectedSoundGroup}">
-					</views:PropertyGridExt>
+					</controls:PropertyGridExt>
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Scripts">
