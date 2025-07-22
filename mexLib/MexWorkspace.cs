@@ -347,6 +347,13 @@ namespace mexLib
 
             output?.WriteLine($"Generate IfAll {sw.Elapsed}");
 
+            sw.Restart();
+            GenerateMexSeries.Compile(this);
+            sw.Stop();
+            total += sw.Elapsed;
+
+            output?.WriteLine($"Generate MxSr {sw.Elapsed}");
+
             // generate mexSelectChr
             sw.Restart();
             GenerateMexSelectChr.Compile(this);

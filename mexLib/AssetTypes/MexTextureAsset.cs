@@ -71,7 +71,7 @@ namespace mexLib.AssetTypes
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="image"></param>
-        public void SetFromMexImage(MexWorkspace workspace, MexImage image)
+        public void SetFromMexImage(MexWorkspace workspace, MexImage image, bool updateSource = true)
         {
             string path = GetFullPath(workspace);
 
@@ -79,7 +79,8 @@ namespace mexLib.AssetTypes
             workspace.FileManager.Set(path + ".tex", image.ToByteArray());
 
             // compile and set tex
-            workspace.FileManager.Set(path + ".png", image.ToPNG());
+            if (updateSource)
+                workspace.FileManager.Set(path + ".png", image.ToPNG());
         }
         /// <summary>
         /// 

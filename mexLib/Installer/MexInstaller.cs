@@ -24,7 +24,7 @@ namespace mexLib.Installer
         /// <param name="workspace"></param>
         public static void CorrectFixMoveLogicPointers(MexWorkspace workspace)
         {
-            MexDOL dol = new MexDOL(workspace.GetDOL());
+            MexDOL dol = new (workspace.GetDOL());
             Dictionary<uint, (uint, uint)> onloadToLogic = new ();
             for (uint i = 0; i < 0x21; i++)
             {

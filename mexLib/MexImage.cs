@@ -3,6 +3,8 @@ using HSDRaw.Common;
 using HSDRaw.GX;
 using HSDRaw.Tools;
 using mexLib.Utilties;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace mexLib
 {
@@ -114,9 +116,32 @@ namespace mexLib
         /// 
         /// </summary>
         /// <returns></returns>
-        public byte[] GetBGRA()
+        public byte[] GetBgra()
         {
             return GXImageConverter.DecodeTPL(Format, Width, Height, ImageData, TlutFormat, PaletteData.Length / 2, PaletteData);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetRgba()
+        {
+            var bgra = GetBgra();
+            byte[] rgba = new byte[bgra.Length];
+
+            for (int i = 0; i < bgra.Length; i += 4)
+            {
+                byte b = bgra[i];
+                byte g = bgra[i + 1];
+                byte r = bgra[i + 2];
+                byte a = bgra[i + 3];
+
+                rgba[i] = r;
+                rgba[i + 1] = g;
+                rgba[i + 2] = b;
+                rgba[i + 3] = a;
+            }
+            return rgba;
         }
         /// <summary>
         /// 

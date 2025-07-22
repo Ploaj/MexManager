@@ -65,7 +65,7 @@ namespace MexManager
         {
             int width = image.Width;
             int height = image.Height;
-            byte[] rgbaPixels = image.GetBGRA();
+            byte[] rgbaPixels = image.GetBgra();
 
             // Validate pixel data length
             int expectedSize = width * height * 4; // 4 bytes per pixel (RGBA)

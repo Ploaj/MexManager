@@ -14,6 +14,10 @@ namespace mexLib
         public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
         private string _name = "New Costume";
 
+        [DisplayName("Color Smash Group")]
+        public int ColorSmashGroup { get => _colorSmashGroup; set { _colorSmashGroup = value; OnPropertyChanged(); } }
+        private int _colorSmashGroup = 0;
+
         [DisplayName("File")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public MexCostumeVisibilityFile File { get; set; } = new MexCostumeVisibilityFile();
@@ -49,6 +53,7 @@ namespace mexLib
             Format = HSDRaw.GX.GXTexFmt.CI8,
             TlutFormat = HSDRaw.GX.GXTlutFmt.RGB5A3,
         };
+
         /// <summary>
         /// 
         /// </summary>

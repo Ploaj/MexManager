@@ -186,6 +186,8 @@ namespace mexLib.Installer
             // extract result screen
             MexInstaller.InstallResultScreen(workspace);
 
+            // TODO: extract series info from MxSr.dat
+
             return null;
         }
         /// <summary>

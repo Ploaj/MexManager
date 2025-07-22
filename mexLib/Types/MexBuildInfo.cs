@@ -233,7 +233,7 @@ namespace mexLib.Types
                 }
             };
 
-            byte[] pixels = img.GetBGRA();
+            byte[] pixels = img.GetBgra();
             SwapRedAndGreen(ref pixels);
             banner.SetBannerImageRGBA8(pixels);
 

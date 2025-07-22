@@ -386,63 +386,61 @@ namespace mexLib.Types
         /// <returns></returns>
         public static MexSoundGroup? FromSPK(Stream s)
         {
-            using (BinaryReaderExt r = new BinaryReaderExt(s))
+            using BinaryReaderExt r = new (s);
+            
+            if (s.Length < 0x14)
+                return null;
+
+            if (new string(r.ReadChars(3)) != "SPK")
+                return null;
+
+            MexSoundGroup g = new ();
+
+            int version = 1;
+            if (r.ReadChar() == '2')
+                version = 2;
+
+            g.GroupFlags = r.ReadUInt32();
+            g.Flags = r.ReadUInt32();
+
+            var ssmSize = r.ReadInt32();
+            g.Scripts = new System.Collections.ObjectModel.ObservableCollection<SemScript>();
+            var script_count = r.ReadInt32();
+
+            for (int i = 0; i < script_count; i++)
             {
-                if (s.Length < 0x14)
-                    return null;
-
-                if (new string(r.ReadChars(3)) != "SPK")
-                    return null;
-
-                MexSoundGroup g = new MexSoundGroup();
-
-                int version = 1;
-                if (r.ReadChar() == '2')
-                    version = 2;
-
-                g.GroupFlags = r.ReadUInt32();
-                g.Flags = r.ReadUInt32();
-
-                var ssmSize = r.ReadInt32();
-                g.Scripts = new System.Collections.ObjectModel.ObservableCollection<SemScript>();
-                var script_count = r.ReadInt32();
-
-                for (int i = 0; i < script_count; i++)
+                var start = r.ReadUInt32();
+                var size = r.ReadInt32();
+                var script_name = "New Script";
+                if (version > 1)
                 {
-                    var start = r.ReadUInt32();
-                    var size = r.ReadInt32();
-                    var script_name = "New Script";
-                    if (version > 1)
-                    {
-                        var temp = r.Position + 4;
-                        r.Position = r.ReadUInt32();
-                        script_name = r.ReadString(r.ReadChar());
-                        r.Position = temp;
-                    }
-
-                    g.Scripts.Add(new SemScript(r.GetSection(start, size))
-                    {
-                        Name = script_name
-                    });
+                    var temp = r.Position + 4;
+                    r.Position = r.ReadUInt32();
+                    script_name = r.ReadString(r.ReadChar());
+                    r.Position = temp;
                 }
 
-                g.FileName = r.ReadString(r.ReadChar());
-                g.Name = g.FileName;
+                g.Scripts.Add(new SemScript(r.GetSection(start, size))
                 {
-                    using (MemoryStream ssmStream = new MemoryStream(r.ReadBytes(ssmSize)))
-                    {
-                        SSM ssm = new();
-                        ssm.Open(g.FileName, ssmStream);
-                        g._bufferSize = ssm.BufferSize;
-
-                        int index = 0;
-                        foreach (DSP? so in ssm.Sounds)
-                            g.Sounds.Add(new MexSound() { Name = $"Sound_{index++:D3}", DSP = so });
-                    }
-                }
-
-                return g;
+                    Name = script_name
+                });
             }
+
+            g.FileName = r.ReadString(r.ReadChar());
+            g.Name = g.FileName;
+            {
+                using MemoryStream ssmStream = new (r.ReadBytes(ssmSize));
+                
+                SSM ssm = new();
+                ssm.Open(g.FileName, ssmStream);
+                g._bufferSize = ssm.BufferSize;
+
+                int index = 0;
+                foreach (DSP? so in ssm.Sounds)
+                    g.Sounds.Add(new MexSound() { Name = $"Sound_{index++:D3}", DSP = so });
+            }
+
+            return g;
         }
     }
 }

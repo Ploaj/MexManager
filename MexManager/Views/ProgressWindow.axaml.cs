@@ -101,7 +101,8 @@ public partial class ProgressWindow : Window
             if (e.UserState is string s)
                 AppendLog(s);
 
-            ProgressBar.Value = e.ProgressPercentage;
+            if (e.ProgressPercentage >= 0)
+                ProgressBar.Value = e.ProgressPercentage;
         });
     }
 

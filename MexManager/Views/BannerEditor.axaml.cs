@@ -84,7 +84,7 @@ public partial class BannerEditor : Window
             };
             if (Image != null)
             {
-                byte[] pixels = Image.GetBGRA();
+                byte[] pixels = Image.GetBgra();
                 SwapRedAndGreen(ref pixels);
                 _banner.SetBannerImageRGBA8(pixels);
             }
