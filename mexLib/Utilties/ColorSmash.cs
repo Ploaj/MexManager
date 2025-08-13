@@ -447,6 +447,9 @@ namespace mexLib.Utilties
 
             private static double Distance(Rgba32[] a, Rgba32[] b, double max = double.MaxValue)
             {
+                if (a.Length != b.Length)
+                    return 0;
+
                 double sum = 0;
                 for (int i = 0; i < a.Length; i++)
                 {
