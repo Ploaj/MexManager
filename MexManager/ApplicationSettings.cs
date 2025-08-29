@@ -1,6 +1,7 @@
 ﻿using PropertyModels.ComponentModel.DataAnnotations;
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
 
@@ -31,16 +32,23 @@ namespace MexManager
             string configPath = FilePath;
             if (File.Exists(configPath))
             {
-                JsonSerializerOptions options = new()
+                try
                 {
-                    WriteIndented = true, // For pretty-printing
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase // For camelCase naming
-                };
-                string jsonString = File.ReadAllText(configPath);
-                ApplicationSettings? file = JsonSerializer.Deserialize<ApplicationSettings>(jsonString, options);
+                    JsonSerializerOptions options = new()
+                    {
+                        WriteIndented = true, // For pretty-printing
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase // For camelCase naming
+                    };
+                    string jsonString = File.ReadAllText(configPath);
+                    ApplicationSettings? file = JsonSerializer.Deserialize<ApplicationSettings>(jsonString, options);
 
-                if (file != null)
-                    return file;
+                    if (file != null)
+                        return file;
+                } catch (Exception e)
+                {
+                    Logger.WriteLine("Application Settings failed to load");
+                    Logger.WriteLine(e.Message);
+                }
             }
 
             ApplicationSettings settings = new();
@@ -56,7 +64,7 @@ namespace MexManager
             JsonSerializerOptions options = new()
             {
                 WriteIndented = true, // For pretty-printing
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase // For camelCase naming
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // For camelCase naming
             };
             string jsonString = JsonSerializer.Serialize(this, options);
             File.WriteAllText("config.json", jsonString);

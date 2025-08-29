@@ -130,18 +130,17 @@ namespace MexManager
 
             var updatePath = Path.Combine(baseDir, "MexManagerUpdater.exe");
 
-            var assembly = Assembly.GetExecutingAssembly();
+            //var assembly = Assembly.GetExecutingAssembly();
+            //using var stream = assembly.GetManifestResourceStream("MexManager.MexManagerUpdater.exe");
+            //{
+            //    if (stream == null)
+            //        throw new Exception($"Resource MexManagerUpdater not found.");
 
-            using var stream = assembly.GetManifestResourceStream("MexManager.MexManagerUpdater.exe");
-            {
-                if (stream == null)
-                    throw new Exception($"Resource MexManagerUpdater not found.");
-
-                using var fileStream = new FileStream(updatePath, System.IO.FileMode.Create, System.IO.FileAccess.Write);
-                {
-                    stream.CopyTo(fileStream);
-                }
-            }
+            //    using var fileStream = new FileStream(updatePath, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+            //    {
+            //        stream.CopyTo(fileStream);
+            //    }
+            //}
 
             Process p = new ();
             p.StartInfo.FileName = updatePath;

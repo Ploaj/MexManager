@@ -90,6 +90,7 @@ namespace MexManagerUpdater
 
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 _writer.WriteLine($"[{timestamp}] {line}");
+                Console.WriteLine($"[{timestamp}] {line}");
             }
         }
 
