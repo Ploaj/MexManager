@@ -26,7 +26,7 @@ namespace MexManager.Tools
             public float Error = 0.001f;
         }
 
-        private readonly Dictionary<int, JointInfo> _indexToName = new();
+        private readonly Dictionary<int, JointInfo> _indexToName = [];
 
         public string? this[int i]
         {

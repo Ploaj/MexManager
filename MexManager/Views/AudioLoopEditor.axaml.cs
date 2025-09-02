@@ -86,8 +86,8 @@ public partial class AudioLoopEditor : Window
     }
 
     public const int LINE_COUNT = 300;
-    private List<Line> leftLines = [];
-    private List<Line> rightLines = [];
+    private readonly List<Line> leftLines = [];
+    private readonly List<Line> rightLines = [];
     private WAVE? WavCache = null;
     private Size _lastSize;
 

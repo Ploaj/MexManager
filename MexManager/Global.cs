@@ -128,15 +128,9 @@ namespace MexManager
         {
             if (MexWorkspace.TryOpenWorkspace(filepath, out MexWorkspace? workspace, out error, out isomissing))
             {
-                // load most recent codes patch
-                MexCode? mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
-                if (workspace != null && mainCode != null)
-                {
-                    // update codes
-                    workspace.Project.MainCode = mainCode;
-                }
                 // set working workspace
                 Workspace = workspace;
+                Global.ReloadCodes();
                 return true;
             }
 
@@ -282,6 +276,19 @@ namespace MexManager
                 //{
                 //    System.Console.WriteLine("Error: " + error);
                 //}
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        internal static void ReloadCodes()
+        {
+            // load most recent codes patch
+            MexCode? mainCode = CodeLoader.FromGCT(File.ReadAllBytes(MexCodePath));
+            if (Workspace != null && mainCode != null)
+            {
+                // update codes
+                Workspace.Project.MainCode = mainCode;
             }
         }
     }

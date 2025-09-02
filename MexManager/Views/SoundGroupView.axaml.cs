@@ -279,7 +279,7 @@ public partial class SoundGroupView : UserControl
         [DisplayName("Mushroom Pitch (Big)")]
         public int BigPitch { get; set; } = -350;
     }
-    private static SoundGenSettings _soundGenSettings = new ();
+    private static readonly SoundGenSettings _soundGenSettings = new ();
     /// <summary>
     /// 
     /// </summary>

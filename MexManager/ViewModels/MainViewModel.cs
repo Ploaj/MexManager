@@ -1,12 +1,14 @@
 ﻿using GCILib;
 using mexLib.Installer;
 using mexLib.Types;
+using mexLib.Utilties;
 using MexManager.Tools;
 using MexManager.Views;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Input;
 
 namespace MexManager.ViewModels;
@@ -409,30 +411,46 @@ public partial class MainViewModel : ViewModelBase
     /// <param name="parameter"></param>
     public static async void Update_Click(object? parameter)
     {
-        var res = await MessageBox.Show($"Would you like to update MexManager to latest?\n\n{Updater.Version}\n\n{Updater.LatestRelease?.Body}", 
-            "Update MexManager",
-            MessageBox.MessageBoxButtons.YesNoCancel);
-
-        if (res != MessageBox.MessageBoxResult.Yes)
-            return;
-
-        // save changes if workspace is loaded
-        if (Global.Workspace != null)
+        if (Updater.UpdateManager)
         {
-            MessageBox.MessageBoxResult res2 = await MessageBox.Show("Save Changes to current project?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
+            var res = await MessageBox.Show($"Would you like to update MexManager to latest?\n\n{Updater.Version}\n\n{Updater.LatestRelease?.Body}",
+                "Update MexManager",
+                MessageBox.MessageBoxButtons.YesNoCancel);
 
-            switch (res2)
+            if (res != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            // save changes if workspace is loaded
+            if (Global.Workspace != null)
             {
-                case MessageBox.MessageBoxResult.Yes:
-                    Global.SaveWorkspace();
-                    break;
-                case MessageBox.MessageBoxResult.Cancel:
-                    return;
-            }
-        }
+                MessageBox.MessageBoxResult res2 = await MessageBox.Show("Save Changes to current project?", "Save Changes", MessageBox.MessageBoxButtons.YesNoCancel);
 
-        // perform update
-        Updater.Update();
+                switch (res2)
+                {
+                    case MessageBox.MessageBoxResult.Yes:
+                        Global.SaveWorkspace();
+                        break;
+                    case MessageBox.MessageBoxResult.Cancel:
+                        return;
+                }
+            }
+
+            // perform update
+            await Updater.Update();
+        }
+        else
+        if (Updater.UpdateCodes)
+        {
+            var res = await MessageBox.Show($"Would you like to update MexManager to latest?\n\n{Updater.Version}\n\n{Updater.LatestRelease?.Body}",
+                "Update MexManager",
+                MessageBox.MessageBoxButtons.YesNoCancel);
+
+            if (res != MessageBox.MessageBoxResult.Yes)
+                return;
+
+            await Updater.UpdateCodesOnly();
+            Global.ReloadCodes();
+        }
     }
     /// <summary>
     /// 

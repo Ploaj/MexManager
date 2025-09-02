@@ -39,7 +39,7 @@ public partial class PatchView : UserControl
 
                 foreach (var r in f.Roots)
                 {
-                    MexCodePatch patch = new MexCodePatch(r.Name, new mexLib.HsdObjects.HSDFunctionDat()
+                    MexCodePatch patch = new (r.Name, new mexLib.HsdObjects.HSDFunctionDat()
                     {
                         _s = r.Data._s
                     });

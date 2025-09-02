@@ -56,7 +56,7 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="MexManagerUpdater.exe">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</None>
 		<None Update="OpenAL32.dll">

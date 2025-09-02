@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace MexManager
@@ -23,6 +24,9 @@ namespace MexManager
 
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 _writer.WriteLine($"[{timestamp}] {line}");
+#if DEBUG
+                Debug.WriteLine($"[{timestamp}] {line}");
+#endif
             }
         }
 
