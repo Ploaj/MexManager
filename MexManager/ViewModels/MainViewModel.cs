@@ -409,7 +409,7 @@ public partial class MainViewModel : ViewModelBase
     /// 
     /// </summary>
     /// <param name="parameter"></param>
-    public static async void Update_Click(object? parameter)
+    public async void Update_Click(object? parameter)
     {
         if (Updater.UpdateManager)
         {
@@ -441,8 +441,8 @@ public partial class MainViewModel : ViewModelBase
         else
         if (Updater.UpdateCodes)
         {
-            var res = await MessageBox.Show($"Would you like to update MexManager to latest?\n\n{Updater.Version}\n\n{Updater.LatestRelease?.Body}",
-                "Update MexManager",
+            var res = await MessageBox.Show($"Would you like to update codes to latest?",
+                "Update Codes",
                 MessageBox.MessageBoxButtons.YesNoCancel);
 
             if (res != MessageBox.MessageBoxResult.Yes)
@@ -450,6 +450,7 @@ public partial class MainViewModel : ViewModelBase
 
             await Updater.UpdateCodesOnly();
             Global.ReloadCodes();
+            ((RelayCommand)UpdateCommand).RaiseCanExecuteChanged();
         }
     }
     /// <summary>

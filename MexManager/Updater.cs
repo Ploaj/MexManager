@@ -93,6 +93,7 @@ namespace MexManager
                 false))
             {
                 UpdateCodes = true;
+                onready?.Invoke();
             }
             if (await CheckUpdateLocalFile(
                 "akaneia",
@@ -103,6 +104,7 @@ namespace MexManager
                 false))
             {
                 UpdateCodes = true;
+                onready?.Invoke();
             }
 
             try
@@ -219,11 +221,8 @@ namespace MexManager
                 "master",
                 "asm/codes.ini",
                 Global.MexAddCodePath,
-                true))
-            {
-                UpdateCodes = false;
-            }
-            if (await CheckUpdateLocalFile(
+                true) &&
+                await CheckUpdateLocalFile(
                 "akaneia",
                 "m-ex",
                 "master",
