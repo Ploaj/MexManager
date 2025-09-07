@@ -379,11 +379,21 @@
 			</TabItem>
 			<TabItem Header="Code">
 				<ScrollViewer>
-					<controls:PropertyGridExt
-						Margin="4"
-						AllowQuickFilter="False"
-						DataContext="{Binding SelectedFighter.Functions}">
-					</controls:PropertyGridExt>
+					<StackPanel Orientation="Vertical">
+						<Menu>
+							<MenuItem Header="_Copy">
+								<MenuItem Header="_Move Logic Struct"
+										  Click="CopyFighterMoveLogic_Click"/>
+								<MenuItem Header="_Demo Logic Struct"
+										  Click="CopyFighterDemoLogic_Click"/>
+							</MenuItem>
+						</Menu>
+						<controls:PropertyGridExt
+							Margin="4"
+							AllowQuickFilter="False"
+							DataContext="{Binding SelectedFighter.Functions}">
+						</controls:PropertyGridExt>
+					</StackPanel>
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Bones">

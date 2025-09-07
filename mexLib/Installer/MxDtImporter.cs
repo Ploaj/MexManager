@@ -6,7 +6,6 @@ using HSDRaw.MEX;
 using HSDRaw.MEX.Menus;
 using HSDRaw.MEX.Stages;
 using HSDRaw.Tools;
-using mexLib.MexScubber;
 using mexLib.Types;
 using mexLib.Utilties;
 

@@ -195,14 +195,14 @@ namespace mexLib.Types
         /// </summary>
         public override int GetIconHash(MexWorkspace ws)
         {
-            switch (Status)
+            return Status switch
             {
-                case StageIconStatus.Random: return -2;
-                case StageIconStatus.Locked: return -1;
-                case StageIconStatus.Unlocked: return GetStageTextureAsset(ws).GetHashCode();
-                case StageIconStatus.Hidden: return -3;
-                case StageIconStatus.Decoration: return IconAsset.GetHashCode();
-                default: return -3;
+                StageIconStatus.Random => -2,
+                StageIconStatus.Locked => -1,
+                StageIconStatus.Unlocked => GetStageTextureAsset(ws).GetHashCode(),
+                StageIconStatus.Hidden => -3,
+                StageIconStatus.Decoration => IconAsset.GetHashCode(),
+                _ => -3
             };
         }
 
@@ -213,20 +213,15 @@ namespace mexLib.Types
         /// <returns></returns>
         public override MexImage? GetIconImage(MexWorkspace ws)
         {
-            switch (Status)
+            return Status switch
             {
-                case StageIconStatus.Random:
-                    return ws.Project.ReservedAssets.SSSNullAsset.GetTexFile(ws);
-                case StageIconStatus.Locked:
-                    return ws.Project.ReservedAssets.SSSLockedNullAsset.GetTexFile(ws);
-                case StageIconStatus.Unlocked:
-                    return GetStageTextureAsset(ws).GetTexFile(ws);
-                case StageIconStatus.Decoration:
-                    return IconAsset.GetTexFile(ws);
-                case StageIconStatus.Hidden:
-                default:
-                    return null;
-            }
+                StageIconStatus.Random => ws.Project.ReservedAssets.SSSNullAsset.GetTexFile(ws),
+                StageIconStatus.Locked => ws.Project.ReservedAssets.SSSLockedNullAsset.GetTexFile(ws),
+                StageIconStatus.Unlocked => GetStageTextureAsset(ws).GetTexFile(ws),
+                StageIconStatus.Decoration => IconAsset.GetTexFile(ws),
+                StageIconStatus.Hidden => null,
+                _ => null
+            };
         }
         /// <summary>
         /// 

@@ -4,7 +4,6 @@ using HSDRaw.MEX;
 using MeleeMedia.Audio;
 using mexLib.Attributes;
 using mexLib.Installer;
-using mexLib.MexScubber;
 using mexLib.Utilties;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -105,7 +104,7 @@ namespace mexLib.Types
         [Browsable(false)]
         public ObservableCollection<SemScript>? Scripts { get => _scripts; set { _scripts = value; OnPropertyChanged(); } }
 
-        private uint _bufferSize { get; set; }
+        private uint bufferSize;
 
         /// <summary>
         /// 
@@ -139,7 +138,7 @@ namespace mexLib.Types
             //int bufferSize = ((stream.ReadByte() & 0xFF) << 24) | ((stream.ReadByte() & 0xFF) << 16) | ((stream.ReadByte() & 0xFF) << 8) | (stream.ReadByte() & 0xFF);
 
             //var bufferSize = (int)gen.Workspace.GetFileSize("audio//us//" + FileName);
-            var bufferSize = _bufferSize;
+            var bufferSize = this.bufferSize;
             if (bufferSize % 0x20 != 0)
                 bufferSize += 0x20 - (bufferSize % 0x20);
 
@@ -167,7 +166,7 @@ namespace mexLib.Types
 
             FileName = st.SSM_SSMFiles[index].Value;
             Flags = (uint)st.SSM_BufferSizes[index].Flag;
-            _bufferSize = (uint)st.SSM_BufferSizes[index].SSMFileSize;
+            bufferSize = (uint)st.SSM_BufferSizes[index].SSMFileSize;
             GroupFlags = (uint)st.SSM_LookupTable[index].EntireFlag;
             Name = Path.GetFileNameWithoutExtension(FileName).FirstCharToUpper();
         }
@@ -194,7 +193,7 @@ namespace mexLib.Types
 
             using MemoryStream stream = new();
             ssm.WriteToStream(stream, out int bs);
-            _bufferSize = (uint)bs;
+            bufferSize = (uint)bs;
             return stream.ToArray();
         }
         /// <summary>
@@ -206,7 +205,7 @@ namespace mexLib.Types
         {
             SSM ssm = new();
             ssm.Open(Path.GetFileName(fullPath), workspace.FileManager.GetStream(fullPath));
-            _bufferSize = ssm.BufferSize;
+            bufferSize = ssm.BufferSize;
 
             if (replace)
                 Sounds.Clear();
@@ -227,7 +226,7 @@ namespace mexLib.Types
             Type = group.Type;
             SubType = group.SubType;
             Mushroom = group.Mushroom;
-            _bufferSize = group._bufferSize;
+            bufferSize = group.bufferSize;
 
             if (Scripts != null &&
                 group.Scripts != null)
@@ -433,7 +432,7 @@ namespace mexLib.Types
                 
                 SSM ssm = new();
                 ssm.Open(g.FileName, ssmStream);
-                g._bufferSize = ssm.BufferSize;
+                g.bufferSize = ssm.BufferSize;
 
                 int index = 0;
                 foreach (DSP? so in ssm.Sounds)

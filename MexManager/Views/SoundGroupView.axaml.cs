@@ -86,12 +86,12 @@ public partial class SoundGroupView : UserControl
         if (DataContext is SoundGroupModel model &&
             model.SelectedSoundGroup != null)
         {
-            var file = await FileIO.TryOpenFiles("Import Sound", "", FileIO.FilterMusic);
+            System.Collections.Generic.IEnumerable<string> file = await FileIO.TryOpenFiles("Import Sound", "", FileIO.FilterMusic);
 
             if (file == null)
                 return;
 
-            foreach (var f in file)
+            foreach (string f in file)
             {
                 DSP dsp = new();
                 if (dsp.FromFile(f))
@@ -245,7 +245,7 @@ public partial class SoundGroupView : UserControl
     /// <param name="e"></param>
     private void AddScript_Click(object? sender, RoutedEventArgs e)
     {
-        var s = CreateAndAddSound("SFX_Untitled", 0, 1, 15, 255);
+        SemScript? s = CreateAndAddSound("SFX_Untitled", 0, 1, 15, 255);
         if (s != null)
             ScriptList.SelectedItem = s;
     }
@@ -279,7 +279,7 @@ public partial class SoundGroupView : UserControl
         [DisplayName("Mushroom Pitch (Big)")]
         public int BigPitch { get; set; } = -350;
     }
-    private static readonly SoundGenSettings _soundGenSettings = new ();
+    private static readonly SoundGenSettings _soundGenSettings = new();
     /// <summary>
     /// 
     /// </summary>
@@ -291,16 +291,16 @@ public partial class SoundGroupView : UserControl
             model.SelectedSoundGroup is MexSoundGroup group &&
             group.Scripts != null)
         {
-            var res = await PropertyGridPopup.ShowDialog("Generate Sound Settings", "Generate", _soundGenSettings);
+            bool res = await PropertyGridPopup.ShowDialog("Generate Sound Settings", "Generate", _soundGenSettings);
 
             if (!res)
                 return;
 
             for (int i = _soundGenSettings.Offset; i < _soundGenSettings.Offset + _soundGenSettings.Count; i++)
             {
-                var name = "SFX_Untitled";
+                string name = "SFX_Untitled";
 
-                if (_soundGenSettings.UseSoundBankNames && 
+                if (_soundGenSettings.UseSoundBankNames &&
                     i < model.SelectedSoundGroup.Sounds.Count)
                 {
                     name = $"SFX_{model.SelectedSoundGroup.Sounds[i].Name}";
@@ -310,13 +310,13 @@ public partial class SoundGroupView : UserControl
 
                 if (_soundGenSettings.IsMushroom)
                 {
-                    var bigname = "SFXB_Untitled";
-                    var smallname = "SFXS_Untitled";
+                    string bigname = "SFXB_Untitled";
+                    string smallname = "SFXS_Untitled";
 
                     if (_soundGenSettings.UseSoundBankNames &&
                         i < model.SelectedSoundGroup.Sounds.Count)
                     {
-                        var index = name.LastIndexOf("_");
+                        int index = name.LastIndexOf("_");
                         if (index != -1)
                         {
                             bigname = name.Insert(index, "B");
@@ -734,17 +734,17 @@ public partial class SoundGroupView : UserControl
             return;
 
         // check if file already exists
-        var sg = Global.Workspace.Project.SoundGroups.FirstOrDefault(e => e.FileName == g.FileName);
+        MexSoundGroup? sg = Global.Workspace.Project.SoundGroups.FirstOrDefault(e => e.FileName == g.FileName);
         if (sg != null)
         {
-            var res = await MessageBox.Show($"\"{g.FileName}\" already exists.\nWould you like to overwrite it?", "Overwrite Soundbank", MessageBox.MessageBoxButtons.YesNoCancel);
+            MessageBox.MessageBoxResult res = await MessageBox.Show($"\"{g.FileName}\" already exists.\nWould you like to overwrite it?", "Overwrite Soundbank", MessageBox.MessageBoxButtons.YesNoCancel);
             if (res == MessageBox.MessageBoxResult.Yes)
             {
                 Global.Workspace.Project.SoundGroups.Replace(sg, g);
             }
             else
             {
-                var path = Global.Workspace.GetFilePath("audio/us/" + g.FileName);
+                string path = Global.Workspace.GetFilePath("audio/us/" + g.FileName);
                 g.FileName = Path.GetFileName(Global.Workspace.FileManager.GetUniqueFilePath(path));
                 Global.Workspace.Project.AddSoundGroup(g);
             }
@@ -783,7 +783,7 @@ public partial class SoundGroupView : UserControl
                 case ".spk":
                     {
                         using FileStream fs = new(file, FileMode.Open);
-                        var group = MexSoundGroup.FromSPK(fs);
+                        MexSoundGroup? group = MexSoundGroup.FromSPK(fs);
                         if (group != null)
                         {
                             TryAddSoundGroup(group);

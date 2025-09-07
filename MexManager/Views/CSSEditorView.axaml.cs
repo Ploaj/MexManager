@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using mexLib;
 using mexLib.Types;
-using mexLib.Utilties;
 using MexManager.ViewModels;
 using System.ComponentModel;
 using System.Reactive.Linq;
@@ -104,8 +103,8 @@ public partial class CSSEditorView : UserControl
             DataContext is MainViewModel model &&
             model.CharacterSelect != null)
         {
-            var res = await MessageBox.Show("Would you like to re-compress all CSPs?", "Apply CSP Compression", MessageBox.MessageBoxButtons.YesNoCancel);
-            var force = res == MessageBox.MessageBoxResult.Yes;
+            MessageBox.MessageBoxResult res = await MessageBox.Show("Would you like to re-compress all CSPs?", "Apply CSP Compression", MessageBox.MessageBoxButtons.YesNoCancel);
+            bool force = res == MessageBox.MessageBoxResult.Yes;
 
             await ProgressWindow.DisplayProgress((w) =>
             {

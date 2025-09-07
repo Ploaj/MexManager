@@ -4,8 +4,8 @@ using HSDRaw.Melee;
 using HSDRaw.Melee.Mn;
 using HSDRaw.MEX.Scenes;
 using MeleeMedia.Audio;
-using mexLib.MexScubber;
 using mexLib.Types;
+using mexLib.Utilties;
 
 namespace mexLib.Installer
 {

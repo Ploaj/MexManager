@@ -1,4 +1,4 @@
-﻿namespace mexLib
+﻿namespace mexLib.Utilties
 {
     public class FileManager
     {

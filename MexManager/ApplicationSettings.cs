@@ -1,7 +1,6 @@
 ﻿using PropertyModels.ComponentModel.DataAnnotations;
 using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
 
@@ -44,7 +43,8 @@ namespace MexManager
 
                     if (file != null)
                         return file;
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Logger.WriteLine("Application Settings failed to load");
                     Logger.WriteLine(e.Message);

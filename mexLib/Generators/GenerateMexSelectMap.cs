@@ -6,6 +6,7 @@ using HSDRaw.Melee.Mn;
 using HSDRaw.MEX.Stages;
 using HSDRaw.Tools;
 using mexLib.Types;
+using mexLib.Utilties;
 
 namespace mexLib.Generators
 {

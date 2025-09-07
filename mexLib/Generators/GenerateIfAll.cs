@@ -3,6 +3,8 @@ using HSDRaw.Common;
 using HSDRaw.Common.Animation;
 using HSDRaw.MEX;
 using HSDRaw.Tools;
+using mexLib.Types;
+using mexLib.Utilties;
 
 namespace mexLib.Generators
 {

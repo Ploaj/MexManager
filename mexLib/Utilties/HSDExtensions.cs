@@ -4,7 +4,7 @@ using HSDRaw.Common.Animation;
 using HSDRaw.Tools;
 using System.IO.Compression;
 
-namespace mexLib
+namespace mexLib.Utilties
 {
     public static class HSDExtensions
     {

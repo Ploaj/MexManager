@@ -4,7 +4,6 @@ using HSDRaw.Melee;
 using MeleeMedia.Audio;
 using mexLib.Generators;
 using mexLib.Installer;
-using mexLib.MexScubber;
 using mexLib.Types;
 using mexLib.Utilties;
 using System.Collections.ObjectModel;

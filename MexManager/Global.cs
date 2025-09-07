@@ -1,12 +1,10 @@
 ﻿using MeleeMedia.Audio;
 using mexLib;
-using mexLib.Installer;
 using mexLib.Types;
 using mexLib.Utilties;
 using MexManager.Tools;
 using MexManager.Views;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -144,7 +142,7 @@ namespace MexManager
             if (!File.Exists(iso))
                 return false;
 
-            var output = Path.GetDirectoryName(filepath) + "/";
+            string output = Path.GetDirectoryName(filepath) + "/";
 
             if (!Directory.Exists(output))
                 return false;
@@ -179,16 +177,16 @@ namespace MexManager
                 {
                     if (!File.Exists(filepath))
                         return false;
-                    
+
                     MexProject? proj = MexJsonSerializer.Deserialize<MexProject>(filepath);
                     if (proj == null)
                         return false;
 
-                    var res = await MessageBox.Show($"Please select the \"{proj.Build.Name}\" v{proj.Build.MajorVersion}.{proj.Build.MinorVersion}.{proj.Build.PatchVersion} ISO.", "Extract ISO", MessageBox.MessageBoxButtons.OkCancel);
+                    MessageBox.MessageBoxResult res = await MessageBox.Show($"Please select the \"{proj.Build.Name}\" v{proj.Build.MajorVersion}.{proj.Build.MinorVersion}.{proj.Build.PatchVersion} ISO.", "Extract ISO", MessageBox.MessageBoxButtons.OkCancel);
 
                     if (res == MessageBox.MessageBoxResult.Ok)
                     {
-                        var iso = await FileIO.TryOpenFile("Source ISO", "", FileIO.FilterISO);
+                        string? iso = await FileIO.TryOpenFile("Source ISO", "", FileIO.FilterISO);
                         if (iso == null)
                             return false;
 
@@ -206,7 +204,7 @@ namespace MexManager
                             await MessageBox.Show(error, "Open Project Error", MessageBox.MessageBoxButtons.Ok);
                             return false;
                         }
-                            
+
                     }
                 }
             }

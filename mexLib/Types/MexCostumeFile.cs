@@ -2,7 +2,7 @@
 using mexLib.Utilties;
 using System.ComponentModel;
 
-namespace mexLib
+namespace mexLib.Types
 {
     public class MexCostumeVisibilityFile : MexCostumeFile
     {

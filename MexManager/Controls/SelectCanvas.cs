@@ -360,7 +360,7 @@ namespace MexManager.Controls
         {
             if (Global.Workspace != null)
             {
-                var hash = icon.GetIconHash(Global.Workspace);
+                int hash = icon.GetIconHash(Global.Workspace);
 
                 if (!IconBitmapCache.ContainsKey(hash))
                 {

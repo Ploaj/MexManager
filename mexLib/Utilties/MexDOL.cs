@@ -1,9 +1,8 @@
 ﻿using HSDRaw;
-using mexLib.Utilties;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace mexLib.MexScubber
+namespace mexLib.Utilties
 {
     public class MexDOL
     {

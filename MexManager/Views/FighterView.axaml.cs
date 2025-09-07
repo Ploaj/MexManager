@@ -1,13 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
 using HSDRaw;
-using mexLib;
 using mexLib.Types;
+using mexLib.Utilties;
 using MexManager.Extensions;
 using MexManager.Tools;
 using MexManager.ViewModels;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -491,17 +489,17 @@ public partial class FighterView : UserControl
             DataContext is MainViewModel model &&
             model.SelectedFighter is MexFighter fighter)
         {
-            var f = await FileIO.TryOpenFile("Import Bone INI", "", BoneINI.FileFilter);
+            string? f = await FileIO.TryOpenFile("Import Bone INI", "", BoneINI.FileFilter);
 
             if (f == null)
                 return;
 
             // load bone ini
-            var ini = new BoneINI(f);
+            BoneINI ini = new(f);
 
             // get bone table lookup
-            var boneTable = fighter.BoneDefinitions.Lookup;
-            var attr = boneTable._s.GetCreateReference<HSDAccessor>(4);
+            HSDRaw.Melee.SBM_BoneLookupTable boneTable = fighter.BoneDefinitions.Lookup;
+            HSDAccessor attr = boneTable._s.GetCreateReference<HSDAccessor>(4);
             if (attr._s.Length < BoneLookups.Length)
                 attr._s.Resize(BoneLookups.Length);
 
@@ -511,7 +509,7 @@ public partial class FighterView : UserControl
             // search for bone indices
             for (int i = 0; i < BoneLookups.Length; i++)
             {
-                var index = ini.IndexOf(BoneLookups[i]);
+                int index = ini.IndexOf(BoneLookups[i]);
 
                 if (index < 0 || index > 255)
                     attr._s.SetByte(i, 255);
@@ -525,6 +523,55 @@ public partial class FighterView : UserControl
             // update display
             model.SelectedFighter = null;
             model.SelectedFighter = fighter;
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="addr"></param>
+    /// <returns></returns>
+    private static async void CopyToClipboard(string structName, uint addr)
+    {
+        if (Global.Workspace != null &&
+            App.MainWindow != null &&
+            App.MainWindow.Clipboard != null)
+        {
+            if (SourceGenerator.ExtractMoveLogicTable(Global.Workspace, structName, addr, out string? moveLogicTable))
+            {
+                await App.MainWindow.Clipboard.SetTextAsync(moveLogicTable);
+                await MessageBox.Show($"Copied {structName} to clipboard!", "Copy Move Logic", MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+        }
+
+        await MessageBox.Show($"Failed to copy {structName}", "Copy Move Logic", MessageBox.MessageBoxButtons.Ok);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void CopyFighterMoveLogic_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter)
+        {
+            CopyToClipboard("move_logic", fighter.Functions.MoveLogicPointer);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void CopyFighterDemoLogic_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Global.Workspace != null &&
+            DataContext is MainViewModel model &&
+            model.SelectedFighter is MexFighter fighter)
+        {
+            CopyToClipboard("demo_logic", fighter.Functions.DemoMoveLogicPointer);
         }
     }
 }

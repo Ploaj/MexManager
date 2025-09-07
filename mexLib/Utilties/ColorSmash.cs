@@ -15,12 +15,11 @@ namespace mexLib.Utilties
 
         public static void Quantize(
             IEnumerable<MexImage> meximages,
-            ColorType colorType,
             int numColors,
             bool verbose)
         {
             var images = OpenImages(meximages);
-            var quantMap = GetQuantizationMap(images, colorType, numColors, verbose);
+            var quantMap = GetQuantizationMap(images, numColors, verbose);
 
             var colorCombos = new HashSet<Rgba32[]>(quantMap.Values, new SequenceComparer<Rgba32>());
 
@@ -62,7 +61,6 @@ namespace mexLib.Utilties
             int nh = Shared.AddPadding(height, ty) / ty;
             int nw = Shared.AddPadding(width, tx) / tx;
             int i = 0;
-            Dictionary<int, int> tlutRemap = new Dictionary<int, int>();
             for (int h = 0; h < nh; h++)
             {
                 for (int w = 0; w < nw; w++)
@@ -163,7 +161,6 @@ namespace mexLib.Utilties
 
         private static Dictionary<Rgba32[], Rgba32[]> GetQuantizationMap(
             List<Image<Rgba32>> images,
-            ColorType colorType,
             int numColors,
             bool verbose)
         {
@@ -173,7 +170,7 @@ namespace mexLib.Utilties
             if (verbose)
                 Console.WriteLine($"{grouped.Count} color combinations in input images");
 
-            return KMeans.Run(grouped, numColors, verbose);
+            return KMeans.Run(grouped, numColors);
         }
 
         private static List<List<Rgba32>> GetColorCombinations(List<Image<Rgba32>> images)
@@ -346,7 +343,7 @@ namespace mexLib.Utilties
                 return (centers, clusters);
             }
 
-            public static Dictionary<Rgba32[], Rgba32[]> Run(List<Grouped<Rgba32[]>> grouped, int k, bool verbose)
+            public static Dictionary<Rgba32[], Rgba32[]> Run(List<Grouped<Rgba32[]>> grouped, int k)
             {
                 var (centers, clusters) = InitializeCenters(grouped, k);
                 var clusterAssignments = new int[grouped.Count];

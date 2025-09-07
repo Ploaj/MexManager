@@ -1,14 +1,11 @@
 ﻿using GCILib;
 using mexLib.Installer;
 using mexLib.Types;
-using mexLib.Utilties;
 using MexManager.Tools;
 using MexManager.Views;
 using ReactiveUI;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Windows.Input;
 
 namespace MexManager.ViewModels;
@@ -294,7 +291,7 @@ public partial class MainViewModel : ViewModelBase
             if (Global.Workspace.Project.Fighters.Count > 0 &&
                 Global.Workspace.Project.Fighters[0].Functions.MoveLogicPointer == 0)
             {
-                var mes = await MessageBox.Show("It looks like some fighters are missing move logic pointers.\nWould you like to fix them now?", "Fix Move Logic", MessageBox.MessageBoxButtons.YesNoCancel);
+                MessageBox.MessageBoxResult mes = await MessageBox.Show("It looks like some fighters are missing move logic pointers.\nWould you like to fix them now?", "Fix Move Logic", MessageBox.MessageBoxButtons.YesNoCancel);
                 if (mes == MessageBox.MessageBoxResult.Yes)
                     MexInstaller.CorrectFixMoveLogicPointers(Global.Workspace);
             }
@@ -413,7 +410,7 @@ public partial class MainViewModel : ViewModelBase
     {
         if (Updater.UpdateManager)
         {
-            var res = await MessageBox.Show($"Would you like to update MexManager to latest?\n\n{Updater.Version}\n\n{Updater.LatestRelease?.Body}",
+            MessageBox.MessageBoxResult res = await MessageBox.Show($"Would you like to update MexManager to latest?\n\n{Updater.Version}\n\n{Updater.LatestRelease?.Body}",
                 "Update MexManager",
                 MessageBox.MessageBoxButtons.YesNoCancel);
 
@@ -441,7 +438,7 @@ public partial class MainViewModel : ViewModelBase
         else
         if (Updater.UpdateCodes)
         {
-            var res = await MessageBox.Show($"Would you like to update codes to latest?",
+            MessageBox.MessageBoxResult res = await MessageBox.Show($"Would you like to update codes to latest?",
                 "Update Codes",
                 MessageBox.MessageBoxButtons.YesNoCancel);
 

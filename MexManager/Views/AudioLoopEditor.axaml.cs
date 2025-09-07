@@ -101,7 +101,7 @@ public partial class AudioLoopEditor : Window
 
         WaveformCanvas.LayoutUpdated += (s, e) =>
         {
-            var currentSize = WaveformCanvas.Bounds.Size;
+            Size currentSize = WaveformCanvas.Bounds.Size;
             if (_lastSize != currentSize)
             {
                 _lastSize = currentSize;
@@ -614,7 +614,7 @@ public partial class AudioLoopEditor : Window
         [Description("1 = 1 second 0.5 = half a second")]
         public float Time { get; set; } = 0.05f;
     }
-    private readonly static GenSilence SilenceSetting = new ();
+    private readonly static GenSilence SilenceSetting = new();
 
     /// <summary>
     /// 
@@ -629,7 +629,7 @@ public partial class AudioLoopEditor : Window
         if (DSP == null)
             return;
 
-        var res = await PropertyGridPopup.ShowDialog("Generate Silence", "OK", SilenceSetting);
+        bool res = await PropertyGridPopup.ShowDialog("Generate Silence", "OK", SilenceSetting);
 
         if (!res)
             return;
@@ -637,11 +637,11 @@ public partial class AudioLoopEditor : Window
         if (SilenceSetting.Time <= 0)
             return;
 
-        var wave = DSP.ToWAVE();
-        var gen = (int)(wave.Frequency * SilenceSetting.Time);
+        WAVE wave = DSP.ToWAVE();
+        int gen = (int)(wave.Frequency * SilenceSetting.Time);
 
         List<short[]> newChannels = [];
-        foreach (var c in wave.Channels)
+        foreach (short[]? c in wave.Channels)
         {
             short[] d = new short[c.Length + gen];
             Array.Copy(c, d, c.Length);

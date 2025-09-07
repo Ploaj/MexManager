@@ -181,7 +181,7 @@ public partial class MainView : UserControl
         string? filepath = await FileIO.TrySaveFile("Save Workspace", "project.mexproj", FileIO.FilterMexProject);
 
         // get output path
-        var output = Path.GetDirectoryName(filepath);
+        string? output = Path.GetDirectoryName(filepath);
         if (output == null)
             return;
 
@@ -194,7 +194,7 @@ public partial class MainView : UserControl
             });
         });
 
-        var dolPath = Path.Combine(output, Path.Combine("sys", "main.dol"));
+        string dolPath = Path.Combine(output, Path.Combine("sys", "main.dol"));
 
         if (!File.Exists(dolPath))
             return;

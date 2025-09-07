@@ -3,7 +3,6 @@ using HSDRaw.MEX;
 using HSDRaw.MEX.Stages;
 using mexLib.Attributes;
 using mexLib.Installer;
-using mexLib.MexScubber;
 using mexLib.Utilties;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

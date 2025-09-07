@@ -26,27 +26,28 @@ public partial class PatchView : UserControl
         if (Global.Workspace == null)
             return;
 
-        var filePaths = await FileIO.TryOpenFiles("Export Patch", "", FileIO.FilterHSD);
+        System.Collections.Generic.IEnumerable<string> filePaths = await FileIO.TryOpenFiles("Export Patch", "", FileIO.FilterHSD);
 
         if (filePaths == null)
             return;
 
-        foreach (var filePath in filePaths)
+        foreach (string filePath in filePaths)
         {
             try
             {
-                var f = new HSDRawFile(filePath);
+                HSDRawFile f = new(filePath);
 
-                foreach (var r in f.Roots)
+                foreach (HSDRootNode? r in f.Roots)
                 {
-                    MexCodePatch patch = new (r.Name, new mexLib.HsdObjects.HSDFunctionDat()
+                    MexCodePatch patch = new(r.Name, new mexLib.HsdObjects.HSDFunctionDat()
                     {
                         _s = r.Data._s
                     });
                     Global.Workspace.Project.Patches.Add(patch);
                     CodesList.SelectedItem = patch;
                 }
-            } catch
+            }
+            catch
             {
 
             }
@@ -64,12 +65,12 @@ public partial class PatchView : UserControl
 
         if (CodesList.SelectedItem is MexCodePatch code)
         {
-            var filePath = await FileIO.TrySaveFile("Export Patch", $"{code.Name}.dat", FileIO.FilterHSD);
+            string? filePath = await FileIO.TrySaveFile("Export Patch", $"{code.Name}.dat", FileIO.FilterHSD);
 
             if (filePath == null)
                 return;
 
-            var f = new HSDRawFile();
+            HSDRawFile f = new();
             f.Roots.Add(new HSDRootNode()
             {
                 Name = code.Name,

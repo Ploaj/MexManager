@@ -5,6 +5,7 @@ using HSDRaw.MEX.Menus;
 using HSDRaw.MEX.Stages;
 using mexLib.Installer;
 using mexLib.Types;
+using mexLib.Utilties;
 using System.Text;
 
 namespace mexLib
@@ -36,7 +37,7 @@ namespace mexLib
         public MexGenerator(MexWorkspace workspace)
         {
             Workspace = workspace;
-            MexScubber.MexDOL dol = new(workspace.GetDOL());
+            MexDOL dol = new(workspace.GetDOL());
             EffectFiles.AddRange(MexDefaultData.GenerateDefaultMexEffectSlots(dol));
             StageIDs.AddRange(MexDefaultData.GenerateDefaultStageIDs(dol));
         }

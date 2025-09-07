@@ -1,13 +1,10 @@
-﻿using MexManager.Tools;
-using Octokit;
+﻿using Octokit;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -80,15 +77,15 @@ namespace MexManager
         public static async Task CheckLatest(OnUpdateReader onready)
         {
             string currentVersion = "";
-            var versionText = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "version.txt");
+            string versionText = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "version.txt");
             if (File.Exists(versionText))
                 currentVersion = File.ReadAllText(versionText);
 
             if (await CheckUpdateLocalFile(
-                "akaneia", 
-                "m-ex", 
-                "master", 
-                "asm/codes.ini", 
+                "akaneia",
+                "m-ex",
+                "master",
+                "asm/codes.ini",
                 Global.MexAddCodePath,
                 false))
             {
@@ -109,7 +106,7 @@ namespace MexManager
 
             try
             {
-                var client = new GitHubClient(new Octokit.ProductHeaderValue("mex-updater"));
+                GitHubClient client = new(new Octokit.ProductHeaderValue("mex-updater"));
                 await GetReleases(client);
 
                 if (releases == null)
@@ -154,14 +151,14 @@ namespace MexManager
         /// </summary>
         /// <returns></returns>
         public static async Task<bool> CheckUpdateLocalFile(
-            string owner, 
-            string repo, 
-            string branch, 
-            string filePath, 
+            string owner,
+            string repo,
+            string branch,
+            string filePath,
             string localFile,
             bool download)
         {
-            using HttpClient http = new ();
+            using HttpClient http = new();
 
             http.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("mex-updater", "1.0"));
 
@@ -169,15 +166,15 @@ namespace MexManager
             string commitsUrl = $"https://api.github.com/repos/{owner}/{repo}/commits?path={filePath}&sha={branch}";
             string commitJson = await http.GetStringAsync(commitsUrl);
 
-            var commits = JsonDocument.Parse(commitJson).RootElement;
+            JsonElement commits = JsonDocument.Parse(commitJson).RootElement;
             if (commits.GetArrayLength() == 0)
             {
                 Logger.WriteLine($"{Path.GetFileNameWithoutExtension(localFile)} not found in repo");
                 return false;
             }
 
-            var latestCommit = commits[0];
-            var commitDate = latestCommit
+            JsonElement latestCommit = commits[0];
+            DateTime commitDate = latestCommit
                 .GetProperty("commit")
                 .GetProperty("committer")
                 .GetProperty("date")
@@ -186,7 +183,7 @@ namespace MexManager
             // --- Step 2: Compare with local file
             if (File.Exists(localFile))
             {
-                var localTime = File.GetLastWriteTimeUtc(localFile);
+                DateTime localTime = File.GetLastWriteTimeUtc(localFile);
                 Logger.WriteLine($"{Path.GetFileName(localFile)} {commitDate} {localTime}");
                 if (localTime >= commitDate)
                 {
@@ -199,7 +196,7 @@ namespace MexManager
             if (download)
             {
                 string rawUrl = $"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{filePath}";
-                var fileBytes = await http.GetByteArrayAsync(rawUrl);
+                byte[] fileBytes = await http.GetByteArrayAsync(rawUrl);
                 Directory.CreateDirectory(Path.GetDirectoryName(localFile) ?? ".");
                 await File.WriteAllBytesAsync(localFile, fileBytes);
 
@@ -239,17 +236,17 @@ namespace MexManager
         /// </summary>
         public async static Task<bool> Update()
         {
-            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
-            var updatePath = Path.Combine(baseDir, "MexManagerUpdater.exe");
+            string updatePath = Path.Combine(baseDir, "MexManagerUpdater.exe");
             if (!File.Exists(updatePath))
             {
                 await CheckUpdateLocalFile(
-                    "Ploaj", 
-                    "MexManager", 
-                    "master", 
-                    "MexManager.Desktop/MexManagerUpdater.exe", 
-                    updatePath, 
+                    "Ploaj",
+                    "MexManager",
+                    "master",
+                    "MexManager.Desktop/MexManagerUpdater.exe",
+                    updatePath,
                     true);
             }
 
@@ -268,7 +265,7 @@ namespace MexManager
             //    }
             //}
 
-            Process p = new ();
+            Process p = new();
             p.StartInfo.FileName = updatePath;
             p.StartInfo.Arguments = $"\"{Updater.DownloadURL}\" \"{Updater.Version}\" -r";
             p.StartInfo.UseShellExecute = true;

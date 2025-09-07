@@ -1,7 +1,6 @@
 ﻿using HSDRaw;
 using HSDRaw.MEX;
 using HSDRaw.MEX.Menus;
-using mexLib.MexScubber;
 using mexLib.Utilties;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -131,13 +130,13 @@ namespace mexLib.Types
                                 // 
                                 var sw = new Stopwatch();
                                 sw.Start();
-                                ColorSmash.Quantize(colorsmash.Select(e => e.Item2), ColorSmash.ColorType.Rgb5a3, 256, false);
+                                ColorSmash.Quantize(colorsmash.Select(e => e.Item2), 256, false);
                                 foreach (var c in colorsmash)
                                     c.Item1.CSPAsset.SetFromMexImage(ws, c.Item2, false);
                                 sw.Stop();
 
                                 //
-                                progress?.Invoke(this, new ProgressChangedEventArgs(-1, $"Completed - Fighter: \"{fighter.Name}\" Group: {group.Key} Costumes: {colorsmash.Count} in {sw.Elapsed.ToString()}"));
+                                progress?.Invoke(this, new ProgressChangedEventArgs(-1, $"Completed - Fighter: \"{fighter.Name}\" Group: {group.Key} Costumes: {colorsmash.Count} in {sw.Elapsed}"));
                             }
 
                             // decrement percentage
