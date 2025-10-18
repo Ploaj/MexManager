@@ -39,6 +39,9 @@
 						Command="{Binding ExportISOCommand}"/>
 				<Separator/>
 				<MenuItem Header="_Create From">
+					<MenuItem Header="_Vanilla Melee (v1.02)"
+							  Click="OnNewClick"
+							  ToolTip.Tip="Create from an untouched Melee ISO"/>
 					<MenuItem Header="_mex ISO"
 							  Click="CreateFromMexISO_Click"
 							  ToolTip.Tip="Create from a pre-existing m-ex installed ISO"/>

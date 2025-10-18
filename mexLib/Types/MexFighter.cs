@@ -361,15 +361,15 @@ namespace mexLib.Types
             Functions.FromMxDt(mxdt, internalId);
 
             // extract logic pointers from dol since old mex stored the actual data
-            if (!MexFighterIDConverter.IsMexFighter(internalId, workspace.Project.Fighters.Count))
+            if (!MexFighterIDConverter.IsMexFighter(internalId, mxdt.MetaData.NumOfInternalIDs))
             {
-                uint oldInternal = (uint)MexFighterIDConverter.ToInternalID(
-                    MexFighterIDConverter.ToExternalID(internalId, workspace.Project.Fighters.Count),
-                    0x21);
+                int oldInternal = internalId;
+                if (internalId >= 0x21 - 6)
+                    oldInternal -= (mxdt.MetaData.NumOfInternalIDs - 0x21);
 
                 // get original internal id
-                Functions.MoveLogicPointer = dol.GetStruct<uint>(0x803C12E0, oldInternal);
-                Functions.DemoMoveLogicPointer = dol.GetStruct<uint>(0x803C1364, oldInternal);
+                Functions.MoveLogicPointer = dol.GetStruct<uint>(0x803C12E0, (uint)oldInternal);
+                Functions.DemoMoveLogicPointer = dol.GetStruct<uint>(0x803C1364, (uint)oldInternal);
             }
 
             // import items
