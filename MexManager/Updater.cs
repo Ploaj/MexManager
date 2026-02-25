@@ -218,7 +218,7 @@ namespace MexManager
                 "master",
                 "asm/codes.ini",
                 Global.MexAddCodePath,
-                true) &&
+                true) ||
                 await CheckUpdateLocalFile(
                 "akaneia",
                 "m-ex",
