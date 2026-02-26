@@ -188,7 +188,7 @@ namespace MexManager
                 if (localTime >= commitDate)
                 {
                     Logger.WriteLine($"\"{Path.GetFileName(localFile)}\" is up to date");
-                    return false;
+                    return true;
                 }
             }
 
@@ -218,7 +218,7 @@ namespace MexManager
                 "master",
                 "asm/codes.ini",
                 Global.MexAddCodePath,
-                true) ||
+                true) &&
                 await CheckUpdateLocalFile(
                 "akaneia",
                 "m-ex",
