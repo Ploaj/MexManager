@@ -188,7 +188,7 @@ namespace MexManager
                 if (localTime >= commitDate)
                 {
                     Logger.WriteLine($"\"{Path.GetFileName(localFile)}\" is up to date");
-                    return true;
+                    return false;
                 }
             }
 

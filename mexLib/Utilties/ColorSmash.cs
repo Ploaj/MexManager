@@ -173,17 +173,23 @@ namespace mexLib.Utilties
             return KMeans.Run(grouped, numColors);
         }
 
-        private static List<List<Rgba32>> GetColorCombinations(List<Image<Rgba32>> images)
+        private static IEnumerable<Rgba32[]> GetColorCombinations(List<Image<Rgba32>> images)
         {
-            int width = images[0].Width;
-            int height = images[0].Height;
-            var combos = new List<List<Rgba32>>();
+            int width = images.Min(i => i.Width);
+            int height = images.Min(i => i.Height);
+
+            var buffer = new Rgba32[images.Count];
 
             for (int y = 0; y < height; y++)
+            {
                 for (int x = 0; x < width; x++)
-                    combos.Add(images.Select(img => img[x, y]).ToList());
+                {
+                    for (int i = 0; i < images.Count; i++)
+                        buffer[i] = images[i][x, y];
 
-            return combos;
+                    yield return buffer;
+                }
+            }
         }
 
         private static List<Rgba32[]> OrderColorCombinations(HashSet<Rgba32[]> combos)

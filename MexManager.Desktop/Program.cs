@@ -2,6 +2,7 @@
 using Avalonia.ReactiveUI;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MexManager.Desktop;
 
@@ -13,6 +14,16 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+        {
+            File.WriteAllText("crash.log", e.ExceptionObject.ToString());
+        };
+
+        TaskScheduler.UnobservedTaskException += (s, e) =>
+        {
+            File.WriteAllText("crash.log", e.Exception.ToString());
+        };
+
         try
         {
             // Set the working directory to the directory of the executable

@@ -106,8 +106,8 @@ namespace mexLib.Types
 
                                 // check for compression
                                 if (textureAsset != null &&
-                                    (textureAsset.Width > csp_width ||
-                                    textureAsset.Height > csp_height ||
+                                    (textureAsset.Width != csp_width ||
+                                    textureAsset.Height != csp_height ||
                                     force))
                                 {
                                     costume.CSPAsset.Resize(ws, csp_width, csp_height);
@@ -124,19 +124,38 @@ namespace mexLib.Types
                                 colorsmash.Count > 0 && 
                                 colorsmash.Any(e => !e.Item2.ImageData.SequenceEqual(colorsmash[0].Item2.ImageData)))
                             {
-                                // apply color smash
-                                progress?.Invoke(this, new ProgressChangedEventArgs(-1, $"ColorSmashing Fighter: \"{fighter.Name}\" Group: {group.Key} Costumes: {colorsmash.Count}..."));
+                                var w = colorsmash[0].Item2.Width;
+                                var h = colorsmash[0].Item2.Height;
 
-                                // 
-                                var sw = new Stopwatch();
-                                sw.Start();
-                                ColorSmash.Quantize(colorsmash.Select(e => e.Item2), 256, false);
-                                foreach (var c in colorsmash)
-                                    c.Item1.CSPAsset.SetFromMexImage(ws, c.Item2, false);
-                                sw.Stop();
+                                // this error shouldn't normally ever happen, but just in case
+                                if (colorsmash.Any(e => e.Item2.Width != w || e.Item2.Height != h))
+                                {
+                                    // problem
+                                    progress?.Invoke(this, new ProgressChangedEventArgs(-1, $"WARNING: ColorSmash Resolution Failed: {fighter.Name} - {group.Key}"));
+                                    int i = 0;
+                                    foreach (var (cos, img) in colorsmash)
+                                    {
+                                        progress?.Invoke(this, new ProgressChangedEventArgs(-1, $"\t{i} - \"{cos.Name}\" ({img.Width}x{img.Height})"));
+                                        i++;
+                                    }
+                                }
+                                else
+                                {
+                                    // apply color smash
+                                    progress?.Invoke(this, new ProgressChangedEventArgs(-1, $"ColorSmashing Fighter: \"{fighter.Name}\" Group: {group.Key} Costumes: {colorsmash.Count}..."));
 
-                                //
-                                progress?.Invoke(this, new ProgressChangedEventArgs(-1, $"Completed - Fighter: \"{fighter.Name}\" Group: {group.Key} Costumes: {colorsmash.Count} in {sw.Elapsed}"));
+                                    // 
+                                    var sw = new Stopwatch();
+                                    sw.Start();
+                                    ColorSmash.Quantize(colorsmash.Select(e => e.Item2), 256, false);
+                                    foreach (var c in colorsmash)
+                                        c.Item1.CSPAsset.SetFromMexImage(ws, c.Item2, false);
+                                    sw.Stop();
+
+                                    //
+                                    progress?.Invoke(this, new ProgressChangedEventArgs(-1, $"Completed - Fighter: \"{fighter.Name}\" Group: {group.Key} Costumes: {colorsmash.Count} in {sw.Elapsed}"));
+
+                                }
                             }
 
                             // decrement percentage
