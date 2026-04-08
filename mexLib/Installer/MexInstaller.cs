@@ -384,12 +384,12 @@ namespace mexLib.Installer
             for (int internalId = 0; internalId < workspace.Project.Fighters.Count; internalId++) // 26
             {
                 // get fighter  external id
-                int externalId = MexFighterIDConverter.ToExternalID(internalId, 0x21);
+                int externalId = MexFighterIDConverter.ToExternalID(internalId, workspace.Project.Fighters.Count);
 
                 // sheik hack
                 if (externalId == 19)
                     externalId = 25;
-                else if (externalId > 19)
+                else if (externalId > 19 && externalId < 26)
                     externalId -= 1;
 
                 // search and set asset for fighter

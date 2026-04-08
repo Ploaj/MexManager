@@ -32,35 +32,54 @@ namespace mexLib
         /// <returns></returns>
         public static bool IsMexFighter(int internalId, int characterCount)
         {
-            return (internalId >= 0x21 - 6 && internalId < characterCount - 6);
+            return 
+                (   
+                    internalId >= BaseCharacterCount - InternalSpecialCharCount && 
+                    internalId < characterCount - InternalSpecialCharCount
+               );
         }
+
         /// <summary>
-        /// 
+        /// Converts an internal character ID (CKIND) to its external (FTKIND) representation.
+        /// Handles added characters and special character remapping.
         /// </summary>
-        /// <param name="internalID"></param>
-        /// <param name="characterCount"></param>
-        /// <returns></returns>
         public static int ToExternalID(int internalID, int characterCount)
         {
+            // Special hardcoded case (Popo)
+            if (internalID == 11)
+                return characterCount - 1;
+
             int addedChars = characterCount - BaseCharacterCount;
-            bool isSpecialCharacter = internalID >= characterCount - InternalSpecialCharCount;
 
-            if (internalID >= characterCount - InternalSpecialCharCount - addedChars &&
-                !isSpecialCharacter)
-                return (BaseCharacterCount - ExternalSpecialCharCount) + (internalID - (BaseCharacterCount - InternalSpecialCharCount));
+            int specialStart = characterCount - InternalSpecialCharCount;
+            bool isSpecial = internalID >= specialStart;
 
-            int externalId = internalID + (isSpecialCharacter ? -addedChars : 0);
+            int addedRangeStart = specialStart - addedChars;
 
-            if (externalId < InternalToExternal.Length)
-                externalId = InternalToExternal[externalId];
+            // Case 1: internal ID falls into the shifted "added characters" range
+            if (internalID >= addedRangeStart && !isSpecial)
+            {
+                int baseOffset = BaseCharacterCount - ExternalSpecialCharCount;
+                int internalOffset = internalID - (BaseCharacterCount - InternalSpecialCharCount);
+                return baseOffset + internalOffset;
+            }
 
-            if (isSpecialCharacter)
-                externalId += addedChars;
+            // Start with a base external ID
+            int externalID = internalID;
 
-            if (internalID == 11) // POPO special case
-                externalId = characterCount - 1;
+            // collapse space for added characters if special
+            if (isSpecial)
+                externalID -= addedChars;
 
-            return externalId;
+            // apply lookup remapping if within bounds
+            if (externalID < InternalToExternal.Length)
+                externalID = InternalToExternal[externalID];
+
+            // restore offset for special characters
+            if (isSpecial)
+                externalID += addedChars;
+
+            return externalID;
         }
 
         /// <summary>
